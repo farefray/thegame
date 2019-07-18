@@ -2,9 +2,9 @@ import React, {
   Component
 } from 'react';
 
-import { buyUnitEvent, getStatsEvent, placePieceEvent } from '../events';
-import { isUndefined, updateMessage } from '../f';
-import PawnImage from './PawnImage';
+import { buyUnitEvent, getStatsEvent, placePieceEvent } from '../../../events'
+import { isUndefined, updateMessage } from '../../../f';
+import PawnImage from '../../PawnImage.jsx';
 
 class Cell extends Component {
   state = {

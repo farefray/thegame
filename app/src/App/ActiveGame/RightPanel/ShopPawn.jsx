@@ -2,10 +2,10 @@ import React, {
   Component
 } from 'react';
 
-import { buyUnitEvent, getStatsEvent } from '../events';
-import { isUndefined, updateMessage } from '../f';
-import { getImage, getTypeImg, getGymImage } from '../images.js';
-import PawnImage from './PawnImage';
+import { buyUnitEvent, getStatsEvent } from '../../../events';
+import { isUndefined, updateMessage } from '../../../f';
+import { getImage, getTypeImg, getGymImage } from '../../../images.js';
+import PawnImage from '../..//PawnImage.jsx';
 
 class ShopPawn extends Component{
 

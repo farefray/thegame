@@ -30,7 +30,7 @@ export async function AjaxLoadSprites(dispatch) {
     }, 2000 * timeoutCounter); 
   });
 }
-
+// TODO usage for this
 export async function AjaxGetUnitJson(dispatch) {
   console.log('Fetching json from ' + ipAdress + '/unitJson');
   fetch(ipAdress + '/unitJson', {

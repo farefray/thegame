@@ -1,10 +1,8 @@
 
 
 import React, { Component } from 'react';
-import { sendMessage, AjaxGetUnitJson } from './socket';
 
 import { connect } from 'react-redux';
-import { isUndefined } from './f';
 import './css/grid.css';
 import './App.scss';
 import './animations.css';
@@ -18,51 +16,8 @@ class App extends Component {
     document.title = 'Pixel Auto Chess';
     this.state = {chatMessageInput: ''};
   }
-  // Event listener example, can be attached to example buttons
-  
-  // Event logic
 
   
-
-  getPosCoords = (pos) => {
-    return pos.split(',');
-  }
-
-  setBuffsFromSolo = (buffs, solo, type) => {
-    const buff = solo[type];
-    if(buff) {
-      buffs[buff['typeBuff']] = (buffs[buff['typeBuff']] || 0) + buff['value'];
-    }
-  }
-
-  // TODO: Load unitJson
-  displayUnitList = () => {
-    if(this.props.loadedUnitJson) {
-      // TODO: Display here
-      // this.props.unitJson
-    } else {
-      AjaxGetUnitJson(this.props.dispatch);
-    }
-  }
-
-  visitPlayer = (playerIndex) => {
-    console.log('Visiting Player', playerIndex, '...')
-    this.props.dispatch({type: 'SPEC_PLAYER', playerIndex})
-  }
-
-  handleVolumeChange = (e) => {
-    const newVolume = e.target.value / 100; // this.audioElement.length * 
-    // console.log('@handleVolumechange', e.target.value)
-    this.props.dispatch({type: 'CHANGE_VOLUME', newVolume})
-  }
-
-  handleChatSubmit = (event) => {
-    if(this.state.chatMessageInput !== '') {
-      sendMessage(this.state.chatMessageInput);
-    }
-    this.setState({...this.state, chatMessageInput: ''})
-    event.preventDefault();
-  }
 
   render() {
     if (!this.props.gameIsLive) {
@@ -151,5 +106,3 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps)(App);
 // TODO: Add react code here to connect to the reducer (state)
-
-//export default App;

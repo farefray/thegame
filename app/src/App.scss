@@ -382,17 +382,11 @@ body {
 .boardDiv {
   background: gray;
   background-position: 8px 10px; 
-  /*
-  background: url(./assets/images/circle.png) no-repeat;
-  */
 }
 
 .boardDivBattle {
-  background: gray;
+  background: black;
   background-position: 8px 10px; 
-  /* 
-  background: url(./assets/images/circle.png) no-repeat;
-  */
 }
 
 .handDiv {
@@ -404,17 +398,12 @@ body {
 }
 
 .cell {
-  /*border: 1px solid lightblue;*/
-  /*border: 1px solid rgb(33, 33, 33);*/
-  border: 1px solid black;
-  background-color:rgba(0, 0, 0, 0);
-  border-radius: 8px;
-  width: 85px; 
-  height: 85px;
+  border: 1px solid #00000030;
+  background-color: rgba(0, 0, 0, 0);
+  width: 64px; 
+  height: 64px;
   position: relative;
-  /*background: url(https://i.gyazo.com/f5c31403dc3840b9b276c3e8d3e178d3.png) no-repeat;*/
-  /*background: url(./assets/images/grass2.gif) no-repeat;*/
-  background-size: 85px 85px;
+  background: url(./assets/images/terrain/grass.gif) repeat;
 }
 
 .cell .markedUnit {
