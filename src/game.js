@@ -4,54 +4,11 @@ const {
   Map, List, Set, fromJS,
 } = require('immutable');
 
-const pokemonJS = require('./pokemon');
-const deckJS = require('./deck');
+const pawns = require('./pawns');
 const f = require('./f');
-const playerJS = require('./player');
 const typesJS = require('./types');
 const gameConstantsJS = require('./game_constants');
 const abilitiesJS = require('./abilities');
-
-
-/**
- * File used for game logic
- */
-
-/**
-  * Builds deck of pokemon loaded from pokemon.js
-  * Optional parameter to choose pokemon for deck (mainly for testing)
-  */
-async function buildPieceStorage(optList) {
-  let availablePieces = List([List([]), List([]), List([]), List([]), List([])]);
-  const decks = await deckJS.getDecks();
-  // console.log('@buildPieceStorage: decks', decks)
-  for (let i = 0; i < decks.size; i++) {
-    for (let j = 0; j < decks.get(i).size; j++) {
-      const pokemon = decks.get(i).get(j);
-      if (f.isUndefined(optList) || optList.includes(pokemon.get('name'))) {
-        const rarityAmount = gameConstantsJS.getRarityAmount(pokemon.get('cost'));
-        // console.log('Adding', rarityAmount, pokemon.get('name'), 'to', pokemon.get('cost'));
-        for (let l = 0; l < rarityAmount; l++) {
-          availablePieces = f.push(availablePieces, i, pokemon.get('name'));
-        }
-      }
-    }
-    availablePieces = f.shuffle(availablePieces, i);
-  }
-  // console.log('\n@buildPieceStorage: availablePieces', availablePieces)
-  return availablePieces;
-}
-
-async function initEmptyState(amountPlaying, optList) {
-  const pieceStorage = await buildPieceStorage(optList);
-  const state = Map({
-    pieces: pieceStorage,
-    discardedPieces: List([]),
-    round: 1, // (gameConstantsJS.debugMode ? 8 : 1),
-    income_basic: 1,
-  });
-  return playerJS.initPlayers(state, amountPlaying);
-}
 
 /**
  * Fills pieceStorage with discardedPieces
@@ -64,7 +21,7 @@ async function refillPieces(pieces, discardedPieces) {
   console.log(`@refillPieces Refilling ${discardedPieces.size} units (Pieces size = ${pieces.size})`); // pieceStorage
   for (let i = 0; i < discardedPieces.size; i++) {
     const name = discardedPieces.get(i);
-    const pokeStats = await pokemonJS.getStats(name);
+    const pokeStats = await pawns.getStats(name);
     const cost = pokeStats.get('cost');
     if(pokeStats.get('evolves_from')) {
       console.log('REFILLING NOT BASE UNIT @refillPieces', name);
@@ -148,7 +105,7 @@ async function addPieceToShop(shop, pos, pieces, level, discPieces, player, newU
     const piece = pieceObj.get('piece');
     const pieceIndex = pieceObj.get('index');
     if (!f.isUndefined(piece)) {
-      const unitStats = await pokemonJS.getStats(piece);
+      const unitStats = await pawns.getStats(piece);
       let newShopUnit = Map({
         name: piece,
         displayName: unitStats.get('displayName'),
@@ -221,7 +178,7 @@ exports.refreshShopGlobal = async (stateParam, index) => {
  * Create unit for board/hand placement from name and spawn position
  */
 async function getBoardUnit(name, x, y) {
-  const unitInfo = await pokemonJS.getStats(name);
+  const unitInfo = await pawns.getStats(name);
   if (f.isUndefined(unitInfo)) console.log('UNDEFINED:', name);
   // console.log('@getBoardUnit', name, unitInfo)
   let unit = Map({
@@ -290,7 +247,7 @@ exports.buyUnit = async (stateParam, playerIndex, unitID) => {
     state = state.setIn(['players', playerIndex, 'shop'], shop);
 
     const hand = state.getIn(['players', playerIndex, 'hand']);
-    const unitInfo = await pokemonJS.getStats(unit);
+    const unitInfo = await pawns.getStats(unit);
     const handIndex = await getFirstAvailableSpot(state, playerIndex); // TODO: Go: Get first best hand index
     // console.log('@buyUnit handIndex', handIndex);
     const unitHand = await getBoardUnit(unit, f.x(handIndex));
@@ -378,7 +335,7 @@ async function checkPieceUpgrade(stateParam, playerIndex, piece, position) {
   let state = stateParam;
   const boardUnits = state.getIn(['players', playerIndex, 'board']);
   const name = piece.get('name');
-  const stats = await pokemonJS.getStats(name);
+  const stats = await pawns.getStats(name);
   if (f.isUndefined(stats.get('evolves_to'))) return Map({ state, upgradeOccured: false });
   let pieceCounter = 0;
   let positions = List([]);
@@ -418,7 +375,7 @@ async function checkPieceUpgrade(stateParam, playerIndex, piece, position) {
     const newPiece = await getBoardUnit(evolvesTo, f.x(position), f.y(position));
     state = state.setIn(['players', playerIndex, 'board', position], newPiece);
     // TODO: List -> handle differently
-    const evolutionDisplayName = (await pokemonJS.getStats(evolvesTo)).get('displayName');
+    const evolutionDisplayName = (await pawns.getStats(evolvesTo)).get('displayName');
     // console.log('evolutionDisplayName', evolutionDisplayName);
     const nextPieceUpgrade = await checkPieceUpgrade(state, playerIndex, newPiece, position);
     // Get both upgrades
@@ -516,7 +473,7 @@ exports.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => withd
  */
 async function discardBaseUnits(stateParam, playerIndex, name, depth = 1) {
   let state = stateParam;
-  const unitStats = await pokemonJS.getStats(name);
+  const unitStats = await pawns.getStats(name);
   const evolutionFrom = unitStats.get('evolves_from');
   // console.log('@discardBaseUnits start', name, depth);
   if (f.isUndefined(evolutionFrom)) { // Base level
@@ -556,7 +513,7 @@ async function sellPiece(state, playerIndex, piecePosition) {
     pieceTemp = state.getIn(['players', playerIndex, 'board', piecePosition]);
   }
   const piece = pieceTemp;
-  const unitStats = await pokemonJS.getStats(piece.get('name'));
+  const unitStats = await pawns.getStats(piece.get('name'));
   const cost = unitStats.get('cost');
   const gold = state.getIn(['players', playerIndex, 'gold']);
   let newState = state.setIn(['players', playerIndex, 'gold'], +gold + +cost);
@@ -861,7 +818,7 @@ async function removeHpBattle(board, unitPos, hpToRemove, percent = false) {
   // console.log('@removeHpBattle', hpToRemove)
   let newHp = currentHp - hpToRemove;
   if (percent) {
-    const maxHp = (await pokemonJS.getStats(board.get(unitPos).get('name'))).get('hp');
+    const maxHp = (await pawns.getStats(board.get(unitPos).get('name'))).get('hp');
     newHp = await Math.round(currentHp - (maxHp * hpToRemove)); // HptoRemove is percentage to remove
   }
   if (newHp <= 0) {
@@ -936,7 +893,7 @@ async function calcDamage(actionType, power, unit, target, typeFactor, useSpecia
  * Heals unit at unitPos by heal amount, not over max hp
  */
 async function healUnit(board, unitPos, heal) {
-  const maxHp = (await pokemonJS.getStats(board.get(unitPos).get('name'))).get('hp');
+  const maxHp = (await pawns.getStats(board.get(unitPos).get('name'))).get('hp');
   const newHp = (board.getIn([unitPos, 'hp']) + heal >= maxHp ? maxHp : board.getIn([unitPos, 'hp']) + heal);
   const hpHealed = newHp - board.getIn([unitPos, 'hp']);
   return Map({ board: board.setIn([unitPos, 'hp'], newHp), hpHealed });
@@ -1051,7 +1008,7 @@ async function isBattleOver(board, team) {
  * Convert damage in percentage to value
  */
 async function dmgPercToHp(board, unitPos, percentDmg) {
-  const maxHp = (await pokemonJS.getStats(board.get(unitPos).get('name'))).get('hp');
+  const maxHp = (await pawns.getStats(board.get(unitPos).get('name'))).get('hp');
   return Math.round(maxHp * percentDmg);
 }
 
@@ -1465,8 +1422,8 @@ async function countUniqueOccurences(board, teamParam = '0') {
     // console.log('@countUnique UNIT', name)
     const team = unit.get('team') || teamParam;
     // console.log(unique, team, unit, unitPos)
-    // console.log('@countUniqueOccurences', unique.get(String(team)), pokemonJS.getBasePokemon(name))
-    const basePokemon = await pokemonJS.getBasePokemon(name);
+    // console.log('@countUniqueOccurences', unique.get(String(team)), pawns.getBasePokemon(name))
+    const basePokemon = await pawns.getBasePokemon(name);
     if (!unique.get(String(team)).has(basePokemon)) { // TODO: Check
       // f.p('@CountUniqueOccurences Unique', basePokemon, team, unique);
       const newSet = await unique.get(String(team)).add(basePokemon);
@@ -1625,7 +1582,7 @@ async function markBoardBonuses(board, teamParam = '0') {
  * Create unit for board battle from createBoardUnit unit given newpos/pos and team
  */
 async function createBattleUnit(unit, unitPos, team) {
-  const unitStats = await pokemonJS.getStats(unit.get('name'));
+  const unitStats = await pawns.getStats(unit.get('name'));
   const ability = await abilitiesJS.getAbility(unit.get('name'));
   // if(ability.get('mana')) console.log('@createBattleUnit', unit.get('name'), unitStats.get('ability'), ability.get('mana'));
   return unit.set('team', team).set('attack', unitStats.get('attack'))
@@ -1633,18 +1590,18 @@ async function createBattleUnit(unit, unitPos, team) {
     .set('maxHp', unitStats.get('hp'))
     .set('startHp', unitStats.get('hp'))
     .set('type', unitStats.get('type'))
-    .set('next_move', unitStats.get('next_move') || pokemonJS.getStatsDefault('next_move'))
-    .set('mana', unitStats.get('mana') || pokemonJS.getStatsDefault('mana'))
+    .set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'))
+    .set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'))
     .set('ability', unitStats.get('ability'))
-    .set('defense', unitStats.get('defense') || pokemonJS.getStatsDefault('defense'))
-    .set('speed', pokemonJS.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pokemonJS.getStatsDefault('speed')))
-    /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pokemonJS.getStatsDefault('mana_hit_given'))
-    .set('mana_hit_taken', unitStats.get('mana_hit_taken') || pokemonJS.getStatsDefault('mana_hit_taken')) */
-    .set('mana_multiplier', unitStats.get('mana_multiplier') || pokemonJS.getStatsDefault('mana_multiplier'))
+    .set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'))
+    .set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')))
+    /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
+    .set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
+    .set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'))
     .set('specialAttack', unitStats.get('specialAttack'))
     .set('specialDefense', unitStats.get('specialDefense'))
     .set('position', unitPos)
-    .set('range', unitStats.get('range') || pokemonJS.getStatsDefault('range'))
+    .set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
     .set('manaCost', ability.get('mana') || abilitiesJS.getDefault('mana'));
 }
 
@@ -1848,7 +1805,7 @@ async function fixTooManyUnits(state, playerIndex) {
   let cheapestCostIndex = List([]);
   while (!temp.done) {
     const unitPos = temp.value;
-    const cost = (await pokemonJS.getStats(board.get(unitPos).get('name'))).get('cost');
+    const cost = (await pawns.getStats(board.get(unitPos).get('name'))).get('cost');
     if (cost < cheapestCost) {
       cheapestCost = cost;
       cheapestCostIndex = List([unitPos]);
@@ -2008,7 +1965,7 @@ async function calcDamageTaken(boardUnits) {
   // Each surviving piece does damage based on its level: 1+floor(level/3)
   // Level 1-2 units do 1 damage, 3-5 do 2 damage, 6-8 do 3 damage, level 9 do 4 damage
   while (!tempUnit.done) {
-    const stats = await pokemonJS.getStats(boardUnits.get(tempUnit.value).get('name'));
+    const stats = await pawns.getStats(boardUnits.get(tempUnit.value).get('name'));
     const level = +stats.get('cost');
     sum += 1 + Math.floor(level / 3);
     tempUnit = keysIter.next();
@@ -2166,7 +2123,9 @@ async function startGame(stateParam) {
   return state;
 }
 
+const StateJS = require('./game/state');
+
 exports.startGameGlobal = async (amountPlaying) => {
-  const state = await initEmptyState(amountPlaying);
+  const state = await StateJS.initEmpty(amountPlaying);
   return startGame(state);
 };

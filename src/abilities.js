@@ -1,9 +1,6 @@
-
-
-
 const { Map, List, fromJS } = require('immutable');
 const fs = require('fs');
-const pokemonJS = require('./pokemon');
+const pawns = require('./pawns');
 const f = require('./f');
 
 const abilityDefaults = Map({
@@ -39,7 +36,7 @@ exports.getDefault = name => abilityDefaults.get(name);
 
 exports.getAbility = async (name) => {
   // console.log('@abilties.getAbility', name);
-  const ability = (await pokemonJS.getStats(name)).get('ability');
+  const ability = (await pawns.getStats(name)).get('ability');
   const returnMe = (await abilitiesMap).get(ability);
   if (f.isUndefined(returnMe)) console.log('@getAbility undefined', name);
   return returnMe;

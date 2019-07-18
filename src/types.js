@@ -3,7 +3,7 @@
 const { Map, List } = require('immutable');
 
 const f = require('./f');
-const pokemonJS = require('./pokemon');
+const pawns = require('./pawns');
 
 const increaseSpeed = (unit, bonus) => unit.set('speed', Math.max(10, unit.get('speed') - bonus)); // Lower speed = better
 const increaseHp = (unit, bonus) => unit.set('hp', +unit.get('hp') + +bonus).set('startHp', +unit.get('hp') + +bonus);
@@ -12,14 +12,14 @@ const increaseDefense = (unit, bonus) => unit.set('defense', +unit.get('defense'
 const increaseSpecialAttack = (unit, bonus) => unit.set('specialAttack', +unit.get('specialAttack') + +bonus);
 const increaseSpecialDefense = (unit, bonus) => unit.set('specialDefense', +unit.get('specialDefense') + +bonus);
 const decreaseDefense = (unit, bonus) => unit.set('defense', Math.max(1, +unit.get('defense') - +bonus));
-const decreaseSpeed = (unit, bonus) => unit.set('speed', Math.min(pokemonJS.getStatsDefault('upperLimitSpeed') + 100, +unit.get('speed') + +bonus)); // Higher speed value = worse
+const decreaseSpeed = (unit, bonus) => unit.set('speed', Math.min(pawns.getStatsDefault('upperLimitSpeed') + 100, +unit.get('speed') + +bonus)); // Higher speed value = worse
 const decreaseHp = (unit, bonus) => unit.set('hp', Math.max(0, +unit.get('hp') - +bonus)); //.set('startHp', Math.max(0, +unit.get('hp') - +bonus));
 const decreaseAttack = (unit, bonus) => unit.set('attack', Math.max(0, +unit.get('attack') - +bonus));
 
 const reqForUpgrade = async (unitParam, bonus) => {
   // Get tier of unit
   let unit = unitParam;
-  const tier = await pokemonJS.getUnitTier(unit.get('name'));
+  const tier = await pawns.getUnitTier(unit.get('name'));
   // console.log('@reqForUpgrade bugs', tier, bonus)
   if (tier <= bonus) { // Bonus marks highest allowed tier for unit
     // console.log('@reqForUpgrade bugs BONUS', unit)

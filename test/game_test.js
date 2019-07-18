@@ -1,13 +1,10 @@
-
-
-
 const assert = require('assert');
 const rewire = require('rewire');
 const { Map, List, fromJS } = require('immutable');
 
 const fileModule = rewire('../src/game.js');
 const fileModule2 = rewire('../src/game_constants.js');
-const pokemonJS = rewire('../src/pokemon.js');
+const pawns = rewire('../src/pawns.js');
 
 const f = require('../src/f');
 
@@ -61,8 +58,8 @@ describe('game state', () => {
       }
       assert.equal(pieces.size, sum);
       */
-      const stats = await pokemonJS.getStats(pieces.get(0).get(0));
-      const stats2 = await pokemonJS.getStats(pieces.get(2).get(0))
+      const stats = await pawns.getStats(pieces.get(0).get(0));
+      const stats2 = await pawns.getStats(pieces.get(2).get(0))
       assert.equal(stats.get('cost'), 1);
       assert.equal(stats2.get('cost'), 3);
     });
@@ -169,7 +166,7 @@ describe('game state', () => {
       const unit = await createBattleUnit((await getBoardUnit('rattata', 2, 2)), f.pos(2,2), 1);
       state = await endBattle(state, '0', false, Map({}).set(f.pos(2,2), unit), true, 1);
       // TODO Test with damage taken (Will be 0 when no enemy units)
-      assert.equal(state.getIn(['players', '0', 'hp']), hp - (await pokemonJS.getStats(unit.get('name'))).get('cost'));
+      assert.equal(state.getIn(['players', '0', 'hp']), hp - (await pawns.getStats(unit.get('name'))).get('cost'));
     });
   });
   describe('endTurn', () => {
@@ -251,7 +248,7 @@ describe('game state', () => {
       assert.equal(state.getIn(['players', '0', 'gold']), 4); // 1 start, 1 win, 2 basic
       assert.equal(state.getIn(['players', '1', 'gold']), 3); // 1 start 2 basic
       assert.equal(state.getIn(['players', '0', 'hp']), hp);
-      assert.equal(state.getIn(['players', '1', 'hp']), hp - (await pokemonJS.getStats(unit.get('name'))).get('cost'));
+      assert.equal(state.getIn(['players', '1', 'hp']), hp - (await pawns.getStats(unit.get('name'))).get('cost'));
     });
   });
   describe('sellPiece', () => {
@@ -268,7 +265,7 @@ describe('game state', () => {
       assert.equal(unit.get('name'), state.get('discardedPieces').get(0));
       assert.equal(state.getIn(['players', '0', 'hand']).get(f.pos(0)), undefined);
       assert.equal(gold, 0);
-      const stats = await pokemonJS.getStats(unit.get('name'));
+      const stats = await pawns.getStats(unit.get('name'));
       assert.equal(state.getIn(['players', '0', 'gold']), stats.get('cost'));
     });
     it('sellPiece from hand, level 3?', async () => {
@@ -284,7 +281,7 @@ describe('game state', () => {
         const unit = await getBoardUnit('rattata', 2, 2);
         let board = Map({}).set(f.pos(2,2), unit);
         unitBoard = board.get(f.pos(2,2));
-        unitStats = await pokemonJS.getStats('rattata');
+        unitStats = await pawns.getStats('rattata');
         assert.equal(unitBoard.get('name'), 'rattata');
         assert.equal(unitBoard.get('displayName'), unitStats.get('displayName'));
         assert.equal(f.x(unitBoard.get('position')), 2);
@@ -300,8 +297,8 @@ describe('game state', () => {
     it('calcDamageTaken tests?', async () => {
       const unit = await getBoardUnit('rattata', 2, 2);
       let board = Map({}).set(f.pos(2,2), unit);
-      const rStats = await pokemonJS.getStats('rattata');
-      const pStats = await pokemonJS.getStats('pikachu');
+      const rStats = await pawns.getStats('rattata');
+      const pStats = await pawns.getStats('pikachu');
       const rattataLevel = rStats.get('cost');
       const pikachuLevel = pStats.get('cost');
       const valueDamageTaken = await calcDamageTaken(board);
@@ -756,10 +753,10 @@ describe('game state', () => {
       assert.equal(markedBoard.get(f.pos(1,3)).get('buff').get(0), 'normal +15');
       assert.equal(markedBoard.get(f.pos(1,4)).get('buff').get(0), 'normal +15');
       // TODO: Check that the normal buff is applied
-      assert.equal(markedBoard.get(f.pos(1,1)).get('hp'), (await pokemonJS.getStats('rattata')).get('hp') + 15);
-      assert.equal(markedBoard.get(f.pos(1,2)).get('hp'), (await pokemonJS.getStats('pidgey')).get('hp') + 15);
-      assert.equal(markedBoard.get(f.pos(1,3)).get('hp'), (await pokemonJS.getStats('spearow')).get('hp') + 15);
-      assert.equal(markedBoard.get(f.pos(1,4)).get('hp'), (await pokemonJS.getStats('snorlax')).get('hp') + 15);
+      assert.equal(markedBoard.get(f.pos(1,1)).get('hp'), (await pawns.getStats('rattata')).get('hp') + 15);
+      assert.equal(markedBoard.get(f.pos(1,2)).get('hp'), (await pawns.getStats('pidgey')).get('hp') + 15);
+      assert.equal(markedBoard.get(f.pos(1,3)).get('hp'), (await pawns.getStats('spearow')).get('hp') + 15);
+      assert.equal(markedBoard.get(f.pos(1,4)).get('hp'), (await pawns.getStats('snorlax')).get('hp') + 15);
     });
     it('markBoardBonuses team impact', async () => {
       // TODO

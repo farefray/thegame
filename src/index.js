@@ -10,7 +10,7 @@ const router = express.Router();
 const cors = require('cors');
 
 const deckJS = require('./deck');
-const pokemonJS = require('./pokemon');
+const pawns = require('./pawns');
 const socketController = require('./socketcontroller.js');
 
 // we will use port 8000 for our app
@@ -22,8 +22,8 @@ app.use(cors());
 
 router.all('*', cors());
 
-const pokemonSpritesJSON = pokemonJS.getPokemonSprites();
-const pokemonJson = pokemonJS.getMap();
+const pokemonSpritesJSON = pawns.getPokemonSprites();
+const pokemonJson = pawns.getMap();
 
 const getSprites = async () => pokemonSpritesJSON;
 const getPokemonJson = async () => pokemonJson;

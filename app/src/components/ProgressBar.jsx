@@ -43,7 +43,7 @@ class ProgressBar extends Component {
     };
 
     // TODO make it universal and pass text from parent
-    const loadingString = (this.props.progress > 0 ? 'Loading' + '.'.repeat(loadingCounter) : 'Connecting' + '.'.repeat(loadingCounter));
+    const loadingString = (this.props.progress > 0 ? 'Loading' + '.'.repeat(loadingCounter) : 'Connecting' + '.'.repeat(loadingCounter)); // TODO
 
     const value = (this.props.progress || 0) / 100;
     return (<div data-value={value} className="rpgui-progress green" data-rpguitype="progress" data-text={loadingString}></div>);

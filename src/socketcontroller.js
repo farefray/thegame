@@ -3,7 +3,7 @@
 const { Map, fromJS } = require('immutable');
 const gameJS = require('./game');
 const sessionJS = require('./session');
-const pokemonJS = require('./pokemon');
+const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');
 const typesJS = require('./types');
 const gameConstantsJS = require('./game_constants');
@@ -444,14 +444,14 @@ module.exports = (socket, io) => {
   });
 
   socket.on('GET_STATS', async (name) => {
-    const stats = pokemonJS.getStats(name);
+    const stats = pawns.getStats(name);
     const ability = await abilitiesJS.getAbility(name);
     let newStats = (await stats).set('abilityType', ability.get('type'));
     if (ability.get('displayName')) {
       newStats = newStats.set('abilityDisplayName', ability.get('displayName'));
     }
     if (typeof newStats.get('evolves_to') === 'string') { // && !Array.isArray(newStats.get('evolves_to').toJS())) { // Test
-      const evolStats = await pokemonJS.getStats(newStats.get('evolves_to'));
+      const evolStats = await pawns.getStats(newStats.get('evolves_to'));
       newStats = newStats.set('snd_evolves_to', evolStats.get('evolves_to'));
     }
     f.p('Retrieving stats for', name); // , newStats);

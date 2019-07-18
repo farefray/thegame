@@ -1,5 +1,3 @@
-
-
 const shuffle = require('immutable-shuffle');
 const gameConstantsJS = require('./game_constants');
 
