@@ -35,19 +35,14 @@ class ProgressBar extends Component {
 
       setTimeout(() => {
         if (this._isMounted) {
-          this.setState({...this.state, 'loadingCounter': loadingCounter}) // todo fix when unmounted
+          this.setState({...this.state, 'loadingCounter': loadingCounter})
           this.props.dispatch({ type: 'LOADING_STRING', loadingCounter })
           this.updateUI()
         }
       }, 1000);
     };
-    
-    var old = <button style={{ marginLeft: '5px' }} className={`rpgui-button ${(this.props.playersReady >= 2 && this.props.playersReady !== this.props.connectedPlayers && this.props.ready ? '' : 'hidden')}`}
-            onClick={() => this.startGameEvent(true)}>
-            Force Start Game{(this.props.connected ? ` (${this.props.playersReady}/${this.props.connectedPlayers})` : ' Connecting ...')}
-          </button>; // TODO
 
-
+    // TODO make it universal and pass text from parent
     const loadingString = (this.props.progress > 0 ? 'Loading' + '.'.repeat(loadingCounter) : 'Connecting' + '.'.repeat(loadingCounter));
 
     const value = (this.props.progress || 0) / 100;

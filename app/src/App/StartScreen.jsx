@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { getImage } from '../images.js';
+import { startGame, ready, unready } from '../socket';
 import ProgressBar from '../components/ProgressBar.jsx';
+import SoundButton from './StartScreen/SoundButton.jsx';
 
 class StartScreen extends Component {
 
@@ -9,65 +10,69 @@ class StartScreen extends Component {
     this.state = {
       'nameChangeInput': ''
     };
-
   }
 
   handleNameChange = (event) => {
-    if(this.state.nameChangeInput.length <= 20 && this.state.nameChangeInput !== '') {
-      this.props.dispatch({type: 'UPDATE_PRIVATE_NAME', name: this.state.nameChangeInput});
+    if (this.state.nameChangeInput.length <= 20 && this.state.nameChangeInput !== '') {
+      this.props.dispatch({ type: 'UPDATE_PRIVATE_NAME', name: this.state.nameChangeInput });
     }
 
-    this.setState({...this.state, 'nameChangeInput': ''})
+    this.setState({ ...this.state, 'nameChangeInput': '' })
     event.preventDefault();
+  }
+
+  toggleReady = () => {
+    console.log('@toggleReady', this.props.ready);
+    const { dispatch } = this.props;
+    dispatch({ type: 'TOGGLE_READY' });
+    this.props.ready ? unready() : ready();
+  };
+
+  startGameEvent = (forceStart = false) => {
+    console.log('@startGameEvent', forceStart)
+    if (this.props.allReady || forceStart) {
+      console.log('Starting')
+      startGame(this.props.playersReady);
+    } else {
+      console.log('Not starting')
+    }
   }
 
   render () {
     const loadingProgress = 100 / 3 * (this.props.connected + this.props.loaded + (this.props.playersReady !== -1)) + 1;
-    
-
-    const soundButton = (<div className='mainMenuSoundDiv marginTop5'>
-        <div>
-          <img className='musicImgMainMenu' src={(this.props.musicEnabled ? getImage('music') : getImage('musicMuted'))}
-            alt={(this.props.musicEnabled ? 'Mute Music' : 'Turn on Music')} onClick={() => this.props.dispatch({ type: 'TOGGLE_MUSIC' })} />
-        </div>
-        <div>
-          <img className='soundImgMainMenu' src={(this.props.soundEnabled ? getImage('sound') : getImage('soundMuted'))}
-            alt={(this.props.soundEnabled ? 'Mute Sound' : 'Turn on Sound')} onClick={() => this.props.dispatch({ type: 'TOGGLE_SOUND' })} />
-        </div>
-        {(this.props.musicEnabled ? this.playMusic() : '')}
-      </div>);
 
     const isLoaded = (loadingProgress >= 100);
 
     const mainMenu = (<div>
       <div className='startButtons'>
-        <div className='flex'>
-          {isLoaded ? 
+        {isLoaded ?
           <div>
-            <button className={`rpgui-button startButton ${(!this.props.ready ? 'growAnimation' : '')}`}
-              onClick={this.toggleReady}>{(this.props.ready ? 'Unready' : 'Ready')}</button>
-            <button style={{ marginLeft: '5px' }} className={`rpgui-button ${(this.props.playersReady === this.props.connectedPlayers ? 'growAnimation' : '')}`}
-              onClick={() => this.startGameEvent()}>
-              {(`Start Game (${this.props.playersReady}/${this.props.connectedPlayers})`)}
-            </button>
+            {this.props.playerName !== '' ? <div>
+              Player: {this.props.playerName} <br />
+              <button className={`rpgui-button startButton ${(!this.props.ready ? 'growAnimation' : '')}`}
+                onClick={this.toggleReady}><p>{(this.props.ready ? 'Unready' : 'Ready')}</p></button>
+              <button style={{ marginLeft: '5px' }} className={`rpgui-button ${(this.props.playersReady === this.props.connectedPlayers ? 'growAnimation' : '')}`}
+                onClick={() => this.startGameEvent()}>
+                <p>
+                  {(`Start Game (${this.props.playersReady}/${this.props.connectedPlayers})`)}
+                </p>
+              </button></div> : <div>
+                <form>
+                  <label className='text_shadow'>Name:</label>
+                  <label>
+                    <input maxLength='20' placeholder='Enter your nickname' className='textInputSmaller' type="text" value={this.state.nameChangeInput}
+                      onChange={(event) => this.setState({ ...this.state, nameChangeInput: event.target.value })} />
+                  </label>
+                  <button className="rpgui-button golden" type="button" onClick={this.handleNameChange}><p>Submit</p></button>
+                </form>
+              </div>}
           </div> : <ProgressBar progress={loadingProgress} loadingCounter={this.state.loadingCounter} dispatch={this.props.dispatch} />}
-        </div>
       </div>
 
-      <div className='mainMenuNameChange'>
-        <form onSubmit={this.handleNameChange}>
-          <label className='text_shadow'>Name:</label>
-          <label>
-            <input maxLength='20' placeholder={this.props.playerName} className='textInputSmaller' type="text" value={this.state.nameChangeInput}
-              onChange={(event) => this.setState({ ...this.state, nameChangeInput: event.target.value })} />
-          </label>
-          <input className='rpgui-button golden' type="submit" value="Submit" />
-        </form>
-      </div>
-      {soundButton}
+      <SoundButton soundEnabled={this.state.soundEnabled} musicEnabled={this.state.musicEnabled} dispatch={this.props.dispatch} />
     </div>);
 
-    return (<div className="section group"><div className="col span_1_of_10"></div><div className="col span_8_of_10 rpgui-content rpgui-cursor-default"><div id="container"><div className="inner rpgui-container framed">{mainMenu}</div></div></div><div className="col span_1_of_10"></div></div>);
+    return (<div id="startscreen" className="section group"><div className="col span_1_of_10"></div><div className="col span_8_of_10 rpgui-content rpgui-cursor-default"><div className="startscreen-inner inner rpgui-container framed">{mainMenu}</div></div><div className="col span_1_of_10"></div></div>);
   }
 }
 

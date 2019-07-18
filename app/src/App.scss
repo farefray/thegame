@@ -9,6 +9,15 @@ body {
   /*background-image: url(https://i.imgur.com/VOPXdoh.jpg) no-repeat;*/
 }
 
+#startscreen {
+  width: 100vw;
+  height: 100vh;
+  .startscreen-inner {
+    width: 80%;
+    height: 80%;
+  }
+}
+
 .mainMenu {
   width: 100vw;
   height: 100vh;
@@ -190,7 +199,7 @@ body {
   z-index: 1;
 }
 
-.pokemonImg {
+.pawnImg {
   display: block;
   /*
   margin-top: 0px;
@@ -1113,10 +1122,6 @@ body {
   z-index: 12;
 }
 
-.mainMenuNameChange {
-  margin-top: 10px;
-  margin-left: 600px;
-}
 
 /*
   Rarity colors

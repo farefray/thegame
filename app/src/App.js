@@ -1,12 +1,12 @@
 
 
 import React, { Component } from 'react';
-import { ready, unready, startGame, sendMessage, AjaxGetUnitJson } from './socket';
+import { sendMessage, AjaxGetUnitJson } from './socket';
 import { toggleLockEvent, refreshShopEvent, buyExpEvent, placePieceEvent, withdrawPieceEvent, sellPieceEvent } from './events';
 import { connect } from 'react-redux';
 import { isUndefined, updateMessage } from './f';
 import './css/grid.css';
-import './App.css';
+import './App.scss';
 import './animations.css';
 
 import { getUnitAudio, getSoundEffect } from './audio.js';
@@ -27,23 +27,6 @@ class App extends Component {
   // Event listener example, can be attached to example buttons
   
   // Event logic
-
-  toggleReady = () => {
-    console.log('@toggleReady', this.props.ready);
-    const { dispatch } = this.props;
-    dispatch({type: 'TOGGLE_READY'});
-    this.props.ready ? unready() : ready();
-  };
-
-  startGameEvent = (forceStart=false) => {
-    console.log('@startGameEvent', forceStart)
-    if(this.props.allReady || forceStart){
-      console.log('Starting')
-      startGame(this.props.playersReady);
-    } else {
-      console.log('Not starting')
-    }
-  }
 
   pos = (x,y) => {
     if(isUndefined(y)){
@@ -800,16 +783,6 @@ class App extends Component {
     </div>;
   }
 
-  playMusic = () => {
-    // console.log('@playMusic', this.props.music);
-    const el = <audio ref='MusicEl' src={this.props.music} onLoadStart={() => this.refs.MusicEl.volume = this.props.volume} loop autoPlay/>;
-    if(this.refs.MusicEl){
-      this.refs.MusicEl.volume = this.props.volume;
-    }
-    return el;
-    // return <Audio loopEnabled={true} source={source} newProps={this.props}/>
-  }
-
   handleVolumeChange = (e) => {
     const newVolume = e.target.value / 100; // this.audioElement.length * 
     // console.log('@handleVolumechange', e.target.value)
@@ -946,7 +919,8 @@ class App extends Component {
 
   render() {
     if (!this.props.gameIsLive) {
-      return <StartScreen connected={this.props.connected} loaded={this.props.loaded} playersReady={this.props.playersReady} loadingCounter={this.props.loadingCounter} dispatch={this.props.dispatch} />;
+      // Thats horrible way. Maybe we should connect state in StartScreen instead.
+      return <StartScreen {...this.props} />;
     }
 
     const topBar = <div className='flex topBarDiv'>
@@ -1136,6 +1110,7 @@ class App extends Component {
   }
 }
 
+// Thats not good :{
 const mapStateToProps = state => ({
   gameIsLive: state.gameIsLive, 
   connected: state.connected,

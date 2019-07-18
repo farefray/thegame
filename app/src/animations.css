@@ -10,11 +10,11 @@
   animation: jump 1s ease-in-out 0s normal infinite both running;
 }
 
-.growAnimation {
+.growAnimation > p {
   animation: growText 1s ease-in-out 0s alternate infinite both running;
 }
 
-.pokemonSpawn {
+.pawnSpawn {
   animation: 0.50s ease-in-out 0s 1 reverse both running shrinkDown;
   /*animation-name: enter;
 	animation-duration: 0.9s;*/
@@ -851,7 +851,7 @@
 	}
 }
 
-.pokemonEnter {
+.pawnEnter {
 	animation-name: enter;
 	animation-duration: 0.9s; /* 1.2s */
 }

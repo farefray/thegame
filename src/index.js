@@ -32,7 +32,7 @@ router.get('/sprites', async (req, res) => {
   console.log('/sprites GET Request - ', req.connection.remoteAddress);
   const sprites = await getSprites();
   // Added delay for responses(TODO remove me after tests)
-  setTimeout(() => res.json({ sprites }), 7500);
+  setTimeout(() => res.json({ sprites }), 2500);
 });
 
 router.get('/unitJson', async (req, res) => {

@@ -76,7 +76,7 @@ class PawnImage extends Component {
     const baseMarginLeft = Math.max(85 - width - 7, 0);
     const imgEl = < img
     className = {
-      `pokemonImg ${(this.props.renderBase ? 'pokemonSpawn' : (this.props.newProps.onGoingBattle ? (this.props.isBoard ? '' : 'pokemonEnter') : 'pokemonEnter'))} ` +
+      `pawnImg ${(this.props.renderBase ? 'pawnSpawn' : (this.props.newProps.onGoingBattle ? (this.props.isBoard ? '' : 'pawnEnter') : 'pawnEnter'))} ` +
       `${this.props.name} ${(this.props.classList ? this.props.classList : '')}`
     }
     key = {
