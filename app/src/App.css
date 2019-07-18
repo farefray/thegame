@@ -1,0 +1,1263 @@
+/* Author: Petter Andersson */
+
+body {
+  margin: 0px; /*20px*/
+  padding: 0px;
+  font-family: sans-serif;
+  background: rgb(33, 33, 33);
+  /*background: lightblue;*/
+  /*background-image: url(https://i.imgur.com/VOPXdoh.jpg) no-repeat;*/
+}
+
+.mainMenu {
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  background-image: url(https://wallpapercave.com/wp/wp3595253.jpg) no-repeat;
+}
+
+.mainMenuSoundDiv {
+  margin-left: 220px;
+}
+
+.logos {
+  padding-top: 50px;
+  display: grid; 
+  padding-left: 150px;
+}
+
+.startButtons {
+  padding-left: 600px;
+}
+
+.startButton {
+  width: 80px;
+}
+
+.gameDiv {
+  margin: 20px;
+}
+
+.wholeBody {
+  margin-top: 10px;
+}
+
+.loadingBarContainer {
+  width: 202px;
+  position: relative;
+}
+
+.loadingBar {
+  height: 24px;
+  background-color: rgb(19, 190, 19);
+  text-shadow:0px 1px 0px #528ecc;
+  padding: 2px;
+  line-height: 45px;
+  margin-left: -7px;
+  margin-top: -2px;
+  padding-right: 14px;
+  border-radius: 5px;
+  height: 45px;
+  z-index: 10;
+  text-shadow:
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000;
+}
+
+.loadingBarText {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  transform: translate(-50%,-50%);
+  text-align: center;
+  z-index: 20;
+}
+
+.loadingBarConnecting {
+  margin-top: -9px !important;
+}
+
+.babyImgInfoPanel {
+  position: absolute;
+  width: 44px;
+  height: 10px;
+  transform: rotate(30deg);
+  margin-left: 115px;
+  margin-top: -50px;
+  border-radius: 15%;
+}
+
+.babyImg {
+  position: absolute;
+  width: 53px;
+  height: 12px;
+  transform: rotate(45deg);
+  margin-left: 85px;
+  margin-top: 20px;
+  border-radius: 15%;
+}
+
+.pokemonShopText {
+  padding-left: 5px;
+  white-space: pre-line;
+  color: white;
+  padding-top: 5px;
+  text-shadow:
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000;  
+  text-align: center;
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.pokemonShopEntity {
+  margin: 6px;
+  padding-bottom: 5px;
+  width: 140px;
+  height: 180px;
+  /*
+  border: 2px solid black;
+  */
+  background-color: rgb(46, 40, 40);
+  border-radius: 50px;
+  z-index: 1;
+  /*background: url(https://i.pinimg.com/originals/7c/0f/eb/7c0feb742c99ac92d76360a0e0ee3d3b.png) no-repeat;
+  background-size: 120px 180px;*/
+}
+
+.redFont {
+  color: red !important;
+}
+
+.goldFont {
+  color: gold !important;
+}
+
+.pokemonShopHalf {
+  margin-left: 21px;
+}
+
+.PawnImageDiv{
+  height: 90px;
+  /*
+  border-radius: 50px;
+  border: 1px black solid; 
+  */
+}
+
+.PawnImageBase {
+  margin-top: 50px;
+  margin-left: 38px;
+  height: 25px;
+  width: 60px;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 2;
+}
+
+.pawnInfo {
+  position: absolute;
+  margin-top: 10px;
+  margin-left: 15px;
+}
+
+.infoImg {
+  margin-top: 1px;
+  margin-left: 1px;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  z-index: 2;
+}
+
+.infoImg:hover + .infoImgBg{
+  background: rgb(38, 207, 38);
+}
+
+.infoImgBg {
+  margin: auto;
+  margin-top: 2px;
+  margin-left: 2px;
+  width: 23px;
+  height: 23px;
+  background: white;
+  position: absolute;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.pokemonImg {
+  display: block;
+  /*
+  margin-top: 0px;
+  margin-left: 0px;
+  */
+  margin: auto;
+  position: relative;
+  z-index: 3;
+}
+
+.pokemonShopEmpty {
+  margin-left: 35%;
+  margin-top: 60%;
+}
+
+.shopInteractDiv {
+  padding-top: 30px;
+  padding-left: 24px;
+}
+
+.pieceImg {
+  /*
+  width: 17px;
+  height: 30px;
+  */
+  width: 30px;
+  height: 30px;
+}
+
+.pieceDiv {
+  padding-top: 30px;
+}
+
+.musicDiv {
+  /*margin-top: 60px;*/
+}
+
+.soundImg {
+  /* 50 50 */
+  margin-left: 10px;
+  margin-top: 12px;
+  width: 30px;
+  height: 30px;
+}
+
+.musicImg {
+  /* 70 70 */
+  width: 50px;
+  height: 50px;
+}
+
+.soundImgMainMenu {
+  margin-left: 5px;
+  margin-top: 30px;
+  width: 60px;
+  height: 60px;
+}
+
+.musicImgMainMenu {
+  width: 70px;
+  height: 70px;
+}
+
+.chatSoundImg {
+  /* 300 270 */
+  margin-top: 8px;
+  margin-left: 8px;
+  width: 45px;
+  height: 41px;
+}
+
+.toggleHelpDiv {
+  margin-left: 10px;
+}
+
+.updateMessage {
+  height: 30px;
+}
+
+.actionMessage {
+  animation: fadeOutDown 2s ease-in-out 0s infinite forwards;
+  margin-top: 25px;
+  margin-left: 3px;
+  font-size: 14px;
+  padding-left: 35px;
+  margin-top: 25px;
+}
+
+.actionMessagePadding {
+  padding-left: 10px !important;
+}
+
+.paddingLeft5{
+  padding-left: 5px;
+}
+
+.paddingRight5{
+  padding-right: 5px;
+}
+
+.infoPanel {
+  height: 385px;
+  padding-top: 5px;
+  white-space: pre-line;
+}
+
+.infoPanelBuff {
+  color: rgb(10, 248, 10);
+}
+
+.infoPanelStats {
+  padding-top: 5px;
+  font-size: 15px;
+}
+
+.infoPanelPokemonLogo {
+  height: 50px;
+}
+
+.noSelected{
+  padding-top: 100px;
+  padding-left: 18px;
+}
+
+.textAlignCenter {
+  text-align: center;
+}
+
+.boardColumn {
+  display: block;
+}
+
+.flex {
+  display: flex;
+}
+
+.center {
+  margin: auto;
+}
+
+.centerWith50{
+  margin: auto;
+  width: 50%;
+}
+
+.topBarDiv {
+  width: 80%;
+}
+
+.topBarPlayerName {
+  margin-top: 0px;
+  padding-left: 30px;
+  font-weight: bold;
+}
+
+.topBarRound {
+  padding-left: 120px;
+}
+
+.topBarPadding {
+  padding-left: 65px;
+}
+
+.topBarPieceDiv {
+  padding-left: 65px;
+}
+
+.leftBar {
+  width: 165px;
+}
+
+.marginTop5 {
+  margin-top: 5px;
+}
+
+.marginTop15 {
+  margin-top: 15px;
+}
+
+.boardDiv {
+  background: gray;
+  background-position: 8px 10px; 
+  /*
+  background: url(./assets/images/circle.png) no-repeat;
+  */
+}
+
+.boardDivBattle {
+  background: gray;
+  background-position: 8px 10px; 
+  /* 
+  background: url(./assets/images/circle.png) no-repeat;
+  */
+}
+
+.handDiv {
+  background: url(./assets/images/handBg.png) no-repeat;
+}
+
+.handDivVisiting {
+  background: url(./assets/images/visiting.png) no-repeat;
+}
+
+.cell {
+  /*border: 1px solid lightblue;*/
+  /*border: 1px solid rgb(33, 33, 33);*/
+  border: 1px solid black;
+  background-color:rgba(0, 0, 0, 0);
+  border-radius: 8px;
+  width: 85px; 
+  height: 85px;
+  position: relative;
+  /*background: url(https://i.gyazo.com/f5c31403dc3840b9b276c3e8d3e178d3.png) no-repeat;*/
+  /*background: url(./assets/images/grass2.gif) no-repeat;*/
+  background-size: 85px 85px;
+}
+
+.cell .markedUnit {
+  z-index: 30;
+}
+
+.markedUnit {
+  border: 1px solid yellow;
+  /*
+  outline-style: groove;
+  outline-color: gold;
+  outline-width: thin;*/
+  box-shadow: 0 0 7pt 3pt yellow;
+}
+
+:focus { outline: none; }
+
+.text_shadow {
+  color: white;
+  text-shadow:
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000;  
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.oldNormalButton {
+	border: white;
+  border-style: solid;
+	height: 45px;
+  /*width: 50px;*/
+  margin-right: 5px;	
+  color: white;
+  border-radius: 5px;
+  text-shadow:
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000; 
+  background-color: rgba(1, 1, 1, 0.7);
+  font-weight: bold;
+  /*font-size: 16pt;*/
+}
+
+.normalButton {
+	-moz-box-shadow: 3px 4px 0px 0px #1564ad;
+	-webkit-box-shadow: 3px 4px 0px 0px #1564ad;
+	box-shadow: 3px 4px 0px 0px #1564ad;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5));
+	background:-moz-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:-webkit-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:-o-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:-ms-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:linear-gradient(to bottom, #79bbff 5%, #378de5 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5',GradientType=0);
+	background-color:#79bbff;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	border:1px solid #337bc4;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+  /*font-size:17px;
+   padding:12px 44px;
+  */
+	font-weight:bold;
+	text-decoration:none;
+  text-shadow:0px 1px 0px #528ecc;
+  height: 45px;
+  text-shadow:
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000;
+}
+
+.normalButton:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff));
+	background:-moz-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:-webkit-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:-o-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:-ms-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:linear-gradient(to bottom, #378de5 5%, #79bbff 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff',GradientType=0);
+	background-color:#378de5;
+}
+
+.normalButton:active {
+	position:relative;
+	top:1px;
+}
+
+.goldImage {
+  /*width: 30px;*/
+  height: 30px; /*20*/
+  width: 24px; /*16*/
+  padding-left: 5px;
+  /*
+  padding-top: 1px;
+  */
+  padding-top: 1px;
+}
+
+.goldImageRefreshDiv {
+  margin-top: -8px;
+  margin-left: 7px;
+}
+
+.goldImageBuyExp {
+  margin-left: 12px;
+}
+
+.goldImageSmall {
+  height: 14px;
+  width: 10px;
+  padding-top: 4px;
+  /*width: 18px;*/
+  /*padding-top: 1px;*/
+}
+
+.goldImageSmallest {
+  padding-left: 10px;
+  height: 13px;
+  width: 9px;
+  padding-top: 4px;
+  /*width: 18px;*/
+  /*padding-top: 1px;*/
+}
+
+.goldImageShop {
+  height: 15px;
+  width: 11px;
+  padding-top: 5px;
+  margin-left: 12px;
+  /*width: 18px;*/
+  /*padding-top: 1px;*/
+}
+
+.goldImageScoreboard {
+  height: 17px;
+  width: 12px;
+  padding-top: 7px;
+  margin-left: 10px;
+}
+
+.goldImageTextSmall {
+  padding-left: 3px;
+  margin-top: 3px; 
+}
+
+.shopCostText {
+  padding-left: 2px;
+}
+
+.biggerText{
+  font-size: 22px;
+}
+
+.timerText{
+  text-align: center;
+  font-size: 70px;
+}
+
+.timerDiv{
+  height: 80px;
+}
+
+.messageUpdate {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.messageUpdate-enter {
+  opacity: 0.01;
+}
+
+.messageUpdate-enter.messageUpdate-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+/*
+.messageUpdate::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  bottom: -50%;
+  left: -50%;
+  background: linear-gradient(to bottom, rgba(229, 172, 142, 0), rgba(255,255,255,0.5) 50%, rgba(229, 172, 142, 0));
+  transform: rotateZ(60deg) translate(-5em, 7.5em);
+}
+*/
+
+.boardBuffs{
+  height: 225px;
+  margin-left: -10px;
+}
+
+.battleEnemyBuffs {
+  height: 75px;
+  margin-left: -20px;
+}
+
+.textList {
+  white-space: pre-line;
+}
+
+.buffText {
+  font-size: 10px;
+  position: absolute;
+  z-index: 10;
+}
+
+.toggleHelpImg {
+  /*140 84*/
+  margin-top: 15px;
+  width: 35px;
+  height: 21px;
+}
+
+.chatTypingDiv {
+  padding-left: 5px;
+  animation-name: textMove;
+	animation-duration: 0.9s;
+}
+
+.chatTypingSubmit {
+  height: 25px;
+}
+
+.helpText {
+  white-space: pre-line;
+  padding-left: 5px;
+  margin-top: 5px;
+  animation-name: textMove;
+	animation-duration: 0.9s;
+}
+
+.messageContainerDiv{
+  display: flex;
+  flex-direction: column-reverse;
+  height: 290px;
+  overflow: auto;
+}
+
+.messagesContainer{
+  width: 456px;
+}
+
+.messageContainerSimple {
+  height: 290px;
+  width: 456px;
+  overflow: auto;
+  animation-name: textMove;
+	animation-duration: 0.9s;
+}
+
+.textInput {
+  width: 300px;
+  max-width: 300px;
+  border-radius: 4px;
+}
+
+.textInputSmaller {
+  width: 150px;
+  max-width: 150px;
+  border-radius: 4px;
+}
+
+.absolute {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.barDiv {
+  position: absolute;
+  margin-top: 85px;
+}
+
+.manaBar {
+  background-color: blue;
+  text-align: center;
+  border: 1px solid black;
+  position: absolute; 
+  z-index: 311;
+  font-size: 12px;
+  position: absolute;
+  float: left;
+  width: 85px;
+  height: 12px;
+  z-index: 4;
+}
+
+.colorPurple {
+  background-color: rgb(117, 34, 117);
+}
+
+.barContainer {
+  position: absolute;
+  margin-top: 72px;
+}
+
+.hpBar[color="0"] {
+  background: green;
+}
+
+.hpBar[color="1"] {
+  background: red;
+}
+
+
+.barContainer .hpText{
+  position: absolute;
+  left: 50%;
+  top: 0px;
+  height: 100%;
+  margin-top: 0px;
+  transform:translate(-50%,-50%);
+  color:white;
+  float: left;
+  width : 100%;
+  height : 100%;
+  text-align: center;
+  font-size: 12px;
+  z-index: 5;
+}
+
+.manaText {
+  position: absolute;
+  left: 50%;
+  top: 0px;
+  height: 100%;
+  margin-top: 0px;
+  transform:translate(-50%,-50%);
+  color:white;
+  float: left;
+  width : 100%;
+  height : 100%;
+  text-align: center;
+  font-size: 12px;
+  z-index: 5;
+}
+
+
+.hpBar {
+  position: absolute;
+  float: left;
+  width: 85px;
+  height: 12px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid none solid solid;
+  z-index: 4;
+}
+
+.barBorderShield {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid none solid solid;
+}
+
+.barBorderNormal {
+  border: 1px black solid;
+}
+
+.shieldBar{
+  position: absolute;
+  float: left;
+  background : rgb(0, 170, 255);
+  width : 85px;
+  height: 12px;  
+  border-width: 1px;
+  border-color: black;
+  border-style: solid solid solid none;
+  z-index: 4;
+}
+
+.shieldBar, .hpBar, .levelBar, .playerHpBar, .loadingBar{
+  transition:all 0.2s;
+}
+
+
+.damageBarDiv {
+  width: 100px;
+  position: absolute;
+}
+
+.damageBar {
+  min-width: 0px;
+  max-width: 100px;
+  margin-top: 2px;
+  height: 16px;
+  text-align: center;
+  border: 1px solid black;
+  position: absolute; 
+  font-size: 12px;
+  z-index: 4;
+}
+
+.friendlyBar {
+  background-color: green;
+}
+
+.enemyBar {
+  background-color: red;
+}
+
+.boostBar {
+  background-color: rgb(72, 182, 219);
+}
+
+.playerHpBarDiv {
+  border: 1px dotted black;
+  border-radius: 10px;
+  width: 150px;
+  height: 30px;
+  position: relative;
+}
+
+.playerHpBar {
+  text-align: center;
+  position: absolute; 
+  background-color: green;
+  height: 26px;
+  border-radius: 10px;
+  padding-top: 5px;
+}
+
+.playerHpBarText {
+  padding-left: 97px;
+  padding-top: 4px;
+}
+
+.playerHpBarTextFull {
+  padding-left: 85px !important;
+}
+
+.scoreboard {
+  right: 0px;
+  margin-left: auto;
+  margin-right: 0;
+  float: right;
+  display: flex;
+  justify-content: flex-end;
+  clear: both;
+}
+
+.playerScoreboardContainer {
+  border-radius: 5px;
+  width: 200px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.playerScoreboardInner{
+  margin-left: 5px;
+  position: relative;
+}
+
+.playerScoreboardLevel {
+  margin-top: 3px;
+  margin-left: 11px;
+}
+
+.playerScoreboardName{
+  font-size: 28px;
+}
+
+.playerScoreboardDead {
+}
+
+.playerScoreBoardVisitButtonDiv {
+  position: absolute;
+}
+
+.visitButton {
+  margin-left: 5px;
+  height: 24px !important;
+  font-size: 13px !important;
+}
+
+.streak {
+  margin-left: 3px;
+  margin-top: 3px;
+}
+
+.streakImage {
+  padding-left: 5px;
+  width: 18px;
+  height: 18px;
+}
+
+.icecubeImage {
+  padding-top: 8px;
+}
+
+.flameImage {
+  padding-top: 5px;
+}
+
+.dmgBoardDiv {
+  margin-left: 10px;
+  animation-name: textMove;
+	animation-duration: 0.9s; /* 1.2s */
+}
+
+.dmgBoardUnit {
+  margin-bottom: 2px;
+}
+
+.dmgBoardUnitName {
+  margin-left: 103px;
+  font-weight: bold;
+}
+
+.dmgBoardUnitValue {
+
+}
+
+.levelDiv {
+  position: relative;
+  height: 26px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+.levelBar {
+  background-color: green;
+  height: 26px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  /*border: 1px solid lightblue;*/
+  border: 1px solid rgb(33, 33, 33);
+  border-radius: 10px;
+  padding-top: 5px;
+}
+
+.levelText {
+  padding-left: 310px;
+  padding-top: 4px;
+}
+
+.levelTextExp {
+  padding-top: 4px;
+}
+
+.overlap {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.lockImage {
+  height: 45px;
+  width: 27px;
+  padding-top: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.shineLock {
+  /* TODO Make locked lock shine*/
+}
+
+.gymLeader {
+  /* 64 64 */
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  margin-left: 15px;
+  margin-top: -12px;
+}
+
+.upNext {
+  margin-left: 90px !important;
+  margin-top: -38px !important;
+}
+
+.nextUpText {
+  /* TODO */ 
+}
+
+.refreshShopDiv {
+  padding-top: 10px;
+}
+
+.refreshShopImage {
+  /*
+  height: 65px;
+  width: 35px;
+  350 484
+  */
+  width: 40px;
+  height: 56px;
+  margin-left: -4px;
+}
+
+.belowShopDiv {
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
+.hoveringDiv {
+  margin-top: 15px;
+  margin-left: 10px;
+}
+
+.type {
+  padding: 2px;
+}
+
+.typeLeft {
+  padding-right: 2px;
+  /*margin-right*/
+}
+
+.typeBonusText {
+  position: absolute;
+  font-size: 11px;
+  left: 32px;
+}
+
+.typeBonusTextBelow {
+  font-size: 11px;
+  position: absolute;
+  margin-top: 36px;
+}
+
+.typeBonusTextReq {
+  position: absolute;
+  font-size: 11px;
+  left: 32px;
+  margin-top: 26px;
+}
+
+.typeImg {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  animation: 0.50s ease-in-out 0s 1 reverse both running shrinkDown;
+}
+
+.typeTier {
+  position: absolute;
+  font-size: 20px;
+  left: 11px;
+  top: 7px;
+  animation: enter 1.2s;
+}
+
+.typeImgSmaller {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  animation: 0.50s ease-in-out 0s 1 reverse both running shrinkDown;
+}
+
+.typeTierSmaller {
+  position: absolute;
+  font-size: 15px;
+  left: 8px;
+  top: 4px;
+  animation: enter 1.2s;
+}
+
+.typeBonusTextSmaller {
+  position: absolute;
+  font-size: 9px;
+  left: 23px;
+}
+
+.typeElement {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.typeDiv {
+  margin-left: 5px;
+  width: 160px;
+}
+
+.buffInfoDiv {
+  position: absolute;
+  font-size: 13px;
+  background-color: rgb(33, 33, 33);
+  border: 2pt solid black;
+  border-radius: 5px;
+  padding: 5px;
+  z-index: 12;
+}
+
+.mainMenuNameChange {
+  margin-top: 10px;
+  margin-left: 600px;
+}
+
+/*
+  Rarity colors
+  rgb(58, 49, 49)
+*/
+/*
+  TODO: Edit Shop
+  background: url(./assets/images/pokeball.png) no-repeat;
+  background-position: 10px 10px; 
+  background-size: 10px 10px;
+*/
+.costColor1 {
+  background-color: rgb(123,123,123);
+}
+
+.costColor2 {
+  background-color: rgb(57, 120, 35);
+}
+
+.costColor3 {
+  background-color: rgb(18, 90, 159);
+}
+
+.costColor4 {
+  background-color: rgb(131, 47, 184);
+}
+
+.costColor5 {
+  background-color: rgb(255, 118, 28);
+}
+
+.costColorText1 {
+  color: white;
+}
+
+.costColorText2 {
+  color: lightblue;
+}
+
+.costColorText3 {
+  color: rgb(28, 117, 201);
+}
+
+.costColorText4 {
+  color: rgb(131, 47, 184);
+}
+
+.costColorText5 {
+  color: rgb(255, 118, 28);
+}
+
+.poison {
+  background-color: rgb(88, 231, 88);
+}
+
+.bug {
+  background-color: rgb(139, 206, 39);
+}
+
+.fire {
+  background-color: rgb(255, 64 ,64);
+}
+
+.ground {
+  background-color: rgb(114, 65, 16);
+}
+
+.normal {
+  background-color: rgb(240, 240, 240);
+}
+
+.flying {
+  background-color: rgb(120, 149, 201);
+}
+
+.electric {
+  background-color: rgb(255, 238,0);
+}
+
+.water {
+  background-color: rgb(0, 170, 255);
+}
+
+.grass {
+  background-color: rgb(51, 187, 51);
+}
+
+.ice {
+  background-color: lightblue;
+}
+
+.fighting {
+  background-color: #964B00;
+}
+
+.psychic {
+  background-color: rgb(204, 0, 221);
+}
+
+.rock {
+  background-color: rgb(51, 28, 6);
+}
+
+.ghost {
+  background-color: rgb(139, 39, 148);
+}
+
+.dark {
+  background-color: rgb(51, 51, 51);
+}
+
+.dragon {
+  background-color: rgb(174, 153, 98);
+}
+
+.steel {
+  background-color: rgb(192, 192, 192);
+}
+
+.fairy {
+  background-color: rgb(224, 58, 131);
+}
+
+.check {
+  border: 1px solid black;
+  border-radius: 100%;
+  height: 15px;
+  width: 15px;
+  position: relative;
+}
+
+.labels {
+  position: relative;
+}
+
+.noSelect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+  supported by Chrome and Opera */
+}

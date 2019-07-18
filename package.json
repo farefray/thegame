@@ -1,0 +1,45 @@
+{
+  "name": "pkmn_auto_chess",
+  "version": "1.0.0",
+  "description": "Pokemon Auto Chess",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "complete": "eslint ./src && mocha --exit && node src/index.js",
+    "pretest": "eslint ./src && mocha --exit",
+    "posttest": "mocha --exit && eslint ./src",
+    "test": "mocha --exit",
+    "mocha": "mocha --exit",
+    "lint": "eslint ./src",
+    "lintfix": "eslint --fix ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lolispo/pkmn_auto_chess.git"
+  },
+  "author": "Petter Andersson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lolispo/pkmn_auto_chess/issues"
+  },
+  "homepage": "https://github.com/Lolispo/pkmn_auto_chess#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "eslint": "5.6.0",
+    "express": "^4.16.4",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "immutable": "^4.0.0-rc.12",
+    "immutable-shuffle": "^1.0.3",
+    "mocha": "^5.2.0",
+    "npm": "^6.9.0",
+    "rewire": "^4.0.1",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
+    "eslint-plugin-react": "^7.12.4"
+  }
+}
