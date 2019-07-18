@@ -47,10 +47,10 @@ gulp.task('scripts', function() {
 
 // images
 gulp.task('images', function() {
-    //return gulp.src('src/images/**/*')
-    //    .pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
-    //    .pipe(gulp.dest('../public/UI/images'))
-    //    .pipe(notify({ message: 'images task complete' }));
+    return gulp.src('src/img/**/*')
+        .pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
+        .pipe(gulp.dest('../public/UI/img'))
+        .pipe(notify({ message: 'images task complete' }));
 });
 
 // clean
@@ -79,5 +79,5 @@ gulp.task('watch', ['clean', 'styles', 'scripts', 'images'], function() {
 });
 
 // ../public/UI
-gulp.task('../public/UI', ['clean', 'styles', 'scripts', 'images'], function() {
+gulp.task('UI', ['clean', 'styles', 'scripts', 'images'], function() {
 });
