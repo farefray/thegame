@@ -19,6 +19,7 @@ server.listen(8000, () => console.log('connected to port 8000!'));
 app.use('/', router);
 app.use(cors());
 
+
 router.all('*', cors());
 
 const pokemonSpritesJSON = pokemonJS.getPokemonSprites();
@@ -30,7 +31,8 @@ const getPokemonJson = async () => pokemonJson;
 router.get('/sprites', async (req, res) => {
   console.log('/sprites GET Request - ', req.connection.remoteAddress);
   const sprites = await getSprites();
-  res.json({ sprites });
+  // Added delay for responses(TODO remove me after tests)
+  setTimeout(() => res.json({ sprites }), 7500);
 });
 
 router.get('/unitJson', async (req, res) => {

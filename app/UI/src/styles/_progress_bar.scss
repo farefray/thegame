@@ -54,10 +54,17 @@
     top: 9px;
     bottom: 8px;
     left: 0;
-    width: 100%;
     background-image: url('img/progress.png');
     background-repeat: repeat-x;
     background-size: 36px 100%;
+
+    >.progress-text {
+        color: white;
+        z-index: 1;
+        position: relative;
+        margin: 6px 0px 0px 0px;
+        padding-left: 10px;
+    }
 }
 
 /* progress bar - blue color */

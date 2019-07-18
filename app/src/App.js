@@ -5,6 +5,7 @@ import { ready, unready, startGame, sendMessage, AjaxGetUnitJson } from './socke
 import { toggleLockEvent, refreshShopEvent, buyExpEvent, placePieceEvent, withdrawPieceEvent, sellPieceEvent } from './events';
 import { connect } from 'react-redux';
 import { isUndefined, updateMessage } from './f';
+import './css/grid.css';
 import './App.css';
 import './animations.css';
 
@@ -15,12 +16,13 @@ import Timer from './App/Timer';
 import PawnImage from './App/PawnImage';
 import ShopPawn from './App/ShopPawn';
 import Board from './App/Board';
+import StartScreen from './App/StartScreen.jsx';
 
 class App extends Component {
   constructor(props) {
     super(props);
     document.title = 'Pixel Auto Chess';
-    this.state = {chatMessageInput: '', nameChangeInput: ''};
+    this.state = {chatMessageInput: ''};
   }
   // Event listener example, can be attached to example buttons
   
@@ -849,13 +851,7 @@ class App extends Component {
     event.preventDefault();
   }
 
-  handleNameChange = (event) => {
-    if(this.state.nameChangeInput.length <= 20 && this.state.nameChangeInput !== '') {
-      this.props.dispatch({type: 'UPDATE_PRIVATE_NAME', name: this.state.nameChangeInput});
-    }
-    this.setState({...this.state, nameChangeInput: ''})
-    event.preventDefault();
-  }
+  
 
   // TODO: Fix not working
   /*scrollToBottom = () => {
@@ -949,63 +945,8 @@ class App extends Component {
   }
 
   render() {
-    const loadingProgress = 100/5 * (this.props.connected + this.props.loaded + (this.props.playersReady !== -1));
-    let loadingCounter = this.props.loadingCounter || 1;
-    if (loadingProgress < 100) {
-      loadingCounter = (loadingCounter === 3 ? 1 : loadingCounter + 1);
-      setTimeout(() => {
-        this.props.dispatch({type: 'LOADING_STRING', loadingCounter});
-      }, 1000);
-    };
-
-    const loadingString = (loadingProgress > 0 ? 'Loading' + '.'.repeat(loadingCounter) : 'Connecting' + '.'.repeat(loadingCounter));
-
-    const mainMenu = (<div>
-      <div className='startButtons'>
-        <div className='flex'> 
-          <button className={`rpgui-button startButton ${(!this.props.ready ? 'growAnimation' : '')} ${(loadingProgress >= 100 ? '' : 'hidden')}`} 
-          onClick={this.toggleReady}>{(this.props.ready ? 'Unready' : 'Ready')}</button>
-          <button style={{marginLeft: '5px'}} className={`rpgui-button ${(this.props.playersReady === this.props.connectedPlayers ? 'growAnimation' : '')}`} 
-            onClick={() => this.startGameEvent()}>
-             {(loadingProgress >= 100 ? `Start Game (${this.props.playersReady}/${this.props.connectedPlayers})` 
-              : <div className='rpgui-progress rpgui-disabled red'><div className='text_shadow loadingBarContainer  rpgui-progress-track'>
-                  {(loadingProgress > 0 ? <div className='rpgui-progress-fill green' style={{width: loadingProgress + '%'}}></div> : '')}
-                  <p className={`loadingBarText ${loadingProgress > 0 ? '' : 'loadingBarConnecting'}`}>
-                    {loadingString}
-                  </p>
-                </div></div>)}
-          </button>
-          <button style={{marginLeft: '5px'}} className={`rpgui-button ${(this.props.playersReady >= 2 && this.props.playersReady !== this.props.connectedPlayers && this.props.ready ? '' : 'hidden')}`} 
-            onClick={() => this.startGameEvent(true)}>
-            Force Start Game{(this.props.connected ? ` (${this.props.playersReady}/${this.props.connectedPlayers})` : ' Connecting ...')}
-          </button>
-        </div>
-      </div>
-      <div className='mainMenuNameChange'>
-        <form onSubmit={this.handleNameChange}>
-          <label className='text_shadow'>Name:</label>
-          <label>
-            <input maxLength='20' placeholder={this.props.playerName} className='textInputSmaller' type="text" value={this.state.nameChangeInput} 
-            onChange={(event) => this.setState({...this.state, nameChangeInput: event.target.value})} />
-          </label>
-          <input className='rpgui-button golden' type="submit" value="Submit" />
-        </form>
-      </div>
-      <div className='mainMenuSoundDiv marginTop5'>
-        <div>
-          <img className='musicImgMainMenu' src={(this.props.musicEnabled ? getImage('music') : getImage('musicMuted'))} 
-          alt={(this.props.musicEnabled ? 'Mute Music': 'Turn on Music')} onClick={() => this.props.dispatch({type: 'TOGGLE_MUSIC'})}/>
-        </div>
-        <div>
-          <img className='soundImgMainMenu' src={(this.props.soundEnabled ? getImage('sound') : getImage('soundMuted'))} 
-          alt={(this.props.soundEnabled ? 'Mute Sound': 'Turn on Sound')}  onClick={() => this.props.dispatch({type: 'TOGGLE_SOUND'})}/>
-        </div>
-        {(this.props.musicEnabled ? this.playMusic() : '')} 
-      </div>
-    </div>);
-
     if (!this.props.gameIsLive) {
-      return <div className="rpgui-content rpgui-cursor-default"><div id="container"><div className="inner rpgui-container framed">{mainMenu}</div></div></div>;
+      return <StartScreen connected={this.props.connected} loaded={this.props.loaded} playersReady={this.props.playersReady} loadingCounter={this.props.loadingCounter} dispatch={this.props.dispatch} />;
     }
 
     const topBar = <div className='flex topBarDiv'>

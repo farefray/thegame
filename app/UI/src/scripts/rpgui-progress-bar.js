@@ -32,6 +32,23 @@ RPGUI.__set_funcs["progress"] = function(elem, value)
 	progress.style.width = (value * 100) + "%";
 };
 
+RPGUI.__update_funcs["progress"] = function (elem) {
+	var track = RPGUI.get_child_with_class(elem, "rpgui-progress-track");
+	if (track) {
+		var progressBar = RPGUI.get_child_with_class(track, "rpgui-progress-fill");
+		if (progressBar) {
+			var value = elem.dataset.value !== undefined ? parseFloat(elem.dataset.value) : 1;
+			progressBar.style.width = (value * 100) + "%";
+
+			// text inside progress bar
+			var text = RPGUI.get_child_with_class(progressBar, "progress-text");
+			if (elem.dataset.text && text) {
+				text.innerHTML = elem.dataset.text;
+			}
+		}
+	}
+}
+
 // init all progress elements on page load
 RPGUI.on_load(function()
 {
@@ -74,6 +91,15 @@ function create_progress(elem)
 	// the progress itself
 	var progress = RPGUI.create_element("div");
 	RPGUI.add_class(progress, "rpgui-progress-fill");
+
+	// text inside progress bar
+	if (elem.dataset.text) {
+		var text = RPGUI.create_element("div");
+		RPGUI.add_class(text, "progress-text")
+		text.innerHTML = elem.dataset.text;
+		progress.appendChild(text);
+	}
+
 	track.appendChild(progress);
 
 	// set color
