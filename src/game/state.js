@@ -23,4 +23,22 @@ StateJS.initEmpty = async (amountPlaying, optList) => {
   return playerJS.initPlayers(state, amountPlaying);
 };
 
+/**
+ * Get first available spot on hand
+ */
+StateJS.getFirstAvailableSpot = async (state, playerIndex) => {
+  const hand = state.getIn(['players', playerIndex, 'hand']);
+  // console.log('@getFirst', hand.keys().value)
+  for (let i = 0; i < 8; i++) {
+    // Get first available spot on bench
+    const pos = f.pos(i);
+    // console.log('inner', hand.get(pos), hand.get(String(pos)))
+    if (f.isUndefined(hand.get(pos)) && f.isUndefined(hand.get(String(pos)))) {
+      return pos;
+    }
+  }
+  // Returns undefined if hand is full
+  return undefined;
+}
+
 module.exports = StateJS;

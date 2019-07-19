@@ -2,6 +2,7 @@
 
 const { Map, fromJS } = require('immutable');
 const gameJS = require('./game');
+const BattleJS = require('./game/battle.js');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');
@@ -304,7 +305,7 @@ module.exports = (socket, io) => {
         const prepBSWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, prepBattleState);
         // console.log('@sc.battleReady State sent in', prepBSWithPieces)
 
-        const obj = await gameJS.battleSetup(prepBSWithPieces);
+        const obj = await BattleJS.battleSetup(prepBSWithPieces);
         const newState = obj.get('state');
         const preBattleState = obj.get('preBattleState');
         const roundType = obj.get('roundType');
