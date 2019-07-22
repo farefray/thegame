@@ -3,6 +3,7 @@
 const { Map, fromJS } = require('immutable');
 const gameJS = require('./game');
 const BattleJS = require('./game/battle.js');
+const StateJS = require('./game/state');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');
@@ -352,7 +353,7 @@ module.exports = (socket, io) => {
           const stateAfterBattle = sessionJS.buildStateAfterBattle(socket.id, connectedPlayers, sessions, newState);
           // Endbattle and get endTurned state
 
-          const stateCheckDead = await BattleJS.endBattleForAll(stateAfterBattle, winners, finalBoards, matchups, roundType);
+          const stateCheckDead = await StateJS.endBattleForAll(stateAfterBattle, winners, finalBoards, matchups, roundType);
 
           let stateEndedTurn = stateCheckDead;
           const iter2 = stateCheckDead.get('players').keys();

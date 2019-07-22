@@ -4,9 +4,8 @@ const {
   Set,
 } = require('immutable');
 const f = require('../f');
-const StateJS = require('./state');
 const pawns = require('../pawns');
-const UnitJS = require('./unit');
+const abilitiesJS = require('../abilities');
 const typesJS = require('../types');
 
 const BoardJS = {};
@@ -111,7 +110,7 @@ async function _checkPieceUpgrade(stateParam, playerIndex, piece, position) {
       evolvesTo = evolvesUnit.get(f.getRandomInt(evolvesTo.size));
     }
     // Check if multiple evolutions exist, random between
-    const newPiece = await UnitJS.getBoardUnit(evolvesTo, f.x(position), f.y(position));
+    const newPiece = await BoardJS.getBoardUnit(evolvesTo, f.x(position), f.y(position));
     state = state.setIn(['players', playerIndex, 'board', position], newPiece);
     // TODO: List -> handle differently
     const evolutionDisplayName = (await pawns.getStats(evolvesTo)).get('displayName');
@@ -127,6 +126,25 @@ async function _checkPieceUpgrade(stateParam, playerIndex, piece, position) {
 }
 
 /** Public methods */
+
+/**
+ * Create unit for board/hand placement from name and spawn position
+ */
+BoardJS.getBoardUnit = async (name, x, y) => {
+  const unitInfo = await pawns.getStats(name);
+  if (f.isUndefined(unitInfo)) console.log('UNDEFINED:', name);
+  // console.log('@getBoardUnit', name, unitInfo)
+  let unit = Map({
+    name,
+    displayName: unitInfo.get('displayName'),
+    position: f.pos(x, y),
+    type: unitInfo.get('type'),
+  });
+  if (unitInfo.get('reqEvolve')) {
+    unit = unit.set('reqEvolve', unitInfo.get('reqEvolve'));
+  }
+  return unit;
+};
 
 /**
  * Give bonuses from types
@@ -276,6 +294,33 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
 };
 
 /**
+ * Create unit for board battle from createBoardUnit unit given newpos/pos and team
+ */
+BoardJS.createBattleUnit = async (unit, unitPos, team) => {
+  const unitStats = await pawns.getStats(unit.get('name'));
+  const ability = await abilitiesJS.getAbility(unit.get('name'));
+  // if(ability.get('mana')) console.log('@createBattleUnit', unit.get('name'), unitStats.get('ability'), ability.get('mana'));
+  return unit.set('team', team).set('attack', unitStats.get('attack'))
+    .set('hp', unitStats.get('hp'))
+    .set('maxHp', unitStats.get('hp'))
+    .set('startHp', unitStats.get('hp'))
+    .set('type', unitStats.get('type'))
+    .set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'))
+    .set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'))
+    .set('ability', unitStats.get('ability'))
+    .set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'))
+    .set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')))
+    /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
+    .set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
+    .set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'))
+    .set('specialAttack', unitStats.get('specialAttack'))
+    .set('specialDefense', unitStats.get('specialDefense'))
+    .set('position', unitPos)
+    .set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
+    .set('manaCost', ability.get('mana') || abilitiesJS.getDefault('mana'));
+};
+
+/**
  * Combines two boards into one for battle
  * Adds all relevant stats for the unit to the unit
  * Reverses position for enemy units
@@ -287,7 +332,7 @@ BoardJS.combineBoards = async (board1, board2) => {
   while (!tempUnit.done) {
     const unitPos = tempUnit.value;
     const unit = board1.get(unitPos);
-    const battleUnit = await UnitJS.createBattleUnit(unit, unitPos, 0);
+    const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 0);
     newBoard = await newBoard.set(unitPos, battleUnit);
     tempUnit = keysIter.next();
   }
@@ -297,7 +342,7 @@ BoardJS.combineBoards = async (board1, board2) => {
     const unitPos = tempUnit.value;
     const newUnitPos = f.reverseUnitPos(unitPos); // Reverse unitPos
     const unit = board2.get(unitPos);
-    const battleUnit = await UnitJS.createBattleUnit(unit, newUnitPos, 1);
+    const battleUnit = await BoardJS.createBattleUnit(unit, newUnitPos, 1);
     newBoard = await newBoard.set(newUnitPos, battleUnit);
     tempUnit = keysIter2.next();
   }
@@ -305,11 +350,29 @@ BoardJS.combineBoards = async (board1, board2) => {
 };
 
 /**
+ * Get first available spot on hand
+ */
+BoardJS.getFirstAvailableSpot = async (state, playerIndex) => {
+  const hand = state.getIn(['players', playerIndex, 'hand']);
+  // console.log('@getFirst', hand.keys().value)
+  for (let i = 0; i < 8; i++) {
+    // Get first available spot on bench
+    const pos = f.pos(i);
+    // console.log('inner', hand.get(pos), hand.get(String(pos)))
+    if (f.isUndefined(hand.get(pos)) && f.isUndefined(hand.get(String(pos)))) {
+      return pos;
+    }
+  }
+  // Returns undefined if hand is full
+  return undefined;
+};
+
+/**
  * WithdrawPiece from board to best spot on bench
  * * Assumes not bench is full
  */
 BoardJS.withdrawPiece = async (state, playerIndex, piecePosition) => {
-  const benchPosition = await StateJS.getFirstAvailableSpot(state, playerIndex);
+  const benchPosition = await BoardJS.getFirstAvailableSpot(state, playerIndex);
   // TODO: Handle placePiece return upgradeOccured
   return (await BoardJS.placePiece(state, playerIndex, piecePosition, benchPosition, false)).get('state');
 };
@@ -466,7 +529,7 @@ BoardJS.createBattleBoard = async (inputList) => {
     const pokemon = el.get('name');
     const x = el.get('x');
     const y = el.get('y');
-    const unit = await UnitJS.getBoardUnit(pokemon, x, y);
+    const unit = await BoardJS.getBoardUnit(pokemon, x, y);
     board = await board.set(f.pos(x, y), unit);
   }
   return board;

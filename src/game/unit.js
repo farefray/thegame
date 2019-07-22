@@ -304,52 +304,6 @@ function _handleNeighbor(pathFindParam, board, current, enemyPos, pos) {
 /** Public methods */
 
 /**
- * Create unit for board battle from createBoardUnit unit given newpos/pos and team
- */
-UnitJS.createBattleUnit = async (unit, unitPos, team) => {
-  const unitStats = await pawns.getStats(unit.get('name'));
-  const ability = await abilitiesJS.getAbility(unit.get('name'));
-  // if(ability.get('mana')) console.log('@createBattleUnit', unit.get('name'), unitStats.get('ability'), ability.get('mana'));
-  return unit.set('team', team).set('attack', unitStats.get('attack'))
-    .set('hp', unitStats.get('hp'))
-    .set('maxHp', unitStats.get('hp'))
-    .set('startHp', unitStats.get('hp'))
-    .set('type', unitStats.get('type'))
-    .set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'))
-    .set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'))
-    .set('ability', unitStats.get('ability'))
-    .set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'))
-    .set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')))
-    /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
-    .set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
-    .set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'))
-    .set('specialAttack', unitStats.get('specialAttack'))
-    .set('specialDefense', unitStats.get('specialDefense'))
-    .set('position', unitPos)
-    .set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
-    .set('manaCost', ability.get('mana') || abilitiesJS.getDefault('mana'));
-};
-
-/**
- * Create unit for board/hand placement from name and spawn position
- */
-UnitJS.getBoardUnit = async (name, x, y) => {
-  const unitInfo = await pawns.getStats(name);
-  if (f.isUndefined(unitInfo)) console.log('UNDEFINED:', name);
-  // console.log('@getBoardUnit', name, unitInfo)
-  let unit = Map({
-    name,
-    displayName: unitInfo.get('displayName'),
-    position: f.pos(x, y),
-    type: unitInfo.get('type'),
-  });
-  if (unitInfo.get('reqEvolve')) {
-    unit = unit.set('reqEvolve', unitInfo.get('reqEvolve'));
-  }
-  return unit;
-};
-
-/**
  * return closest enemy and marks if within range or not
  * If someones at spot && its enemy unit
  * Does this handle positioning good for both teams?
@@ -360,7 +314,7 @@ UnitJS.getBoardUnit = async (name, x, y) => {
  *    team 0: N, S, W, E, NW, NE, SW, SE
  *    team 1: S, N, W, E, SW, SE, NW, NE
  */
-UnitJS.getClosestEnemy = async (board, unitPos, range, team, exceptionsList = List([])) => {
+UnitJS.getClosestEnemy = (board, unitPos, range, team, exceptionsList = List([])) => {
   // f.print(board, '@getClosestEnemy board')
   const x = f.x(unitPos);
   const y = f.y(unitPos);
@@ -514,7 +468,7 @@ UnitJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     }
     const range = (!f.isUndefined(ability.get('acc_range')) && !f.isUndefined(ability.get('acc_range').size)
       ? ability.get('acc_range').get(1) : abilitiesJS.getAbilityDefault('range'));
-    const enemyPos = await UnitJS.getClosestEnemy(board, unitPos, range, team);
+    const enemyPos = UnitJS.getClosestEnemy(board, unitPos, range, team);
     const action = 'spell';
     const target = await enemyPos.get('closestEnemy');
     // console.log('@nextmove - ability target: ', target, enemyPos)

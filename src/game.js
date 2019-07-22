@@ -38,9 +38,9 @@ exports.buyUnit = async (stateParam, playerIndex, unitID) => {
 
     const hand = state.getIn(['players', playerIndex, 'hand']);
     const unitInfo = await pawns.getStats(unit);
-    const handIndex = await StateJS.getFirstAvailableSpot(state, playerIndex); // TODO: Go: Get first best hand index
+    const handIndex = await BoardJS.getFirstAvailableSpot(state, playerIndex); // TODO: Go: Get first best hand index
     // console.log('@buyUnit handIndex', handIndex);
-    const unitHand = await UnitJS.getBoardUnit(unit, f.x(handIndex));
+    const unitHand = await BoardJS.getBoardUnit(unit, f.x(handIndex));
     // console.log('@buyUnit unitHand', unitHand)
     state = state.setIn(['players', playerIndex, 'hand'], hand.set(unitHand.get('position'), unitHand));
 
