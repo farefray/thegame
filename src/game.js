@@ -10,7 +10,6 @@ const shopJS = require('./game/shop');
 const BattleJS = require('./game/battle');
 const StateJS = require('./game/state');
 const BoardJS = require('./game/board');
-const UnitJS = require('./game/unit');
 
 // Cost of 2 gold(todo check for balance?)
 exports.refreshShopGlobal = async (stateParam, index) => {

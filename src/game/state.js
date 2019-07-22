@@ -6,7 +6,6 @@ const deckJS = require('../deck');
 const playerJS = require('../player');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
-const ShopJS = require('./shop');
 const pawns = require('../pawns');
 
 const StateJS = {};
@@ -23,9 +22,8 @@ async function _prepEndTurn(state, playerIndex) {
     console.log('@prepEndTurn CHECK: Ending Turn', state.get('amountOfPlayers'));
     const newState = state.set('players', synchronizedPlayers); // Set
     synchronizedPlayers = Map({});
-    const newRoundState = await StateJS.endTurn(newState);
     return Map({
-      state: newRoundState,
+      state: await StateJS.endTurn(newState),
       last: true
     });
   }
@@ -210,7 +208,8 @@ StateJS.endTurn = async (stateParam) => {
     const index = temp.value;
     const locked = state.getIn(['players', index, 'locked']);
     if (!locked) {
-      state = await ShopJS.refreshShop(state, index);
+      // state = await ShopJS.refreshShop(state, index);
+      // TODO update shops
       // console.log('Not locked for player[' + i + '] \n', state.get('pieces').get(0));
     }
     state = await StateJS.increaseExp(state, index, 1);
