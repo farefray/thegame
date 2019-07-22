@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
 import './css/grid.css';
+import './css/aniv2.css';
 import './App.scss';
 import './animations.css';
 

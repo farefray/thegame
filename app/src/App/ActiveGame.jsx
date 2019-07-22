@@ -32,58 +32,6 @@ class ActiveGame extends Component {
     }
     return board;
   }
-
-  battleAction = async (currentRound, board, dispatch, counter, nextMove) => {
-    if(currentRound < this.props.round) {
-      return;
-    }
-    // Fix remove class Animation
-    board = await this.removeClassAnimation(nextMove, board);
-    dispatch({type: 'UPDATE_BATTLEBOARD', board, moveNumber: counter});
-    board = await this.removeActionMessage(nextMove, board);
-    dispatch({type: 'UPDATE_BATTLEBOARD', board, moveNumber: counter});
-    board = await this.renderMove(nextMove, board);
-
-    // console.log('Next action in', nextRenderTime, '(', currentTime, time, ')')
-    dispatch({type: 'UPDATE_BATTLEBOARD', board, moveNumber: counter});
-  }
-
-  /*
-      if(currentRound < this.props.round) {
-        return;
-      }
-      const nextMove = actionStack.shift(); // actionStack is mutable
-      const time = nextMove.time;
-      const nextRenderTime =  (time - currentTime) * timeFactor;
-      if(isUndefined(board)){
-        console.log('CHECK ME: Board is undefined', board, nextMove, nextRenderTime);
-      }
-      timeouts.push(await setTimeout(() => {
-        this.battleAction(currentRound, board, dispatch, counter, nextMove)
-      }, time));
-      counter += 1;
-      if(actionStack.length === 0){
-        await this.wait(time + 1500);
-        if(currentRound < this.props.round) {
-          return;
-        }
-        board = await this.endOfBattleClean(battleStartBoard, winner);
-        dispatch({type: 'UPDATE_BATTLEBOARD', board, moveNumber: 'Ended'});
-        // console.log('END OF BATTLE: winningTeam', winningTeam, 'x', Object.values(battleStartBoard));
-        if(winner) {
-          updateMessage(this.props, 'Battle won!', 'big');
-          dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('cheer')});
-        } else {
-          updateMessage(this.props, 'Battle lost!', 'big');
-          dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('battleLose')});
-        }
-      }
-
-      */
-
-      /*
-
-      */
   /*
   setTimeout(() => {
     dispatch({type: 'RESET_BATTLEBOARD_ACTIONMESSAGE', pos: nextMove.target});
@@ -105,27 +53,7 @@ class ActiveGame extends Component {
     return battleBoard;
   }
 
-  getDmgBoard = (dmgBoard) => {
-    const list = [];
-    if(!dmgBoard) return '';
-    const keys = Object.keys(dmgBoard);
-    const sortedDmgBoard = keys.sort((a,b) => dmgBoard[b] - dmgBoard[a]);
-    // keys.forEach(unitName => {
-    for(let i = 0; i < sortedDmgBoard.length; i++){
-      const unitName = sortedDmgBoard[i];
-      const value = dmgBoard[unitName];
-      // console.log('@getDmgBoard', value, this.props.dmgBoardTotalDmg)
-      const width = value / this.props.dmgBoardTotalDmg * 100 + '%';
-      list.push(<div className='dmgBoardUnitDiv' key={unitName}>
-        <div className='damageBarDiv'>
-          <span className='damageBar friendlyBar' style={{width: width}}></span>
-        </div>
-        <span className='dmgBoardUnitName'>{unitName + ': '}</span>
-        <span className='dmgBoardUnitValue'>{value}</span>
-      </div>)
-    }
-    return list;
-  }
+  
 
   damageUnit = async (newBoard, target, value, unitPos, direction, actionMessageTarget, manaChanges, actionMessageAttacker) => {
     if(isUndefined(newBoard[target])){
@@ -178,18 +106,17 @@ class ActiveGame extends Component {
     dispatch({type: 'CHANGE_STARTBATTLE', value: false});
     let board = battleStartBoard
     let currentTime = 0;
-    const timeFactor = 15; // Load in a better way TODO
+
     console.log('Starting Battle with', actionStack.length, 'moves');
     // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
     let counter = 0;
-    let timeouts = [];
     while(actionStack.length > 0) {
       if(currentRound < this.props.round) {
         return;
       }
       const nextMove = actionStack.shift(); // actionStack is mutable
       const time = nextMove.time;
-      const nextRenderTime =  (time - currentTime) * timeFactor;
+      const nextRenderTime =  (time - currentTime) * 15; // magic time factor, fixme
       if(isUndefined(board)){
         console.log('CHECK ME: Board is undefined', board, nextMove, nextRenderTime);
       }

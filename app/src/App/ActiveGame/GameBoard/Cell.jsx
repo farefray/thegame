@@ -92,7 +92,7 @@ class Cell extends Component {
               style={{width: (pokemon.hp-pokemon.maxHp / pokemon.hp1 * 100)+'%'}}/> : '')} 
             </div> : '')*/
           const manaBar = <div className={`barDiv ${(pokemon.mana === 0 ? 'hidden' : '')}`} style={{width: sideLength}}>
-              <p class='manaText text_shadow'>
+              <p className='manaText text_shadow'>
                 {`${pokemon.mana}/${pokemon.manaCost}`}
               </p>
               <div className={`manaBar text_shadow
