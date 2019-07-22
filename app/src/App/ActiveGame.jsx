@@ -7,7 +7,6 @@ import LeftBar from './ActiveGame/LeftBar.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
 import RightPanel from './ActiveGame/RightPanel.jsx';
 
-import { getImage, getGymImage, getTypeImg } from '../images.js';
 import { refreshShopEvent, buyExpEvent, placePieceEvent, withdrawPieceEvent, sellPieceEvent, toggleLockEvent } from '../events';
 import { isUndefined, updateMessage } from '../f';
 import { getUnitAudio, getSoundEffect } from '../audio.js';

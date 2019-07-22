@@ -1,12 +1,9 @@
 const {
   Map,
   List,
-  Set,
   fromJS,
 } = require('immutable');
-const deckJS = require('../deck');
 const pawns = require('../pawns');
-const playerJS = require('../player');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
 
@@ -78,7 +75,7 @@ ShopJS.refillPieces = async (pieces, discardedPieces) => {
     // console.log('@refillPieces', name);
   }
   return pieceStorage;
-}
+};
 
 /**
  * Updates shop with a new piece from getPieceFromRarity
@@ -132,7 +129,7 @@ ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, new
     discPieces: newDiscPieces,
     newUnitAmounts
   };
-}
+};
 
 /**
  * Refresh shop

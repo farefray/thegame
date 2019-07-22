@@ -352,7 +352,7 @@ module.exports = (socket, io) => {
           const stateAfterBattle = sessionJS.buildStateAfterBattle(socket.id, connectedPlayers, sessions, newState);
           // Endbattle and get endTurned state
 
-          const stateCheckDead = await gameJS.endBattleForAll(stateAfterBattle, winners, finalBoards, matchups, roundType);
+          const stateCheckDead = await BattleJS.endBattleForAll(stateAfterBattle, winners, finalBoards, matchups, roundType);
 
           let stateEndedTurn = stateCheckDead;
           const iter2 = stateCheckDead.get('players').keys();

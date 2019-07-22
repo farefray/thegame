@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "watch": "nodemon src/index.js",
+    "dev": "nodemon src/index.js",
+    "debug": "node --inspect src/index.js",
     "complete": "eslint ./src && mocha --exit && node src/index.js",
     "pretest": "eslint ./src && mocha --exit",
     "posttest": "mocha --exit && eslint ./src",
