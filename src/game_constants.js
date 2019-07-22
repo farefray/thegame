@@ -1,7 +1,8 @@
 
 
 const { Map, List } = require('immutable');
-const gameJS = require('./game');
+const BoardJS = require('./game/board');
+
 const f = require('./f');
 
 const rarityAmount = List([45, 30, 25, 15, 10]); // Real version
@@ -84,14 +85,14 @@ exports.getDamageFactorType = actionType => damageFactorType.get(actionType);
     70: Final Boss: Pidgeot, alakazam, rhydon, arcanine, exeggutor, blastoise
  */
 const roundSetConfiguration = Map({
-  1: async () => gameJS.createBattleBoard(List([
+  1: async () => BoardJS.createBattleBoard(List([
     Map({ name: 'minotaur', x: 3, y: 1 }),
   ])),
-  2: async () => gameJS.createBattleBoard(List([
+  2: async () => BoardJS.createBattleBoard(List([
     Map({ name: 'minotaur', x: 3, y: 1 }),
     Map({ name: 'minotaur', x: 5, y: 1 }),
   ])),
-  3: async () => gameJS.createBattleBoard(List([
+  3: async () => BoardJS.createBattleBoard(List([
     Map({ name: 'minotaur', x: 3, y: 1 }),
     Map({ name: 'minotaur', x: 5, y: 1 }),
   ]))
@@ -101,7 +102,7 @@ exports.getSetRound = async (round) => {
   const board = await roundSetConfiguration.get(String(round))();
   // console.log('@getSetRound', board);
   if (f.isUndefined(board)) {
-    return gameJS.createBattleBoard(List([
+    return BoardJS.createBattleBoard(List([
       Map({ name: 'rhyhorn', x: 3, y: 1 }),
       Map({ name: 'dugtrio', x: 4, y: 1 }),
       Map({ name: 'nidoqueen', x: 5, y: 1 }),
