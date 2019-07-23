@@ -17,7 +17,7 @@ class GameBoard extends Component {
       for (let j = 0; j < width; j++) {
         data[i][j] = {
           x: j,
-          y: i,
+          y: height-i-1,
         };
       }
     }
