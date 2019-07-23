@@ -328,10 +328,6 @@ body {
   text-align: center;
 }
 
-.boardColumn {
-  display: block;
-}
-
 .flex {
   display: flex;
 }
@@ -382,15 +378,26 @@ body {
 .boardDiv {
   background: gray;
   background-position: 8px 10px; 
+
+  .board {
+    flex-direction: column;
+    .board-column {
+      height: 64px;
+      flex-direction: row;
+      display: flex;
+    }
+  }
 }
 
-.boardDivBattle {
-  background: black;
-  background-position: 8px 10px; 
-}
 
 .handDiv {
-  background: url(./assets/images/handBg.png) no-repeat;
+  width: 528px;
+  height: 66px;
+  .cell {
+    background: url(./assets/images/terrain/hand.png) repeat;
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+  }
 }
 
 .handDivVisiting {
@@ -919,7 +926,7 @@ body {
 .dmgBoardDiv {
   margin-left: 10px;
   animation-name: textMove;
-	animation-duration: 0.9s; /* 1.2s */
+  animation-duration: 0.9s; /* 1.2s */
 }
 
 .dmgBoardUnit {

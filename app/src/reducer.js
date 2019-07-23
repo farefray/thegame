@@ -155,7 +155,7 @@ const reducer = (
 ) => {
   let tempSoundEffects;
   if(devMode) {
-    state = {...state, musicEnabled: false, soundEnabled: false, timerDuration: 15} // Disallows testing sounds currently
+    state = {...state, musicEnabled: false, soundEnabled: false, timerDuration: 1500} // Disallows testing sounds currently
   }
   switch (action.type) { // Listens to events dispatched from from socket.js
     case 'LOAD_UNIT_JSON': {
