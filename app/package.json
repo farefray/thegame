@@ -9,6 +9,7 @@
     "react": "^16.7.0",
     "react-addons-css-transition-group": "^15.6.2",
     "react-beautiful-dnd": "^11.0.5",
+    "react-dnd": "^9.3.2",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",
     "react-scripts": "2.1.3",
