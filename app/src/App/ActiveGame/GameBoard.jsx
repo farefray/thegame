@@ -62,7 +62,14 @@ class GameBoard extends Component {
     }
   };
 
-  renderBoard(boardData) {
+  render() {
+    const boardData = {
+      data: this.createEmptyArray(9, 8),
+      map: this.props.myBoard,
+      myHand: this.props.myHand,
+      isBoard: true
+    }
+
     let counter = 0;
     return boardData.data.map((datarow) => {
       return <div className='board-column' key={counter++}>{
@@ -76,21 +83,6 @@ class GameBoard extends Component {
         })}
       </div>
     });
-  }
-
-  render() {
-    return <div className='boardDiv'>
-      <div className='flex center board'>
-        {
-          this.renderBoard({
-            data: this.createEmptyArray(9, 8),
-            map: this.props.myBoard,
-            myHand: this.props.myHand,
-            isBoard: true
-          })
-        }
-      </div>
-    </div>;
   }
 }
 

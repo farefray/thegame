@@ -5,7 +5,7 @@ import React, {
 import { getStatsEvent, placePieceEvent } from '../../../events'
 import { isUndefined } from '../../../f';
 
-import PawnImage from '../../PawnImage.jsx';
+import Pawn from './Pawn.jsx';
 
 class Cell extends Component {
   state = {
@@ -116,7 +116,7 @@ class Cell extends Component {
             `${(this.props.newProps.onGoingBattle && !this.props.isBoard ? 'pawnEnter' : '')}`;
           // console.log('@rendereding PawnImage classList', classList)
           return <div className={`relative`} style={styleVar}>
-            <PawnImage name={pokemon.name} back={back} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+            <Pawn name={pokemon.name} back={back} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
             {hpBar}
             {manaBar}
             {actionMessage}
@@ -141,7 +141,7 @@ class Cell extends Component {
           const back = (this.props.isBoard ? (!isUndefined(pokemon.team) ? pokemon.team === 0 : true) : false);
           
           return <>
-            <PawnImage name={pokemon.name} back={back} sideLength={sideLength} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+            <Pawn name={pokemon.name} back={back} sideLength={sideLength} newProps={this.props.newProps} isBoard={this.props.isBoard} />
             {buffs}
           </>
         }
