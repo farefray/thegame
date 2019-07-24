@@ -88,7 +88,7 @@ const mapStateToProps = state => ({
   boardBuffs: state.boardBuffs,
   deadPlayers: state.deadPlayers,
   gameEnded: state.gameEnded,
-  pokemonSprites: state.pokemonSprites,
+  monsterSprites: state.monsterSprites,
   unitJson: state.unitJson,
   loadedUnitJson: state.loadedUnitJson,
   alternateAnimation: state.alternateAnimation,

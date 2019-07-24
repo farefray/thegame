@@ -65,12 +65,14 @@ class PawnImage extends Component {
     this.reduceImageSize(width, height);
     const paddingTop = this.state.paddingTop;
     let src;
-    if (this.props.newProps.pokemonSprites) {
-      if (!this.props.newProps.pokemonSprites.pokemon[this.props.name]) console.log('Undefined image', this.props.name, this.props.newProps.pokemonSprites.pokemon[this.props.name]);
-      src = 'data:image/gif;base64,' + this.props.newProps.pokemonSprites.pokemon[this.props.name].front;
-      if (this.props.back) {
-        src = 'data:image/gif;base64,' + this.props.newProps.pokemonSprites.pokemon[this.props.name].back;
+    if (this.props.newProps.monsterSprites) {
+      if (!this.props.newProps.monsterSprites[this.props.name]) {
+        console.log(this.props.newProps.monsterSprites);
+        console.log('Undefined image', this.props.name, this.props.newProps.monsterSprites[this.props.name]);
       }
+
+      const monsterImages = this.props.newProps.monsterSprites[this.props.name];
+      src = this.props.back ? monsterImages.move_n : monsterImages.move_s;
     }
     const baseMarginTop = paddingTop + height - 15;
     const baseMarginLeft = Math.max(85 - width - 7, 0);

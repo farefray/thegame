@@ -36,8 +36,8 @@ async function _countUniqueOccurences(board, teamParam = '0') {
     // console.log('@countUnique UNIT', name)
     const team = unit.get('team') || teamParam;
     // console.log(unique, team, unit, unitPos)
-    // console.log('@countUniqueOccurences', unique.get(String(team)), pawns.getBasePokemon(name))
-    const basePokemon = await pawns.getBasePokemon(name);
+    // console.log('@countUniqueOccurences', unique.get(String(team)), pawns.getBaseMonster(name))
+    const basePokemon = await pawns.getBaseMonster(name);
     if (!unique.get(String(team)).has(basePokemon)) { // TODO: Check
       // f.p('@CountUniqueOccurences Unique', basePokemon, team, unique);
       const newSet = await unique.get(String(team)).add(basePokemon);

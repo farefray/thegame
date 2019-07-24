@@ -133,7 +133,7 @@ const reducer = (
     isSelectModeShop: false,
     boardBuffs: {},
     deadPlayers: [],
-    pokemonSprites: {},
+    monsterSprites: {},
     unitJson: {},
     loadedUnitJson: false,
     alternateAnimation: true,
@@ -155,7 +155,7 @@ const reducer = (
 ) => {
   let tempSoundEffects;
   if(devMode) {
-    state = {...state, musicEnabled: false, soundEnabled: false, timerDuration: 1500} // Disallows testing sounds currently
+    state = {...state, musicEnabled: false, soundEnabled: false, timerDuration: 15} // Disallows testing sounds currently
   }
   switch (action.type) { // Listens to events dispatched from from socket.js
     case 'LOAD_UNIT_JSON': {
@@ -165,8 +165,8 @@ const reducer = (
     }
     case 'LOAD_SPRITES_JSON': {
       console.log('Loaded sprites!');
-      state = {...state, pokemonSprites: action.pokemonSprites, loaded: true}
-      console.log('SPRITES:', state.pokemonSprites);
+      state = {...state, monsterSprites: action.monsterSprites, loaded: true}
+      console.log('SPRITES:', state.monsterSprites);
       break;
     }
     case 'NEW_STATE':

@@ -24,7 +24,7 @@ async function buildDecks(pokemonParam) {
 }
 
 let Decks = {};
-pawns.getMap().then((map) => {
+pawns.getMonsterMap().then((map) => {
   Decks = buildDecks(map);
 });
 

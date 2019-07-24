@@ -21,7 +21,7 @@ export async function AjaxLoadSprites(dispatch) {
     // console.log(response);
     const result = await response.json();
     // console.log(result);
-    dispatch({ type: 'LOAD_SPRITES_JSON', pokemonSprites: result.sprites});
+    dispatch({ type: 'LOAD_SPRITES_JSON', monsterSprites: result.sprites});
   }).catch((err) => {
     console.log('Failed to fetch', err);
     timeoutCounter = (timeoutCounter < 5 ? timeoutCounter + 1 : 10);

@@ -1,0 +1,30 @@
+{
+  "minotaur": {
+    "name": "minotaur",
+    "displayName": "Minotaur★",
+    "cost": 4,
+    "hp": 450,
+    "attack": 10,
+    "defense": 55,
+    "speed": 80,
+    "type": "normal",
+    "ability": "splash",
+    "evolves_to": "minotaur",
+    "specialAttack": 15,
+    "specialDefense": 20
+  },
+  "dwarf": {
+    "name": "dwarf",
+    "displayName": "Dwarf",
+    "cost": 1,
+    "hp": 650,
+    "attack": 10,
+    "defense": 55,
+    "speed": 80,
+    "type": "normal",
+    "ability": "",
+    "evolves_to": "dwarf",
+    "specialAttack": 0,
+    "specialDefense": 0
+  }
+}
