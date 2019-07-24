@@ -7,7 +7,7 @@ export default {
     position: '1,1',
     name: 'dwarf',
     back: true,
-    sideLength: 10,
+    sideLength: 80,
     classList: '',
     isBoard: true,
     newProps: {

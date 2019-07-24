@@ -79,8 +79,8 @@ class Cell extends Component {
             <div color={pokemon.team} className={`hpBar ${percShield > 0 ? 'barBorderShield' : 'barBorderNormal'}`} style={{ width: percHp + '%' }} />
             {(percShield > 0 ? <div className='shieldBar' style={{ width: percShield + '%', marginLeft: shieldMarginLeft + 'px' }} /> : '')}
           </div>;
-          {/*<div className={`hpBar  ${(pokemon.team === 0 ? 'friendlyBar' : 'enemyBar')}`} 
-              style={{width: (pokemon.hp / Math.max(pokemon.hp, pokemon.maxHp) * 100)+'%'}}>*/}
+          /*<div className={`hpBar  ${(pokemon.team === 0 ? 'friendlyBar' : 'enemyBar')}`} 
+              style={{width: (pokemon.hp / Math.max(pokemon.hp, pokemon.maxHp) * 100)+'%'}}>*/
           /*(pokemon.hp > pokemon.maxHp ? <div className={`boostBar text_shadow ${(this.props.isBoard ? 'boostBar' : '')}`} 
             style={{width: (pokemon.hp-pokemon.maxHp / pokemon.hp1 * 100)+'%'}}/> : '')} 
           </div> : '')*/
