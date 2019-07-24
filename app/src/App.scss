@@ -328,10 +328,6 @@ body {
   text-align: center;
 }
 
-.boardColumn {
-  display: block;
-}
-
 .flex {
   display: flex;
 }
@@ -379,22 +375,24 @@ body {
   margin-top: 15px;
 }
 
-.boardDiv {
-  background: gray;
-  background-position: 8px 10px; 
-}
+.board-container {
+  position: relative;
 
-.boardDivBattle {
-  background: black;
-  background-position: 8px 10px; 
-}
+  &.rpgui-container.framed {
+    border-image-width: 10px;
+    border-width: 10px;
+    padding: 0;
+    height: 100%;
+  }
 
-.handDiv {
-  background: url(./assets/images/handBg.png) no-repeat;
-}
-
-.handDivVisiting {
-  background: url(./assets/images/visiting.png) no-repeat;
+  .board {
+    flex-direction: column;
+    .board-column {
+      height: 64px;
+      flex-direction: row;
+      display: flex;
+    }
+  }
 }
 
 .cell {
@@ -404,6 +402,19 @@ body {
   height: 64px;
   position: relative;
   background: url(./assets/images/terrain/grass.gif) repeat;
+
+  &.isHand {
+    background: url(./assets/images/terrain/hand.png) repeat;
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+  }
+
+  &.highlighted {
+    background: rgba(0, 255, 21, 0.562);
+    &__red {
+      background: rgba(255, 0, 0, 0.473);
+    }
+  }
 }
 
 .cell .markedUnit {
@@ -919,7 +930,7 @@ body {
 .dmgBoardDiv {
   margin-left: 10px;
   animation-name: textMove;
-	animation-duration: 0.9s; /* 1.2s */
+  animation-duration: 0.9s; /* 1.2s */
 }
 
 .dmgBoardUnit {

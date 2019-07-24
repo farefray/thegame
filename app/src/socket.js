@@ -182,6 +182,7 @@ export const withdrawPiece = (state, from) =>
 export const sellPiece = (state, from) => 
   socket.emit('SELL_PIECE', state, from);
 
+// I think its unsafe to start round with frontend. Need to handle this timer on socket instead
 export const battleReady = (state) => 
   socket.emit('BATTLE_READY', state);
 

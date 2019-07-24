@@ -164,6 +164,28 @@ class RightPanel extends Component {
     return String(x) + ',' + String(y);
   }
 
+  getDmgBoard = (dmgBoard) => {
+    const list = [];
+    if(!dmgBoard) return '';
+    const keys = Object.keys(dmgBoard);
+    const sortedDmgBoard = keys.sort((a,b) => dmgBoard[b] - dmgBoard[a]);
+    // keys.forEach(unitName => {
+    for(let i = 0; i < sortedDmgBoard.length; i++){
+      const unitName = sortedDmgBoard[i];
+      const value = dmgBoard[unitName];
+      // console.log('@getDmgBoard', value, this.props.dmgBoardTotalDmg)
+      const width = value / this.props.dmgBoardTotalDmg * 100 + '%';
+      list.push(<div className='dmgBoardUnitDiv' key={unitName}>
+        <div className='damageBarDiv'>
+          <span className='damageBar friendlyBar' style={{width: width}}></span>
+        </div>
+        <span className='dmgBoardUnitName'>{unitName + ': '}</span>
+        <span className='dmgBoardUnitValue'>{value}</span>
+      </div>)
+    }
+    return list;
+  }
+
   render () {
     return <div className='flex'>
       <div>

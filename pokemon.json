@@ -3,7 +3,7 @@
     "name": "minotaur",
     "displayName": "Minotaur★",
     "cost": 4,
-    "hp": 20,
+    "hp": 450,
     "attack": 10,
     "defense": 55,
     "speed": 80,
