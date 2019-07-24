@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { placePieceEvent } from '../../events'
-import Cell from './GameBoard/Cell.jsx';
+import BoardSquare from './GameBoard/BoardSquare.jsx';
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
 class GameBoard extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {};
   }
 
-  componentDidMount() { };
+  componentDidMount () { };
 
-  createEmptyArray(height, width) {
+  createEmptyArray (height, width) {
     let data = [];
     for (let i = 0; i < height; i++) {
       data[i] = [];
@@ -27,7 +27,7 @@ class GameBoard extends Component {
     return data;
   }
 
-  getPos(x, y, isBoard) {
+  getPos (x, y, isBoard) {
     if (isBoard) {
       return x + ',' + y;
     } else {
@@ -62,7 +62,7 @@ class GameBoard extends Component {
     }
   };
 
-  render() {
+  render () {
     const boardData = {
       data: this.createEmptyArray(9, 8),
       map: this.props.myBoard,
@@ -72,16 +72,18 @@ class GameBoard extends Component {
 
     let counter = 0;
     return boardData.data.map((datarow) => {
-      return <div className='board-column' key={counter++}>{
-        datarow.map((dataitem) => {
-          let key = dataitem.x * datarow.length + dataitem.y;
-          const isBoard = dataitem.y !== 0;
+      return <DndProvider backend={HTML5Backend}>
+        <div className='board-column' key={counter++}>{
+          datarow.map((dataitem) => {
+            let key = dataitem.x * datarow.length + dataitem.y;
+            const isBoard = dataitem.y !== 0;
 
-          return (
-            <Cell key={key} value={dataitem} isBoard={isBoard} map={isBoard ? boardData.map : boardData.myHand} newProps={this.props} />
-          );
-        })}
-      </div>
+            return (
+              <BoardSquare key={key} value={dataitem} isBoard={isBoard} map={isBoard ? boardData.map : boardData.myHand} newProps={this.props} />
+            );
+          })}
+        </div>
+      </DndProvider>
     });
   }
 }

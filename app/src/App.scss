@@ -378,6 +378,7 @@ body {
 .boardDiv {
   background: gray;
   background-position: 8px 10px; 
+  height: 100%;
 
   .board {
     flex-direction: column;
@@ -407,6 +408,13 @@ body {
   height: 64px;
   position: relative;
   background: url(./assets/images/terrain/grass.gif) repeat;
+
+  &.highlighted {
+    background: yellow;
+    &__red {
+      background: red;
+    }
+  }
 }
 
 .cell .markedUnit {

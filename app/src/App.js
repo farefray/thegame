@@ -65,7 +65,7 @@ const mapStateToProps = state => ({
   battleStartBoard: state.battleStartBoard,
   winner: state.winner,
   dmgBoard: state.dmgBoard,
-  selectedUnit: state.selectedUnit,
+  selectedUnit: state.selectedUnit, // TODO get rid of 'selectedUnit'
   mouseOverId: state.mouseOverId,
   stats: state.stats,
   statsMap: state.statsMap,

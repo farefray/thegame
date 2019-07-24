@@ -2,7 +2,7 @@ import React, {
   Component
 } from 'react';
 
-import { getStatsEvent, placePieceEvent } from '../../../events'
+import { getStatsEvent } from '../../../events'
 import { isUndefined } from '../../../f';
 
 import Pawn from './Pawn.jsx';
@@ -39,9 +39,6 @@ class Cell extends Component {
       console.log('Get Stats for', unit.name)
       el.props.newProps.dispatch({ type: 'NEW_UNIT_SOUND', newAudio: '' });
       getStatsEvent(el.props.newProps, unit.name);
-    } else if (prevSelectedUnit.pos && this.state.pos !== prevSelectedUnit.pos &&
-      prevSelectedUnit.unit && prevSelectedUnit.displaySell) { // Pressed empty cell
-      placePieceEvent(this.props.newProps, prevSelectedUnit.pos, this.state.pos);
     } else {
       el.props.newProps.dispatch({ type: 'SELECT_UNIT', selectedUnit: '' });
     }
@@ -116,7 +113,7 @@ class Cell extends Component {
             `${(this.props.newProps.onGoingBattle && !this.props.isBoard ? 'pawnEnter' : '')}`;
           // console.log('@rendereding PawnImage classList', classList)
           return <div className={`relative`} style={styleVar}>
-            <Pawn name={pokemon.name} back={back} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+            <Pawn position={this.state.pos} name={pokemon.name} back={back} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
             {hpBar}
             {manaBar}
             {actionMessage}
@@ -141,7 +138,7 @@ class Cell extends Component {
           const back = (this.props.isBoard ? (!isUndefined(pokemon.team) ? pokemon.team === 0 : true) : false);
           
           return <>
-            <Pawn name={pokemon.name} back={back} sideLength={sideLength} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+            <Pawn position={this.state.pos} name={pokemon.name} back={back} sideLength={sideLength} newProps={this.props.newProps} isBoard={this.props.isBoard} />
             {buffs}
           </>
         }
@@ -150,19 +147,22 @@ class Cell extends Component {
     return null;
   }
 
+  
+
   render () {
     // console.log('@renderCell', this.props.selectedUnit)
     const selPos = this.props.newProps.selectedUnit;
     //console.log('@Cell.render', selPos, this.props.newProps.selectedUnit)
     let className = 'cell' +
       (!isUndefined(selPos) && this.props.isBoard === selPos.isBoard && selPos.displaySell &&
-        selPos.x === this.props.value.x && selPos.y === this.props.value.y ? ' markedUnit' : '');
+        selPos.x === this.props.value.x && selPos.y === this.props.value.y ? ' markedUnit' : '')
+        + ' ' + (this.props.extraClasses);
     return (
-          <div
-            id={this.state.pos} className={className} onClick={() => this.handleCellClick(this)}
+          <div id={this.state.pos} className={className} onClick={() => this.handleCellClick(this)}
             onMouseOver={(event) => this.handleMouseOver(event, this)}
           >
             {this.getValue()}
+            
           </div>
     );
   }

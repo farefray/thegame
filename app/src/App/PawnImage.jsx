@@ -97,25 +97,15 @@ class PawnImage extends Component {
         this.onImgLoad
       }
     />
-    return (<
-      div > {
-        (this.props.renderBase ? < div key={
-          this.props.renderBase
-        }
-          className={
-            `PawnImageBase ${this.props.renderBase}`
-          }
-          style={
-            {
-              marginTop: (Number.isNaN(baseMarginTop) ? '' : baseMarginTop),
-              marginLeft: (Number.isNaN(baseMarginLeft) ? '' : baseMarginLeft),
-              width: (typeof width === 'number' ? width * 1.5 : '')
-            }
-          } > < /div> : '')} {
-            imgEl
-          } </div>
-      );
-      }
-    }
-  
-  export default PawnImage;
+    return (<div> {(this.props.renderBase ? <div key={this.props.renderBase} className={`PawnImageBase ${this.props.renderBase}`} style={{
+      marginTop: (Number.isNaN(baseMarginTop) ? '' : baseMarginTop),
+      marginLeft: (Number.isNaN(baseMarginLeft) ? '' : baseMarginLeft),
+      width: (typeof width === 'number' ? width * 1.5 : '')
+    }}></div> : '')} {
+        imgEl
+      } </div>
+    );
+  }
+}
+
+export default PawnImage;

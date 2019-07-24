@@ -99,6 +99,39 @@ export function buyExpEvent(props) {
   }
 }
 
+// TODO DRY placepieceevent
+export function canMovePiece(prop, fromParam, to) {
+  const from = String(fromParam);
+  if(prop.isDead) {
+    return false;
+  }else if(prop.visiting !== prop.index){
+    return false
+  }
+
+  if(!prop.onGoingBattle && prop.isBattle){
+    return false
+  }
+
+  if(from && to && prop.gameIsLive){
+    console.log('@placePieceEvent', from, to);
+    const splitted = to.split(',');
+    const fromSplitted = from.split(',');
+    const validPos = (splitted.length === 2 ? splitted[1] < 4 && splitted[1] >= 0: true) && splitted[0] < 8 && splitted[0] >= 0;
+    const unitExists = (fromSplitted.length === 2 ? prop.myBoard[fromParam] : prop.myHand[from])
+    // console.log('@placePieceEvent', fromSplitted, validPos, unitExists, prop.myHand);
+    if(validPos && unitExists && !prop.onGoingBattle){
+      // console.log('Sending place piece!')
+      return true;
+    } else {
+      // Hand to hand movement during battle allowed
+      if(validPos && unitExists && prop.onGoingBattle && !from.includes(',') && !to.includes(',')) {
+          return true
+      } else {
+        return false
+      }
+    }
+  }
+}
 export function placePieceEvent(prop, fromParam, to) {
   // to is on valid part of the board
   const from = String(fromParam);

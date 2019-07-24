@@ -1,8 +1,4 @@
 import React, { Component } from 'react';
-import { placePieceEvent } from '../../events'
-import Cell from './GameBoard/Cell.jsx';
-import { DndProvider } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 
 class GameBoardBottom extends Component {
     constructor(props) {
