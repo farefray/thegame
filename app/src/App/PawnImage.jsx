@@ -19,7 +19,7 @@ class PawnImage extends Component {
   onImgLoad ({
     target: img
   }) {
-    // console.log('@onImgLoad - ', img.offsetHeight, 'vs', img.naturalHeight, ', ', img.offsetWidth, 'vs', img.naturalWidth);
+    console.log('@onImgLoad - ', img.offsetHeight, 'vs', img.naturalHeight, ', ', img.offsetWidth, 'vs', img.naturalWidth);
     this.setState({
       dimensions: {
         height: img.naturalHeight,
