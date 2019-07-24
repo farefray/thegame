@@ -375,10 +375,15 @@ body {
   margin-top: 15px;
 }
 
-.boardDiv {
-  background: gray;
-  background-position: 8px 10px; 
-  height: 100%;
+.board-container {
+  position: relative;
+
+  &.rpgui-container.framed {
+    border-image-width: 10px;
+    border-width: 10px;
+    padding: 0;
+    height: 100%;
+  }
 
   .board {
     flex-direction: column;

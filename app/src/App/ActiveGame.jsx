@@ -9,9 +9,8 @@ import GameBoardBottom from './ActiveGame/GameBoardBottom.jsx';
 
 import RightPanel from './ActiveGame/RightPanel.jsx';
 
-import { refreshShopEvent, buyExpEvent, placePieceEvent, withdrawPieceEvent, sellPieceEvent, toggleLockEvent } from '../events';
 import { isUndefined, updateMessage } from '../f';
-import { getUnitAudio, getSoundEffect } from '../audio.js';
+import { getSoundEffect } from '../audio.js';
 
 class ActiveGame extends Component {
   constructor (props) {
@@ -307,82 +306,12 @@ class ActiveGame extends Component {
     this.props.dispatch({ type: 'SPEC_PLAYER', playerIndex })
   }
 
-
-
-
-  handleKeyPress (event) {
-    // console.log(event)
-    // console.log(event.key, event.currentTarget)
-    const prop = this.props;
-    let from;
-    if (event.target.tagName === 'INPUT') {
-      return;
-    }
-    switch (event.key) {
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-        from = String(parseInt(event.key) - 1);
-      case 'Q':
-      case 'q': {
-        from = (isUndefined(from) ? (prop.selectedUnit.displaySell ? prop.selectedUnit.pos : '') : from);
-        const to = prop.mouseOverId;
-        console.log('@placePiece q pressed', from, to)
-        placePieceEvent(this.props, from, to);
-        prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {} })
-        break;
-      }
-      case 'W':
-      case 'w': {
-        from = prop.mouseOverId;
-        console.log(prop.myBoard, from, prop.mouseOverId)
-        if (!isUndefined(from) && prop.myBoard[from]) {
-          withdrawPieceEvent(this.props, from);
-        } else {
-          from = (prop.selectedUnit.displaySell ? prop.selectedUnit.pos : '');
-          withdrawPieceEvent(this.props, from);
-        }
-        prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {} })
-        break;
-      }
-      case 'E':
-      case 'e': {
-        from = (prop.selectedUnit.displaySell ? prop.selectedUnit.pos : '');
-        if (!isUndefined(from)) {
-          sellPieceEvent(this.props, from);
-        } else {
-          console.log('Use Select to sell units!')
-        }
-        prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {} })
-        break;
-      }
-      case 'D':
-      case 'd':
-        refreshShopEvent(this.props);
-        break;
-      case 'F':
-      case 'f':
-        buyExpEvent(this.props);
-        break;
-      case 'K':
-      case 'k':
-        this.props.dispatch({ type: 'TOGGLE_DEBUG_MODE' });
-        break;
-      default:
-    }
-  }
-
   render () {
-    return (<div className='gameDiv' onKeyDown={(event) => this.handleKeyPress(event)} tabIndex='0'>
+    return (<div className='gameDiv' tabIndex='0'>
       <TopBar {...this.props} />
       <div className='flex wholeBody'>
         <LeftBar {...this.props} />
-        <div className='boardDiv'>
+        <div className='board-container rpgui-container framed'>
           <div className='flex center board'>
             <GameBoard {...this.props} />
           </div>
