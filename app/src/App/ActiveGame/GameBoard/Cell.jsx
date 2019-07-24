@@ -4,22 +4,15 @@ import React, {
 
 import { getStatsEvent } from '../../../events'
 import { isUndefined } from '../../../f';
+import { toBoardPosition } from '../../../shared/BoardUtils.js';
 
 import Pawn from './Pawn.jsx';
 
 class Cell extends Component {
   state = {
     ...this.state,
-    pos: this.getPos(this.props.value.x, this.props.value.y),
+    pos: toBoardPosition(this.props.value.x, this.props.value.y),
     selPos: this.props.newProps.selectedUnit,
-  }
-
-  getPos (x, y) {
-    if (this.props.isBoard) {
-      return x + ',' + y;
-    } else {
-      return String(x);
-    }
   }
 
   handleCellClick (el) {
@@ -65,7 +58,7 @@ class Cell extends Component {
 
   getValue () {
     // console.log('@Cell.getValue value =', value)
-    // console.log('@Cell.getValue', this.props.map, this.props.map[this.getPos(value.x,value.y)])
+    // console.log('@Cell.getValue', this.props.map, this.props.map[toBoardPosition(value.x,value.y)])
     if (this.props.map) {
       let pokemon;
       const sideLength = 85;

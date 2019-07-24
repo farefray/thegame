@@ -12,6 +12,7 @@
         "max-len": "off",
         "no-await-in-loop": "off",
         "no-underscore-dangle": "off",
-        "comma-dangle": "off"
+        "comma-dangle": "off",
+        "linebreak-style": "off"
     }
 }

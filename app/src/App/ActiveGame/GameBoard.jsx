@@ -4,6 +4,8 @@ import BoardSquare from './GameBoard/BoardSquare.jsx';
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
+import { toBoardPosition } from '../../shared/BoardUtils.js';
+
 class GameBoard extends Component {
   constructor (props) {
     super(props);
@@ -27,14 +29,6 @@ class GameBoard extends Component {
     return data;
   }
 
-  getPos (x, y, isBoard) {
-    if (isBoard) {
-      return x + ',' + y;
-    } else {
-      return String(x);
-    }
-  }
-
   /**
    * Managing DnD pawns on the board
    *
@@ -55,7 +49,7 @@ class GameBoard extends Component {
     const selectedUnit = this.props.selectedUnit;
     console.log('selected unit');
     console.log(selectedUnit);
-    const position = this.getPos(parseInt(destination.droppableId), 0, false)
+    const position = toBoardPosition(parseInt(destination.droppableId), 0)
     if (selectedUnit.pos && position !== selectedUnit.pos &&
       selectedUnit.unit && selectedUnit.displaySell) {
       placePieceEvent(this.props, selectedUnit.pos, position);

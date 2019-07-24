@@ -390,17 +390,6 @@ body {
   }
 }
 
-/** TODO **/
-.handDiv {
-  width: 528px;
-  height: 66px;
-  .cell {
-    background: url(./assets/images/terrain/hand.png) repeat;
-    background-repeat: no-repeat;
-    background-position: 100% 100%;
-  }
-}
-
 .cell {
   border: 1px solid #00000030;
   background-color: rgba(0, 0, 0, 0);
@@ -409,10 +398,16 @@ body {
   position: relative;
   background: url(./assets/images/terrain/grass.gif) repeat;
 
+  &.isHand {
+    background: url(./assets/images/terrain/hand.png) repeat;
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+  }
+
   &.highlighted {
-    background: yellow;
+    background: rgba(0, 255, 21, 0.562);
     &__red {
-      background: red;
+      background: rgba(255, 0, 0, 0.473);
     }
   }
 }

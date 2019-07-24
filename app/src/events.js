@@ -113,7 +113,6 @@ export function canMovePiece(prop, fromParam, to) {
   }
 
   if(from && to && prop.gameIsLive){
-    console.log('@placePieceEvent', from, to);
     const splitted = to.split(',');
     const fromSplitted = from.split(',');
     const validPos = (splitted.length === 2 ? splitted[1] < 4 && splitted[1] >= 0: true) && splitted[0] < 8 && splitted[0] >= 0;
@@ -131,7 +130,8 @@ export function canMovePiece(prop, fromParam, to) {
       }
     }
   }
-}
+};
+
 export function placePieceEvent(prop, fromParam, to) {
   // to is on valid part of the board
   const from = String(fromParam);
