@@ -1,26 +1,12 @@
 const shuffle = require('immutable-shuffle');
 const gameConstantsJS = require('./game_constants');
 
+const BoardUtils = require('../app/src/shared/BoardUtils');
+
 const isUndefined = obj => (typeof obj === 'undefined');
 exports.isUndefined = obj => isUndefined(obj);
 
 exports.getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
-
-/**
- * Returns:
- * position: Map{
- *   x ,
- *   y (if missing -> is on hand, outside of the board)
- * }
- */
-const pos = (x, y) => {
-  // console.log('@pos', List([x]), List([x,y]));
-  if (y === undefined) {
-    return String(x);
-  }
-  return `${x},${y}`;
-};
-
 
 const x = (position) => {
   if (!isUndefined(position)) {
@@ -38,7 +24,7 @@ const y = (position) => {
   return (isUndefined(curr) ? curr : parseInt(curr, 10));
 };
 
-exports.pos = (px, py) => pos(px, py);
+exports.pos = (px, py) => BoardUtils.toBoardPosition(px, py);
 exports.x = position => x(position);
 exports.y = position => y(position);
 
@@ -50,7 +36,7 @@ exports.checkHandUnit = position => isUndefined(y(position));
 /**
  * Reverses position, your units position on enemy boards
  */
-exports.reverseUnitPos = posInput => pos(7 - x(posInput), 7 - y(posInput));
+exports.reverseUnitPos = posInput => BoardUtils.toBoardPosition(7 - x(posInput), 7 - y(posInput));
 
 // exports.print = (obj, msg) => console.log(msg + JSON.stringify(obj)); // Normal version
 exports.print = (obj, msg = '') => console.log(msg + JSON.stringify(obj, null, 2)); // Pretty printed version

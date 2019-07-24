@@ -21,7 +21,7 @@ export async function AjaxLoadSprites(dispatch) {
     // console.log(response);
     const result = await response.json();
     // console.log(result);
-    dispatch({ type: 'LOAD_SPRITES_JSON', pokemonSprites: result.sprites});
+    dispatch({ type: 'LOAD_SPRITES_JSON', monsterSprites: result.sprites});
   }).catch((err) => {
     console.log('Failed to fetch', err);
     timeoutCounter = (timeoutCounter < 5 ? timeoutCounter + 1 : 10);
@@ -182,6 +182,7 @@ export const withdrawPiece = (state, from) =>
 export const sellPiece = (state, from) => 
   socket.emit('SELL_PIECE', state, from);
 
+// I think its unsafe to start round with frontend. Need to handle this timer on socket instead
 export const battleReady = (state) => 
   socket.emit('BATTLE_READY', state);
 

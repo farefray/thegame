@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import Board from './GameBoard/Board.jsx';
+import { placePieceEvent } from '../../events'
+import BoardSquare from './GameBoard/BoardSquare.jsx';
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
+
+import { toBoardPosition } from '../../shared/BoardUtils.js';
 
 class GameBoard extends Component {
   constructor (props) {
@@ -7,26 +12,73 @@ class GameBoard extends Component {
     this.state = {};
   }
 
+  componentDidMount () { };
+
+  createEmptyArray (height, width) {
+    let data = [];
+    for (let i = 0; i < height; i++) {
+      data[i] = [];
+      for (let j = 0; j < width; j++) {
+        data[i][j] = {
+          x: j,
+          y: width - i,
+        };
+      }
+    }
+
+    return data;
+  }
+
+  /**
+   * Managing DnD pawns on the board
+   *
+   * @memberof GameBoard
+   */
+  onDragEnd = (result) => {
+    console.log(result);
+
+    const { source, destination, draggableId } = result;
+    console.log(source);
+    console.log(destination);
+    console.log(draggableId);
+
+    if (!destination) {
+      return;
+    }
+
+    const selectedUnit = this.props.selectedUnit;
+    console.log('selected unit');
+    console.log(selectedUnit);
+    const position = toBoardPosition(parseInt(destination.droppableId), 0)
+    if (selectedUnit.pos && position !== selectedUnit.pos &&
+      selectedUnit.unit && selectedUnit.displaySell) {
+      placePieceEvent(this.props, selectedUnit.pos, position);
+    }
+  };
+
   render () {
-   return <div className={(!this.props.onGoingBattle ? 'boardDiv' : 'boardDivBattle')}>
-   <div>
-     <Board height={8} width={8} map={this.props.myBoard} isBoard={true} newProps={this.props}/>
-   </div>
-   <div className='levelDiv'>
-     <div className={`levelBar overlap ${(this.props.exp === 0 ? 'hidden' : '')}`} 
-     style={{width: (this.props.expToReach !== 0 ? String(this.props.exp/this.props.expToReach * 100) : '100') + '%'}}/>
-     <div className='biggerText centerWith50 overlap levelText'>
-       <span className='text_shadow paddingLeft5 paddingRight5'>{'Level ' + JSON.stringify(this.props.level, null, 2)}</span>
-       {<span className='text_shadow paddingLeft5 paddingRight5'>{'( ' + (this.props.expToReach === 'max' ? 'max' : this.props.exp + '/' + this.props.expToReach) + ' )'}</span>}
-     </div>
-     <div className='overlap text_shadow marginTop5 paddingLeft5 levelTextExp'>
-       {'Exp: ' + this.props.exp + '/' + this.props.expToReach}
-     </div>
-   </div>
-   <div className={`flex center ${(this.props.index === this.props.visiting ? 'handDiv' : 'handDivVisiting')}`}>
-     <Board height={1} width={8} map={this.props.myHand} isBoard={false} newProps={this.props}/>
-   </div>
- </div>;
+    const boardData = {
+      data: this.createEmptyArray(9, 8),
+      map: this.props.myBoard,
+      myHand: this.props.myHand,
+      isBoard: true
+    }
+
+    let counter = 0;
+    return boardData.data.map((datarow) => {
+      return <DndProvider backend={HTML5Backend}>
+        <div className='board-column' key={counter++}>{
+          datarow.map((dataitem) => {
+            let key = dataitem.x * datarow.length + dataitem.y;
+            const isBoard = dataitem.y !== 0;
+
+            return (
+              <BoardSquare key={key} value={dataitem} isBoard={isBoard} map={isBoard ? boardData.map : boardData.myHand} newProps={this.props} />
+            );
+          })}
+        </div>
+      </DndProvider>
+    });
   }
 }
 

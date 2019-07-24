@@ -133,7 +133,7 @@ const reducer = (
     isSelectModeShop: false,
     boardBuffs: {},
     deadPlayers: [],
-    pokemonSprites: {},
+    monsterSprites: {},
     unitJson: {},
     loadedUnitJson: false,
     alternateAnimation: true,
@@ -165,8 +165,8 @@ const reducer = (
     }
     case 'LOAD_SPRITES_JSON': {
       console.log('Loaded sprites!');
-      state = {...state, pokemonSprites: action.pokemonSprites, loaded: true}
-      console.log('SPRITES:', state.pokemonSprites);
+      state = {...state, monsterSprites: action.monsterSprites, loaded: true}
+      console.log('SPRITES:', state.monsterSprites);
       break;
     }
     case 'NEW_STATE':

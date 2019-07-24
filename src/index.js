@@ -22,11 +22,11 @@ app.use(cors());
 
 router.all('*', cors());
 
-const pokemonSpritesJSON = pawns.getPokemonSprites();
-const pokemonJson = pawns.getMap();
+const spritesJSON = pawns.getMonsterSprites();
+const monstersJSON = pawns.getMonsterMap();
 
-const getSprites = async () => pokemonSpritesJSON;
-const getPokemonJson = async () => pokemonJson;
+const getSprites = async () => spritesJSON;
+const getMonstersJson = async () => monstersJSON;
 
 router.get('/sprites', async (req, res) => {
   console.log('/sprites GET Request - ', req.connection.remoteAddress);
@@ -37,8 +37,8 @@ router.get('/sprites', async (req, res) => {
 
 router.get('/unitJson', async (req, res) => {
   console.log('/unitJson GET Request - ', req.connection.remoteAddress);
-  const pokemonJson = await getPokemonJson();
-  res.json({ pokemonJson });
+  const mosntersJSON = await getMonstersJson();
+  res.json({ mosntersJSON });
 });
 
 io.on('connection', (socket) => {
