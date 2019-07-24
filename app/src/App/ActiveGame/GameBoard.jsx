@@ -1,31 +1,33 @@
 import React, { Component } from 'react';
 import { placePieceEvent } from '../../events'
 import Cell from './GameBoard/Cell.jsx';
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 class GameBoard extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {};
   }
 
-  componentDidMount () { };
+  componentDidMount() { };
 
   createEmptyArray(height, width) {
     let data = [];
     for (let i = 0; i < height; i++) {
-      data[i] = Array();
+      data[i] = [];
       for (let j = 0; j < width; j++) {
         data[i][j] = {
           x: j,
-          y: height-i-1,
+          y: width - i,
         };
       }
     }
 
     return data;
   }
-  
-  getPos (x, y, isBoard) {
+
+  getPos(x, y, isBoard) {
     if (isBoard) {
       return x + ',' + y;
     } else {
@@ -66,46 +68,27 @@ class GameBoard extends Component {
       return <div className='board-column' key={counter++}>{
         datarow.map((dataitem) => {
           let key = dataitem.x * datarow.length + dataitem.y;
+          const isBoard = dataitem.y !== 0;
+
           return (
-              <Cell key={key} value={dataitem} isBoard={boardData.isBoard} map={boardData.map} newProps={this.props}/>
-            );
+            <Cell key={key} value={dataitem} isBoard={isBoard} map={isBoard ? boardData.map : boardData.myHand} newProps={this.props} />
+          );
         })}
       </div>
     });
   }
 
-  render () {
+  render() {
     return <div className='boardDiv'>
-      <div>
-        <div className='flex center board'> 
-          {
-            this.renderBoard({
-              data: this.createEmptyArray(8, 8),
-              map: this.props.myBoard,
-              isBoard: true
-            })
-          }
-        </div>
-      </div>
-      <div className={`flex center board ${(this.props.index === this.props.visiting ? 'handDiv' : 'handDivVisiting')}`}>
+      <div className='flex center board'>
         {
           this.renderBoard({
-            data: this.createEmptyArray(1, 8),
-            map: this.props.myHand,
-            isBoard: false
+            data: this.createEmptyArray(9, 8),
+            map: this.props.myBoard,
+            myHand: this.props.myHand,
+            isBoard: true
           })
         }
-      </div>
-      <div className='levelDiv'>
-        <div className={`levelBar overlap ${(this.props.exp === 0 ? 'hidden' : '')}`}
-          style={{ width: (this.props.expToReach !== 0 ? String(this.props.exp / this.props.expToReach * 100) : '100') + '%' }} />
-        <div className='biggerText centerWith50 overlap levelText'>
-          <span className='text_shadow paddingLeft5 paddingRight5'>{'Level ' + JSON.stringify(this.props.level, null, 2)}</span>
-          {<span className='text_shadow paddingLeft5 paddingRight5'>{'( ' + (this.props.expToReach === 'max' ? 'max' : this.props.exp + '/' + this.props.expToReach) + ' )'}</span>}
-        </div>
-        <div className='overlap text_shadow marginTop5 paddingLeft5 levelTextExp'>
-          {'Exp: ' + this.props.exp + '/' + this.props.expToReach}
-        </div>
       </div>
     </div>;
   }

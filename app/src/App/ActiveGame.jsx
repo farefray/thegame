@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import TopBar from './ActiveGame/TopBar.jsx';
 import LeftBar from './ActiveGame/LeftBar.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
+import GameBoardBottom from './ActiveGame/GameBoardBottom.jsx';
+
 import RightPanel from './ActiveGame/RightPanel.jsx';
 
 import { refreshShopEvent, buyExpEvent, placePieceEvent, withdrawPieceEvent, sellPieceEvent, toggleLockEvent } from '../events';
@@ -381,6 +383,7 @@ class ActiveGame extends Component {
    <div className='flex wholeBody'>
      <LeftBar {...this.props} />
      <GameBoard {...this.props} />
+     <GameBoardBottom {...this.props} />
      <RightPanel {...this.props} />
    </div>
    <input className='hidden' type='checkbox' checked={this.props.startBattle} onChange={(this.props.startBattle ? this.startBattleEvent.bind(this)() : () => '')}/>
