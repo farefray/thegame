@@ -68,7 +68,7 @@ class PawnImage extends Component {
   // TODO
   getSprite() {
     const params = encodeData({
-      id: 69,
+      id: this.props.newProps.unitJson[this.props.name].looktype,
       direction: this.props.direction
     });
 

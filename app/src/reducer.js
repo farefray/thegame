@@ -148,7 +148,7 @@ const reducer = (
   switch (action.type) { // Listens to events dispatched from from socket.js
     case 'LOAD_UNIT_JSON': {
       console.log('Loaded units!');
-      state = {...state, unitJson: action.json, loadedUnitJson: true}
+      state = {...state, unitJson: action.json.mosntersJSON, loadedUnitJson: true}
       break;
     }
     case 'NEW_STATE':

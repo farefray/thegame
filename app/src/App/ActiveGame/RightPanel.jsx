@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import ShopPawn from './RightPanel/ShopPawn';
-import { refreshShopEvent, buyExpEvent, placePieceEvent, withdrawPieceEvent, sellPieceEvent, toggleLockEvent } from '../../events';
-import { sendMessage, AjaxGetUnitJson } from '../../socket';
-import { getImage, getTypeImg, getGymImage } from '../../images.js';
-import { isUndefined, updateMessage } from '../../f';
+import { refreshShopEvent, buyExpEvent, toggleLockEvent } from '../../events';
+import { sendMessage } from '../../socket';
+import { getImage } from '../../images.js';
+import { isUndefined } from '../../f';
 
 class RightPanel extends Component {
   constructor (props) {

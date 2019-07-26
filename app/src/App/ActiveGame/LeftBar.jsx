@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Timer from '../Timer';
 import PawnImage from '../PawnImage.jsx';
-import { isUndefined, updateMessage } from '../../f';
-import { getImage, getGymImage, getTypeImg } from '../../images.js';
-import { refreshShopEvent, buyExpEvent, placePieceEvent, withdrawPieceEvent, sellPieceEvent, toggleLockEvent } from '../../events';
+import { isUndefined, } from '../../f';
+import { getImage, getTypeImg } from '../../images.js';
+import { sellPieceEvent } from '../../events';
 import { getUnitAudio, getSoundEffect } from '../../audio.js';
 import { capitalize } from '../../util';
 
