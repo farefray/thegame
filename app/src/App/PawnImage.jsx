@@ -15,14 +15,12 @@ const imageBackends = {
 }
 
 class PawnImage extends Component {
-
   constructor (props) {
     super(props);
     this.state = {
       dimensions: {},
     };
     this.onImgLoad = this.onImgLoad.bind(this);
-    this.reduceImageSize = this.reduceImageSize.bind(this);
     this.calculatePadding = this.calculatePadding.bind(this);
   }
 
@@ -39,30 +37,9 @@ class PawnImage extends Component {
     this.calculatePadding(img.naturalHeight);
   }
 
-  reduceImageSize (width, height, initial = 'true') {
-    const sideLength = this.state.sideLength;
-    if (width > sideLength || height > sideLength) {
-      this.reduceImageSize(width * 0.9, height * 0.9, false);
-    } else {
-      if (!initial) {
-        this.setState({
-          dimensions: {
-            height: height,
-            width: width
-          }
-        });
-        this.calculatePadding(height);
-      }
-    }
-  }
 
   calculatePadding (height) {
-    const sideLength = this.state.sideLength;
-    const paddingTop = (sideLength - height) / 2;
-    // console.log('@calculatePadding', paddingTop)
-    this.setState({
-      paddingTop: paddingTop
-    });
+    
   }
 
   // TODO
@@ -81,11 +58,9 @@ class PawnImage extends Component {
       width,
       height
     } = this.state.dimensions;
-    this.reduceImageSize(width, height);
-    const paddingTop = this.state.paddingTop;
     const src = this.getSprite();
     
-    const baseMarginTop = paddingTop + height - 15;
+    const baseMarginTop = height - 15;
     const baseMarginLeft = Math.max(85 - width - 7, 0);
     const imgEl = <img className={
         `pawnImg ${(this.props.renderBase ? 'pawnSpawn' : (this.props.newProps.onGoingBattle ? (this.props.isBoard ? '' : 'pawnEnter') : 'pawnEnter'))} ` +
@@ -96,7 +71,6 @@ class PawnImage extends Component {
       }
       style={
         {
-          paddingTop: !!paddingTop ? paddingTop : '',
           width: width,
           height: height
         }
@@ -104,7 +78,7 @@ class PawnImage extends Component {
       src={
         src
       }
-      alt='Pokemon'
+      alt='Pawn'
       onLoad={
         this.onImgLoad
       }

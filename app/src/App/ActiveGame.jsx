@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-
-
 import TopBar from './ActiveGame/TopBar.jsx';
 import LeftBar from './ActiveGame/LeftBar.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
@@ -11,6 +9,8 @@ import RightPanel from './ActiveGame/RightPanel.jsx';
 
 import { isUndefined, updateMessage } from '../f';
 import { getSoundEffect } from '../audio.js';
+
+const TIME_FACTOR = 15;
 
 class ActiveGame extends Component {
   constructor (props) {
@@ -117,7 +117,7 @@ class ActiveGame extends Component {
       }
       const nextMove = actionStack.shift(); // actionStack is mutable
       const time = nextMove.time;
-      const nextRenderTime = (time - currentTime) * 15; // magic time factor, fixme
+      const nextRenderTime = (time - currentTime) * TIME_FACTOR; // magic time factor, fixme
       if (isUndefined(board)) {
         console.log('CHECK ME: Board is undefined', board, nextMove, nextRenderTime);
       }

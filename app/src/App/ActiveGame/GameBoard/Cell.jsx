@@ -6,8 +6,6 @@ import { getStatsEvent } from '../../../events'
 import { isUndefined } from '../../../f';
 import { toBoardPosition } from '../../../shared/BoardUtils.js';
 
-import Pawn from './Pawn.jsx';
-
 class Cell extends Component {
   state = {
     ...this.state,
@@ -56,94 +54,6 @@ class Cell extends Component {
     }
   }
 
-  getValue () {
-    // console.log('@Cell.getValue value =', value)
-    // console.log('@Cell.getValue', this.props.map, this.props.map[toBoardPosition(value.x,value.y)])
-    if (this.props.map) {
-      let pokemon;
-      const sideLength = 85;
-      // console.log('@getValue', this.props.isBoard && this.props.newProps.onGoingBattle)
-      if (this.props.isBoard && this.props.newProps.onGoingBattle && this.props.newProps.battleStartBoard) { // Battle
-        // console.log('I WANT TO BE RERENDERED', this.props.newProps.battleStartBoard);
-        pokemon = this.props.newProps.battleStartBoard[this.state.pos];
-        // (Math.min(pokemon.hp, pokemon.maxHp) / Math.max(pokemon.hp, pokemon.maxHp) * 100)
-        if (pokemon) {
-          // (pokemon.hp + pokemon.hp-pokemon.maxHp / Math.max(pokemon.hp, pokemon.maxHp) * 100);
-          const percHp = (Math.min(pokemon.hp, pokemon.maxHp) / pokemon.startHp) * 100; // (pokemon.hp > pokemon.maxHp ? (1 - ((pokemon.hp - pokemon.startHp) / pokemon.startHp)) : (pokemon.hp / pokemon.maxHp)) * 100;// ;
-          const percShield = (pokemon.hp > pokemon.maxHp ? (pokemon.hp - pokemon.maxHp) / pokemon.startHp * 100 : 0); // (pokemon.hp > pokemon.maxHp ? ((pokemon.hp - pokemon.startHp) / pokemon.startHp) * 100 : 0);
-          const shieldMarginLeft = ((percHp / 100.0) * sideLength) - 2; // - 13);
-          const hpBar = <div className='barContainer' style={{ width: sideLength }}>
-            <p className='hpText text_shadow'>
-              {`${pokemon.hp}/${pokemon.startHp}`}
-            </p>
-            <div color={pokemon.team} className={`hpBar ${percShield > 0 ? 'barBorderShield' : 'barBorderNormal'}`} style={{ width: percHp + '%' }} />
-            {(percShield > 0 ? <div className='shieldBar' style={{ width: percShield + '%', marginLeft: shieldMarginLeft + 'px' }} /> : '')}
-          </div>;
-          /*<div className={`hpBar  ${(pokemon.team === 0 ? 'friendlyBar' : 'enemyBar')}`} 
-              style={{width: (pokemon.hp / Math.max(pokemon.hp, pokemon.maxHp) * 100)+'%'}}>*/
-          /*(pokemon.hp > pokemon.maxHp ? <div className={`boostBar text_shadow ${(this.props.isBoard ? 'boostBar' : '')}`} 
-            style={{width: (pokemon.hp-pokemon.maxHp / pokemon.hp1 * 100)+'%'}}/> : '')} 
-          </div> : '')*/
-          const manaBar = <div className={`barDiv ${(pokemon.mana === 0 ? 'hidden' : '')}`} style={{ width: sideLength }}>
-            <p className='manaText text_shadow'>
-              {`${pokemon.mana}/${pokemon.manaCost}`}
-            </p>
-            <div className={`manaBar text_shadow
-                ${(pokemon.mana >= pokemon.manaCost ? 'colorPurple' : '')}`} style={{ width: (pokemon.mana / pokemon.manaCost * 100) + '%' }} />
-          </div>;
-          const actionMessage = (pokemon.actionMessage && pokemon.actionMessage !== '' ?
-            <div className={`text_shadow actionMessage ${(pokemon.actionMessage.split(' ').length > 2 ? 'actionMessagePadding' : '')}`} style={{ position: 'absolute' }}>
-              {pokemon.actionMessage}
-            </div>
-            : '');
-          let styleVar = { position: 'relative' };
-          if (pokemon.animateMove) {
-            styleVar = pokemon.animateMove;
-            // console.log('StyleVar', pokemon.name, styleVar)
-          }
-
-          const back = (this.props.isBoard ? (!isUndefined(pokemon.team) ? pokemon.team === 0 : true) : false);
-          const classList = `absolute ${(pokemon.winningAnimation ? ' winningAnimation' : (pokemon.attackAnimation ? ' ' + pokemon.attackAnimation : ''))} ` +
-            `${(this.props.newProps.onGoingBattle && !this.props.isBoard ? 'pawnEnter' : '')}`;
-          // console.log('@rendereding PawnImage classList', classList)
-
-          return <div className={`relative`} style={styleVar}>
-            <Pawn position={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
-            {hpBar}
-            {manaBar}
-            {actionMessage}
-          </div>
-        }
-      } else {
-        pokemon = this.props.map[this.state.pos];
-        // if(pokemon && pokemon.buff) console.log(pokemon.buff)
-        let buffs = '';
-        if (this.props.isBoard) {
-          let pokemonBuffList = [];
-          if (pokemon && pokemon.buff && pokemon.buff.length > 0) {
-            // console.log('@stuff', pokemonBuffList, pokemon.buff.length)
-            for (let i = 0; i < pokemon.buff.length; i++) {
-              pokemonBuffList.push(<span key={'buff' + pokemon.buff[i]}>{pokemon.buff[i] + '\n'}</span>);
-            }
-          }
-          buffs = (pokemon && pokemon.buff && pokemon.buff.length > 0 ? <div className='text_shadow textList buffText'>Buffed: {pokemonBuffList}</div> : '');
-        }
-
-        if (!isUndefined(pokemon)) {
-          const back = (this.props.isBoard ? (!isUndefined(pokemon.team) ? pokemon.team === 0 : true) : false);
-          
-          return <>
-            <Pawn position={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} newProps={this.props.newProps} isBoard={this.props.isBoard} />
-            {buffs}
-          </>
-        }
-      }
-    }
-    return null;
-  }
-
-  
-
   render () {
     // console.log('@renderCell', this.props.selectedUnit)
     const selPos = this.props.newProps.selectedUnit;
@@ -152,14 +62,12 @@ class Cell extends Component {
       (!isUndefined(selPos) && this.props.isBoard === selPos.isBoard && selPos.displaySell &&
         selPos.x === this.props.value.x && selPos.y === this.props.value.y ? ' markedUnit' : '')
         + ' ' + (this.props.extraClasses);
-    return (
-          <div id={this.state.pos} className={className} onClick={() => this.handleCellClick(this)}
+
+    return <div id={this.state.pos} className={className} onClick={() => this.handleCellClick(this)}
             onMouseOver={(event) => this.handleMouseOver(event, this)}
           >
-            {this.getValue()}
-            
-          </div>
-    );
+          {this.props.children}
+          </div>;
   }
 }
 

@@ -703,7 +703,7 @@ describe('game state', () => {
       // TODO     
     });
   });
-  describe('prepareBattle', () => {
+  describe('executeBattle', () => {
     /**
      * Spawn opponent in reverse board
      * Mark owners of units
@@ -715,7 +715,7 @@ describe('game state', () => {
      * Gets finished battle, similar to battleTime in that sense, middleMan
      * (stateParam, pairing) 
      */
-    it('prepareBattle', async () => {
+    it('executeBattle', async () => {
       // TODO     
     });
   });

@@ -31,14 +31,14 @@ class LeftBar extends Component {
       if(s.evolves_from) {
         evolves_from = <span className='flex'>
           <span className='paddingRight5 marginTop15'>Evolves from: </span>
-          <PawnImage name={s.evolves_from} sideLength={40} newProps={this.props}/>
+          <PawnImage name={s.evolves_from} newProps={this.props}/>
         </span>;
       }
       if(s.evolves_to) {
         if(Array.isArray(s.evolves_to)){
           const evoList = [];
           for(let i = 0; i < s.evolves_to.length; i++){
-            evoList.push(<span key={'evo'+s.evolves_to[i]}><PawnImage name={s.evolves_to[i]} sideLength={40} newProps={this.props}/></span>)
+            evoList.push(<span key={'evo'+s.evolves_to[i]}><PawnImage name={s.evolves_to[i]} newProps={this.props}/></span>)
           }
           evolves_to = <span className='flex'>
             <span className='paddingRight5 marginTop15'>Evols: </span>
@@ -47,14 +47,14 @@ class LeftBar extends Component {
         } else {
           evolves_to = <span className='flex'>
             <span className='paddingRight5 marginTop15'>Evolves to: </span>
-            <PawnImage name={s.evolves_to} sideLength={40} newProps={this.props}/>
+            <PawnImage name={s.evolves_to} newProps={this.props}/>
           </span>
         }
       }
       if(s.snd_evolves_to) {
         snd_evolves_to = <span className='flex'>
           <span className='paddingRight5 marginTop15'>Last Evolve: </span>
-          <PawnImage name={s.snd_evolves_to} sideLength={40} newProps={this.props}/>
+          <PawnImage name={s.snd_evolves_to} newProps={this.props}/>
         </span>
       }
       const boardBuffs = this.props.boardBuffs;
@@ -122,7 +122,7 @@ class LeftBar extends Component {
       <div className='textAlignCenter'>
         <div>{this.props.stats.displayName}</div>
         <div className='infoPanelPokemonLogo'>
-        <PawnImage name={name} sideLength={50} newProps={this.props}/>
+        <PawnImage name={name} newProps={this.props}/>
         </div>
       </div>
       {this.buildStats()}

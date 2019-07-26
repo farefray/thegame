@@ -6,8 +6,6 @@ import { placePieceEvent, canMovePiece } from '../../../events'
 import { toBoardPosition } from '../../../shared/BoardUtils.js';
 
 function movePawn(pawn, x, y) {
-  console.log(pawn);
-  console.log(x, y);
   placePieceEvent(pawn.newProps, pawn.position, toBoardPosition(x, y));
 }
 
@@ -15,7 +13,7 @@ function canMove(pawn, x, y) {
   return canMovePiece(pawn.newProps, pawn.position, toBoardPosition(x, y)); // its not the safest way
 }
 
-export default function BoardSquare ({ key, value, isBoard, map, newProps }) {
+export default function BoardSquare ({ key, value, isBoard, newProps, children }) {
   const [{ isOver, canDrop }, drop] = useDrop({
       accept: ItemTypes.PAWN,
       canDrop: (item) => canMove(item, value.x, value.y),
@@ -34,6 +32,8 @@ export default function BoardSquare ({ key, value, isBoard, map, newProps }) {
   }
 
   return <div ref={drop}>
-    <Cell key={key} value={value} isBoard={isBoard} map={map} newProps={newProps} extraClasses={extraClasses}/>
+    <Cell key={key} value={value} isBoard={isBoard} newProps={newProps} extraClasses={extraClasses}>
+      {children}
+    </Cell>
   </div>
 }

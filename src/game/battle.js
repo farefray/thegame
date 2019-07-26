@@ -426,7 +426,7 @@ BattleJS.fixTooManyUnits = async (state, playerIndex) => {
  * Mark owners of units
  * Start battle
  */
-BattleJS.prepareBattle = async (board1, board2) => {
+BattleJS.executeBattle = async (board1, board2) => {
   // Check to see if a battle is required
   // Lose when empty, even if enemy no units aswell (tie with no damage taken)
   const board = await BoardJS.combineBoards(board1, board2);
@@ -440,13 +440,13 @@ BattleJS.prepareBattle = async (board1, board2) => {
     });
   }
 
-  // f.print(board, '@prepareBattle')
+  // f.print(board, '@executeBattle')
   // Both players have units, battle required
   const boardWithBonuses = (await BoardJS.markBoardBonuses(board)).get('newBoard');
   // f.print(boardWithBonuses);
   const boardWithMovement = await _setRandomFirstMove(boardWithBonuses);
   if (f.isUndefined(boardWithMovement)) {
-    console.log('@prepareBattle UNDEFINED BOARD', board1, board2);
+    console.log('@executeBattle UNDEFINED BOARD', board1, board2);
   }
   const result = await _startBattle(boardWithMovement);
   return result.set('startBoard', boardWithMovement);
@@ -462,7 +462,7 @@ BattleJS.npcRound = async (stateParam, npcBoard) => {
     const currentPlayer = tempPlayer.value;
     const board1 = state.getIn(['players', currentPlayer, 'board']);
     // {actionStack: actionStack, board: newBoard, winner: winningTeam, startBoard: initialBoard}
-    const resultBattle = await BattleJS.prepareBattle(board1, npcBoard);
+    const resultBattle = await BattleJS.executeBattle(board1, npcBoard);
 
     const actionStack = resultBattle.get('actionStack');
     const startBoard = resultBattle.get('startBoard');
@@ -540,7 +540,7 @@ BattleJS.battleTime = async (stateParam) => {
     const board2 = state.getIn(['players', enemy, 'board']);
     if (f.isUndefined(board2)) console.log('Undefined board', enemy);
     // {actionStack: actionStack, board: newBoard, winner: winningTeam, startBoard: initialBoard}
-    const resultBattle = await BattleJS.prepareBattle(board1, board2);
+    const resultBattle = await BattleJS.executeBattle(board1, board2);
 
     // For visualization of battle
     const actionStack = resultBattle.get('actionStack');
