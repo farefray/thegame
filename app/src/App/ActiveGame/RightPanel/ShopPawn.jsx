@@ -35,7 +35,7 @@ class ShopPawn extends Component{
           {(this.props.ShopPawn.reqEvolve ? <div className='pokemonBaby'>
             <img className='babyImg' src={getImage('baby')} alt={'baby' + this.props.ShopPawn.name}/>
           </div> : '')}
-          <PawnImage name={this.props.ShopPawn.name} sideLength={85} renderBase={costColorClass} newProps={this.props.newProps}/>
+          <PawnImage direction="3" idle="true" name={this.props.ShopPawn.name} sideLength={85} renderBase={costColorClass} newProps={this.props.newProps}/>
         </div>
         <div className='pokemonShopText'>
           <span className={costColorTextClass}>{this.props.ShopPawn.displayName + '\n'}</span>
@@ -57,7 +57,7 @@ class ShopPawn extends Component{
       content = <div className={`pokemonShopEmpty text_shadow`}>Empty</div>;
     }
     return (
-      <div className={`pokemonShopEntity ${(this.props.className ? this.props.className : '')}`} onClick={() => buyUnitEvent(this.props, this.props.index)}>
+      <div className={`shop-entity rpgui-container framed-golden ${(this.props.className ? this.props.className : '')}`} onClick={() => buyUnitEvent(this.props, this.props.index)}>
         {content}
       </div>
     );

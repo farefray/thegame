@@ -34,64 +34,8 @@ async function loadImmutableMonstersJSON() {
   return fromJS(monstersJSON);
 }
 
-// Should be moved to another file TODO
-// make Promise version of fs.readdir()
-const monstersDIR = 'app/src/shared/monsters/';
-fs.readdirAsync = function (dirname) {
-  return new Promise((resolve, reject) => {
-    fs.readdir(dirname, (err, filenames) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(filenames);
-      }
-    });
-  });
-};
-
-// make Promise version of fs.readFile()
-fs.readFileAsync = (filename, enc) => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filename, enc, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
-};
-
-
-// read all json files in the directory, filter out those needed to process, and using Promise.all to time when all async readFiles has completed. 
-function loadMonsterImages() {
-  return new Promise((resolve) => {
-    fs.readdirAsync(monstersDIR).then((filenames) => {
-      return Promise.all(filenames.map((filename) => {
-        return fs.readFileAsync(monstersDIR + filename, 'utf8');
-      }));
-    }).then((files) => {
-      const summary = {};
-      files.forEach((file) => {
-        const json_file = JSON.parse(file);
-        const monsterName = json_file.name.toLowerCase();
-        delete json_file.name;
-        summary[monsterName] = json_file;
-      });
-
-      return resolve(summary);
-    });
-  });
-}
-
-async function loadSpritesJSON() {
-  const sprites = await loadMonsterImages();
-  return fromJS(sprites);
-}
 
 const monstersMap = loadImmutableMonstersJSON();
-const monsterSprites = loadSpritesJSON();
-
 exports.getStats = async (name) => {
   const mobsMap = await monstersMap;
   // console.log('getStats', name);//, pokeMap.get(name.toLowerCase()));
@@ -130,6 +74,5 @@ exports.getUnitTier = name => getUnitTierLocal(name);
 
 exports.getMonsterMap = async () => monstersMap;
 
-exports.getMonsterSprites = async () => monsterSprites;
 
 exports.getStatsDefault = stat => defaultStat.get(stat);

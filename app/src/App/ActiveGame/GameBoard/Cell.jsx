@@ -101,12 +101,14 @@ class Cell extends Component {
             styleVar = pokemon.animateMove;
             // console.log('StyleVar', pokemon.name, styleVar)
           }
+
           const back = (this.props.isBoard ? (!isUndefined(pokemon.team) ? pokemon.team === 0 : true) : false);
           const classList = `absolute ${(pokemon.winningAnimation ? ' winningAnimation' : (pokemon.attackAnimation ? ' ' + pokemon.attackAnimation : ''))} ` +
             `${(this.props.newProps.onGoingBattle && !this.props.isBoard ? 'pawnEnter' : '')}`;
           // console.log('@rendereding PawnImage classList', classList)
+
           return <div className={`relative`} style={styleVar}>
-            <Pawn position={this.state.pos} name={pokemon.name} back={back} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+            <Pawn position={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
             {hpBar}
             {manaBar}
             {actionMessage}
@@ -131,7 +133,7 @@ class Cell extends Component {
           const back = (this.props.isBoard ? (!isUndefined(pokemon.team) ? pokemon.team === 0 : true) : false);
           
           return <>
-            <Pawn position={this.state.pos} name={pokemon.name} back={back} sideLength={sideLength} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+            <Pawn position={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} newProps={this.props.newProps} isBoard={this.props.isBoard} />
             {buffs}
           </>
         }

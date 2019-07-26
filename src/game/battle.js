@@ -682,8 +682,11 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     if (f.isUndefined(ability)) {
       console.log(`${unit.get('name')} buggy ability`);
     }
-    const range = (!f.isUndefined(ability.get('acc_range')) && !f.isUndefined(ability.get('acc_range').size)
-      ? ability.get('acc_range').get(1) : abilitiesJS.getAbilityDefault('range'));
+    let range = 1;
+    if (ability) {
+      range = (!f.isUndefined(ability.get('acc_range')) && !f.isUndefined(ability.get('acc_range').size)
+        ? ability.get('acc_range').get(1) : abilitiesJS.getAbilityDefault('range'));
+    }
     const enemyPos = UnitJS.getClosestEnemy(board, unitPos, range, team);
     const action = 'spell';
     const target = await enemyPos.get('closestEnemy');

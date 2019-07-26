@@ -5,16 +5,6 @@ import { updatePlayerName } from './socket';
 
 const devMode = true;
 
-let counter = 0;
-
-const increaseCounter = (soundEffects) => {
-  if(counter + 1 === soundEffects.length) {
-    counter = 0;
-  } else {
-    counter += 1;
-  }
-}
-
 const updateSoundArray = (array, pos, newSound) => {
   return array.map((item, index) => {
     if (index !== pos) {
@@ -133,11 +123,9 @@ const reducer = (
     isSelectModeShop: false,
     boardBuffs: {},
     deadPlayers: [],
-    monsterSprites: {},
     unitJson: {},
     loadedUnitJson: false,
     alternateAnimation: true,
-    loaded: false,
     visiting: -1,
     actionStacks: {},
     battleStartBoards: {},
@@ -159,14 +147,8 @@ const reducer = (
   }
   switch (action.type) { // Listens to events dispatched from from socket.js
     case 'LOAD_UNIT_JSON': {
-      console.log('Loaded sprites!');
+      console.log('Loaded units!');
       state = {...state, unitJson: action.json, loadedUnitJson: true}
-      break;
-    }
-    case 'LOAD_SPRITES_JSON': {
-      console.log('Loaded sprites!');
-      state = {...state, monsterSprites: action.monsterSprites, loaded: true}
-      console.log('SPRITES:', state.monsterSprites);
       break;
     }
     case 'NEW_STATE':
@@ -568,7 +550,7 @@ const reducer = (
       break;
     }
     case 'LOADING_STRING': {
-      if(!(state.connected && state.loaded)) {
+      if(!(state.connected)) {
         state = {...state, loadingCounter: action.loadingCounter}
       }
       break;

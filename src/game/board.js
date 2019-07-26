@@ -317,7 +317,7 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
     .set('specialDefense', unitStats.get('specialDefense'))
     .set('position', unitPos)
     .set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
-    .set('manaCost', ability.get('mana') || abilitiesJS.getDefault('mana'));
+    .set('manaCost', (ability && ability.get('mana')) || abilitiesJS.getDefault('mana'));
 };
 
 /**

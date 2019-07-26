@@ -1,0 +1,414 @@
+0 - Void
+1 - <Nothing>
+2 - Orc warlord
+3 - Warwolf
+4 - Orc rider
+5 - Orc 
+6 - Orc shaman
+7 - Orc warrior
+8 - Orc berserker
+9 - Necromancer
+10 - Yellow butterfly
+11 - Massive water elemental
+12 - Archdemon
+13 - Black sheep
+14 - Sheep
+15 - Troll
+16 - Bear
+17 - Beholder
+18 - Ghoul
+19 - Slime
+20 - Quara predator
+21 - Rat
+22 - Cyclops
+23 - Minotaur mage
+24 - Minotaur archer
+25 - Minutaur
+26 - Rotworm
+27 - Wolf
+28 - Snake
+29 - Minotaur guard
+30 - Spider
+31 - Deer
+32 - Dog
+33 - Skeleton
+34 - Dragon
+35 - Demon
+36 - Poison spider
+37 - Demon skeleton
+38 - Giant spider
+39 - Dragon lord
+40 - Fire devil
+41 - Lion
+42 - Polar bear
+43 - Scorpion
+44 - Wasp
+45 - Bug
+46 - Quara constrictor
+47 - Quara hydromancer
+48 - Ghost
+49 - Fire elemental
+50 - Orc spearman
+51 - Green Djinn
+52 - Winter wolf
+53 - Frost troll
+54 - Witch
+55 - behemoth
+56 - Cave rat
+57 - Monk
+58 - Priestess
+59 - Orc leader
+60 - Pig
+61 - Goblin
+62 - Elf
+63 - Elf arcarnist
+64 - Elf Scout
+65 - Mummy
+66 - Dwarf geomancer
+67 - Stone golem
+68 - Vampire
+69 - Dwarf
+70 - Dwarf guard
+71 - Dwarf soldier
+72 - Quara mantassin
+73 - Hero
+74 - Rabbit
+75 - Game master
+76 - Swamp troll
+77 - Quara pincher
+78 - Banshee
+79 - Ancient scarab
+80 - Blue djinn
+81 - Cobra
+82 - Larva
+83 - Scarab
+84 - Ormuc
+85 - Morguthis
+86 - thalas
+87 - Dipthrah
+88 - Arkothep
+89 - Mahrdis
+90 - Vashresamun
+91 - Ashmunrah
+92 - Mimic
+93 - Pirate marauder
+94 - Hyaena
+95 - Gargoyle
+96 - Pirate cutthroat
+97 - Pirate buccaneer
+98 - Pirate corsair
+99 - Lich
+100 - Crypt shambler
+101 - Bone beast
+102 - Death slicer
+103 - Efreet
+104 - Marid
+105 - Badger
+106 - Skunk
+107 - Demon
+108 - Elder beholder
+109 - Gazer
+110 - Yeti
+111 - Chicken
+112 - Crab
+113 - Lizard templar
+114 - Lizard Sentinel
+115 - Lizard Snakecharmer
+116 - Kongra
+117 - Merlkin
+118 - Sibang
+119 - Crocodile
+120 - Carnaphila
+121 - Hydra
+122 - Bat
+123 - Panda
+124 - Centipede
+125 - tiger
+126 - Old Woman
+127 - Old man
+128 - Male citizen
+129 - Male hunter
+130 - Male mage
+131 - Male knight
+132 - Male nobleman
+133 - Male summoner
+134 - Male warrior
+135 - <Nothing>
+136 - Female citizen
+137 - Female hunter
+138 - Female mage
+139 - Female Knight
+140 - Female noblewoman
+141 - Female summoner
+142 - Female warrior
+143 - Male barbarian
+144 - Male druid
+145 - Male wizard
+146 - Male oriental
+147 - Female barbarian
+148 - Female druid
+149 - Female wizard
+150 - Female oriental
+151 - Male pirate
+152 - Male assassin
+153 - Male begger
+154 - Male shaman
+155 - Female pirate
+156 - Female assassin
+157 - Female begger
+158 - Female shaman
+159 - Elf (Colour Changable)
+160 - Dwarf (Colour Changable)
+161 - <Nothing>
+162 - <Nothing>
+163 - <Nothing>
+164 - <Nothing>
+165 - <Nothing>
+166 - <Nothing>
+167 - <Nothing>
+168 - <Nothing>
+169 - <Nothing>
+170 - <Nothing>
+171 - <Nothing>
+172 - <Nothing>
+173 - <Nothing>
+174 - <Nothing>
+175 - <Nothing>
+176 - <Nothing>
+177 - <Nothing>
+178 - <Nothing>
+179 - <Nothing>
+180 - <Nothing>
+181 - <Nothing>
+182 - <Nothing>
+183 - <Nothing>
+184 - <Nothing>
+185 - <Nothing>
+186 - <Nothing>
+187 - <Nothing>
+188 - <Nothing>
+189 - <Nothing>
+190 - <Nothing>
+191 - <Nothing>
+192 - Carrion worm
+193 - Enlighted of the cult
+194 - Adept of the cult
+195 - Pirate skeleton
+196 - Pirate ghost
+197 - Tortoise
+198 - Thornback tortoise
+199 - Mammoth
+200 - Blood crab
+201 - Demon
+202 - Minotaur guard
+203 - Elf arcanist
+204 - Dragon lord
+205 - Stone golem
+206 - Monk
+207 - Minotaur guard
+208 - giant spider
+209 - Necromancer
+210 - Elder beholder
+211 - Elephant
+212 - Flamingo
+213 - Purple butterfly
+214 - Dworc voodoomaster
+215 - Dworc fleshhunter
+216 - Dworc venomsniper
+217 - Parrot
+218 - Terror bird
+219 - Tarantula
+220 - Serpent spawn
+221 - Spit nettle
+222 - Toad
+223 - Seagull
+224 - Green frog
+225 - Monk
+226 - Frog
+227 - Blue butterfly
+228 - Red butterfly
+229 - Ferumbras
+230 - Hand of cursed fate
+231 - Undead dragon
+232 - Lost soul
+233 - Betrayed wraith
+234 - Dark torturer
+235 - Spectre
+236 - Destroyer
+237 - Diabolic imp
+238 - Defiler
+239 - Wyvern
+240 - Hellhound
+241 - Phantasm
+242 - Blistering fire elemental
+243 - Hellfire fighter
+244 - Juggernaut
+245 - Nightmare
+246 - Blightwalker
+247 - Plaguesmith
+248 - Frost dragon
+249 - Chakoya tribewarden
+250 - Penguin
+251 - Male norseman
+252 - Female norsewoman
+253 - Barbarian headsplitter
+254 - Barbarian skullhunter
+255 - Barbarian bloodwalker
+256 - Braindeath
+257 - Frost giant
+258 - Husky
+259 - Chakoya toolshaper
+260 - Chakoya windcaller
+261 - Ice golem
+262 - Silver rabbit
+263 - Crystal spider
+264 - Barbarian brutetamer
+265 - Frost giantess
+266 - Comunity manager
+267 - Swimming
+268 - Male nightmare knight
+269 - Female nightmare knight
+270 - Female jester
+271 - Dragon hatchling
+272 - Dragon lord hatchling
+273 - Male jester
+274 - Squirrel
+275 - Sea serpent
+276 - Cat
+277 - Cyclops smith
+278 - Male brotherhood of bones
+279 - Female brotherhood of bones
+280 - Cyclops drone
+281 - Troll champion
+282 - Island troll
+283 - Frost dragon hatchling
+284 - Cockroach
+285 - Massive earth elemental
+286 - Water elemental
+287 - Vampire overlord
+288 - Female demonhunter
+289 - Male demonhunter
+290 - Massive energy elemental
+291 - Wyrm
+292 - Animated pumpkin
+293 - Energy element
+294 - Wisp
+295 - Rotworm queen
+296 - Goblin assassin
+297 - Goblin scavanger
+298 - Skeleton warrior
+299 - Bog raider
+300 - Grim reaper
+301 - Earth element
+302 - God
+303 - Undead tortoise?
+304 - Worker golem
+305 - Mutated rat
+306 - Undead gladiator
+307 - Mutaded bat
+308 - Werewolf
+309 - Yalaharian
+310 - Haunted treeling
+311 - Zombie
+312 - Vampire bride
+313 - Gozzler
+314 - Acid blob
+315 - Death blob
+316 - Mercury blob
+317 - Young sea serpent
+318 - Mutated tiger
+319 - Haunted spirit
+320 - Nightstalker
+321 - Nightmare scion
+322 - Hellspawn
+323 - Mutaded human
+324 - Female yalaharian
+325 - Male yalaharian
+326 - War golem
+327 - ?
+328 - Married (Male)
+329 - Married (Female)
+330 - Medusa
+332 - King Tibianus
+331 - Queen Eloise
+333 - small Golem
+334 - Draken Warmaste
+335 - Male Warmaster
+336 - Female Warmaster
+337 - Lizard High Guard
+338 - Lizard Legionnaire
+339 - Lizard Dragon Priest
+340 - Draken Spellweaver
+341 - Gnarlhound
+342 - Orc Marauder
+343 - Lizard Zaogun
+344 - Lizard Chosen
+345 - ?  (Eternal Guardian)
+346 - Terramite
+347 - Wailing Widow
+348 - Lancer Beetle
+349 - Insect Swarm
+350 - Sandcrawler
+351 - Ghastly Dragon
+352 - Brimstone Bug
+353 - Finger Killer
+354 - Triple Medusa
+355 - Souleater
+356 - Snake God Essence
+357 - Draken Abomination
+358 - Killer Caiman
+359 - Abomination Fury
+360 - Phantom Lord
+361 - Purple Turtle
+362 - Draken Elite
+363 - Butterfly Demon
+364 - Lizard Abomination
+365 - Living Plant        
+366 - Female Wayfarer
+367 - Male Wayfarer
+368 - Widow mount
+369 - Racing Bird mount
+370 - War Bear Mount
+371 - Black sheep mount
+372 - Midnight Panther mount
+373 - Draptor mount
+374 - Titanica mount
+375 - Tin Lizzard mount
+376 - Blazerbringer mount
+377 - Rapid Boar mount
+378 - Stampor mount
+379 - Undead bear mount
+380 - Rapid Boar
+381 - Stampor
+382 - Draptor
+383 - Titanica
+384 - Undead bear
+385 - Midnight Panther
+386 - New GM outfit
+387 - Donkey (mount)
+388 - Slug (mount)
+389 - Uniwheel (mount)
+390 - Crystal Wolf (mount)
+391 - Crystal Wolf
+392 - War Horse (brown, mount)
+393 - War Horse (brown, wild)
+394 - Mad Mage
+395 - Iron Servant
+396 - Golden Servant
+397 - Diamond Servant
+398 - Sandstone Scorpion
+399 - Donkey (wild)
+400 - White Deer
+401 - White Deer (mount)
+402 - Panda (mount)
+403 - Insectoid Scout
+404 - Dromedary
+405 - Dromedary (mount)
+406 - Sandstone Scorpion (mount)
+407 - Slug
+408 - Yielothax
+409 - Shaburak Lord
+410 - Askarak Lord
+411 - N/A
+412 - Bog Frog
+413 - Deepling Scout

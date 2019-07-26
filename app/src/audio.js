@@ -21,11 +21,8 @@ import horn from './assets/SoundEffects/horn.mp3';
 import heGone from './assets/SoundEffects/heGone.mp3';
 import Tick from './assets/SoundEffects/Tick.mp3';
 
-import minotaur from './assets/monsterssounds/monster.wav'
-
 
 const array = [
-  ['minotaur', minotaur] 
 ];
 
 const map = new Map(array);

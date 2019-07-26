@@ -39,7 +39,7 @@ class StartScreen extends Component {
   }
 
   render () {
-    const loadingProgress = 100 / 3 * (this.props.connected + this.props.loaded + (this.props.playersReady !== -1)) + 1;
+    const loadingProgress = 100 / 2 * (this.props.connected + (this.props.playersReady !== -1)) + 1;
 
     const isLoaded = (loadingProgress >= 100);
 

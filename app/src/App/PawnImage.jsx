@@ -2,14 +2,24 @@ import React, {
   Component
 } from 'react';
 
+// todo
+function encodeData(data) {
+  return Object.keys(data).map(function(key) {
+      return [key, data[key]].map(encodeURIComponent).join("=");
+  }).join("&");
+}
+
+const imageBackends = {
+  animated: 'http://18.200.195.197/phpsprites/animoutfit.php?',
+  idle: 'http://18.200.195.197/phpsprites/outfit.php?'
+}
+
 class PawnImage extends Component {
 
   constructor (props) {
     super(props);
     this.state = {
       dimensions: {},
-      paddingTop: '0px',
-      sideLength: this.props.sideLength
     };
     this.onImgLoad = this.onImgLoad.bind(this);
     this.reduceImageSize = this.reduceImageSize.bind(this);
@@ -55,6 +65,15 @@ class PawnImage extends Component {
     });
   }
 
+  // TODO
+  getSprite() {
+    const params = encodeData({
+      id: 69,
+      direction: this.props.direction
+    });
+
+    return (this.props.idle ? imageBackends.idle : imageBackends.animated) + params;
+  }
   render () {
     // Import result is the URL of your image
     // TODO: Store gifs locally so calculation is not required everytime
@@ -64,20 +83,11 @@ class PawnImage extends Component {
     } = this.state.dimensions;
     this.reduceImageSize(width, height);
     const paddingTop = this.state.paddingTop;
-    let src;
-    if (this.props.newProps.monsterSprites) {
-      if (!this.props.newProps.monsterSprites[this.props.name]) {
-        console.log(this.props.newProps.monsterSprites);
-        console.log('Undefined image', this.props.name, this.props.newProps.monsterSprites[this.props.name]);
-      }
-
-      const monsterImages = this.props.newProps.monsterSprites[this.props.name];
-      src = this.props.back ? monsterImages.move_n : monsterImages.move_s;
-    }
+    const src = this.getSprite();
+    
     const baseMarginTop = paddingTop + height - 15;
     const baseMarginLeft = Math.max(85 - width - 7, 0);
-    const imgEl = < img
-      className={
+    const imgEl = <img className={
         `pawnImg ${(this.props.renderBase ? 'pawnSpawn' : (this.props.newProps.onGoingBattle ? (this.props.isBoard ? '' : 'pawnEnter') : 'pawnEnter'))} ` +
         `${this.props.name} ${(this.props.classList ? this.props.classList : '')}`
       }
@@ -86,7 +96,7 @@ class PawnImage extends Component {
       }
       style={
         {
-          paddingTop: paddingTop,
+          paddingTop: !!paddingTop ? paddingTop : '',
           width: width,
           height: height
         }
@@ -99,7 +109,7 @@ class PawnImage extends Component {
         this.onImgLoad
       }
     />
-    return (<div> {(this.props.renderBase ? <div key={this.props.renderBase} className={`PawnImageBase ${this.props.renderBase}`} style={{
+    return (<div> {(this.props.renderBase ? <div key={this.props.renderBase} className={`${this.props.renderBase}`} style={{
       marginTop: (Number.isNaN(baseMarginTop) ? '' : baseMarginTop),
       marginLeft: (Number.isNaN(baseMarginLeft) ? '' : baseMarginLeft),
       width: (typeof width === 'number' ? width * 1.5 : '')

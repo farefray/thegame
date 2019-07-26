@@ -123,19 +123,15 @@ body {
   line-height: 25px;
 }
 
-.pokemonShopEntity {
+.shop-entity {
   margin: 6px;
   padding-bottom: 5px;
-  width: 140px;
-  height: 180px;
-  /*
-  border: 2px solid black;
-  */
-  background-color: rgb(46, 40, 40);
-  border-radius: 50px;
+  width: 128px;
+  height: 128px;
   z-index: 1;
-  /*background: url(https://i.pinimg.com/originals/7c/0f/eb/7c0feb742c99ac92d76360a0e0ee3d3b.png) no-repeat;
-  background-size: 120px 180px;*/
+  position: relative;
+
+  
 }
 
 .redFont {
@@ -156,16 +152,6 @@ body {
   border-radius: 50px;
   border: 1px black solid; 
   */
-}
-
-.PawnImageBase {
-  margin-top: 50px;
-  margin-left: 38px;
-  height: 25px;
-  width: 60px;
-  border-radius: 50%;
-  position: absolute;
-  z-index: 2;
 }
 
 .pawnInfo {
