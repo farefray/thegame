@@ -15,7 +15,9 @@ const TIME_FACTOR = 15;
 class ActiveGame extends Component {
   constructor (props) {
     super(props);
-    this.state = {};
+    this.state = {
+      activeBattle: false
+    };
   }
 
   wait = async (ms) => {
@@ -302,8 +304,11 @@ class ActiveGame extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    console.log('will receive');console.log(prevProps);
-    if (this.props.startBattle === true && !prevProps.startBattle) {
+    console.log('will receive');
+    console.log(this.props.startBattle);
+    console.log(this.state.activeBattle);
+    if (this.props.startBattle === true && !this.state.activeBattle) {
+      this.setState({...this.state, activeBattle: true})
       this.startBattleEvent();
     }
   }

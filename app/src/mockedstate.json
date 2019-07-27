@@ -77,7 +77,7 @@
                 "unitPos": 0
             },
             "target": "0,2",
-            "time": 3800,
+            "time": 500,
             "typeEffective": "",
             "unitPos": "0,1",
             "value": 1

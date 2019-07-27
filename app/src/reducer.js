@@ -401,7 +401,7 @@ const reducer = (
     case 'SET_MOUSEOVER_ID':
       state = {...state, mouseOverId: action.mouseOverId}
       break;
-    case 'SET_ONGOING_BATTLE': {
+    case 'SET_ONGOING_BATTLE': { // not used, so check
       state = {...state, onGoingBattle: action.value}
       break;
     }
