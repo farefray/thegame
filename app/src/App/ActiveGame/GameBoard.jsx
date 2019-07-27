@@ -11,7 +11,9 @@ class GameBoard extends Component {
     this.state = {};
   }
 
-  componentDidMount() { };
+  componentDidMount() {
+    debugger;
+  };
 
   createEmptyArray(height, width) {
     let data = [];
