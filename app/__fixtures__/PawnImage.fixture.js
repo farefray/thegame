@@ -6,11 +6,28 @@ export default {
     position: '1,1',
     name: 'dwarf',
     direction: 1,
-    idle: true,
+    idle: false,
     classList: '',
     isBoard: true,
     newProps: {
-      onGoingBattle: true
+      onGoingBattle: true,
+      unitJson: {
+        "dwarf": {
+          "name": "dwarf",
+          "displayName": "Dwarf",
+          "looktype": 69,
+          "cost": 1,
+          "hp": 650,
+          "attack": 10,
+          "defense": 155,
+          "speed": 80,
+          "type": "normal",
+          "ability": "splash",
+          "evolves_to": null,
+          "specialAttack": 0,
+          "specialDefense": 0
+        }
+      }
     }
   }
 };

@@ -50,7 +50,7 @@ class Cell extends Component {
         : el.parentElement.id) : el.id);
     if (self.props.newProps.mouseOverId !== id) {
       // console.log('Mousing Over:', id);
-      self.props.newProps.dispatch({ type: 'SET_MOUSEOVER_ID', mouseOverId: id })
+      // self.props.newProps.dispatch({ type: 'SET_MOUSEOVER_ID', mouseOverId: id })
     }
   }
 

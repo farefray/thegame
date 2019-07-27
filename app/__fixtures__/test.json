@@ -1,0 +1,27 @@
+{
+            "action": "attack",
+            "direction": "S",
+            "manaChanges": {
+                "0,3": 18,
+                "0,2": 18
+            },
+            "target": "0,3",
+            "time": 3200,
+            "typeEffective": "",
+            "unitPos": "0,2",
+            "value": 1
+        },
+        {
+            "action": "spell",
+            "abilityName": "Splash",
+            "direction": "S",
+            "effect": {},
+            "manaChanges": {
+                "unitPos": 0
+            },
+            "target": "2,3",
+            "time": 3500,
+            "typeEffective": "",
+            "unitPos": "0,2",
+            "value": 1
+        },

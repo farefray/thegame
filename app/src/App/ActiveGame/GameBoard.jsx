@@ -6,14 +6,14 @@ import { toBoardPosition } from '../../shared/BoardUtils.js';
 import Pawn from './GameBoard/Pawn.jsx';
 
 class GameBoard extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {};
   }
 
-  componentDidMount () { };
+  componentDidMount() { };
 
-  createEmptyArray (height, width) {
+  createEmptyArray(height, width) {
     let data = [];
     for (let i = 0; i < height; i++) {
       data[i] = [];
@@ -28,7 +28,7 @@ class GameBoard extends Component {
     return data;
   }
 
-  render () {
+  render() {
     const boardData = {
       data: this.createEmptyArray(9, 8),
       map: this.props.myBoard,
@@ -37,29 +37,34 @@ class GameBoard extends Component {
     }
 
     let counter = 0;
-    return boardData.data.map((datarow) => {
-      return <DndProvider backend={HTML5Backend}>
-        <div className='board-column' key={counter++}>{
-          datarow.map((dataitem) => {
-            let key = dataitem.x * datarow.length + dataitem.y;
-            const isBoard = dataitem.y !== 0;
-            // Picking map, its hand, board or battleBoard
-            const boardMap = isBoard && this.props.onGoingBattle
-              ? this.props.battleStartBoard : (isBoard ? boardData.map : boardData.myHand);
-            const cellPos = toBoardPosition(dataitem.x, dataitem.y);
-            const creature = boardMap[cellPos]
-            return (
-              <BoardSquare key={key} value={dataitem} isBoard={isBoard} newProps={this.props}>
-                {
-                  creature && <Pawn position={cellPos} idle={true} name={creature.name} direction={isBoard ? 3 : 1} newProps={this.props}/>
-                  // todo pawnstats here
-                }
-              </BoardSquare>
-            );
-          })}
-        </div>
-      </DndProvider>
-    });
+    return <div className='board-container rpgui-container framed'>
+      <div className='flex center board'>
+      {boardData.data.map((datarow) => {
+        return <DndProvider key={counter} backend={HTML5Backend}>
+          <div className='board-column' key={counter++}>{
+            datarow.map((dataitem) => {
+              const isBoard = dataitem.y !== 0;
+              // Picking map, its hand, board or battleBoard
+              const boardMap = isBoard && this.props.onGoingBattle
+                ? this.props.battleStartBoard : (isBoard ? boardData.map : boardData.myHand);
+              const cellPos = toBoardPosition(dataitem.x, dataitem.y);
+              const creature = boardMap[cellPos];
+              return (
+                <React.Fragment key={cellPos}>
+                <BoardSquare value={dataitem} isBoard={isBoard} newProps={this.props}>
+                  {
+                    !!creature && <Pawn position={cellPos} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} newProps={this.props} />
+                    // todo pawnstats here
+                  }
+                </BoardSquare>
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </DndProvider>
+      })}
+    </div>
+    </div>
   }
 }
 

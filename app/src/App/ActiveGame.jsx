@@ -111,6 +111,7 @@ class ActiveGame extends Component {
     console.log('Starting Battle with', actionStack.length, 'moves');
     // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
     let counter = 0;
+    debugger
     while (actionStack.length > 0) {
       if (currentRound < this.props.round) {
         return;
@@ -293,17 +294,18 @@ class ActiveGame extends Component {
         console.log('error action = ', action, nextMove);
         return board;
     }
-  }
-
-  handleVolumeChange = (e) => {
-    const newVolume = e.target.value / 100; // this.audioElement.length * 
-    // console.log('@handleVolumechange', e.target.value)
-    this.props.dispatch({ type: 'CHANGE_VOLUME', newVolume })
-  }
+  }  
 
   visitPlayer = (playerIndex) => {
     console.log('Visiting Player', playerIndex, '...')
     this.props.dispatch({ type: 'SPEC_PLAYER', playerIndex })
+  }
+
+  componentDidUpdate = (prevProps) => {
+    console.log('will receive');console.log(prevProps);
+    if (this.props.startBattle === true && !prevProps.startBattle) {
+      this.startBattleEvent();
+    }
   }
 
   render () {
@@ -311,15 +313,10 @@ class ActiveGame extends Component {
       <TopBar {...this.props} />
       <div className='flex wholeBody'>
         <LeftBar {...this.props} />
-        <div className='board-container rpgui-container framed'>
-          <div className='flex center board'>
-            <GameBoard {...this.props} />
-          </div>
-        </div>
+        <GameBoard {...this.props} />
         <GameBoardBottom {...this.props} />
         <RightPanel {...this.props} />
       </div>
-      <input className='hidden' type='checkbox' checked={this.props.startBattle} onChange={(this.props.startBattle ? this.startBattleEvent.bind(this)() : () => '')} />
     </div>);
   }
 }

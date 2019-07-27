@@ -1,7 +1,7 @@
 {
   "name": "app",
   "version": "0.1.0",
-  "private": true,  
+  "private": true,
   "scripts": {
     "start": "react-scripts start",
     "startboth": "concurrently \"react-scripts start\" \"node ../src/index.js\"",
@@ -20,12 +20,14 @@
     "react": "^16.7.0",
     "react-addons-css-transition-group": "^15.6.2",
     "react-beautiful-dnd": "^11.0.5",
+    "react-cosmos-redux-proxy": "^4.8.2",
     "react-dnd": "^9.3.2",
     "react-dnd-html5-backend": "^9.3.2",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",
     "react-scripts": "2.1.3",
     "redux": "^4.0.1",
+    "redux-devtools-extension": "^2.13.8",
     "socket.io-client": "^2.2.0"
   },
   "eslintConfig": {

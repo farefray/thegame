@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getImage, getGymImage, getTypeImg } from '../../images.js';
+import { getImage, getGymImage } from '../../images.js';
 
 class TopBar extends Component {
   constructor (props) {

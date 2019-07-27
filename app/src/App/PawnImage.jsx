@@ -27,7 +27,7 @@ class PawnImage extends Component {
   onImgLoad ({
     target: img
   }) {
-    console.log('@onImgLoad - ', img.offsetHeight, 'vs', img.naturalHeight, ', ', img.offsetWidth, 'vs', img.naturalWidth);
+    // console.log('@onImgLoad - ', img.offsetHeight, 'vs', img.naturalHeight, ', ', img.offsetWidth, 'vs', img.naturalWidth);
     this.setState({
       dimensions: {
         height: img.naturalHeight,
@@ -44,8 +44,11 @@ class PawnImage extends Component {
 
   // TODO
   getSprite() {
+    const lookType = this.props.newProps.unitJson && this.props.newProps.unitJson[this.props.name] ?
+    this.props.newProps.unitJson[this.props.name].looktype : 1;
+
     const params = encodeData({
-      id: this.props.newProps.unitJson[this.props.name].looktype,
+      id: lookType,
       direction: this.props.direction
     });
 
@@ -60,33 +63,18 @@ class PawnImage extends Component {
     } = this.state.dimensions;
     const src = this.getSprite();
     
-    const baseMarginTop = height - 15;
-    const baseMarginLeft = Math.max(85 - width - 7, 0);
     const imgEl = <img className={
         `pawnImg ${(this.props.renderBase ? 'pawnSpawn' : (this.props.newProps.onGoingBattle ? (this.props.isBoard ? '' : 'pawnEnter') : 'pawnEnter'))} ` +
         `${this.props.name} ${(this.props.classList ? this.props.classList : '')}`
-      }
-      key={
-        src
-      }
-      style={
-        {
+      } key={src} style={{
           width: width,
-          height: height
-        }
-      }
-      src={
-        src
-      }
-      alt='Pawn'
-      onLoad={
-        this.onImgLoad
-      }
-    />
+          height: height,
+          marginTop: width === 32 ? '32px' : 'auto',
+          marginLeft: width === 32 ? '32px' : 'auto'
+        }} src={src} alt='Pawn' onLoad={this.onImgLoad} />
+
     return (<div> {(this.props.renderBase ? <div key={this.props.renderBase} className={`${this.props.renderBase}`} style={{
-      marginTop: (Number.isNaN(baseMarginTop) ? '' : baseMarginTop),
-      marginLeft: (Number.isNaN(baseMarginLeft) ? '' : baseMarginLeft),
-      width: (typeof width === 'number' ? width * 1.5 : '')
+      width: width
     }}></div> : '')} {
         imgEl
       } </div>

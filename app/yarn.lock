@@ -882,15 +882,7 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-transform-typescript" "^7.1.0"
 
-"@babel/runtime-corejs2@^7.4.5":
-  version "7.5.5"
-  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs2/-/runtime-corejs2-7.5.5.tgz#c3214c08ef20341af4187f1c9fbdc357fbec96b2"
-  integrity sha512-FYATQVR00NSNi7mUfpPDp7E8RYMXDuO8gaix7u/w3GekfUinKgX1AcTxs7SoiEmoEW9mbpjrwqWSW6zCmw5h8A==
-  dependencies:
-    core-js "^2.6.5"
-    regenerator-runtime "^0.13.2"
-
-"@babel/runtime-corejs2@^7.0.0", "@babel/runtime-corejs2@^7.3.1":
+"@babel/runtime-corejs2@^7.0.0", "@babel/runtime-corejs2@^7.3.1", "@babel/runtime-corejs2@^7.4.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime-corejs2/-/runtime-corejs2-7.5.5.tgz#c3214c08ef20341af4187f1c9fbdc357fbec96b2"
   integrity sha512-FYATQVR00NSNi7mUfpPDp7E8RYMXDuO8gaix7u/w3GekfUinKgX1AcTxs7SoiEmoEW9mbpjrwqWSW6zCmw5h8A==
@@ -3341,6 +3333,13 @@ dir-glob@2.0.0:
     arrify "^1.0.1"
     path-type "^3.0.0"
 
+dir-glob@^2.0.0:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/dir-glob/-/dir-glob-2.2.2.tgz#fa09f0694153c8918b18ba0deafae94769fc50c4"
+  integrity sha512-f9LBi5QWzIW3I6e//uxZoLBlUt9kcp66qo0sSCxL6YZKc75R1c4MFCoe/LaZiBGmgujvQdxc5Bn3QhfyvK5Hsw==
+  dependencies:
+    path-type "^3.0.0"
+
 dnd-core@^9.3.2:
   version "9.3.2"
   resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-9.3.2.tgz#d30f4a53fc296d6fedee05ed690db97974c7decc"
@@ -3351,13 +3350,6 @@ dnd-core@^9.3.2:
     asap "^2.0.6"
     invariant "^2.2.4"
     redux "^4.0.1"
-
-dir-glob@^2.0.0:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/dir-glob/-/dir-glob-2.2.2.tgz#fa09f0694153c8918b18ba0deafae94769fc50c4"
-  integrity sha512-f9LBi5QWzIW3I6e//uxZoLBlUt9kcp66qo0sSCxL6YZKc75R1c4MFCoe/LaZiBGmgujvQdxc5Bn3QhfyvK5Hsw==
-  dependencies:
-    path-type "^3.0.0"
 
 dns-equal@^1.0.0:
   version "1.0.0"
@@ -6690,12 +6682,7 @@ mem@^4.0.0:
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
 
-memoize-one@^5.0.4:
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.0.5.tgz#8cd3809555723a07684afafcd6f756072ac75d7e"
-  integrity sha512-ey6EpYv0tEaIbM/nTDOpHciXUvd+ackQrJgEzBwemhZZIWZjcyodqEcrmqDy2BKRTM3a65kKBV4WtLXJDt26SQ==
-
-memoize-one@^5.0.0:
+memoize-one@^5.0.0, memoize-one@^5.0.4:
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.0.5.tgz#8cd3809555723a07684afafcd6f756072ac75d7e"
   integrity sha512-ey6EpYv0tEaIbM/nTDOpHciXUvd+ackQrJgEzBwemhZZIWZjcyodqEcrmqDy2BKRTM3a65kKBV4WtLXJDt26SQ==
@@ -8784,6 +8771,16 @@ react-cosmos-playground@^4.8.0-alpha.0:
   resolved "https://registry.yarnpkg.com/react-cosmos-playground/-/react-cosmos-playground-4.8.4.tgz#76d41e01431f44ee493ad8131ac46ad9681ae4ea"
   integrity sha512-Kh3168JnWgpRu7GZ6QN54HdHl8HlivuDi/ESWP20as6ixnFXICbVadsDRvSftuv3uVN0rSfe8+1tBTNrbIQxiA==
 
+react-cosmos-redux-proxy@^4.8.2:
+  version "4.8.2"
+  resolved "https://registry.yarnpkg.com/react-cosmos-redux-proxy/-/react-cosmos-redux-proxy-4.8.2.tgz#3544ac7caa39f263ca7b1325330c3cc436d983dd"
+  integrity sha512-9JTqskcGRDdnuIAuWJTJxsS14OVcpdfI/nLyqzbxzj4eJEcyAg3Ic8f12SkPmbuqHo4wws4w/UgsCyr3FC6DrA==
+  dependencies:
+    "@babel/runtime-corejs2" "^7.3.1"
+    lodash.omit "^4.5.0"
+    react-cosmos-shared "^4.8.2"
+    redux "^4.0.1"
+
 react-cosmos-shared2@^4.8.1:
   version "4.8.1"
   resolved "https://registry.yarnpkg.com/react-cosmos-shared2/-/react-cosmos-shared2-4.8.1.tgz#b782b300c7593ed66e2eb952bb03b01261a7999c"
@@ -9176,6 +9173,11 @@ redent@^1.0.0:
   dependencies:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
+
+redux-devtools-extension@^2.13.8:
+  version "2.13.8"
+  resolved "https://registry.yarnpkg.com/redux-devtools-extension/-/redux-devtools-extension-2.13.8.tgz#37b982688626e5e4993ff87220c9bbb7cd2d96e1"
+  integrity sha512-8qlpooP2QqPtZHQZRhx3x3OP5skEV1py/zUdMY28WNAocbafxdG2tRD1MWE7sp8obGMNYuLWanhhQ7EQvT1FBg==
 
 redux@^4.0.1:
   version "4.0.4"

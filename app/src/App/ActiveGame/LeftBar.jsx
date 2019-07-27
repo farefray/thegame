@@ -292,6 +292,12 @@ class LeftBar extends Component {
     </div>;
   }
 
+  handleVolumeChange = (e) => {
+    const newVolume = e.target.value / 100; // this.audioElement.length * 
+    // console.log('@handleVolumechange', e.target.value)
+    this.props.dispatch({ type: 'CHANGE_VOLUME', newVolume })
+  }
+  
   render () {
     return <div className='leftBar'>
       {this.props.gameIsLive ? <Timer startTime={this.props.timerDuration} key={this.props.round} startTimer={this.props.startTimer}
