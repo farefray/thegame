@@ -123,8 +123,6 @@ const reducer = (
     isSelectModeShop: false,
     boardBuffs: {},
     deadPlayers: [],
-    unitJson: {},
-    loadedUnitJson: false,
     alternateAnimation: true,
     visiting: -1,
     actionStacks: {},
@@ -146,11 +144,6 @@ const reducer = (
     state = {...state, musicEnabled: false, soundEnabled: false, timerDuration: 15} // Disallows testing sounds currently
   }
   switch (action.type) { // Listens to events dispatched from from socket.js
-    case 'LOAD_UNIT_JSON': {
-      console.log('Loaded units!');
-      state = {...state, unitJson: action.json.mosntersJSON, loadedUnitJson: true}
-      break;
-    }
     case 'NEW_STATE':
       // Update state with incoming data from server
       console.log('@NewState Players: ', action.newState.players);

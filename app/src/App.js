@@ -88,8 +88,6 @@ const mapStateToProps = state => ({
   boardBuffs: state.boardBuffs,
   deadPlayers: state.deadPlayers,
   gameEnded: state.gameEnded,
-  unitJson: state.unitJson,
-  loadedUnitJson: state.loadedUnitJson,
   alternateAnimation: state.alternateAnimation,
   visiting: state.visiting,
   showDmgBoard: state.showDmgBoard,

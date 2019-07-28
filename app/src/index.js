@@ -12,7 +12,9 @@ const store = createStore(reducer);
 
 // setup socket connection
 export const socket = configureSocket(store.dispatch);
-AjaxGetUnitJson(store.dispatch);
+AjaxGetUnitJson((unitJSON) => {
+  localStorage.setItem('unitJSON', JSON.stringify(unitJSON));
+});
 
 ReactDOM.render(
   <Provider store={store}>

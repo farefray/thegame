@@ -44,11 +44,8 @@ class PawnImage extends Component {
 
   // TODO
   getSprite() {
-    const lookType = this.props.newProps.unitJson && this.props.newProps.unitJson[this.props.name] ?
-    this.props.newProps.unitJson[this.props.name].looktype : 1;
-
     const params = encodeData({
-      id: lookType,
+      id: this.props.lookType || 1,
       direction: this.props.direction
     });
 
@@ -64,7 +61,7 @@ class PawnImage extends Component {
     const src = this.getSprite();
     
     const imgEl = <img className={
-        `pawnImg ${(this.props.renderBase ? 'pawnSpawn' : (this.props.newProps.onGoingBattle ? (this.props.isBoard ? '' : 'pawnEnter') : 'pawnEnter'))} ` +
+        `pawnImg ${(this.props.renderBase ? 'pawnSpawn' : '')} ` +
         `${this.props.name} ${(this.props.classList ? this.props.classList : '')}`
       } key={src} style={{
           width: width,
