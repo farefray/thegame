@@ -25,7 +25,6 @@ export default function Pawn ({ position, name, direction, idle, classList, isBo
   
   let lookType = creature ? creature.looktype : 1;
 
-  classList += ' ' + (newProps.onGoingBattle ? (isBoard ? '' : 'pawnEnter') : 'pawnEnter');
   return <>
     <DragPreviewImage connect={preview} src={previewImage} />
     <div ref={drag} style={{

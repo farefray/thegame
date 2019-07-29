@@ -113,13 +113,6 @@ class RightPanel extends Component {
           s += s2;
         }
         break;
-      case 'typeBonuses':
-        if(this.props.typeBonusString){
-          s += this.props.typeBonusString;
-        } else {
-          s += s2;
-        }
-        break;
       case 'hotkeys':
         s += s2;
         break;
@@ -260,8 +253,6 @@ class RightPanel extends Component {
             <input className='check' type='radio' name='helpRadio' onChange={() => this.props.dispatch({ type: 'SET_HELP_MODE', chatHelpMode: 'hotkeys' })} />
             <label className='labels'>Hotkeys</label>
             <input className='check' type='radio' name='helpRadio' onChange={() => this.props.dispatch({ type: 'SET_HELP_MODE', chatHelpMode: 'types' })} />
-            <label className='labels'>Types</label>
-            <input className='check' type='radio' name='helpRadio' onChange={() => this.props.dispatch({ type: 'SET_HELP_MODE', chatHelpMode: 'typeBonuses' })} />
             <label className='labels'>Buffs</label>
             <input className='check' type='radio' name='helpRadio' onChange={() => this.props.dispatch({ type: 'SET_HELP_MODE', chatHelpMode: 'damageBoard' })} />
             <label className='labels'>Damage</label>

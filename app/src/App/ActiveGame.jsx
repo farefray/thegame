@@ -294,6 +294,7 @@ var visitPlayer = (playerIndex) => {
 
 function ActiveGame (props) {
   const activeBattle = false;
+  console.log(props.gold);
 
   /* TODO start battle from hooks */
   /*

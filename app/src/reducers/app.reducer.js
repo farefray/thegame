@@ -101,7 +101,6 @@ export function app(state = {
     statsMap: {},
     typeStatsString: '',
     typeBonusString: '',
-    typeMap: '',
     round: 1,
     musicEnabled: true,
     soundEnabled: true,
@@ -311,15 +310,6 @@ export function app(state = {
         ...state,
         chatHelpMode: action.chatHelpMode,
         showDmgBoard: false
-      }
-      break;
-    case 'SET_TYPE_BONUSES':
-      // console.log('setTypeBonuses', action.typeMap);
-      state = {
-        ...state,
-        typeStatsString: action.typeDescs,
-        typeBonusString: action.typeBonuses,
-        typeMap: action.typeMap
       }
       break;
     case 'BATTLE_TIME':

@@ -7,7 +7,6 @@ const StateJS = require('./game/state');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');
-const typesJS = require('./types');
 const gameConstantsJS = require('./game_constants');
 const f = require('./f');
 
@@ -132,7 +131,6 @@ module.exports = (socket, io) => {
     // Set pieces in Session
     const newSession = sessionJS.makeSession(sessionConnectedPlayers, state.get('pieces'));
     sessions = sessions.set(sessionId, newSession);
-    const typeDescriptions = typesJS.buildTypeString();
     console.log('Starting game!');
     // Send to all connected sockets
     const stateToSend = getStateToSend(state); // .setIn(['players', '0', 'gold'], 1000);
@@ -142,7 +140,6 @@ module.exports = (socket, io) => {
     while (!temp.done) {
       const id = temp.value;
       io.to(`${id}`).emit('ADD_PLAYER', sessionConnectedPlayers.get(id));
-      io.to(`${id}`).emit('SET_TYPE_BONUSES', typeDescriptions[0], typeDescriptions[1], typeDescriptions[2].toJS());
       temp = iter.next();
     }
     emitMessage(socket, io, sessionId, (socketId) => {
@@ -193,6 +190,7 @@ module.exports = (socket, io) => {
     // console.log('Discarded pieces inc', fromJS(stateParam).get('discardedPieces'));
     const state = await gameJS.buyUnit(stateWithPieces, index, pieceIndex);
     // Gold, shop, hand
+    // URGENT TODO CHECK GOLD HERE
     console.log('Bought unit at', pieceIndex, '. #discarded =', state.get('discardedPieces').size);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
     sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);

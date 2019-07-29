@@ -16,7 +16,7 @@ function Player(i) {
     level: (gameConstantsJS.debugMode ? 5 : 1),
     exp: 0,
     expToReach: 1,
-    gold: (gameConstantsJS.debugMode ? 0 : 0),
+    gold: (gameConstantsJS.debugMode ? 100 : 0),
     shop: Map({}), // Buys from 5
     hand: Map({}), // Sideline, 8 at once
     board: Map({}), // Placed on board (8x8 area, placeable is 4x8)
