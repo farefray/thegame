@@ -119,7 +119,6 @@ export function app(state = {
     deadPlayers: [],
     unitJson: {},
     loadedUnitJson: false,
-    alternateAnimation: true,
     visiting: -1,
     actionStacks: {},
     battleStartBoards: {},
@@ -129,7 +128,6 @@ export function app(state = {
     dmgBoardTotalDmg: -1,
     markedBuff: '',
     displayMarkedBuff: false,
-    debugMode: false,
     prevDmgBoard: {},
     loadingCounter: 1,
   },
@@ -439,12 +437,6 @@ export function app(state = {
         isSelectModeShop: true
       }
       break;
-    case 'SET_MOUSEOVER_ID':
-      state = {
-        ...state,
-        mouseOverId: action.mouseOverId
-      }
-      break;
     case 'SET_ONGOING_BATTLE': { // not used, so check
       state = {
         ...state,
@@ -631,13 +623,6 @@ export function app(state = {
         soundEffects: tempSoundEffects
       };
       break;
-    case 'TOGGLE_ALTERNATE_ANIMATION': {
-      state = {
-        ...state,
-        alternateAnimation: !state.alternateAnimation
-      }
-      break;
-    }
     case 'SPEC_PLAYER': {
       const index = action.playerIndex;
       state = {
@@ -674,13 +659,6 @@ export function app(state = {
       state = {
         ...state,
         displayMarkedBuff: !state.displayMarkedBuff
-      }
-      break;
-    }
-    case 'TOGGLE_DEBUG_MODE': {
-      state = {
-        ...state,
-        debugMode: !state.debugMode
       }
       break;
     }
