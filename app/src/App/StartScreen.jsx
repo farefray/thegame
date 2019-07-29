@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { startGame, ready, unready } from '../socket';
 import ProgressBar from '../components/ProgressBar.jsx';
 import SoundButton from './StartScreen/SoundButton.jsx';
@@ -40,7 +42,7 @@ class StartScreen extends Component {
 
   // TODO wait for unitJSON appear in localstorage before rendeing
   render () {
-    const loadingProgress = 100 / 2 * (this.props.connected + (this.props.playersReady !== -1)) + 1;
+    const loadingProgress = 100 / 2 * ((this.props.loadedUnitJson && 1 || 0) + (this.props.connected && 1 || 0));
 
     const isLoaded = (loadingProgress >= 100);
 
@@ -76,5 +78,16 @@ class StartScreen extends Component {
     return (<div id="startscreen" className="section group"><div className="col span_1_of_10"></div><div className="col span_8_of_10 rpgui-content rpgui-cursor-default"><div className="startscreen-inner inner rpgui-container framed">{mainMenu}</div></div><div className="col span_1_of_10"></div></div>);
   }
 }
+const mapDispatchToProps = dispatch => bindActionCreators(dispatch);
+function mapStateToProps(state) {
+  const { ready, playersReady, connectedPlayers, connected, loadedUnitJson, loadingCounter, playerName } = state.startscreen;
 
-export default StartScreen;
+  const { allReady } = state.app;
+  return {
+    ready, allReady, playersReady, connected, connectedPlayers, loadedUnitJson, loadingCounter, playerName
+  };
+}
+
+const connected = connect(mapStateToProps)(StartScreen);
+const withDispatch = connect(mapDispatchToProps)(connected);
+export default withDispatch;

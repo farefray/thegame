@@ -8,7 +8,7 @@ import { isUndefined } from '../../f';
 class RightPanel extends Component {
   constructor (props) {
     super(props);
-    this.state = {};
+    this.state = {chatMessageInput: ''};
   }
 
   createScoreboardPlayerEntry = (player, isDead) => {
@@ -187,6 +187,16 @@ class RightPanel extends Component {
   }
 
   render () {
+    const debug = true;
+    
+    if (debug) {
+      return <>
+        <ShopPawn ShopPawn={this.props.myShop[this.pos(0)]} index={0} newProps={this.props} />
+        <ShopPawn ShopPawn={this.props.myShop[this.pos(1)]} index={1} newProps={this.props} />
+        <ShopPawn ShopPawn={this.props.myShop[this.pos(2)]} index={2} newProps={this.props} />
+      </>
+    }
+
     return <div className='flex'>
       <div>
         <div>
@@ -232,7 +242,7 @@ class RightPanel extends Component {
               <img className='toggleHelpImg' src={(this.props.help ? getImage('collapse') : getImage('collapseNot'))}
                 onClick={() => this.props.dispatch({ type: 'TOGGLE_HELP' })} alt='toggleHelp' />
             </div>
-            {(this.props.debugMode ? <div className='text_shadow hoveringDiv'>Hovering: {JSON.stringify(this.props.mouseOverId, null, 2)}</div> : '')}
+
             <div className={'text_shadow messageUpdate'} style={{ padding: '5px' }} >
               <div className={`updateMessage ${(this.props.messageMode === 'big' ? 'goldFont' : (this.props.messageMode === 'error' ? 'redFont' : ''))}`}>
                 {'Message: ' + this.props.message}

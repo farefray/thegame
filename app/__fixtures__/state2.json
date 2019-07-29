@@ -60,6 +60,7 @@
     "boardBuffs": {},
     "deadPlayers": {},
     "unitJson": {},
+    "loadedUnitJson": true,
     "alternateAnimation": true,
     "visiting": "0",
     "showDmgBoard": false,

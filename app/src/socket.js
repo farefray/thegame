@@ -53,8 +53,8 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'LOCK_TOGGLED', index: index, lock: lock});
   });
 
-  socket.on('NEW_PLAYER', index => {
-    dispatch({ type: 'NEW_PLAYER', index: index});
+  socket.on('ADD_PLAYER', index => {
+    dispatch({ type: 'ADD_PLAYER', index: index});
   });
 
   // TODO Update in reducer for Allready and ready
