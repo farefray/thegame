@@ -40,6 +40,7 @@ class StartScreen extends Component {
     }
   }
 
+  // TODO wait for unitJSON appear in localstorage before rendeing
   render () {
     const loadingProgress = 100 / 2 * ((this.props.loadedUnitJson && 1 || 0) + (this.props.connected && 1 || 0));
 

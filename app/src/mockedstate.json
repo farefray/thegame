@@ -229,8 +229,7 @@
             "specialDefense": 0
         }
     },
-    "loadedUnitJson": true,
-    "": true,
+    "alternateAnimation": true,
     "visiting": "0",
     "showDmgBoard": false,
     "timerDuration": 15,

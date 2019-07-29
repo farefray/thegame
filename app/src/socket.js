@@ -9,8 +9,7 @@ const ipAdress = 'http://' + ip + ':8000';
 console.log('Connecting to ' + ipAdress + ' ...');
 const socket = io(ipAdress);
 
-// TODO usage for this
-export async function AjaxGetUnitJson(dispatch) {
+export async function AjaxGetUnitJson(cb) {
   console.log('Fetching json from ' + ipAdress + '/unitJson');
   fetch(ipAdress + '/unitJson', {
     method: 'GET',
@@ -21,7 +20,7 @@ export async function AjaxGetUnitJson(dispatch) {
     // console.log(response);
     const result = await response.json();
     // console.log(result);
-    dispatch({ type: 'LOAD_UNIT_JSON', json: result});
+    cb(result.mosntersJSON);
   }).catch((err) => {
     console.log('Failed to fetch', err);
   });

@@ -15,8 +15,17 @@ export default function Pawn ({ position, name, direction, idle, classList, isBo
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
-  })
+  });
 
+  let creature = {};
+  try {
+    const unitJson = JSON.parse(localStorage.getItem('unitJSON'))
+    creature = unitJson[name];
+  } catch (e) {}
+  
+  let lookType = creature ? creature.looktype : 1;
+
+  classList += ' ' + (newProps.onGoingBattle ? (isBoard ? '' : 'pawnEnter') : 'pawnEnter');
   return <>
     <DragPreviewImage connect={preview} src={previewImage} />
     <div ref={drag} style={{
@@ -24,7 +33,7 @@ export default function Pawn ({ position, name, direction, idle, classList, isBo
       fontSize: 25,
       cursor: 'move',
     }}>
-      <PawnImage name={name} idle={idle} direction={direction} classList={classList} isBoard={isBoard} />
+      <PawnImage name={name} idle={idle} direction={direction} classList={classList} isBoard={isBoard} lookType={lookType}/>
     </div>
   </>
 }

@@ -35,7 +35,7 @@ class ShopPawn extends Component{
           {(this.props.ShopPawn.reqEvolve ? <div className='pokemonBaby'>
             <img className='babyImg' src={getImage('baby')} alt={'baby' + this.props.ShopPawn.name}/>
           </div> : '')}
-          <PawnImage direction="3" idle="true" name={this.props.ShopPawn.name} renderBase={costColorClass} newProps={this.props.newProps}/>
+          <PawnImage direction="3" idle="true" name={this.props.ShopPawn.name} renderBase={costColorClass}/>
         </div>
         <div className='pokemonShopText'>
           <span className={costColorTextClass}>{this.props.ShopPawn.displayName + '\n'}</span>
