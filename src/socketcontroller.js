@@ -141,7 +141,7 @@ module.exports = (socket, io) => {
     let temp = iter.next();
     while (!temp.done) {
       const id = temp.value;
-      io.to(`${id}`).emit('NEW_PLAYER', sessionConnectedPlayers.get(id));
+      io.to(`${id}`).emit('ADD_PLAYER', sessionConnectedPlayers.get(id));
       io.to(`${id}`).emit('SET_TYPE_BONUSES', typeDescriptions[0], typeDescriptions[1], typeDescriptions[2].toJS());
       temp = iter.next();
     }

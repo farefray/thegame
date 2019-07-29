@@ -27,7 +27,7 @@ export function buyUnitEvent(props, index) {
     updateMessage(props.newProps, 'Waiting ...', 'error');
     return;
   }
-  if(props.ShopPawn && props.newProps.gameIsLive){
+  if(props.ShopPawn){
     if(props.newProps.gold >= props.ShopPawn.cost){
       const size = Object.keys(props.newProps.myHand).length;
       if(size < 8){
@@ -54,7 +54,7 @@ export function refreshShopEvent(props) {
     updateMessage(props, 'Waiting ...', 'error');
     return;
   }
-  if(props.gold >= 2 && props.gameIsLive){
+  if(props.gold >= 2){
     refreshShop(props.storedState)
   } else{
     updateMessage(props, 'Not enough gold!', 'error');
@@ -86,7 +86,7 @@ export function buyExpEvent(props) {
     updateMessage(props, 'Waiting ...', 'error');
     return;
   }
-  if(props.gold >= 5 && props.gameIsLive){
+  if(props.gold >= 5){
     if(props.level < 10){
       buyExp(props.storedState)
     } else {
@@ -112,7 +112,7 @@ export function canMovePiece(prop, fromParam, to) {
     return false
   }
 
-  if(from && to && prop.gameIsLive){
+  if(from && to){
     const splitted = to.split(',');
     const fromSplitted = from.split(',');
     const validPos = (splitted.length === 2 ? splitted[1] < 4 && splitted[1] >= 0: true) && splitted[0] < 8 && splitted[0] >= 0;
@@ -148,7 +148,7 @@ export function placePieceEvent(prop, fromParam, to) {
     updateMessage(prop, 'Waiting ...', 'error');
     return;
   }
-  if(from && to && prop.gameIsLive){
+  if(from && to){
     console.log('@placePieceEvent', from, to);
     const splitted = to.split(',');
     const fromSplitted = from.split(',');
@@ -188,7 +188,7 @@ export function withdrawPieceEvent(prop, from) {
     return;
   }
   const size = Object.keys(prop.myHand).length;
-  if(prop.myBoard[from] && !prop.onGoingBattle && prop.gameIsLive){ // From contains unit
+  if(prop.myBoard[from] && !prop.onGoingBattle){ // From contains unit
     if(size < 8){
       withdrawPiece(prop.storedState, String(from));
       prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
@@ -217,7 +217,7 @@ export function sellPieceEvent(prop, from) {
   console.log('@sellPiece', validUnit, from, prop.selectedUnit.isBoard)
   // From contains unit, hand unit is ok during battle
   // TODO: Remove false && and fix allowing sellPiece during battle, currently weird
-  if(validUnit && prop.gameIsLive && (!prop.onGoingBattle || !prop.selectedUnit.isBoard)){ // false &&
+  if(validUnit && (!prop.onGoingBattle || !prop.selectedUnit.isBoard)){ // false &&
     sellPiece(prop.storedState, String(from));
     prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
     prop.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('sellUnit')});

@@ -300,8 +300,8 @@ class LeftBar extends Component {
   
   render () {
     return <div className='leftBar'>
-      {this.props.gameIsLive ? <Timer startTime={this.props.timerDuration} key={this.props.round} startTimer={this.props.startTimer}
-        storedState={this.props.storedState} dispatch={this.props.dispatch} gameEnded={this.props.gameEnded}></Timer> : ''}
+      <Timer startTime={this.props.timerDuration} key={this.props.round} startTimer={this.props.startTimer}
+        storedState={this.props.storedState} dispatch={this.props.dispatch} gameEnded={this.props.gameEnded}></Timer> 
       <div>
         {this.selectedUnitInformation()}
         {this.unitSound()}
@@ -324,7 +324,7 @@ class LeftBar extends Component {
         </div>
         <img className='chatSoundImg' src={(this.props.chatSoundEnabled ? getImage('chatSound') : getImage('chatSoundMuted'))}
           onClick={() => this.props.dispatch({ type: 'TOGGLE_CHAT_SOUND' })} alt='chatSoundToggle' />
-        {(this.props.musicEnabled && this.props.gameIsLive ? this.playMusic() : '')}
+        {(this.props.musicEnabled ? this.playMusic() : '')}
       </div>
       <div className='paddingLeft5 marginTop5 text_shadow'>
         <input

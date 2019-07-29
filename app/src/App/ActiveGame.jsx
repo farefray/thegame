@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import TopBar from './ActiveGame/TopBar.jsx';
 import LeftBar from './ActiveGame/LeftBar.jsx';
@@ -296,7 +297,7 @@ class ActiveGame extends Component {
         console.log('error action = ', action, nextMove);
         return board;
     }
-  }  
+  }
 
   visitPlayer = (playerIndex) => {
     console.log('Visiting Player', playerIndex, '...')
@@ -308,7 +309,7 @@ class ActiveGame extends Component {
     console.log(this.props.startBattle);
     console.log(this.state.activeBattle);
     if (this.props.startBattle === true && !this.state.activeBattle) {
-      this.setState({...this.state, activeBattle: true})
+      this.setState({ ...this.state, activeBattle: true })
       this.startBattleEvent();
     }
   }
@@ -326,4 +327,12 @@ class ActiveGame extends Component {
   }
 }
 
-export default ActiveGame;
+// Thats not good :{ Need to avoid such massive stuff here
+function mapStateToProps(state) {
+  const { index, message, messageMode, updatePlayerName, help, chatHelpMode, senderMessages, chatMessages, storedState, players, player, myHand, myShop, myBoard, lock, level, exp, expToReach, gold, onGoingBattle, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, selectedUnit, mounseOverId, stats, statsMap, typeStatsString, typeBonusString, typeMap, round, musicEnabled, soundEnabled, chatSoundEnabled, selectedSound, soundEffect, soundEffects, MediaStreamAudioSourceNode, volume, startTimer, isDead, selectedShopUnit, isSelectModeShop, boardBuffs, deadPlayers, gameEnded, unitJson, alternateAnimation, visiting, showDmgBoard, timerDuration, dmgBoardTotalDmg, markedBuff, displayMarkedBuff, debugMode, prevDmgBoard } = state.app;
+  return {
+    index, message, messageMode, updatePlayerName, help, chatHelpMode, senderMessages, chatMessages, storedState, players, player, myHand, myShop, myBoard, lock, level, exp, expToReach, gold, onGoingBattle, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, selectedUnit, mounseOverId, stats, statsMap, typeStatsString, typeBonusString, typeMap, round, musicEnabled, soundEnabled, chatSoundEnabled, selectedSound, soundEffect, soundEffects, MediaStreamAudioSourceNode, volume, startTimer, isDead, selectedShopUnit, isSelectModeShop, boardBuffs, deadPlayers, gameEnded, unitJson, alternateAnimation, visiting, showDmgBoard, timerDuration, dmgBoardTotalDmg, markedBuff, displayMarkedBuff, debugMode, prevDmgBoard
+  };
+}
+
+export default connect(mapStateToProps)(ActiveGame);

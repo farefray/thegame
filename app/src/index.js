@@ -3,10 +3,8 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { configureSocket, AjaxGetUnitJson } from './socket';
-import { createStore } from 'redux';
-import reducer from './reducer';
+import store from './store';
 import { Provider } from 'react-redux';
-const store = createStore(reducer);
 
 //ReactDOM.render(<App />, document.getElementById('root'));
 

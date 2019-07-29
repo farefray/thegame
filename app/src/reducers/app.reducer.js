@@ -1,7 +1,8 @@
-
-
-import { getBackgroundAudio, getSoundEffect } from './audio';
-import { updatePlayerName } from './socket';
+import {
+  getBackgroundAudio,
+  getSoundEffect
+} from '../audio';
+import { updatePlayerName } from '../socket';
 
 const devMode = true;
 
@@ -18,8 +19,8 @@ const updateSoundArray = (array, pos, newSound) => {
 
 const getNewSoundEffects = (soundEffects, newSoundEffect) => {
   // console.log('@getNewSoundEffects', soundEffects, soundEffects.length)
-  for(let i = 0; i < soundEffects.length; i++){
-    if(soundEffects[i] !== newSoundEffect){
+  for (let i = 0; i < soundEffects.length; i++) {
+    if (soundEffects[i] !== newSoundEffect) {
       // Overwrites prev sound
       // console.log('@NewSoundEffect', i, newSoundEffect, 'x', soundEffects[i]);
       return updateSoundArray(soundEffects, i, newSoundEffect);
@@ -47,8 +48,8 @@ const getNewSoundEffects = (soundEffects, newSoundEffect) => {
 
 const clearSoundEffect = (soundEffects, soundEffect) => {
   let newSoundEffects = soundEffects;
-  for(let i = 0; i < soundEffects.length; i++){
-    if(soundEffects[i] === soundEffect){
+  for (let i = 0; i < soundEffects.length; i++) {
+    if (soundEffects[i] === soundEffect) {
       // console.log('@NewSoundEffect', i, newSoundEffect)
       newSoundEffects[i] = '';
     }
@@ -58,26 +59,19 @@ const clearSoundEffect = (soundEffects, soundEffect) => {
 
 const sumObj = (obj) => {
   let sum = 0;
-  for(let el in obj) {
-    if(obj.hasOwnProperty(el)) {
+  for (let el in obj) {
+    if (obj.hasOwnProperty(el)) {
       sum += parseInt(obj[el], 10);
     }
   }
   return sum;
 }
 
-const reducer = (
-  state = {
+export function app(state = {
     gameIsLive: false,
-    connected: false,
     index: -1,
-    ready: false,
-    playersReady: -1,
-    connectedPlayers: -1,
-    allReady: false,
     message: 'default',
     messageMode: '',
-    playerName: '',
     help: true,
     chatHelpMode: 'chat',
     chatMessages: [],
@@ -93,7 +87,7 @@ const reducer = (
     expToReach: -1,
     gold: -1,
     onGoingBattle: false, // Most battle checks
-    isBattle: false,  // Used for checking interactions before battle state is received
+    isBattle: false, // Used for checking interactions before battle state is received
     enemyIndex: -1,
     roundType: '',
     startBattle: false,
@@ -114,7 +108,7 @@ const reducer = (
     timerDuration: 30,
     chatSoundEnabled: true,
     selectedSound: '',
-    soundEffects: ['', '', '', '', '','', '', '', '', ''],
+    soundEffects: ['', '', '', '', '', '', '', '', '', ''],
     music: getBackgroundAudio('mainMenu'),
     volume: 0.05,
     startTimer: false,
@@ -140,29 +134,31 @@ const reducer = (
     loadingCounter: 1,
   },
   action
-) => {
+) {
   let tempSoundEffects;
-  if(devMode) {
-    state = {...state, musicEnabled: false, soundEnabled: false, timerDuration: 15} // Disallows testing sounds currently
+  if (devMode) {
+    state = {
+      ...state,
+      musicEnabled: false,
+      soundEnabled: false,
+      timerDuration: 15
+    } // Disallows testing sounds currently
   }
-  switch (action.type) { // Listens to events dispatched from from socket.js
-    case 'LOAD_UNIT_JSON': {
-      console.log('Loaded units!');
-      state = {...state, unitJson: action.json.mosntersJSON, loadedUnitJson: true}
-      break;
-    }
+  switch (action.type) { // Listens to events dispatched from from socket.js    
     case 'NEW_STATE':
       // Update state with incoming data from server
       console.log('@NewState Players: ', action.newState.players);
-      state = { ...state,  
+      state = {
+        ...state,
         storedState: action.newState,
-        message: 'Received State', 
+        message: 'Received State',
         messageMode: '',
         players: action.newState.players,
         round: action.newState.round,
       };
-      if(action.newState.players[state.index]){
-        state = {...state,
+      if (action.newState.players[state.index]) {
+        state = {
+          ...state,
           myHand: action.newState.players[state.index].hand,
           myBoard: action.newState.players[state.index].board,
           myShop: action.newState.players[state.index].shop,
@@ -177,66 +173,38 @@ const reducer = (
       console.log('New State', action.newState)
       // console.log(state);
       break;
-    case 'UPDATE_PLAYER':
-      // console.log('updating player', action.index, action.player);
-      state = { ...state,
-        // message: 'Updated player', 
-        messageMode: '',
+    case 'UPDATE_PLAYER_NAME': {
+      const newPlayers = state.players;
+      newPlayers[action.pid].name = action.name
+      if (state.index === action.pid) {
+        state = {
+          ...state,
+          playerName: action.name
+        }
       }
-      if(action.index === state.index && !state.isDead){
-        // TODO: Model upgrades on myBoard here
-        state = {...state,
-          myShop: action.player.shop,
-          level: action.player.level,
-          exp: action.player.exp,
-          expToReach: action.player.expToReach,
-          gold: action.player.gold,
-        };
-      } 
-      if(state.visiting === action.index && action.index !== state.index) {
-        if(state.isDead) { // Sync everything when dead
-          state = {...state, 
-            myShop: action.player.shop,
-            level: action.player.level,
-            exp: action.player.exp,
-            expToReach: action.player.expToReach,
-            gold: action.player.gold,
-          }
-        }
-        state = {...state,
-          myHand: action.player.hand,
-          myBoard: action.player.board,
-          boardBuffs: action.player.boardBuffs,
-        }
-      } else if(action.index === state.index && !state.isDead) {
-        state = {...state,
-          visiting: state.index,
-          myHand: action.player.hand,
-          myBoard: action.player.board,
-          boardBuffs: action.player.boardBuffs,
-        }
+      state = {
+        ...state,
+        players: newPlayers,
       }
 
-      const players = state.players;
-      players[action.index] = action.player
-      state = {...state, players: {...players}}
-      state.storedState.players[action.index] = action.player;
-      // console.log('@Updated player', state.storedState)
-      break;
-    case 'LOCK_TOGGLED':
-      console.log('Toggled Lock')
-      state = {...state, lock: action.lock}
-      state.storedState.players[state.index]['locked'] = action.lock;
-      break;
-    case 'NEW_PLAYER':
-      console.log('Received player index', action.index);
+      return state;
+    }
+    case 'ALL_READY': {
+      return {
+        ...state,
+        connectedPlayers: action.connectedPlayers,
+        allReady: action.value,
+        gameIsLive: false,
+        music: getBackgroundAudio('mainMenu'),
+      }
+    }
+    case 'ADD_PLAYER': {
       state.playerName === '' ? updatePlayerName('Player ' + action.index) : updatePlayerName(state.playerName);
-      state = { ...state, 
-        index: action.index, 
+      return {
+        ...state,
+        index: action.index,
         visiting: action.index,
         gameIsLive: true,
-        ready: false,
-        playersReady: -1,
         connectedPlayers: -1,
         allReady: false,
         message: 'default',
@@ -255,62 +223,106 @@ const reducer = (
         winner: false,
         dmgBoard: {},
         selectedUnit: -1,
-        soundEffects: ['', '', '', '', '','', '', '', '', ''],
+        soundEffects: ['', '', '', '', '', '', '', '', '', ''],
         music: getBackgroundAudio('idle'),
         startTimer: true,
         isDead: false,
         boardBuffs: {},
         deadPlayers: [],
       }
-      break;
-    case 'UPDATE_PLAYER_NAME': {
-      const newPlayers = state.players;
-      newPlayers[action.pid].name = action.name
-      if(state.index === action.pid) {
-        state = {...state, playerName: action.name}
-      }
-      state = {...state,
-        players: newPlayers,
-      }
-      console.log('Update name for player with index', action.id, 'to', action.name);
-      break;
     }
-    case 'UPDATE_PRIVATE_NAME': {
-      state = {...state, playerName: action.name}
-      console.log('Updated name:', action.name);
-      break;
-    }
-    case 'SET_CONNECTED':
-      state = {...state, connected: action.connected};
-      break;
-    case 'TOGGLE_READY':
-      state = { ...state, ready: !state.ready}
-      break;
-    case 'READY':
-      state = { ...state, playersReady: action.playersReady, connectedPlayers: action.connectedPlayers}
-      break;
-    case 'ALL_READY':
-      // console.log('AllReady', action.playersReady, action.connectedPlayers, action.value)
-      state = { ...state, 
-        playersReady: action.playersReady, 
-        connectedPlayers: action.connectedPlayers, 
-        allReady: action.value, 
-        gameIsLive: false,
-        music: getBackgroundAudio('mainMenu'),
+    case 'UPDATE_PLAYER':
+      // console.log('updating player', action.index, action.player);
+      state = {
+        ...state,
+        // message: 'Updated player', 
+        messageMode: '',
       }
+      if (action.index === state.index && !state.isDead) {
+        // TODO: Model upgrades on myBoard here
+        state = {
+          ...state,
+          myShop: action.player.shop,
+          level: action.player.level,
+          exp: action.player.exp,
+          expToReach: action.player.expToReach,
+          gold: action.player.gold,
+        };
+      }
+      if (state.visiting === action.index && action.index !== state.index) {
+        if (state.isDead) { // Sync everything when dead
+          state = {
+            ...state,
+            myShop: action.player.shop,
+            level: action.player.level,
+            exp: action.player.exp,
+            expToReach: action.player.expToReach,
+            gold: action.player.gold,
+          }
+        }
+        state = {
+          ...state,
+          myHand: action.player.hand,
+          myBoard: action.player.board,
+          boardBuffs: action.player.boardBuffs,
+        }
+      } else if (action.index === state.index && !state.isDead) {
+        state = {
+          ...state,
+          visiting: state.index,
+          myHand: action.player.hand,
+          myBoard: action.player.board,
+          boardBuffs: action.player.boardBuffs,
+        }
+      }
+
+      const players = state.players;
+      players[action.index] = action.player
+      state = {
+        ...state,
+        players: {
+          ...players
+        }
+      }
+      state.storedState.players[action.index] = action.player;
+      // console.log('@Updated player', state.storedState)
+      break;
+    case 'LOCK_TOGGLED':
+      console.log('Toggled Lock')
+      state = {
+        ...state,
+        lock: action.lock
+      }
+      state.storedState.players[state.index]['locked'] = action.lock;
       break;
     case 'UPDATE_MESSAGE':
-      state = {...state, message: action.message, messageMode: action.messageMode}
+      state = {
+        ...state,
+        message: action.message,
+        messageMode: action.messageMode
+      }
       break;
     case 'TOGGLE_HELP':
-      state = {...state, help: !state.help}
+      state = {
+        ...state,
+        help: !state.help
+      }
       break;
     case 'SET_HELP_MODE':
-      state = {...state, chatHelpMode: action.chatHelpMode, showDmgBoard: false}    
+      state = {
+        ...state,
+        chatHelpMode: action.chatHelpMode,
+        showDmgBoard: false
+      }
       break;
     case 'SET_TYPE_BONUSES':
       // console.log('setTypeBonuses', action.typeMap);
-      state = {...state, typeStatsString: action.typeDescs, typeBonusString: action.typeBonuses, typeMap: action.typeMap}
+      state = {
+        ...state,
+        typeStatsString: action.typeDescs,
+        typeBonusString: action.typeBonuses,
+        typeMap: action.typeMap
+      }
       break;
     case 'BATTLE_TIME':
       const actionStack = action.actionStacks[state.index];
@@ -319,9 +331,12 @@ const reducer = (
       const dmgBoard = action.dmgBoards[state.index];
       // console.log('New dmg board in reducer', dmgBoard);
       // console.log('@battle_time', state.soundEffects)
-      if(!state.musicEnabled) {
+      if (!state.musicEnabled) {
         tempSoundEffects = getNewSoundEffects(state.soundEffects, getSoundEffect('horn'));
-        state = {...state, soundEffects: tempSoundEffects}
+        state = {
+          ...state,
+          soundEffects: tempSoundEffects
+        }
       }
       state = {
         ...state,
@@ -336,7 +351,7 @@ const reducer = (
         dmgBoards: action.dmgBoards,
         prevDmgBoard: state.dmgBoard,
       }
-      if(!state.isDead) {
+      if (!state.isDead) {
         state = {
           ...state,
           actionStack,
@@ -344,8 +359,8 @@ const reducer = (
           winner,
           dmgBoard,
           dmgBoardTotalDmg: sumObj(dmgBoard),
-        }        
-      } else if(state.visiting !== state.index && action.battleStartBoards[state.visiting]) {
+        }
+      } else if (state.visiting !== state.index && action.battleStartBoards[state.visiting]) {
         const actionStackVisit = action.actionStacks[state.visiting];
         const battleStartBoardVisit = action.battleStartBoards[state.visiting];
         const winnerVisit = action.winners[state.visiting];
@@ -365,11 +380,19 @@ const reducer = (
       break;
     case 'CHANGE_STARTBATTLE':
       // console.log('FIND ME: Changing StartBattle', action.value);
-      state = {...state, startBattle: action.value}
+      state = {
+        ...state,
+        startBattle: action.value
+      }
       break;
     case 'UPDATE_BATTLEBOARD': {
       // console.log('@reducer.updateBattleBoard: MOVE NUMBER: ', action.moveNumber,'Updating state battleBoard', action.board);
-      state = {...state, battleStartBoard: action.board, message: 'Move ' + action.moveNumber, messageMode: ''}
+      state = {
+        ...state,
+        battleStartBoard: action.board,
+        message: 'Move ' + action.moveNumber,
+        messageMode: ''
+      }
       // console.log('state', state);
       break;
     }
@@ -383,121 +406,213 @@ const reducer = (
       console.log('Updating stats', action.name); // action.stats)
       const statsMap = state.statsMap;
       statsMap[action.name] = action.stats;
-      state = {...state, name: action.name, stats: action.stats, statsMap: statsMap}
+      state = {
+        ...state,
+        name: action.name,
+        stats: action.stats,
+        statsMap: statsMap
+      }
       break;
     case 'SELECT_UNIT':
-      if(action.selectedUnit === ''){
+      if (action.selectedUnit === '') {
         const selectedUnit = state.selectedUnit;
         selectedUnit['displaySell'] = false;
         // selectedUnit['pos'] = '';
-        state = {...state, selectedUnit: {...selectedUnit}}
+        state = {
+          ...state,
+          selectedUnit: {
+            ...selectedUnit
+          }
+        }
       } else {
-        state = {...state, selectedUnit: action.selectedUnit, isSelectModeShop: false}
+        state = {
+          ...state,
+          selectedUnit: action.selectedUnit,
+          isSelectModeShop: false
+        }
       }
       break;
     case 'SELECT_SHOP_INFO':
-      state = {...state, selectedShopUnit: action.name, isSelectModeShop: true}
+      state = {
+        ...state,
+        selectedShopUnit: action.name,
+        isSelectModeShop: true
+      }
       break;
     case 'SET_MOUSEOVER_ID':
-      state = {...state, mouseOverId: action.mouseOverId}
+      state = {
+        ...state,
+        mouseOverId: action.mouseOverId
+      }
       break;
     case 'SET_ONGOING_BATTLE': { // not used, so check
-      state = {...state, onGoingBattle: action.value}
+      state = {
+        ...state,
+        onGoingBattle: action.value
+      }
       break;
     }
     case 'DEACTIVATE_INTERACTIONS': {
-      state = {...state, isBattle: true}
+      state = {
+        ...state,
+        isBattle: true
+      }
       break;
     }
     case 'END_BATTLE': {
       console.log('Battle ended', state.startTimer, action.upcomingRoundType, action.upcomingGymLeader)
-      state = {...state, 
-        onGoingBattle: false, round: state.round + 1, music: getBackgroundAudio('idle'), 
-        startTimer: true, showDmgBoard: true, roundType: action.upcomingRoundType, enemyIndex: (action.upcomingGymLeader || ''), isBattle: false
+      state = {
+        ...state,
+        onGoingBattle: false,
+        round: state.round + 1,
+        music: getBackgroundAudio('idle'),
+        startTimer: true,
+        showDmgBoard: true,
+        roundType: action.upcomingRoundType,
+        enemyIndex: (action.upcomingGymLeader || ''),
+        isBattle: false
       }
       break;
     }
     case 'CLEAR_TICKS': {
       console.log('Clearing ticks!')
       const tempSoundEffects = clearSoundEffect(state.soundEffects, getSoundEffect('Tick'));
-      state = {...state, soundEffects: tempSoundEffects};
+      state = {
+        ...state,
+        soundEffects: tempSoundEffects
+      };
       break;
     }
     case 'TOGGLE_SHOW_DMGBOARD': {
-      state = {...state, showDmgBoard: false}
+      state = {
+        ...state,
+        showDmgBoard: false
+      }
       break;
     }
     case 'DISABLE_START_TIMER':
-      state = {...state, startTimer: false}
+      state = {
+        ...state,
+        startTimer: false
+      }
       // console.log('Disabled start timer')
       break;
     case 'TOGGLE_MUSIC':
-      state = {...state, musicEnabled: !state.musicEnabled}
+      state = {
+        ...state,
+        musicEnabled: !state.musicEnabled
+      }
       break;
     case 'TOGGLE_SOUND':
-      state = {...state, soundEnabled: !state.soundEnabled}
+      state = {
+        ...state,
+        soundEnabled: !state.soundEnabled
+      }
       break;
     case 'TOGGLE_CHAT_SOUND':
       // console.log(state.chatSoundEnabled)
-      state = {...state, chatSoundEnabled: !state.chatSoundEnabled}
+      state = {
+        ...state,
+        chatSoundEnabled: !state.chatSoundEnabled
+      }
       break;
     case 'CHANGE_VOLUME':
       // console.log('@reducer.ChangeVolume', action.newVolume)
-      state = {...state, volume: action.newVolume}; //, music: state.music}
+      state = {
+        ...state,
+        volume: action.newVolume
+      }; //, music: state.music}
       break;
     case 'NEW_UNIT_SOUND':
       // console.log('reducer.NewUnitSound', action.newAudio);
-      state = {...state, selectedSound: action.newAudio}
+      state = {
+        ...state,
+        selectedSound: action.newAudio
+      }
       break;
     case 'NEW_SOUND_EFFECT':
       // console.log('@red.Newsoundeffect', action.newSoundEffect)
       tempSoundEffects = getNewSoundEffects(state.soundEffects, action.newSoundEffect);
-      state = {...state, soundEffects: tempSoundEffects};
+      state = {
+        ...state,
+        soundEffects: tempSoundEffects
+      };
       break;
     case 'END_GAME': {
       console.log('GAME ENDED! Player ' + action.winningPlayer.index + ' won!');
       let newMusic = state.music;
-      if(state.index === action.winningPlayer.index){
+      if (state.index === action.winningPlayer.index) {
         newMusic = getBackgroundAudio('wonGame')
       }
       console.log('Remaining keys in players ...', Object.keys(state.players));
       Object.keys(state.players).forEach((key) => {
-        if(key !== action.winningPlayer.index) {
+        if (key !== action.winningPlayer.index) {
           console.log('Deleting key ...', key, state.players)
           delete state.players[key];
         }
       });
-      const { senderMessages, chatMessages } = state;
-      state = {...state, 
-        message: state.players[action.winningPlayer.index].name + ' won the game', messageMode: 'big', gameEnded: action.winningPlayer, music: newMusic,
-        senderMessages: senderMessages.concat(state.players[action.winningPlayer.index].name + ' won the game'), chatMessages: chatMessages.concat(''),
+      const {
+        senderMessages,
+        chatMessages
+      } = state;
+      state = {
+        ...state,
+        message: state.players[action.winningPlayer.index].name + ' won the game',
+        messageMode: 'big',
+        gameEnded: action.winningPlayer,
+        music: newMusic,
+        senderMessages: senderMessages.concat(state.players[action.winningPlayer.index].name + ' won the game'),
+        chatMessages: chatMessages.concat(''),
       }
       break;
     }
     case 'DEAD_PLAYER': {
-      if(action.pid === state.index) {
-        state = {...state, message: 'You Lost! You finished ' + action.position + '!', messageMode: 'big', isDead: true}
+      if (action.pid === state.index) {
+        state = {
+          ...state,
+          message: 'You Lost! You finished ' + action.position + '!',
+          messageMode: 'big',
+          isDead: true
+        }
       }
-      if(state.isDead && state.visiting === action.pid){
-        state = {...state, visiting: state.index}
+      if (state.isDead && state.visiting === action.pid) {
+        state = {
+          ...state,
+          visiting: state.index
+        }
       }
       console.log('Before: Removing player ' + action.pid, state.players);
       const players = state.players;
-      const deadPlayer = {index: action.pid, hp: 0, pos: state.position, name: players[action.pid].name};
+      const deadPlayer = {
+        index: action.pid,
+        hp: 0,
+        pos: state.position,
+        name: players[action.pid].name
+      };
       delete players[action.pid];
       console.log('Removing player ' + action.pid, players, state.players);
       const deadPlayers = state.deadPlayers;
       deadPlayers.push(deadPlayer);
-      state = {...state, deadPlayers, players}
+      state = {
+        ...state,
+        deadPlayers,
+        players
+      }
       console.log('reducer.Dead_player', state.deadPlayers, deadPlayers);
       break;
     }
     case 'NEW_CHAT_MESSAGE':
       // console.log('@NEW_CHAT_MESSAGE', action.chatType);
-      const { senderMessages, chatMessages } = state;
-      state = {...state, senderMessages: senderMessages.concat(action.senderMessage), chatMessages: chatMessages.concat(action.newMessage)};
+      const {
+        senderMessages, chatMessages
+      } = state;
+      state = {
+        ...state,
+        senderMessages: senderMessages.concat(action.senderMessage),
+        chatMessages: chatMessages.concat(action.newMessage)
+      };
       let soundEffect;
-      switch(action.chatType){
+      switch (action.chatType) {
         case 'pieceUpgrade':
           soundEffect = getSoundEffect('lvlup');
           break;
@@ -511,15 +626,22 @@ const reducer = (
       }
       console.log('newchatmsg')
       tempSoundEffects = getNewSoundEffects(state.soundEffects, soundEffect);
-      state = {...state, soundEffects: tempSoundEffects};
+      state = {
+        ...state,
+        soundEffects: tempSoundEffects
+      };
       break;
     case 'TOGGLE_ALTERNATE_ANIMATION': {
-      state = {...state, alternateAnimation: !state.alternateAnimation}
+      state = {
+        ...state,
+        alternateAnimation: !state.alternateAnimation
+      }
       break;
     }
     case 'SPEC_PLAYER': {
       const index = action.playerIndex;
-      state = {...state,
+      state = {
+        ...state,
         visiting: index,
         myHand: state.players[index].hand,
         myBoard: state.players[index].board,
@@ -534,24 +656,40 @@ const reducer = (
       break;
     }
     case 'SET_MARKED_BUFF': {
-      if(state.markedBuff === action.buff) {
-        state = {...state, displayMarkedBuff: !state.displayMarkedBuff}
+      if (state.markedBuff === action.buff) {
+        state = {
+          ...state,
+          displayMarkedBuff: !state.displayMarkedBuff
+        }
       } else {
-        state = {...state, markedBuff: action.buff, displayMarkedBuff: true}
+        state = {
+          ...state,
+          markedBuff: action.buff,
+          displayMarkedBuff: true
+        }
       }
       break;
     }
     case 'TOGGLE_DISPLAY_MARKED_BUFF': {
-      state = {...state, displayMarkedBuff: !state.displayMarkedBuff}
+      state = {
+        ...state,
+        displayMarkedBuff: !state.displayMarkedBuff
+      }
       break;
     }
     case 'TOGGLE_DEBUG_MODE': {
-      state = {...state, debugMode: !state.debugMode}
+      state = {
+        ...state,
+        debugMode: !state.debugMode
+      }
       break;
     }
     case 'LOADING_STRING': {
-      if(!(state.connected)) {
-        state = {...state, loadingCounter: action.loadingCounter}
+      if (!state.startscreen || !(state.startscreen.connected)) {
+        state = {
+          ...state,
+          loadingCounter: action.loadingCounter
+        }
       }
       break;
     }
@@ -560,5 +698,3 @@ const reducer = (
   }
   return state;
 };
-
-export default reducer;

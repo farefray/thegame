@@ -8,7 +8,7 @@ import { isUndefined } from '../../f';
 class RightPanel extends Component {
   constructor (props) {
     super(props);
-    this.state = {};
+    this.state = {chatMessageInput: ''};
   }
 
   createScoreboardPlayerEntry = (player, isDead) => {
