@@ -309,19 +309,12 @@ function ActiveGame (props) {
     }
     */
 
-  const reducer = (state, action) => {
-    // not sure if it will be required. State changes should be done by direct socket calls, one by one, updating whole state if required.
-    console.log('ActiveGame state reducer');
-    console.log(action);
-    return state;
-  };
-
   return (<div className='gameDiv' tabIndex='0'>
     {/* <TopBar {...this.props} /> */}
     <div className='flex wholeBody'>
       {/* <LeftBar {...this.props} /> */}
       {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
-      <StateProvider initialState={{...appState}} reducer={reducer}>
+      <StateProvider initialState={{...appState}}>
         <GameBoard />
       </StateProvider>
       {/* <GameBoardBottom {...this.props} /> */}

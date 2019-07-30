@@ -28,7 +28,7 @@ export default function BoardSquare ({ cellPosition }) {
     }),
   })
 
-  const [{ onGoingBattle, battleStartBoard, myBoard, myHand }] = useStateValue();
+  const { onGoingBattle, battleStartBoard, myBoard, myHand } = useStateValue();
 
   const isBoard = cellPosition.y !== 0;
 
@@ -36,6 +36,7 @@ export default function BoardSquare ({ cellPosition }) {
   const boardMap = isBoard && onGoingBattle
     ? battleStartBoard : (isBoard ? myBoard : myHand);
   const boardPosition = toBoardPosition(cellPosition.x, cellPosition.y);
+
   const creature = boardMap[boardPosition];
 
   let extraClasses = isOver && canDrop ? 'highlighted' :

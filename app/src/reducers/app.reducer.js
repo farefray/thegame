@@ -2,7 +2,6 @@ import {
   getBackgroundAudio,
   getSoundEffect
 } from '../audio';
-import { updatePlayerName } from '../socket';
 
 const devMode = true;
 
@@ -165,22 +164,6 @@ export function app(state = {
         };
       }
       break;
-    case 'UPDATE_PLAYER_NAME': {
-      const newPlayers = state.players;
-      newPlayers[action.pid].name = action.name
-      if (state.index === action.pid) {
-        state = {
-          ...state,
-          playerName: action.name
-        }
-      }
-      state = {
-        ...state,
-        players: newPlayers,
-      }
-
-      return state;
-    }
     case 'ALL_READY': {
       return {
         ...state,
@@ -191,7 +174,6 @@ export function app(state = {
       }
     }
     case 'ADD_PLAYER': {
-      state.playerName === '' ? updatePlayerName('Player ' + action.index) : updatePlayerName(state.playerName);
       return {
         ...state,
         index: action.index,

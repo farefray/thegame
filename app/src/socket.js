@@ -104,10 +104,6 @@ export const configureSocket = dispatch => {
     dispatch({type: 'DEAD_PLAYER', pid, position});
   });
 
-  socket.on('UPDATE_PLAYER_NAME', (pid, name) => {
-    dispatch({type: 'UPDATE_PLAYER_NAME', pid, name});
-  });
-  
   return socket;
 };
 
@@ -160,8 +156,5 @@ export const sendMessage = message =>
 
 export const getSprites = () => 
   socket.emit('GET_SPRITES');
-
-export const updatePlayerName = (name) => 
-  socket.emit('UPDATE_PLAYER_NAME', name);
 
 export default configureSocket;
