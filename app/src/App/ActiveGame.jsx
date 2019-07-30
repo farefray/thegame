@@ -1,8 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector, shallowEqual } from 'react-redux'
 
 import TopBar from './ActiveGame/TopBar.jsx';
 import LeftBar from './ActiveGame/LeftBar.jsx';
+import Timer from './ActiveGame/Timer.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
 import { StateProvider } from './ActiveGame/GameBoard.context.js';
 
@@ -294,8 +295,12 @@ var visitPlayer = (playerIndex) => {
 
 function ActiveGame (props) {
   const activeBattle = false;
-  console.log(props.gold);
-
+  
+  
+  /*
+   index, storedState, players, player, myHand, myShop, myBoard, onGoingBattle, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
+  */
+  const appState = useSelector(state => state.app, shallowEqual);
   /* TODO start battle from hooks */
   /*
   if (this.props.startBattle === true && !this.state.activeBattle) {
@@ -305,6 +310,7 @@ function ActiveGame (props) {
     */
 
   const reducer = (state, action) => {
+    // not sure if it will be required. State changes should be done by direct socket calls, one by one, updating whole state if required.
     console.log('ActiveGame state reducer');
     console.log(action);
     return state;
@@ -314,19 +320,14 @@ function ActiveGame (props) {
     {/* <TopBar {...this.props} /> */}
     <div className='flex wholeBody'>
       {/* <LeftBar {...this.props} /> */}
-      <StateProvider initialState={props} reducer={reducer}>
+      {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
+      <StateProvider initialState={{...appState}} reducer={reducer}>
         <GameBoard />
       </StateProvider>
       {/* <GameBoardBottom {...this.props} /> */}
-      <RightPanel {...props} />
+      <RightPanel {...appState} />
     </div>
   </div>);
 }
 
-
-function mapStateToProps (state) {
-  const { index, storedState, players, player, myHand, myShop, myBoard, onGoingBattle, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold } = state.app;
-  return { index, storedState, players, player, myHand, myShop, myBoard, onGoingBattle, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold };
-}
-
-export default connect(mapStateToProps)(ActiveGame);
+export default ActiveGame;

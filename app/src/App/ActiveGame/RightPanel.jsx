@@ -241,9 +241,6 @@ class RightPanel extends Component {
                 {'Message: ' + this.props.message}
               </div>
             </div>
-            {/*<div style={{marginLeft: '5px'}}>
-           <button className='rpgui-button test_animation' onClick={() => battleReady(this.props.storedState)}>Battle ready</button>
-         </div>*/}
           </div>
         </div>
         <div>

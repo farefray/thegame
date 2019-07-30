@@ -1,10 +1,12 @@
 import React from 'react'
-import { useStateValue } from '../GameBoard.context.js';
 import { useDrop } from 'react-dnd'
 import ItemTypes from './ItemTypes';
-import Cell from './Cell';
 import { placePieceEvent, canMovePiece } from '../../../events'
 import { toBoardPosition } from '../../../shared/BoardUtils.js';
+
+import { useStateValue } from '../GameBoard.context.js';
+
+import Cell from './Cell';
 import Pawn from './Pawn';
 
 function movePawn (pawn, x, y) {
@@ -26,7 +28,7 @@ export default function BoardSquare ({ cellPosition }) {
     }),
   })
 
-  const [{ onGoingBattle, battleStartBoard, myBoard, myHand }, dispatch] = useStateValue();
+  const [{ onGoingBattle, battleStartBoard, myBoard, myHand }] = useStateValue();
 
   const isBoard = cellPosition.y !== 0;
 

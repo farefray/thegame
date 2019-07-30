@@ -18,11 +18,9 @@ const updateSoundArray = (array, pos, newSound) => {
 }
 
 const getNewSoundEffects = (soundEffects, newSoundEffect) => {
-  // console.log('@getNewSoundEffects', soundEffects, soundEffects.length)
   for (let i = 0; i < soundEffects.length; i++) {
     if (soundEffects[i] !== newSoundEffect) {
       // Overwrites prev sound
-      // console.log('@NewSoundEffect', i, newSoundEffect, 'x', soundEffects[i]);
       return updateSoundArray(soundEffects, i, newSoundEffect);
     }
   }
@@ -110,7 +108,6 @@ export function app(state = {
     soundEffects: ['', '', '', '', '', '', '', '', '', ''],
     music: getBackgroundAudio('mainMenu'),
     volume: 0.05,
-    startTimer: false,
     isDead: true,
     selectedShopUnit: '',
     isSelectModeShop: false,
@@ -144,7 +141,6 @@ export function app(state = {
   switch (action.type) { // Listens to events dispatched from from socket.js    
     case 'NEW_STATE':
       // Update state with incoming data from server
-      console.log('@NewState Players: ', action.newState.players);
       state = {
         ...state,
         storedState: action.newState,
@@ -152,6 +148,7 @@ export function app(state = {
         messageMode: '',
         players: action.newState.players,
         round: action.newState.round,
+        countdown: 15,
       };
       if (action.newState.players[state.index]) {
         state = {
@@ -167,8 +164,6 @@ export function app(state = {
           // lock: action.newState.players[state.index].lock,
         };
       }
-      console.log('New State', action.newState)
-      // console.log(state);
       break;
     case 'UPDATE_PLAYER_NAME': {
       const newPlayers = state.players;
@@ -222,14 +217,12 @@ export function app(state = {
         selectedUnit: -1,
         soundEffects: ['', '', '', '', '', '', '', '', '', ''],
         music: getBackgroundAudio('idle'),
-        startTimer: true,
         isDead: false,
         boardBuffs: {},
         deadPlayers: [],
       }
     }
     case 'UPDATE_PLAYER':
-      // console.log('updating player', action.index, action.player);
       state = {
         ...state,
         // message: 'Updated player', 
@@ -282,10 +275,8 @@ export function app(state = {
         }
       }
       state.storedState.players[action.index] = action.player;
-      // console.log('@Updated player', state.storedState)
       break;
     case 'LOCK_TOGGLED':
-      console.log('Toggled Lock')
       state = {
         ...state,
         lock: action.lock
@@ -317,8 +308,6 @@ export function app(state = {
       const battleStartBoard = action.battleStartBoards[state.index];
       const winner = action.winners[state.index];
       const dmgBoard = action.dmgBoards[state.index];
-      // console.log('New dmg board in reducer', dmgBoard);
-      // console.log('@battle_time', state.soundEffects)
       if (!state.musicEnabled) {
         tempSoundEffects = getNewSoundEffects(state.soundEffects, getSoundEffect('horn'));
         state = {
@@ -362,26 +351,21 @@ export function app(state = {
           dmgBoardTotalDmg: sumObj(dmgBoardVisit),
         }
       }
-      console.log('@battleTime actionStack', state.actionStack);
-      // console.log('@battleTime battleStartBoard', state.battleStartBoard)
       // TODO: BattleStartBoard contain unneccessary amount of information
       break;
     case 'CHANGE_STARTBATTLE':
-      // console.log('FIND ME: Changing StartBattle', action.value);
       state = {
         ...state,
         startBattle: action.value
       }
       break;
     case 'UPDATE_BATTLEBOARD': {
-      // console.log('@reducer.updateBattleBoard: MOVE NUMBER: ', action.moveNumber,'Updating state battleBoard', action.board);
       state = {
         ...state,
         battleStartBoard: action.board,
         message: 'Move ' + action.moveNumber,
         messageMode: ''
       }
-      // console.log('state', state);
       break;
     }
     /*
@@ -391,7 +375,6 @@ export function app(state = {
       state = {...state, battleStartBoard: battleBoard}
     }*/
     case 'SET_STATS':
-      console.log('Updating stats', action.name); // action.stats)
       const statsMap = state.statsMap;
       statsMap[action.name] = action.stats;
       state = {
@@ -442,13 +425,11 @@ export function app(state = {
       break;
     }
     case 'END_BATTLE': {
-      console.log('Battle ended', state.startTimer, action.upcomingRoundType, action.upcomingGymLeader)
       state = {
         ...state,
         onGoingBattle: false,
         round: state.round + 1,
         music: getBackgroundAudio('idle'),
-        startTimer: true,
         showDmgBoard: true,
         roundType: action.upcomingRoundType,
         enemyIndex: (action.upcomingGymLeader || ''),
@@ -457,7 +438,6 @@ export function app(state = {
       break;
     }
     case 'CLEAR_TICKS': {
-      console.log('Clearing ticks!')
       const tempSoundEffects = clearSoundEffect(state.soundEffects, getSoundEffect('Tick'));
       state = {
         ...state,
@@ -472,13 +452,6 @@ export function app(state = {
       }
       break;
     }
-    case 'DISABLE_START_TIMER':
-      state = {
-        ...state,
-        startTimer: false
-      }
-      // console.log('Disabled start timer')
-      break;
     case 'TOGGLE_MUSIC':
       state = {
         ...state,
@@ -492,28 +465,24 @@ export function app(state = {
       }
       break;
     case 'TOGGLE_CHAT_SOUND':
-      // console.log(state.chatSoundEnabled)
       state = {
         ...state,
         chatSoundEnabled: !state.chatSoundEnabled
       }
       break;
     case 'CHANGE_VOLUME':
-      // console.log('@reducer.ChangeVolume', action.newVolume)
       state = {
         ...state,
         volume: action.newVolume
       }; //, music: state.music}
       break;
     case 'NEW_UNIT_SOUND':
-      // console.log('reducer.NewUnitSound', action.newAudio);
       state = {
         ...state,
         selectedSound: action.newAudio
       }
       break;
     case 'NEW_SOUND_EFFECT':
-      // console.log('@red.Newsoundeffect', action.newSoundEffect)
       tempSoundEffects = getNewSoundEffects(state.soundEffects, action.newSoundEffect);
       state = {
         ...state,
@@ -521,7 +490,6 @@ export function app(state = {
       };
       break;
     case 'END_GAME': {
-      console.log('GAME ENDED! Player ' + action.winningPlayer.index + ' won!');
       let newMusic = state.music;
       if (state.index === action.winningPlayer.index) {
         newMusic = getBackgroundAudio('wonGame')
@@ -584,7 +552,6 @@ export function app(state = {
       break;
     }
     case 'NEW_CHAT_MESSAGE':
-      // console.log('@NEW_CHAT_MESSAGE', action.chatType);
       const {
         senderMessages, chatMessages
       } = state;
@@ -606,7 +573,6 @@ export function app(state = {
         default:
           soundEffect = getSoundEffect('pling');
       }
-      console.log('newchatmsg')
       tempSoundEffects = getNewSoundEffects(state.soundEffects, soundEffect);
       state = {
         ...state,

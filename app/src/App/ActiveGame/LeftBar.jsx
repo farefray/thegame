@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Timer from '../Timer';
 import PawnImage from '../PawnImage.jsx';
 import { isUndefined, } from '../../f';
 import { getImage, getTypeImg } from '../../images.js';
@@ -300,8 +299,6 @@ class LeftBar extends Component {
   
   render () {
     return <div className='leftBar'>
-      <Timer startTime={this.props.timerDuration} key={this.props.round} startTimer={this.props.startTimer}
-        storedState={this.props.storedState} dispatch={this.props.dispatch} gameEnded={this.props.gameEnded}></Timer> 
       <div>
         {this.selectedUnitInformation()}
         {this.unitSound()}

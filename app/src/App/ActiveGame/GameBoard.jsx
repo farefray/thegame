@@ -23,9 +23,9 @@ const GameBoard = () => {
   let counter = 0;
   return <div className='board-container rpgui-container framed'>
     <div className='flex center board'>
-      {createEmptyArray(9, 8).map((datarow) => {
-        return <DndProvider key={counter} backend={HTML5Backend}>
-          <div className='board-column' key={counter++}>{
+      <DndProvider backend={HTML5Backend}>
+        {createEmptyArray(9, 8).map((datarow) => {
+          return <div className='board-column' key={counter++}>{
             datarow.map((cellPosition) => {
               const boardPosition = toBoardPosition(cellPosition.x, cellPosition.y);
               return (
@@ -35,8 +35,8 @@ const GameBoard = () => {
               );
             })}
           </div>
-        </DndProvider>
-      })}
+        })}
+      </DndProvider>
     </div>
   </div>
 }
