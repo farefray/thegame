@@ -9,10 +9,10 @@ import { toBoardPosition } from '../../../shared/BoardUtils.js';
 /* TODO */
 /*
   handleCellClick (el) {
-    const unit = (el.props.isBoard ? (el.props.newProps.onGoingBattle ? el.props.newProps.battleStartBoard[this.state.pos] : el.props.newProps.myBoard[this.state.pos]) : el.props.newProps.myHand[this.state.pos]);
+    const unit = (el.props.isBoard ? (el.props.newProps.isActiveBattleGoing ? el.props.newProps.battleStartBoard[this.state.pos] : el.props.newProps.myBoard[this.state.pos]) : el.props.newProps.myHand[this.state.pos]);
     const prevSelectedUnit = el.props.newProps.selectedUnit;
     console.log('@handleCellClick pressed', el.props.value.x, ',', el.props.value.y)
-    // console.log(' -', el.props.isBoard, el.props.newProps.onGoingBattle, this.state.pos, unit, prevSelectedUnit)
+    // console.log(' -', el.props.isBoard, el.props.newProps.isActiveBattleGoing, this.state.pos, unit, prevSelectedUnit)
     // If unit selected -> presses empty -> place piece 
     if (this.state.pos !== prevSelectedUnit.pos) { // Shouldn't do anything if same tile as SELECT_UNIT Tile
       el.props.newProps.dispatch({ type: 'SELECT_UNIT', selectedUnit: { ...el.props.value, isBoard: el.props.isBoard, pos: this.state.pos, unit: unit, displaySell: true } });

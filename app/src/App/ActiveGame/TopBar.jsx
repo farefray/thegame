@@ -38,7 +38,7 @@ class TopBar extends Component {
           </div>
         </div>
         <div className='marginTop5 biggerText text_shadow topBarPadding'>
-          {(this.props.onGoingBattle ? <div className='redFont'>
+          {(this.props.isActiveBattleGoing ? <div className='redFont'>
             {(this.props.enemyIndex ? <span className='nextUpText'>
               {(this.props.players[this.props.enemyIndex] && (this.props.roundType === 'pvp' || this.props.roundType === 'shop') ? 
                 this.props.players[this.props.enemyIndex].name : this.props.enemyIndex) }

@@ -146,12 +146,12 @@ class LeftBar extends Component {
     const className = 'center text_shadow infoPanel';
     const noSelected = <div className={className}><div className={`noSelected`}>No unit selected</div></div>
     if(this.props.stats && !this.props.isSelectModeShop && !isUndefined(this.props.selectedUnit)){
-      let pokemon = (this.props.selectedUnit.isBoard ? (this.props.onGoingBattle && this.props.battleStartBoard ? this.props.battleStartBoard[this.props.selectedUnit.pos] 
+      let pokemon = (this.props.selectedUnit.isBoard ? (this.props.isActiveBattleGoing && this.props.battleStartBoard ? this.props.battleStartBoard[this.props.selectedUnit.pos] 
         : this.props.myBoard[this.props.selectedUnit.pos]) : this.props.myHand[this.props.selectedUnit.pos]);
       if(pokemon){
         this.props.dispatch({type: 'NEW_UNIT_SOUND', newAudio: getUnitAudio(pokemon.name)});
         //console.log('@selectedUnitInformation', pokemon.displayName, pokemon)
-        const displaySell = this.props.selectedUnit.isBoard && this.props.onGoingBattle && this.props.battleStartBoard ? false : this.props.selectedUnit.displaySell;
+        const displaySell = this.props.selectedUnit.isBoard && this.props.isActiveBattleGoing && this.props.battleStartBoard ? false : this.props.selectedUnit.displaySell;
         return this.statsRender(className, pokemon.name, displaySell);
       }
     } else if(this.props.stats && this.props.isSelectModeShop && this.props.selectedShopUnit !== ''){
@@ -309,7 +309,7 @@ class LeftBar extends Component {
           this.displayBuffs() : '')}
       </div>
       <div className='battleEnemyBuffs text_shadow'>
-        {(this.props.onGoingBattle && !Number.isNaN(this.props.enemyIndex) ?
+        {(this.props.isActiveBattleGoing && !Number.isNaN(this.props.enemyIndex) ?
           this.displayEnemyBuffs() : '')}
       </div>
       <div className='flex musicDiv'>

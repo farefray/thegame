@@ -254,10 +254,10 @@ class RightPanel extends Component {
             <input className='check' type='radio' name='helpRadio' onChange={() => this.props.dispatch({ type: 'SET_HELP_MODE', chatHelpMode: 'damageBoard' })} />
             <label className='labels'>Damage</label>
           </div> : '')}
-          {(!this.props.onGoingBattle && this.props.dmgBoard && Object.keys(this.props.dmgBoard).length > 0 && (this.props.showDmgBoard
+          {(!this.props.isActiveBattleGoing && this.props.dmgBoard && Object.keys(this.props.dmgBoard).length > 0 && (this.props.showDmgBoard
             || this.props.chatHelpMode === 'damageBoard') ? <div className='dmgBoardDiv helpText text_shadow'>
               <span className='bold'>Damage Dealt:</span>{this.getDmgBoard(this.props.dmgBoard)}
-            </div> : (this.props.onGoingBattle && this.props.prevDmgBoard && Object.keys(this.props.prevDmgBoard).length > 0 && (this.props.showDmgBoard
+            </div> : (this.props.isActiveBattleGoing && this.props.prevDmgBoard && Object.keys(this.props.prevDmgBoard).length > 0 && (this.props.showDmgBoard
               || this.props.chatHelpMode === 'damageBoard') ? <div className='dmgBoardDiv helpText text_shadow'>
                 <span className='bold'>Damage Dealt Previous Round:</span>{this.getDmgBoard(this.props.prevDmgBoard)}
               </div> : (this.props.help ? this.buildHelp() : '')))}

@@ -83,7 +83,7 @@ export function app(state = {
     exp: -1,
     expToReach: -1,
     gold: -1,
-    onGoingBattle: false, // Most battle checks
+    isActiveBattleGoing: false, // Most battle checks
     isBattle: false, // Used for checking interactions before battle state is received
     enemyIndex: -1,
     roundType: '',
@@ -189,7 +189,7 @@ export function app(state = {
         senderMessages: [],
         storedState: {},
         lock: false,
-        onGoingBattle: false,
+        isActiveBattleGoing: false,
         enemyIndex: -1,
         startBattle: false,
         actionStack: {},
@@ -300,7 +300,7 @@ export function app(state = {
       state = {
         ...state,
         music: (action.enemy ? getBackgroundAudio('pvpbattle') : getBackgroundAudio('battle')),
-        onGoingBattle: true,
+        isActiveBattleGoing: true,
         enemyIndex: action.enemy,
         roundType: action.roundType,
         startBattle: true,
@@ -395,7 +395,7 @@ export function app(state = {
     case 'SET_ONGOING_BATTLE': { // not used, so check
       state = {
         ...state,
-        onGoingBattle: action.value
+        isActiveBattleGoing: action.value
       }
       break;
     }
@@ -409,7 +409,7 @@ export function app(state = {
     case 'END_BATTLE': {
       state = {
         ...state,
-        onGoingBattle: false,
+        isActiveBattleGoing: false,
         round: state.round + 1,
         music: getBackgroundAudio('idle'),
         showDmgBoard: true,

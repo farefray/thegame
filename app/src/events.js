@@ -23,7 +23,7 @@ export function buyUnitEvent(props, index) {
     props.newProps.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});
     return;
   }
-  if(!props.onGoingBattle && props.isBattle){
+  if(!props.isActiveBattleGoing && props.isBattle){
     updateMessage(props.newProps, 'Waiting ...', 'error');
     return;
   }
@@ -50,7 +50,7 @@ export function refreshShopEvent(props) {
     props.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});
     return;
   }
-  if(!props.onGoingBattle && props.isBattle){
+  if(!props.isActiveBattleGoing && props.isBattle){
     updateMessage(props, 'Waiting ...', 'error');
     return;
   }
@@ -68,7 +68,7 @@ export function toggleLockEvent(props) {
     props.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});
     return;
   }
-  if(!props.onGoingBattle && props.isBattle){
+  if(!props.isActiveBattleGoing && props.isBattle){
     updateMessage(props, 'Waiting ...', 'error');
     return;
   }
@@ -82,7 +82,7 @@ export function buyExpEvent(props) {
     props.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});
     return;
   }
-  if(!props.onGoingBattle && props.isBattle){
+  if(!props.isActiveBattleGoing && props.isBattle){
     updateMessage(props, 'Waiting ...', 'error');
     return;
   }
@@ -108,7 +108,7 @@ export function canMovePiece(prop, fromParam, to) {
     return false
   }
 
-  if(!prop.onGoingBattle && prop.isBattle){
+  if(!prop.isActiveBattleGoing && prop.isBattle){
     return false
   }
 
@@ -118,12 +118,12 @@ export function canMovePiece(prop, fromParam, to) {
     const validPos = (splitted.length === 2 ? splitted[1] < 4 && splitted[1] >= 0: true) && splitted[0] < 8 && splitted[0] >= 0;
     const unitExists = (fromSplitted.length === 2 ? prop.myBoard[fromParam] : prop.myHand[from])
     // console.log('@placePieceEvent', fromSplitted, validPos, unitExists, prop.myHand);
-    if(validPos && unitExists && !prop.onGoingBattle){
+    if(validPos && unitExists && !prop.isActiveBattleGoing){
       // console.log('Sending place piece!')
       return true;
     } else {
       // Hand to hand movement during battle allowed
-      if(validPos && unitExists && prop.onGoingBattle && !from.includes(',') && !to.includes(',')) {
+      if(validPos && unitExists && prop.isActiveBattleGoing && !from.includes(',') && !to.includes(',')) {
           return true
       } else {
         return false
@@ -144,7 +144,7 @@ export function placePieceEvent(prop, fromParam, to) {
     prop.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});
     return;
   }
-  if(!prop.onGoingBattle && prop.isBattle){
+  if(!prop.isActiveBattleGoing && prop.isBattle){
     updateMessage(prop, 'Waiting ...', 'error');
     return;
   }
@@ -155,13 +155,13 @@ export function placePieceEvent(prop, fromParam, to) {
     const validPos = (splitted.length === 2 ? splitted[1] < 4 && splitted[1] >= 0: true) && splitted[0] < 8 && splitted[0] >= 0;
     const unitExists = (fromSplitted.length === 2 ? prop.myBoard[fromParam] : prop.myHand[from])
     // console.log('@placePieceEvent', fromSplitted, validPos, unitExists, prop.myHand);
-    if(validPos && unitExists && !prop.onGoingBattle){
+    if(validPos && unitExists && !prop.isActiveBattleGoing){
       // console.log('Sending place piece!')
       placePiece(prop.storedState, from, to);
       prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
     } else {
       // Hand to hand movement during battle allowed
-      if(validPos && unitExists && prop.onGoingBattle && !from.includes(',') && !to.includes(',')) {
+      if(validPos && unitExists && prop.isActiveBattleGoing && !from.includes(',') && !to.includes(',')) {
           placePiece(prop.storedState, from, to);
           prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
       } else {
@@ -183,12 +183,12 @@ export function withdrawPieceEvent(prop, from) {
     prop.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});
     return;
   }
-  if(!prop.onGoingBattle && prop.isBattle){
+  if(!prop.isActiveBattleGoing && prop.isBattle){
     updateMessage(prop, 'Waiting ...', 'error');
     return;
   }
   const size = Object.keys(prop.myHand).length;
-  if(prop.myBoard[from] && !prop.onGoingBattle){ // From contains unit
+  if(prop.myBoard[from] && !prop.isActiveBattleGoing){ // From contains unit
     if(size < 8){
       withdrawPiece(prop.storedState, String(from));
       prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
@@ -209,7 +209,7 @@ export function sellPieceEvent(prop, from) {
     prop.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});
     return;
   }
-  if(!prop.onGoingBattle && prop.isBattle){
+  if(!prop.isActiveBattleGoing && prop.isBattle){
     updateMessage(prop, 'Waiting ...', 'error');
     return;
   }
@@ -217,7 +217,7 @@ export function sellPieceEvent(prop, from) {
   console.log('@sellPiece', validUnit, from, prop.selectedUnit.isBoard)
   // From contains unit, hand unit is ok during battle
   // TODO: Remove false && and fix allowing sellPiece during battle, currently weird
-  if(validUnit && (!prop.onGoingBattle || !prop.selectedUnit.isBoard)){ // false &&
+  if(validUnit && (!prop.isActiveBattleGoing || !prop.selectedUnit.isBoard)){ // false &&
     sellPiece(prop.storedState, String(from));
     prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
     prop.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('sellUnit')});

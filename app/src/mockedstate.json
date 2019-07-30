@@ -63,7 +63,7 @@
     "exp": 0,
     "expToReach": 1,
     "gold": 9999,
-    "onGoingBattle": true,
+    "isActiveBattleGoing": true,
     "isBattle": true,
     "enemyIndex": "Npc Battle",
     "roundType": "npc",
