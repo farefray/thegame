@@ -50,7 +50,7 @@ if (pokemon) {
   // console.log('@rendereding PawnImage classList', classList)
 
   return <div className={`relative`} style={styleVar}>
-      <Pawn position={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+      <Pawn cellPosition={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
       {hpBar}
       {manaBar}
       {actionMessage}
