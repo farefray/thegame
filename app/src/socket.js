@@ -32,7 +32,7 @@ export const configureSocket = dispatch => {
   socket.on('connect', () => {
     console.log('Socket connected');
     dispatch({type: 'SET_CONNECTED', connected: true})
-    giveId();
+    socket.emit('ON_CONNECTION');
   });
 
   socket.on('disconnect', () => {
@@ -122,8 +122,6 @@ export const ready = () =>
 export const unready = () =>
   socket.emit('UNREADY');
 
-export const giveId = () => 
-  socket.emit('GIVE_ID');
 
 export const startGame = amountToPlay => 
   socket.emit('START_GAME', amountToPlay);
@@ -150,8 +148,6 @@ export const sellPiece = (state, from) =>
   socket.emit('SELL_PIECE', state, from);
 
 // I think its unsafe to start round with frontend. Need to handle this timer on socket instead
-export const battleReady = (state) => 
-  socket.emit('BATTLE_READY', state);
 
 export const getStats = (name) => 
   socket.emit('GET_STATS', name);

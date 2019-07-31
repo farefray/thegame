@@ -11,7 +11,7 @@ const gameConstantsJS = require('./game_constants');
 const f = require('./f');
 
 let connectedPlayers = Map({}); // Stores connected players, socketids -> ConnectedUser
-let sessions = Map({}); // Maps sessionIds to sessions
+let sessions = Map({}); // Maps sessionIds to sessions [TODO moved to some database with memory cache?]
 
 const TIME_FACTOR = 15;
 
@@ -93,8 +93,8 @@ module.exports = (socket, io) => {
   */
 
   // TODO Rename, Method used when client connects
-  socket.on('GIVE_ID', async () => {
-    console.log('@Give_id', socket.id);
+  socket.on('ON_CONNECTION', async () => {
+    console.log('@ON_CONNECTION', socket.id);
     const newUser = sessionJS.createUser(socket.id);
     connectedPlayers = connectedPlayers.set(socket.id, newUser);
     countReadyPlayers(false, socket, io);
@@ -138,8 +138,9 @@ module.exports = (socket, io) => {
     });
 
     const scheduleBattleRound = () => {
-
-    }
+      //socket.emit('BATTLE_READY', state);
+      // send battleReady event to players, so they upda
+    };
 
     scheduleBattleRound();
   });
@@ -271,6 +272,7 @@ module.exports = (socket, io) => {
 
   socket.on('BATTLE_READY', async (stateParam) => {
     if (!sessionExist(socket.id)) return;
+
     const index = getPlayerIndex(socket.id);
     const state = fromJS(stateParam); // Shouldn't require pieces in battle
     const amount = state.get('amountOfPlayers');
