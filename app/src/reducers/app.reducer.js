@@ -101,7 +101,6 @@ export function app(state = {
     round: 1,
     musicEnabled: true,
     soundEnabled: true,
-    timerDuration: 30,
     chatSoundEnabled: true,
     selectedSound: '',
     soundEffects: ['', '', '', '', '', '', '', '', '', ''],
@@ -134,7 +133,6 @@ export function app(state = {
       ...state,
       musicEnabled: false,
       soundEnabled: false,
-      timerDuration: 15
     } // Disallows testing sounds currently
   }
   switch (action.type) { // Listens to events dispatched from from socket.js    

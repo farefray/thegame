@@ -136,6 +136,12 @@ module.exports = (socket, io) => {
     emitMessage(socket, io, sessionId, (socketId) => {
       io.to(socketId).emit('UPDATED_STATE', stateToSend);
     });
+
+    const scheduleBattleRound = () => {
+
+    }
+
+    scheduleBattleRound();
   });
 
   // disconnect logic

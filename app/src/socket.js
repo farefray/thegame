@@ -45,6 +45,11 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'NEW_STATE', newState: state});
   });
 
+  // TODO
+  socket.on('START_BATTLE_ROUND', () => {
+    dispatch({ type: 'START_BATTLE_ROUND', startBattle: true});
+  });
+
   socket.on('UPDATE_PLAYER', (index, player) => {
     dispatch({ type: 'UPDATE_PLAYER', index: index, player: player});
   });
