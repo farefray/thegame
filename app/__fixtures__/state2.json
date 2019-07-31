@@ -64,7 +64,6 @@
     "alternateAnimation": true,
     "visiting": "0",
     "showDmgBoard": false,
-    "timerDuration": 15,
     "dmgBoardTotalDmg": 749,
     "markedBuff": "",
     "displayMarkedBuff": false,

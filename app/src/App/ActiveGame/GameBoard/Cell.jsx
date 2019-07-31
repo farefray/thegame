@@ -4,7 +4,6 @@ import React, {
 
 import { getStatsEvent } from '../../../events'
 import { isUndefined } from '../../../f';
-import { toBoardPosition } from '../../../shared/BoardUtils.js';
 
 /* TODO */
 /*
@@ -35,10 +34,9 @@ function handleCellClick(el) {
 }
 
 export default function Cell ({ cellPosition, extraClasses, children }) {
-  const position = toBoardPosition(cellPosition.x, cellPosition.y);
   const className = `cell ${extraClasses}`;
 
-  return <div id={position} className={className} onClick={() => handleCellClick(this)}>
+  return <div id={cellPosition.toBoardPosition()} className={className} onClick={() => handleCellClick(this)}>
     {children}
   </div>;
 }

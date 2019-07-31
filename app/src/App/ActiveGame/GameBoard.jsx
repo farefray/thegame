@@ -2,18 +2,15 @@ import React from 'react';
 import BoardSquare from './GameBoard/BoardSquare.jsx';
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
-import { toBoardPosition } from '../../shared/BoardUtils.js';
+import Position from '../../objects/Position';
 
 const GameBoard = () => {
-  const createEmptyArray = (height, width) => {
+  const createGameBoard = (height, width) => {
     let data = [];
     for (let i = 0; i < height; i++) {
       data[i] = [];
       for (let j = 0; j < width; j++) {
-        data[i][j] = {
-          x: j,
-          y: width - i,
-        };
+        data[i][j] = new Position(j, width - i);
       }
     }
 
@@ -24,12 +21,11 @@ const GameBoard = () => {
   return <div className='board-container rpgui-container framed'>
     <div className='flex center board'>
       <DndProvider backend={HTML5Backend}>
-        {createEmptyArray(9, 8).map((datarow) => {
+        {createGameBoard(9, 8).map((boardColumn) => {
           return <div className='board-column' key={counter++}>{
-            datarow.map((cellPosition) => {
-              const boardPosition = toBoardPosition(cellPosition.x, cellPosition.y);
+            boardColumn.map((cellPosition) => {
               return (
-                <React.Fragment key={boardPosition}>
+                <React.Fragment key={cellPosition.toBoardPosition()}>
                   <BoardSquare cellPosition={cellPosition} />
                 </React.Fragment>
               );

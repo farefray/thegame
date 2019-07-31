@@ -30,16 +30,3 @@ exports.isMyPosition = (position) => {
     && position.y < 4
     && position.x >= 0 && position.x < 8;
 }
-
-exports.isPositionValid = (position) => {
-  const isHand = position.y === 0;
-  const result = position.x
-    && position.y < 4
-    && position.y >= 0
-    && position.x >= 0
-    && position.x < 8;
-
-  return {
-    result, isHand
-  }
-}

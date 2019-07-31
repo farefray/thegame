@@ -4,7 +4,6 @@ import { useDrop } from 'react-dnd'
 import { placePiece} from '../../../socket';
 
 import ItemTypes from './ItemTypes';
-import { toBoardPosition, isMyHandPosition, isMyPosition } from '../../../shared/BoardUtils.js';
 
 import { useStateValue } from '../GameBoard.context.js';
 
@@ -22,16 +21,17 @@ export default function BoardSquare({ cellPosition }) {
       return false;
     }
   
+    const fromBoardPosition = fromPosition.toBoardPosition();
     if (isActiveBattleGoing) {
       // only hand to hand movement is allowed
-      const handUnit = myHand[toBoardPosition(fromPosition)];
-      return (handUnit && isMyHandPosition(fromPosition) && isMyHandPosition(toPosition));
+      const handUnit = myHand[fromBoardPosition];
+      return (handUnit && fromPosition.isMyHandPosition() && toPosition.isMyHandPosition());
     } else {
-      const isPositionFromValid = isMyPosition(fromPosition);
-      const isPositionToValid = isMyPosition(toPosition);
+      const isPositionFromValid = fromPosition.isMyPosition();
+      const isPositionToValid = toPosition.isMyPosition();
 
       if (isPositionFromValid && isPositionToValid) {
-        const handUnit = isMyHandPosition(fromPosition) ? myHand[toBoardPosition(fromPosition)] : myBoard[toBoardPosition(fromPosition)];
+        const handUnit = fromPosition.isMyHandPosition() ? myHand[fromBoardPosition] : myBoard[fromBoardPosition];
         return !!handUnit;
       }
     }
@@ -41,28 +41,27 @@ export default function BoardSquare({ cellPosition }) {
 
   const movePawn = (fromPosition, toPosition) => {
     if (canMovePawn(fromPosition, toPosition)) {
-      placePiece(storedState, toBoardPosition(fromPosition), toBoardPosition(toPosition));
+      placePiece(storedState, fromPosition.toBoardPosition(), toPosition.toBoardPosition());
     }
   }
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: ItemTypes.PAWN,
-    canDrop: (item) => canMovePawn({x: item.position.x, y: item.position.y}, {x:cellPosition.x, y:cellPosition.y}),
-    drop: (item) => movePawn({x: item.position.x, y: item.position.y}, {x:cellPosition.x, y:cellPosition.y}),
+    canDrop: (item) => canMovePawn(item.position, cellPosition),
+    drop: (item) => movePawn(item.position, cellPosition),
     collect: monitor => ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop()
     }),
   })
 
-  const isBoard = cellPosition.y !== 0;
+  const isBoard = cellPosition.isBoard();
 
   // Picking map, its hand, board or battleBoard
   const boardMap = isBoard && isActiveBattleGoing
     ? battleStartBoard : (isBoard ? myBoard : myHand);
-  const boardPosition = toBoardPosition(cellPosition.x, cellPosition.y);
 
-  const creature = boardMap[boardPosition];
+  const creature = boardMap[cellPosition.toBoardPosition()];
 
   let extraClasses = isOver && canDrop ? 'highlighted' :
     (isOver && !canDrop ? 'highlighted__red' : '');

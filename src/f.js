@@ -1,7 +1,7 @@
 const shuffle = require('immutable-shuffle');
 const gameConstantsJS = require('./game_constants');
 
-const BoardUtils = require('../app/src/shared/BoardUtils');
+const Position = require('../app/src/objects/Position');
 
 const isUndefined = obj => (typeof obj === 'undefined');
 exports.isUndefined = obj => isUndefined(obj);
@@ -24,7 +24,7 @@ const y = (position) => {
   return (isUndefined(curr) ? curr : parseInt(curr, 10));
 };
 
-exports.pos = (px, py) => BoardUtils.toBoardPosition(px, py);
+exports.pos = (px, py) => new Position(px, py).toBoardPosition();
 exports.x = position => x(position);
 exports.y = position => y(position);
 
