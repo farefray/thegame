@@ -46,11 +46,11 @@ if (pokemon) {
 
   const back = (this.props.isBoard ? (!isUndefined(pokemon.team) ? pokemon.team === 0 : true) : false);
   const classList = `absolute ${(pokemon.winningAnimation ? ' winningAnimation' : (pokemon.attackAnimation ? ' ' + pokemon.attackAnimation : ''))} ` +
-      `${(this.props.newProps.onGoingBattle && !this.props.isBoard ? 'pawnEnter' : '')}`;
+      `${(this.props.newProps.isActiveBattleGoing && !this.props.isBoard ? 'pawnEnter' : '')}`;
   // console.log('@rendereding PawnImage classList', classList)
 
   return <div className={`relative`} style={styleVar}>
-      <Pawn position={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
+      <Pawn cellPosition={this.state.pos} name={pokemon.name} direction={back ? 1 : 3} sideLength={sideLength} classList={classList} newProps={this.props.newProps} isBoard={this.props.isBoard} />
       {hpBar}
       {manaBar}
       {actionMessage}
