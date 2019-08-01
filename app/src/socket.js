@@ -62,15 +62,10 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'ADD_PLAYER', index: index});
   });
 
-  // TODO Update in reducer for Allready and ready
-  socket.on('ALL_READY', (playersReady, connectedPlayers, allReady) => {
-    dispatch({ type: 'ALL_READY', playersReady: playersReady, connectedPlayers: connectedPlayers, value: allReady});
+  socket.on('WAITINGROOM_STATUS', ({allReady, readyCustomers, totalCustomers}) => {
+    dispatch({ type: 'WAITINGROOM_STATUS', playersReady: readyCustomers, connectedPlayers: totalCustomers, value: allReady});
   });
 
-  socket.on('READY', (playersReady, connectedPlayers) => {
-    dispatch({ type: 'READY', playersReady: playersReady, connectedPlayers: connectedPlayers});
-  });
-  
   socket.on('BATTLE_TIME', (actionStacks, battleStartBoards, winners, dmgBoards, enemy, roundType) => {
     dispatch({ type: 'BATTLE_TIME', actionStacks, battleStartBoards, winners, enemy, dmgBoards, roundType});
   });

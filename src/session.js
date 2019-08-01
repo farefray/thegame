@@ -25,7 +25,7 @@ exports.initializeConnectedPlayers = (connectedPlayersMap) => {
 
 // Default: prepBattleState = undefined
 exports.makeSession = (connectedPlayersInit, pieces) => Map({
-  connectedPlayers: connectedPlayersInit, // Bind socket.id -> playerid (previous connectedPlayer in socketcontroller)
+  connectedPlayers: connectedPlayersInit, // Bind socket.id -> playerid (previous connectedPlayer in socket controller)
   counter: START_COUNTER_VALUE,
   pieces,
   discardedPieces: List([]),

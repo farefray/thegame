@@ -23,22 +23,41 @@ ConnectedPlayers.prototype.set = function (socketID, customer) {
   return this.storage[socketID];
 };
 
-ConnectedPlayers.prototype.updateReadyStatus = function () {
+// TODO this can be executed only for waiting room customers!
+ConnectedPlayers.prototype.getWaitingRoomStatus = function () {
   let readyCustomers = 0;
   let notReadyCustomers = 0;
   Object.keys(this.storage).forEach((socketID) => {
     const customer = this.get(socketID);
-    if (customer.isReady) {
+    if (customer.isReady === true) {
       readyCustomers++;
-    } else {
+    } else if (customer.isReady === false) {
       notReadyCustomers++;
     }
   });
 
   return {
-    allReady: readyCustomers === notReadyCustomers && readyCustomers > 0,
+    allReady: notReadyCustomers === 0 && readyCustomers > 0,
+    readyCustomers,
     totalCustomers: readyCustomers + notReadyCustomers
   };
+};
+
+ConnectedPlayers.prototype.disconnect = function (socketID) {
+  if (this.get(socketID)) {
+    delete this.storage[socketID];
+  }
+};
+
+/**
+ * @param {String} socketID
+ * @param {Array} updateArray [field, value]
+ */
+ConnectedPlayers.prototype.setIn = function (socketID, updateArray) {
+  const customer = this.get(socketID);
+  if (customer) {
+    customer.set(updateArray[0], updateArray[1]);
+  }
 };
 
 module.exports = ConnectedPlayers;

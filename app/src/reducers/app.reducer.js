@@ -162,15 +162,6 @@ export function app(state = {
         };
       }
       break;
-    case 'ALL_READY': {
-      return {
-        ...state,
-        connectedPlayers: action.connectedPlayers,
-        allReady: action.value,
-        gameIsLive: false,
-        music: getBackgroundAudio('mainMenu'),
-      }
-    }
     case 'ADD_PLAYER': {
       return {
         ...state,
