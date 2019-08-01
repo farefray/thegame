@@ -11,7 +11,7 @@
     "pretest": "eslint ./src && mocha --exit",
     "posttest": "mocha --exit && eslint ./src",
     "test": "mocha --exit",
-    "mocha": "mocha --exit",
+    "mocha": "mocha -w",
     "lint": "eslint ./src",
     "lintfix": "eslint --fix ./src"
   },
@@ -44,6 +44,7 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.0",
-    "eslint-plugin-react": "^7.12.4"
+    "eslint-plugin-react": "^7.12.4",
+    "should": "^13.2.3"
   }
 }

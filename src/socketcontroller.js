@@ -15,7 +15,7 @@ const f = require('./f');
 const ConnectedPlayers = require('./models/connectedPlayers');
 
 // Init connected players models\
-const connectedPlayers = ConnectedPlayers();
+const connectedPlayers = new ConnectedPlayers();
 
 let sessions = Map({}); // Maps sessionIds to sessions [TODO moved to some database with memory cache?]
 
@@ -31,18 +31,14 @@ const sessionExist = (socketId) => {
   return !f.isUndefined(sessions.get(connectedPlayers.get(socketId).get('sessionId'))); // Crashed here somehow, early
 };
 
-const emitMessage = (socket, io, sessionId, func) => {
-  const iter = connectedPlayers.keys();
-  let temp = iter.next();
-  while (!temp.done) {
-    const socketId = temp.value;
-    const connectedUser = connectedPlayers.get(socketId);
-    // Valid connection
-    if (connectedUser && (connectedUser.get('sessionId') === sessionId || (sessionId === true && (connectedUser.get('sessionId') === true || connectedUser.get('sessionId') === false)))) {
-      func(socketId);
+const emitMessage = (socket, io, sessionId, callback) => {
+  connectedPlayers.keys().forEach((socketID) => {
+    const customer = connectedPlayers.get(socketID);
+    // TODO
+    if (customer && (customer.get('sessionId') === sessionId || (sessionId === true && (connectedUser.get('sessionId') === true || connectedUser.get('sessionId') === false)))) {
+        callback(socketID);
     }
-    temp = iter.next();
-  }
+  });
 };
 
 const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type = 'chat') => {
@@ -50,39 +46,6 @@ const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type 
   emitMessage(socket, io, getSessionId(socketIdParam), (socketId) => {
     io.to(socketId).emit('NEW_CHAT_MESSAGE', senderName, newMessage, type);
   });
-};
-
-const countReadyPlayers = (isReadyAction, socket, io) => {
-  const iter = connectedPlayers.keys();
-  let temp = iter.next();
-  let counterReady = 0;
-  let counterPlayersWaiting = 0;
-  // console.log('@countReadyPlayers', connectedPlayers, sessions)
-  while (!temp.done) {
-    const id = temp.value;
-    // Compares to true since sessionId = true => ready (if value -> not ready)
-    const sessionId = getSessionId(id);
-    // console.log('@inside - sessionId for', temp.value, ':', sessionId, connectedPlayers.get(id), connectedPlayers.get(id).get('sessionId'));
-    counterReady = (sessionId === true ? counterReady + 1 : counterReady);
-    counterPlayersWaiting = (sessionId === false || sessionId === true ? counterPlayersWaiting + 1 : counterPlayersWaiting);
-    temp = iter.next();
-  }
-  if (counterReady === counterPlayersWaiting) {
-    emitMessage(socket, io, true, (socketId) => {
-      io.to(socketId).emit('ALL_READY', counterReady, counterPlayersWaiting, true);
-    });
-    // io.emit('ALL_READY', counterReady, counterPlayersWaiting, true);
-  } else if (!isReadyAction) { // Someone went unready
-    emitMessage(socket, io, true, (socketId) => {
-      io.to(socketId).emit('ALL_READY', counterReady, counterPlayersWaiting, false);
-    });
-    // io.emit('ALL_READY', counterReady, counterPlayersWaiting, false);
-  } else {
-    emitMessage(socket, io, true, (socketId) => {
-      io.to(socketId).emit('READY', counterReady, counterPlayersWaiting);
-    });
-    // io.emit('READY', counterReady, counterPlayersWaiting);
-  }
 };
 
 const getStateToSend = state => state.delete('pieces').delete('discardedPieces');
@@ -101,15 +64,43 @@ module.exports = (socket, io) => {
   // TODO Rename, Method used when client connects
   socket.on('ON_CONNECTION', async () => {
     console.log('@ON_CONNECTION', socket.id);
-    await connectedPlayers.set(socket.id, new Customer(socket.id));
-    countReadyPlayers(false, socket, io);
+    connectedPlayers.set(socket.id, new Customer(socket.id));
+
     // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
+    const status = connectedPlayers.updateReadyStatus();
+
+    // New customer was added, so game is not ready
+    emitMessage(socket, io, true, (socketId) => {
+      io.to(socketId).emit('ALL_READY', status.readyCustomers, status.totalCustomers, false);
+    });
   });
 
   socket.on('READY', async () => {
     await connectedPlayers.setIn([socket.id, 'sessionId'], true); // Ready
     console.log('Player is ready');
-    countReadyPlayers(true, socket, io);
+    const readyStatus = countReadyPlayers(true, socket, io); // TODO
+
+    if (readyStatus.allReady) {
+      emitMessage(socket, io, true, (socketId) => {
+        io.to(socketId).emit('ALL_READY', counterReady, counterPlayersWaiting, true);
+      });
+      if (counterReady === counterPlayersWaiting) {
+        emitMessage(socket, io, true, (socketId) => {
+          io.to(socketId).emit('ALL_READY', counterReady, counterPlayersWaiting, true);
+        });
+        // io.emit('ALL_READY', counterReady, counterPlayersWaiting, true);
+      } else if (!isReadyAction) { // Someone went unready
+        emitMessage(socket, io, true, (socketId) => {
+          io.to(socketId).emit('ALL_READY', counterReady, counterPlayersWaiting, false);
+        });
+        // io.emit('ALL_READY', counterReady, counterPlayersWaiting, false);
+      } else {
+        emitMessage(socket, io, true, (socketId) => {
+          io.to(socketId).emit('READY', counterReady, counterPlayersWaiting);
+        });
+        // io.emit('READY', counterReady, counterPlayersWaiting);
+      }
+    }
   });
 
   socket.on('UNREADY', async () => {

@@ -1,5 +1,3 @@
-const Keyv = require('keyv');
-
 /**
  * Instance for storing connected players and their sessions.
  * Also includes helper methods which are supposed to make easier data extracting and workout
@@ -7,20 +5,40 @@ const Keyv = require('keyv');
  * @returns {ConnectedPlayers}
  */
 function ConnectedPlayers() {
-  this.storage = new Keyv();
-  this.storage.on('error', err => console.log('Keyv connection Error', err));
+  this.storage = {};
   return this;
 }
 
-ConnectedPlayers.prototype.getSession = async function (sessID) {
-  const session = await this.storage.get(sessID);
-  return session;
+ConnectedPlayers.prototype.get = function (socketID) {
+  const session = this.storage[socketID];
+  return session || null;
 };
 
-ConnectedPlayers.prototype.set = async function (sessID, customer) {
-  await this.storage.set(sessID, customer);
-  return true;
+ConnectedPlayers.prototype.keys = function () {
+  return Object.keys(this.storage);
 };
 
-ConnectedPlayers.prototype.setIn = async function
+ConnectedPlayers.prototype.set = function (socketID, customer) {
+  this.storage[socketID] = customer;
+  return this.storage[socketID];
+};
+
+ConnectedPlayers.prototype.updateReadyStatus = function () {
+  let readyCustomers = 0;
+  let notReadyCustomers = 0;
+  Object.keys(this.storage).forEach((socketID) => {
+    const customer = this.get(socketID);
+    if (customer.isReady) {
+      readyCustomers++;
+    } else {
+      notReadyCustomers++;
+    }
+  });
+
+  return {
+    allReady: readyCustomers === notReadyCustomers && readyCustomers > 0,
+    totalCustomers: readyCustomers + notReadyCustomers
+  };
+};
+
 module.exports = ConnectedPlayers;
