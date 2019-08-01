@@ -1,6 +1,8 @@
 
 
 const { Map, fromJS } = require('immutable');
+const Customer = require('./objects/Customer');
+
 const gameJS = require('./game');
 const BattleJS = require('./game/battle.js');
 const StateJS = require('./game/state');
@@ -10,7 +12,11 @@ const abilitiesJS = require('./abilities');
 const gameConstantsJS = require('./game_constants');
 const f = require('./f');
 
-let connectedPlayers = Map({}); // Stores connected players, socketids -> ConnectedUser
+const ConnectedPlayers = require('./models/connectedPlayers');
+
+// Init connected players models\
+const connectedPlayers = ConnectedPlayers();
+
 let sessions = Map({}); // Maps sessionIds to sessions [TODO moved to some database with memory cache?]
 
 const TIME_FACTOR = 15;
@@ -95,20 +101,19 @@ module.exports = (socket, io) => {
   // TODO Rename, Method used when client connects
   socket.on('ON_CONNECTION', async () => {
     console.log('@ON_CONNECTION', socket.id);
-    const newUser = sessionJS.createUser(socket.id);
-    connectedPlayers = connectedPlayers.set(socket.id, newUser);
+    await connectedPlayers.set(socket.id, new Customer(socket.id));
     countReadyPlayers(false, socket, io);
-    // TODO: Handle many connected players
+    // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
   });
 
   socket.on('READY', async () => {
-    connectedPlayers = connectedPlayers.setIn([socket.id, 'sessionId'], true); // Ready
+    await connectedPlayers.setIn([socket.id, 'sessionId'], true); // Ready
     console.log('Player is ready');
     countReadyPlayers(true, socket, io);
   });
 
   socket.on('UNREADY', async () => {
-    connectedPlayers = connectedPlayers.setIn([socket.id, 'sessionId'], false); // Unready
+    await connectedPlayers.setIn([socket.id, 'sessionId'], false); // Unready
     console.log('Player went unready');
     countReadyPlayers(false, socket, io);
   });
