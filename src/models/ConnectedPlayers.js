@@ -23,7 +23,7 @@ ConnectedPlayers.prototype.set = function (socketID, customer) {
   return this.storage[socketID];
 };
 
-// TODO this can be executed only for waiting room customers!
+// TODO: this can be executed only for waiting room customers!
 ConnectedPlayers.prototype.getWaitingRoomStatus = function () {
   let readyCustomers = 0;
   let notReadyCustomers = 0;

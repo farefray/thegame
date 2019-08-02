@@ -2,6 +2,7 @@
 
 const { Map, fromJS } = require('immutable');
 const Customer = require('./objects/Customer');
+const Session = require('./objects/Session');
 
 const gameJS = require('./game');
 const BattleJS = require('./game/battle.js');
@@ -12,12 +13,12 @@ const abilitiesJS = require('./abilities');
 const gameConstantsJS = require('./game_constants');
 const f = require('./f');
 
-const ConnectedPlayers = require('./models/connectedPlayers');
+const ConnectedPlayers = require('./models/ConnectedPlayers');
+const SessionsStore = require('./models/SessionsStore');
 
 // Init connected players models\
 const connectedPlayers = new ConnectedPlayers();
-
-let sessions = Map({}); // Maps sessionIds to sessions [TODO moved to some database with memory cache?]
+const sessionsStore = new SessionsStore();
 
 const TIME_FACTOR = 15;
 
@@ -124,36 +125,38 @@ function SocketController(socket, io) {
   });
 
 
-  socket.on('START_GAME', async (amountToPlay) => {
-    const readyPlayers = connectedPlayers.filter(player => player.get('sessionId') === true); // || player.get('sessionId') === false
-    const sessionConnectedPlayers = sessionJS.initializeConnectedPlayers(readyPlayers);
-    const sessionId = sessionJS.findFirstAvailableIndex(sessions);
-    connectedPlayers = await sessionJS.updateSessionIds(connectedPlayers, Array.from(sessionConnectedPlayers.keys()), sessionId);
-    const state = await gameJS.startGameGlobal(amountToPlay);
-    // Set pieces in Session
-    const newSession = sessionJS.makeSession(sessionConnectedPlayers, state.get('pieces'));
-    sessions = sessions.set(sessionId, newSession);
-    console.log('Starting game!');
-    // Send to all connected sockets
-    const stateToSend = getStateToSend(state); // .setIn(['players', '0', 'gold'], 1000);
-    console.log('@startGame', socket.id, sessionConnectedPlayers); // stateToSend);
-    const iter = sessionConnectedPlayers.keys();
-    let temp = iter.next();
-    while (!temp.done) {
-      const id = temp.value;
-      io.to(`${id}`).emit('ADD_PLAYER', sessionConnectedPlayers.get(id));
-      temp = iter.next();
-    }
-    emitMessage(socket, io, sessionId, (socketId) => {
-      io.to(socketId).emit('UPDATED_STATE', stateToSend);
+  socket.on('START_GAME', async () => {
+    // TODO: check if all customers are ready
+    const session = new Session();
+    io.in('WAITING_ROOM').clients(async (err, clients) => {
+      console.log('setting session for waiting room', clients);
+
+      if (err) {
+        throw new Error(err);
+      }
+
+      const state = await gameJS.startGameGlobal(clients.length); // TODO
+      session.set('state', state);
+      session.set('customers', clients);
+      session.set('session', sessionJS.makeSession(clients, state.get('pieces'))); // TODO
+      SessionsStore.store(session);
+
+      console.log('Starting game!');
+      clients.forEach((socketID) => {
+        connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers
+        io.to(socketID).emit('ADD_PLAYER', socketID); // ??
+      });
+
+      const stateToSend = getStateToSend(state);
+      io.to('WAITING_ROOM').emit('UPDATED_STATE', stateToSend);
+
+      const scheduleBattleRound = () => {
+        //socket.emit('BATTLE_READY', state);
+        // send battleReady event to players, so they upda
+      };
+
+      scheduleBattleRound();
     });
-
-    const scheduleBattleRound = () => {
-      //socket.emit('BATTLE_READY', state);
-      // send battleReady event to players, so they upda
-    };
-
-    scheduleBattleRound();
   });
 
   

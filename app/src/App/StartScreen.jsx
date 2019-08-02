@@ -30,11 +30,11 @@ class StartScreen extends Component {
     this.props.ready ? unready() : ready();
   };
 
-  startGameEvent = (forceStart = false) => {
-    console.log('@startGameEvent', forceStart)
-    if (this.props.allReady || forceStart) {
+  startGameEvent = () => {
+    console.log('@startGameEvent')
+    if (this.props.allReady) {
       console.log('Starting')
-      startGame(this.props.playersReady);
+      startGame();
     } else {
       console.log('Not starting')
     }

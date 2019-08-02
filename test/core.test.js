@@ -3,11 +3,14 @@ const assert = require('assert');
 const should = require('should');
 const rewire = require('rewire');
 
-const ConnectedPlayers = rewire('../src/models/connectedPlayers.js');
+const ConnectedPlayers = rewire('../src/models/ConnectedPlayers.js');
+const SessionsStore = rewire('../src/models/SessionsStore.js');
+
 const Customer = rewire('../src/objects/Customer.js');
+const Session = rewire('../src/objects/Session.js');
 
 describe('Core Modules', () => {
-  describe('ConnectedPlayers Storage', () => {
+  describe('ConnectedPlayers Storage and Game start', () => {
     const connectedPlayers = new ConnectedPlayers();
     const socketID_1 = 'socketID_1';
     const socketID_2 = 'socketID_2';
@@ -43,5 +46,22 @@ describe('Core Modules', () => {
       status.allReady.should.equal(true);
       status.totalCustomers.should.equal(1);
     });
+  });
+
+  describe('Sessions and SessionStore', () => {
+    const sessionsStore = new SessionsStore();
+    let session = null;
+    it('Can create session', () => {
+      session = new Session();
+      session.should.have.property('ID');
+    });
+
+    it('Can store session', () => {
+      SessionsStore.store(session);
+      const sessID = session.get('ID');
+      const savedSession = sessionsStore.get(sessID);
+      savedSession.ID.should.equal(sessID);
+    });
+
   });
 });

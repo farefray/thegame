@@ -62,8 +62,8 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'ADD_PLAYER', index: index});
   });
 
-  socket.on('WAITINGROOM_STATUS', ({allReady, readyCustomers, totalCustomers}) => {
-    dispatch({ type: 'WAITINGROOM_STATUS', playersReady: readyCustomers, connectedPlayers: totalCustomers, value: allReady});
+  socket.on('WAITINGROOM_STATUS', ({readyCustomers, totalCustomers, allReady}) => {
+    dispatch({ type: 'WAITINGROOM_STATUS', playersReady: readyCustomers, connectedPlayers: totalCustomers, allReady: allReady});
   });
 
   socket.on('BATTLE_TIME', (actionStacks, battleStartBoards, winners, dmgBoards, enemy, roundType) => {
@@ -118,8 +118,8 @@ export const unready = () =>
   socket.emit('UNREADY');
 
 
-export const startGame = amountToPlay => 
-  socket.emit('START_GAME', amountToPlay);
+export const startGame = () => 
+  socket.emit('START_GAME');
 
 export const toggleLock = (state) => 
   socket.emit('TOGGLE_LOCK', state);
