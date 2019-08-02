@@ -11,6 +11,10 @@ const BattleJS = require('./game/battle');
 const StateJS = require('./game/state');
 const BoardJS = require('./game/board');
 
+const State = require('./objects/State');
+const Player = require('./objects/Player');
+
+
 // Cost of 2 gold(todo check for balance?)
 exports.refreshShopGlobal = async (stateParam, index) => {
   const state = stateParam.setIn(['players', index, 'gold'], stateParam.getIn(['players', index, 'gold']) - 2);
@@ -116,23 +120,20 @@ exports.removeDeadPlayer = async (stateParam, playerIndex) => {
 };
 
 
-/**
- * Initialize all shops for all players
- * Round already set to 1
- */
-async function startGame(stateParam) {
-  let state = stateParam;
-  const iter = state.get('players').keys();
-  let temp = iter.next();
-  while (!temp.done) {
-    state = await shopJS.refreshShop(state, temp.value);
-    temp = iter.next();
+const deckJS = require('./deck');
+
+exports.initGame = async (amountPlaying) => {
+  const playersArray = [];
+  for (let i = 0; i < amountPlaying; i++) {
+    playersArray.push(new Player(String(i)));
   }
+
+  let state = new State(playersArray, deckJS.getDecks());
+
+  // TODO better way
+  for (let i = 0; i < amountPlaying; i++) {
+    state = await shopJS.refreshShop(state, playersArray[i].get('index'));
+  }
+
   return state;
-}
-
-
-exports.startGameGlobal = async (amountPlaying) => {
-  const state = await StateJS.initEmpty(amountPlaying);
-  return startGame(state);
 };

@@ -4,7 +4,7 @@ const { Map, fromJS } = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
-const gameJS = require('./game');
+const gameController = require('./game');
 const BattleJS = require('./game/battle.js');
 const StateJS = require('./game/state');
 const sessionJS = require('./session');
@@ -135,11 +135,11 @@ function SocketController(socket, io) {
         throw new Error(err);
       }
 
-      const state = await gameJS.startGameGlobal(clients.length); // TODO
+      const state = await gameController.initGame(clients.length); // TODO
       session.set('state', state);
       session.set('customers', clients);
       session.set('session', sessionJS.makeSession(clients, state.get('pieces'))); // TODO
-      SessionsStore.store(session);
+      sessionsStore.store(session);
 
       console.log('Starting game!');
       clients.forEach((socketID) => {
@@ -163,11 +163,11 @@ function SocketController(socket, io) {
 
   socket.on('TOGGLE_LOCK', async (stateParam) => {
     const index = getPlayerIndex(socket.id);
-    // const state = await gameJS.toggleLock(fromJS(stateParam), index);
+    // const state = await gameController.toggleLock(fromJS(stateParam), index);
     const prevLock = (fromJS(stateParam)).getIn(['players', index, 'locked']);
     console.log('Toggling Lock for Shop! prev lock =', prevLock);
     socket.emit('LOCK_TOGGLED', index, !prevLock);
-    const state = await gameJS.toggleLock((fromJS(stateParam)), index);
+    const state = await gameController.toggleLock((fromJS(stateParam)), index);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
   });
 
@@ -176,7 +176,7 @@ function SocketController(socket, io) {
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
     // console.log('@BuyUnit', stateWithPieces,'\nSTATE BEFORE', fromJS(stateParam), stateParam);
     // console.log('Discarded pieces inc', fromJS(stateParam).get('discardedPieces'));
-    const state = await gameJS.buyUnit(stateWithPieces, index, pieceIndex);
+    const state = await gameController.buyUnit(stateWithPieces, index, pieceIndex);
     // Gold, shop, hand
     // URGENT TODO CHECK GOLD HERE
     console.log('Bought unit at', pieceIndex, '. #discarded =', state.get('discardedPieces').size);
@@ -191,7 +191,7 @@ function SocketController(socket, io) {
   socket.on('BUY_EXP', async (stateParam) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.buyExp(stateWithPieces, index);
+    const state = await gameController.buyExp(stateWithPieces, index);
     // Gold, shop, hand
     console.log('Bought exp, Player', index);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
@@ -203,7 +203,7 @@ function SocketController(socket, io) {
   socket.on('REFRESH_SHOP', async (stateParam) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.refreshShopGlobal(stateWithPieces, index);
+    const state = await gameController.refreshShopGlobal(stateWithPieces, index);
     console.log('Refreshes Shop, level', state.getIn(['players', index, 'level']), 'Player', index);
     // Requires Shop and Pieces
     // socket.emit('UPDATED_PIECES', state);
@@ -217,7 +217,7 @@ function SocketController(socket, io) {
   socket.on('PLACE_PIECE', async (stateParam, from, to) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const obj = await gameJS.placePieceGlobal(stateWithPieces, index, from, to);
+    const obj = await gameController.placePieceGlobal(stateWithPieces, index, from, to);
     const state = obj.get('state');
     const evolutionDisplayName = obj.get('upgradeOccured');
     //  console.log('@PlacePieceSocket', evolutionDisplayName);
@@ -239,7 +239,7 @@ function SocketController(socket, io) {
   socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.withdrawPieceGlobal(stateWithPieces, index, from);
+    const state = await gameController.withdrawPieceGlobal(stateWithPieces, index, from);
     console.log('Withdraw piece at ', from);
     // Hand and board
     emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
@@ -250,7 +250,7 @@ function SocketController(socket, io) {
   socket.on('SELL_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.sellPieceGlobal(stateWithPieces, index, from);
+    const state = await gameController.sellPieceGlobal(stateWithPieces, index, from);
     console.log('Sell piece at ', from);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
     sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
@@ -382,7 +382,7 @@ function SocketController(socket, io) {
               });
             } else { // Player eliminated but game is not over
               console.log('Death:', pid);
-              stateEndedTurn = await gameJS.removeDeadPlayer(stateEndedTurn, pid);
+              stateEndedTurn = await gameController.removeDeadPlayer(stateEndedTurn, pid);
               const playerName = sessionJS.getPlayerNameSession(session, pid);
               const amountOfPlayers = stateEndedTurn.get('amountOfPlayers');
               newChatMessage(socket, io, socket.id, `${playerName} Eliminated - `, `Alive players: ${amountOfPlayers}`, 'playerEliminated');

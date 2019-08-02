@@ -57,7 +57,7 @@ describe('Core Modules', () => {
     });
 
     it('Can store session', () => {
-      SessionsStore.store(session);
+      sessionsStore.store(session);
       const sessID = session.get('ID');
       const savedSession = sessionsStore.get(sessID);
       savedSession.ID.should.equal(sessID);

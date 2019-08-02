@@ -92,8 +92,6 @@ exports.printBoard = async (boardParam, moveParam) => {
   p('');
 };
 
-exports.removeFromPieceStorage = async (pieceStorage, id, index) => pieceStorage.set(id, pieceStorage.get(id).splice(index, 1));
-
 exports.push = (state, id, value) => state.set(id, state.get(id).push(value));
 
 exports.shuffle = (state, id) => state.set(id, shuffle(state.get(id)));
