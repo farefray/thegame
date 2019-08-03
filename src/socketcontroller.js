@@ -1,7 +1,10 @@
 
 
 const { Map, fromJS } = require('immutable');
-const gameJS = require('./game');
+const Customer = require('./objects/Customer');
+const Session = require('./objects/Session');
+
+const gameController = require('./game');
 const BattleJS = require('./game/battle.js');
 const StateJS = require('./game/state');
 const sessionJS = require('./session');
@@ -10,8 +13,12 @@ const abilitiesJS = require('./abilities');
 const gameConstantsJS = require('./game_constants');
 const f = require('./f');
 
-let connectedPlayers = Map({}); // Stores connected players, socketids -> ConnectedUser
-let sessions = Map({}); // Maps sessionIds to sessions
+const ConnectedPlayers = require('./models/ConnectedPlayers');
+const SessionsStore = require('./models/SessionsStore');
+
+// Init connected players models\
+const connectedPlayers = new ConnectedPlayers();
+const sessionsStore = new SessionsStore();
 
 const TIME_FACTOR = 15;
 
@@ -25,20 +32,6 @@ const sessionExist = (socketId) => {
   return !f.isUndefined(sessions.get(connectedPlayers.get(socketId).get('sessionId'))); // Crashed here somehow, early
 };
 
-const emitMessage = (socket, io, sessionId, func) => {
-  const iter = connectedPlayers.keys();
-  let temp = iter.next();
-  while (!temp.done) {
-    const socketId = temp.value;
-    const connectedUser = connectedPlayers.get(socketId);
-    // Valid connection
-    if (connectedUser && (connectedUser.get('sessionId') === sessionId || (sessionId === true && (connectedUser.get('sessionId') === true || connectedUser.get('sessionId') === false)))) {
-      func(socketId);
-    }
-    temp = iter.next();
-  }
-};
-
 const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type = 'chat') => {
   sessionJS.pushSessionMessage(socketIdParam, connectedPlayers, sessions, newMessage);
   emitMessage(socket, io, getSessionId(socketIdParam), (socketId) => {
@@ -46,137 +39,133 @@ const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type 
   });
 };
 
-const countReadyPlayers = (isReadyAction, socket, io) => {
-  const iter = connectedPlayers.keys();
-  let temp = iter.next();
-  let counterReady = 0;
-  let counterPlayersWaiting = 0;
-  // console.log('@countReadyPlayers', connectedPlayers, sessions)
-  while (!temp.done) {
-    const id = temp.value;
-    // Compares to true since sessionId = true => ready (if value -> not ready)
-    const sessionId = getSessionId(id);
-    // console.log('@inside - sessionId for', temp.value, ':', sessionId, connectedPlayers.get(id), connectedPlayers.get(id).get('sessionId'));
-    counterReady = (sessionId === true ? counterReady + 1 : counterReady);
-    counterPlayersWaiting = (sessionId === false || sessionId === true ? counterPlayersWaiting + 1 : counterPlayersWaiting);
-    temp = iter.next();
-  }
-  if (counterReady === counterPlayersWaiting) {
-    emitMessage(socket, io, true, (socketId) => {
-      io.to(socketId).emit('ALL_READY', counterReady, counterPlayersWaiting, true);
-    });
-    // io.emit('ALL_READY', counterReady, counterPlayersWaiting, true);
-  } else if (!isReadyAction) { // Someone went unready
-    emitMessage(socket, io, true, (socketId) => {
-      io.to(socketId).emit('ALL_READY', counterReady, counterPlayersWaiting, false);
-    });
-    // io.emit('ALL_READY', counterReady, counterPlayersWaiting, false);
-  } else {
-    emitMessage(socket, io, true, (socketId) => {
-      io.to(socketId).emit('READY', counterReady, counterPlayersWaiting);
-    });
-    // io.emit('READY', counterReady, counterPlayersWaiting);
-  }
+const emitMessage = (socket, io, sessionId, callback) => {
+  connectedPlayers.keys().forEach((socketID) => {
+    const customer = connectedPlayers.get(socketID);
+    // TODO
+    if (customer && (customer.get('sessionId') === sessionId || (sessionId === true && (connectedUser.get('sessionId') === true || connectedUser.get('sessionId') === false)))) {
+        callback(socketID);
+    }
+  });
 };
 
-const getStateToSend = state => state.delete('pieces').delete('discardedPieces');
 
-module.exports = (socket, io) => {
-  /*
-    Example io code
-    io.on('connection', function(socket){
-        socket.emit('request', ); // emit an event to the socket
-        io.emit('broadcast', ); // emit an event to all connected sockets
-        socket.on('reply', function(){  }); // listen to the event
-        socket.broadcast.emit('UPDATED_PIECES', state); (Didn't work, check)
-    });
-  */
+/*
+  Example io code
+  io.on('connection', function(socket){
+      socket.emit('request', ); // emit an event to the socket
+      io.emit('broadcast', ); // emit an event to all connected sockets
+      socket.on('reply', function(){  }); // listen to the event
+      socket.broadcast.emit('UPDATED_PIECES', state); (Didn't work, check)
+  });
+*/
 
-  // TODO Rename, Method used when client connects
-  socket.on('GIVE_ID', async () => {
-    console.log('@Give_id', socket.id);
-    const newUser = sessionJS.createUser(socket.id);
-    connectedPlayers = connectedPlayers.set(socket.id, newUser);
-    countReadyPlayers(false, socket, io);
-    // TODO: Handle many connected players
+/**
+ * @instance
+ * @returns {SocketController}
+ */
+function SocketController(socket, io) {
+  this.onConnection = () => {
+    socket.join('WAITING_ROOM'); // place new customers to waiting room
+  };
+
+  const waitingRoomUpdateStatus = () => {
+    const status = connectedPlayers.getWaitingRoomStatus();
+    io.to('WAITING_ROOM').emit('WAITINGROOM_STATUS', status);
+  };
+
+  socket.on('ON_CONNECTION', async () => {
+    console.log('@ON_CONNECTION', socket.id);
+    connectedPlayers.set(socket.id, new Customer(socket.id));
+
+    // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
+    // New customer was added, so game is not ready, need to update ready status
+    waitingRoomUpdateStatus();
   });
 
-  socket.on('READY', async () => {
-    connectedPlayers = connectedPlayers.setIn([socket.id, 'sessionId'], true); // Ready
-    console.log('Player is ready');
-    countReadyPlayers(true, socket, io);
-  });
-
-  socket.on('UNREADY', async () => {
-    connectedPlayers = connectedPlayers.setIn([socket.id, 'sessionId'], false); // Unready
-    console.log('Player went unready');
-    countReadyPlayers(false, socket, io);
-  });
-
-  socket.on('START_GAME', async (amountToPlay) => {
-    const readyPlayers = connectedPlayers.filter(player => player.get('sessionId') === true); // || player.get('sessionId') === false
-    const sessionConnectedPlayers = sessionJS.initializeConnectedPlayers(readyPlayers);
-    const sessionId = sessionJS.findFirstAvailableIndex(sessions);
-    connectedPlayers = await sessionJS.updateSessionIds(connectedPlayers, Array.from(sessionConnectedPlayers.keys()), sessionId);
-    const state = await gameJS.startGameGlobal(amountToPlay);
-    // Set pieces in Session
-    const newSession = sessionJS.makeSession(sessionConnectedPlayers, state.get('pieces'));
-    sessions = sessions.set(sessionId, newSession);
-    console.log('Starting game!');
-    // Send to all connected sockets
-    const stateToSend = getStateToSend(state); // .setIn(['players', '0', 'gold'], 1000);
-    console.log('@startGame', socket.id, sessionConnectedPlayers); // stateToSend);
-    const iter = sessionConnectedPlayers.keys();
-    let temp = iter.next();
-    while (!temp.done) {
-      const id = temp.value;
-      io.to(`${id}`).emit('ADD_PLAYER', sessionConnectedPlayers.get(id));
-      temp = iter.next();
-    }
-    emitMessage(socket, io, sessionId, (socketId) => {
-      io.to(socketId).emit('UPDATED_STATE', stateToSend);
-    });
-
-    const scheduleBattleRound = () => {
-
-    }
-
-    scheduleBattleRound();
-  });
-
-  // disconnect logic
   socket.on('disconnect', () => {
-    // Find which connection disconnected, remove data from that person
-    if (connectedPlayers && connectedPlayers.get(socket.id)) {
-      console.log('Player disconnected: ', connectedPlayers.get(socket.id).get('socketId'));
-      const user = connectedPlayers.get(socket.id);
-      const sessionId = user.get('sessionId');
-      const session = sessions.get(sessionId);
-      if (sessionId && session) { // User was in a session (not false, true | sessionId)
-        const playerName = sessionJS.getPlayerName(socket.id, connectedPlayers, sessions); // On disconnect, shows undefined
-        const updatedSession = sessionJS.sessionPlayerDisconnect(socket.id, session);
-        if (f.isUndefined(updatedSession)) {
-          console.log('Removing Session:', sessionId, '(All players left)');
-          sessions = sessions.delete(sessionId);
-        } else {
-          const playersLeft = updatedSession.get('connectedPlayers').size;
-          console.log(`Session ${sessionId} players left: `, playersLeft);
-          sessions = sessions.set(sessionId, updatedSession);
-          newChatMessage(socket, io, socket.id, `${playerName} disconnected - `, `${playersLeft} still connected`, 'disconnect');
-        }
+    console.log('@disconnect', socket.id);
+    const customer = connectedPlayers.get(socket.id);
+    if (customer) {
+      // need to make sure no links to this customer left in memory, else garbage collector will not clean this...
+      connectedPlayers.disconnect(socket.id);
+    }
+
+    // update rooms
+    const sessionID = customer.get('sessionID');
+    if (sessionID) {
+      // Player is in active game [TODO]
+      const playerName = sessionJS.getPlayerName(socket.id, connectedPlayers, sessions); // On disconnect, shows undefined
+      const updatedSession = sessionJS.sessionPlayerDisconnect(socket.id, sessionID);
+      if (f.isUndefined(updatedSession)) {
+        console.log('Removing Session:', sessionID, '(All players left)');
+        sessions = sessions.delete(sessionID);
+      } else {
+        const playersLeft = updatedSession.get('connectedPlayers').size;
+        console.log(`Session ${sessionID} players left: `, playersLeft);
+        sessions = sessions.set(sessionID, updatedSession);
+        newChatMessage(socket, io, socket.id, `${playerName} disconnected - `, `${playersLeft} still connected`, 'disconnect');
       }
-      connectedPlayers = connectedPlayers.delete(socket.id);
-      countReadyPlayers(false, socket, io);
+    } else {
+      // Waiting room
+      waitingRoomUpdateStatus();
     }
   });
+
+  socket.on('READY', () => {
+    connectedPlayers.setIn(socket.id, ['isReady', true]);
+    waitingRoomUpdateStatus();
+  });
+
+  socket.on('UNREADY', () => {
+    connectedPlayers.setIn(socket.id, ['isReady', false]);
+    waitingRoomUpdateStatus();
+  });
+
+
+  socket.on('START_GAME', async () => {
+    // TODO: check if all customers are ready
+    const session = new Session();
+    io.in('WAITING_ROOM').clients(async (err, clients) => {
+      console.log('setting session for waiting room', clients);
+
+      if (err) {
+        throw new Error(err);
+      }
+
+      const state = await gameController.initialize(clients); // TODO
+      session.set('state', state);
+      session.set('customers', clients);
+      session.set('session', sessionJS.makeSession(clients, state.get('pieces'))); // TODO
+      sessionsStore.store(session);
+
+      console.log('Starting game!');
+      clients.forEach((socketID) => {
+        connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers
+        io.to(socketID).emit('ADD_PLAYER', socketID); // ??
+      });
+
+      state.prepareForSending();
+      io.to('WAITING_ROOM').emit('UPDATED_STATE', state);
+
+      const scheduleBattleRound = () => {
+        //socket.emit('BATTLE_READY', state);
+        // send battleReady event to players, so they upda
+      };
+
+      scheduleBattleRound();
+    });
+  });
+
+  
 
   socket.on('TOGGLE_LOCK', async (stateParam) => {
     const index = getPlayerIndex(socket.id);
-    // const state = await gameJS.toggleLock(fromJS(stateParam), index);
+    // const state = await gameController.toggleLock(fromJS(stateParam), index);
     const prevLock = (fromJS(stateParam)).getIn(['players', index, 'locked']);
     console.log('Toggling Lock for Shop! prev lock =', prevLock);
     socket.emit('LOCK_TOGGLED', index, !prevLock);
-    const state = await gameJS.toggleLock((fromJS(stateParam)), index);
+    const state = await gameController.toggleLock((fromJS(stateParam)), index);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
   });
 
@@ -185,7 +174,7 @@ module.exports = (socket, io) => {
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
     // console.log('@BuyUnit', stateWithPieces,'\nSTATE BEFORE', fromJS(stateParam), stateParam);
     // console.log('Discarded pieces inc', fromJS(stateParam).get('discardedPieces'));
-    const state = await gameJS.buyUnit(stateWithPieces, index, pieceIndex);
+    const state = await gameController.buyUnit(stateWithPieces, index, pieceIndex);
     // Gold, shop, hand
     // URGENT TODO CHECK GOLD HERE
     console.log('Bought unit at', pieceIndex, '. #discarded =', state.get('discardedPieces').size);
@@ -200,7 +189,7 @@ module.exports = (socket, io) => {
   socket.on('BUY_EXP', async (stateParam) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.buyExp(stateWithPieces, index);
+    const state = await gameController.buyExp(stateWithPieces, index);
     // Gold, shop, hand
     console.log('Bought exp, Player', index);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
@@ -212,7 +201,7 @@ module.exports = (socket, io) => {
   socket.on('REFRESH_SHOP', async (stateParam) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.refreshShopGlobal(stateWithPieces, index);
+    const state = await gameController.refreshShopGlobal(stateWithPieces, index);
     console.log('Refreshes Shop, level', state.getIn(['players', index, 'level']), 'Player', index);
     // Requires Shop and Pieces
     // socket.emit('UPDATED_PIECES', state);
@@ -226,7 +215,7 @@ module.exports = (socket, io) => {
   socket.on('PLACE_PIECE', async (stateParam, from, to) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const obj = await gameJS.placePieceGlobal(stateWithPieces, index, from, to);
+    const obj = await gameController.placePieceGlobal(stateWithPieces, index, from, to);
     const state = obj.get('state');
     const evolutionDisplayName = obj.get('upgradeOccured');
     //  console.log('@PlacePieceSocket', evolutionDisplayName);
@@ -248,7 +237,7 @@ module.exports = (socket, io) => {
   socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.withdrawPieceGlobal(stateWithPieces, index, from);
+    const state = await gameController.withdrawPieceGlobal(stateWithPieces, index, from);
     console.log('Withdraw piece at ', from);
     // Hand and board
     emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
@@ -259,7 +248,7 @@ module.exports = (socket, io) => {
   socket.on('SELL_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameJS.sellPieceGlobal(stateWithPieces, index, from);
+    const state = await gameController.sellPieceGlobal(stateWithPieces, index, from);
     console.log('Sell piece at ', from);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
     sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
@@ -271,6 +260,7 @@ module.exports = (socket, io) => {
 
   socket.on('BATTLE_READY', async (stateParam) => {
     if (!sessionExist(socket.id)) return;
+
     const index = getPlayerIndex(socket.id);
     const state = fromJS(stateParam); // Shouldn't require pieces in battle
     const amount = state.get('amountOfPlayers');
@@ -390,7 +380,7 @@ module.exports = (socket, io) => {
               });
             } else { // Player eliminated but game is not over
               console.log('Death:', pid);
-              stateEndedTurn = await gameJS.removeDeadPlayer(stateEndedTurn, pid);
+              stateEndedTurn = await gameController.removeDeadPlayer(stateEndedTurn, pid);
               const playerName = sessionJS.getPlayerNameSession(session, pid);
               const amountOfPlayers = stateEndedTurn.get('amountOfPlayers');
               newChatMessage(socket, io, socket.id, `${playerName} Eliminated - `, `Alive players: ${amountOfPlayers}`, 'playerEliminated');
@@ -412,7 +402,7 @@ module.exports = (socket, io) => {
             } else {
               sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, stateEndedTurn);
               sessions = sessionJS.updateSessionPlayers(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              const stateToSend = getStateToSend(stateEndedTurn);
+              stateEndedTurn.prepareForSending();
               const round = stateToSend.get('round');
               const upcomingRoundType = gameConstantsJS.getRoundType(round);
               const upcomingGymLeader = gameConstantsJS.getGymLeader(round);
@@ -454,4 +444,8 @@ module.exports = (socket, io) => {
     f.p('Retrieving stats for', name); // , newStats);
     socket.emit('SET_STATS', name, newStats);
   });
-};
+
+  return this;
+}
+
+module.exports = SocketController;

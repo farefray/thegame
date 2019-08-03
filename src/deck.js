@@ -1,32 +1,22 @@
-const {
-  List
-} = require('immutable');
 const f = require('./f');
 const pawns = require('./pawns');
 const gameConstantsJS = require('./game_constants');
 
-async function buildDecks(pokemonParam) {
-  const pokemon = await pokemonParam;
-  // console.log(pokemon)
-  let decks = List([List([]), List([]), List([]), List([]), List([])]);
-  const pokemonIterator = pokemon.values();
-  let tempPokemon = pokemonIterator.next();
-  while (!tempPokemon.done) {
-    const pokemonVar = tempPokemon.value;
-    // console.log(pokemon.get('evolves_from'))
-    if (f.isUndefined(pokemonVar.get('evolves_from'))) { // Only add base level
-      decks = f.push(decks, tempPokemon.value.get('cost') - 1, tempPokemon.value);
-    }
-    tempPokemon = pokemonIterator.next();
-  }
-  // console.log('@buildDecks, decks', decks)
-  return decks;
-}
+const Decks = {};
+const _buildDecks = async () => {
+  const monsterMap = await pawns.getMonsterMap();
 
-let Decks = {};
-pawns.getMonsterMap().then((map) => {
-  Decks = buildDecks(map);
-});
+  Object.keys(monsterMap).forEach((monsterName) => {
+    const monster = monsterMap[monsterName]
+    if (!Decks[monster.cost - 1]) {
+      Decks[monster.cost - 1] = [];
+    }
+
+    Decks[monster.cost - 1].push(monster);
+  });
+};
+
+_buildDecks();
 
 exports.getDecks = () => Decks;
 
@@ -35,7 +25,7 @@ exports.getDecks = () => Decks;
  * Optional parameter to choose pokemon for deck (mainly for testing)
  */
 exports.buildPieceStorage = async (optList) => {
-  let availablePieces = List([List([]), List([]), List([]), List([]), List([])]);
+  let availablePieces = [[], [], [], [], []];
   const decks = await Decks;
   // console.log('@buildPieceStorage: decks', decks)
   for (let i = 0; i < decks.size; i++) {

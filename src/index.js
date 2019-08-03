@@ -10,7 +10,7 @@ const router = express.Router();
 const cors = require('cors');
 
 const pawns = require('./pawns');
-const socketController = require('./socketcontroller.js');
+const SocketController = require('./socketcontroller.js');
 
 // we will use port 8000 for our app
 server.listen(8000, () => console.log('connected to port 8000!'));
@@ -33,5 +33,7 @@ router.get('/unitJson', async (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socketController(socket, io);
+  console.log('io on connection', socket.id);
+  const socketController = new SocketController(socket, io);
+  socketController.onConnection();
 });

@@ -11,7 +11,7 @@
     "pretest": "eslint ./src && mocha --exit",
     "posttest": "mocha --exit && eslint ./src",
     "test": "mocha --exit",
-    "mocha": "mocha --exit",
+    "mocha": "mocha -w",
     "lint": "eslint ./src",
     "lintfix": "eslint --fix ./src"
   },
@@ -33,16 +33,19 @@
     "http": "0.0.0",
     "immutable": "^4.0.0-rc.12",
     "immutable-shuffle": "^1.0.3",
+    "keyv": "^3.1.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.19.1",
     "npm": "^6.9.0",
     "rewire": "^4.0.1",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.0",
-    "eslint-plugin-react": "^7.12.4"
+    "eslint-plugin-react": "^7.12.4",
+    "should": "^13.2.3"
   }
 }

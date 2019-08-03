@@ -1,13 +1,9 @@
-const {
-  Map,
-  fromJS
-} = require('immutable');
 const fs = require('fs');
 const f = require('./f');
 /**
  * Default stat variables that are used if nothing is found in specific def
  */
-const defaultStat = Map({
+const defaultStat = {
   evolves_from: undefined, // None Assumed - Not used
   /*
   mana_hit_given: 10,
@@ -20,7 +16,7 @@ const defaultStat = Map({
   defense: 50,
   range: 1, // Range for unit to reach (diagonals allowed)
   next_move: 0, // Next move: time for next move
-});
+};
 
 /**
  * Read from json file
@@ -29,45 +25,46 @@ const defaultStat = Map({
  * ☆ = &#9734;
  * Level is same as cost
  */
-async function loadImmutableMonstersJSON() {
-  const monstersJSON = JSON.parse(fs.readFileSync('monsters.json', 'utf8'));
-  return fromJS(monstersJSON);
+async function loadMonstersJSON() {
+  return JSON.parse(fs.readFileSync('monsters.json', 'utf8'));
 }
 
-
-const monstersMap = loadImmutableMonstersJSON();
+const monstersMap = loadMonstersJSON();
 exports.getStats = async (name) => {
   const mobsMap = await monstersMap;
   // console.log('getStats', name);//, pokeMap.get(name.toLowerCase()));
-  if (f.isUndefined(name)) console.log('@getStats undefined', name);
-  return mobsMap.get(name.toLowerCase());
+  if (!name) {
+    console.log('@getStats undefined', name);
+  }
+
+  return mobsMap[name.toLowerCase()];
 };
 
 const getBaseLocal = async (name) => {
   const mobsMap = await monstersMap;
-  const unitStats = mobsMap.get(name.toLowerCase());
+  const unitStats = mobsMap[name.toLowerCase()];
   // console.log('@getBaseLocal', unitStats, name, unitStats.get('evolves_from'));
-  if (f.isUndefined(unitStats.get('evolves_from'))) { // Base level
+  if (f.isUndefined(unitStats.evolves_from)) { // Base level
     // console.log('@getBase This pokemon is a base unit: ', unitStats.get('name'), unitStats.get('evolves_from'), f.isUndefined(unitStats.get('evolves_from')));
-    return unitStats.get('name');
+    return unitStats.name;
   }
   // Go down a level
   // console.log('@.getBaseMonster Check out', unitStats.get('evolves_from'))
-  return getBaseLocal(unitStats.get('evolves_from'));
+  return getBaseLocal(unitStats.evolves_from);
 };
 
 exports.getBaseMonster = name => getBaseLocal(name);
 
 const getUnitTierLocal = async (name, counter = 1) => {
   const mobsMap = await monstersMap;
-  const unitStats = mobsMap.get(name.toLowerCase());
-  if (f.isUndefined(unitStats.get('evolves_from'))) { // Base level
+  const unitStats = mobsMap[name.toLowerCase()];
+  if (f.isUndefined(unitStats.evolves_from)) { // Base level
     // console.log('@getBase This pokemon is a base unit: ', unitStats.get('name'), unitStats.get('evolves_from'), f.isUndefined(unitStats.get('evolves_from')));
     return counter;
   }
   // Go down a level
   // console.log('@.getBaseMonster Check out', unitStats.get('evolves_from'))
-  return getUnitTierLocal(unitStats.get('evolves_from'), counter + 1);
+  return getUnitTierLocal(unitStats.evolves_from, counter + 1);
 };
 
 exports.getUnitTier = name => getUnitTierLocal(name);
@@ -75,4 +72,4 @@ exports.getUnitTier = name => getUnitTierLocal(name);
 exports.getMonsterMap = async () => monstersMap;
 
 
-exports.getStatsDefault = stat => defaultStat.get(stat);
+exports.getStatsDefault = stat => defaultStat[stat];

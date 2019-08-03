@@ -32,7 +32,7 @@ export const configureSocket = dispatch => {
   socket.on('connect', () => {
     console.log('Socket connected');
     dispatch({type: 'SET_CONNECTED', connected: true})
-    giveId();
+    socket.emit('ON_CONNECTION');
   });
 
   socket.on('disconnect', () => {
@@ -62,15 +62,10 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'ADD_PLAYER', index: index});
   });
 
-  // TODO Update in reducer for Allready and ready
-  socket.on('ALL_READY', (playersReady, connectedPlayers, allReady) => {
-    dispatch({ type: 'ALL_READY', playersReady: playersReady, connectedPlayers: connectedPlayers, value: allReady});
+  socket.on('WAITINGROOM_STATUS', ({readyCustomers, totalCustomers, allReady}) => {
+    dispatch({ type: 'WAITINGROOM_STATUS', playersReady: readyCustomers, connectedPlayers: totalCustomers, allReady: allReady});
   });
 
-  socket.on('READY', (playersReady, connectedPlayers) => {
-    dispatch({ type: 'READY', playersReady: playersReady, connectedPlayers: connectedPlayers});
-  });
-  
   socket.on('BATTLE_TIME', (actionStacks, battleStartBoards, winners, dmgBoards, enemy, roundType) => {
     dispatch({ type: 'BATTLE_TIME', actionStacks, battleStartBoards, winners, enemy, dmgBoards, roundType});
   });
@@ -122,11 +117,9 @@ export const ready = () =>
 export const unready = () =>
   socket.emit('UNREADY');
 
-export const giveId = () => 
-  socket.emit('GIVE_ID');
 
-export const startGame = amountToPlay => 
-  socket.emit('START_GAME', amountToPlay);
+export const startGame = () => 
+  socket.emit('START_GAME');
 
 export const toggleLock = (state) => 
   socket.emit('TOGGLE_LOCK', state);
@@ -150,8 +143,6 @@ export const sellPiece = (state, from) =>
   socket.emit('SELL_PIECE', state, from);
 
 // I think its unsafe to start round with frontend. Need to handle this timer on socket instead
-export const battleReady = (state) => 
-  socket.emit('BATTLE_READY', state);
 
 export const getStats = (name) => 
   socket.emit('GET_STATS', name);

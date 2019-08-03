@@ -2,8 +2,6 @@ const {
   Map,
   List,
 } = require('immutable');
-const deckJS = require('../deck');
-const playerJS = require('../player');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
 const pawns = require('../pawns');
@@ -127,19 +125,6 @@ const _endBattle = async (stateParam, playerIndex, winner, finishedBoard, roundT
   // console.log('@endBattle prep', stateParam.get('players'));
   const potentialEndTurnObj = await _prepEndTurn(state, playerIndex);
   return potentialEndTurnObj;
-};
-
-/** Public methods */
-StateJS.initEmpty = async (amountPlaying, optList) => {
-  const pieceStorage = await deckJS.buildPieceStorage(optList);
-  const state = Map({
-    pieces: pieceStorage,
-    discardedPieces: List([]),
-    round: 1, // (gameConstantsJS.debugMode ? 8 : 1),
-    income_basic: 1,
-  });
-
-  return playerJS.initPlayers(state, amountPlaying);
 };
 
 StateJS.increaseExp = (stateParam, playerIndex, amountParam) => {

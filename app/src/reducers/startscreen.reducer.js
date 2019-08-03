@@ -7,7 +7,7 @@ export function startscreen(state = {
   connectedPlayers: 0
 }, action) {
   switch (action.type) {
-    case 'ALL_READY': {
+    case 'WAITINGROOM_STATUS': {
       return {
         ...state,
         playersReady: action.playersReady,
@@ -36,13 +36,6 @@ export function startscreen(state = {
       return {
         ...state,
         connected: action.connected
-      }
-    }
-    case 'READY': {
-      return {
-        ...state,
-        playersReady: action.playersReady,
-        connectedPlayers: action.connectedPlayers
       }
     }
     default:

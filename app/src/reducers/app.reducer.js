@@ -136,6 +136,15 @@ export function app(state = {
     } // Disallows testing sounds currently
   }
   switch (action.type) { // Listens to events dispatched from from socket.js    
+    case 'WAITINGROOM_STATUS': {
+      return {
+        ...state,
+        connectedPlayers: action.connectedPlayers,
+        allReady: action.allReady,
+        gameIsLive: false,
+        music: getBackgroundAudio('mainMenu'),
+      }
+    }
     case 'NEW_STATE':
       // Update state with incoming data from server
       state = {
@@ -162,15 +171,6 @@ export function app(state = {
         };
       }
       break;
-    case 'ALL_READY': {
-      return {
-        ...state,
-        connectedPlayers: action.connectedPlayers,
-        allReady: action.value,
-        gameIsLive: false,
-        music: getBackgroundAudio('mainMenu'),
-      }
-    }
     case 'ADD_PLAYER': {
       return {
         ...state,

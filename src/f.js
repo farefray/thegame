@@ -36,7 +36,7 @@ exports.checkHandUnit = position => isUndefined(y(position));
 /**
  * Reverses position, your units position on enemy boards
  */
-exports.reverseUnitPos = posInput => BoardUtils.toBoardPosition(7 - x(posInput), 7 - y(posInput));
+exports.reverseUnitPos = posInput => new Position(7 - x(posInput), 7 - y(posInput)).toBoardPosition();
 
 // exports.print = (obj, msg) => console.log(msg + JSON.stringify(obj)); // Normal version
 exports.print = (obj, msg = '') => console.log(msg + JSON.stringify(obj, null, 2)); // Pretty printed version
@@ -91,8 +91,6 @@ exports.printBoard = async (boardParam, moveParam) => {
   }
   p('');
 };
-
-exports.removeFromPieceStorage = async (pieceStorage, id, index) => pieceStorage.set(id, pieceStorage.get(id).splice(index, 1));
 
 exports.push = (state, id, value) => state.set(id, state.get(id).push(value));
 
