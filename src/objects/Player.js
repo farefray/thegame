@@ -15,7 +15,7 @@ function Player(id) {
 }
 
 Player.prototype.get = function (field) {
-  return this[field] || null;
+  return this[field] !== undefined ? this[field] : null;
 };
 
 Player.prototype.set = function (field, value) {

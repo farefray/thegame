@@ -132,8 +132,7 @@ ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, new
  * Add new shop
  * TODO: Add logic for piece cap, max 9 units
  */
-ShopJS.refreshShop = async (stateParam, playerIndex) => {
-  let state = stateParam;
+ShopJS.refreshShop = async (state, playerIndex) => {
   const level = state.getIn(['players', playerIndex, 'level']);
   let newShop = {};
   let pieceStorage = state.get('pieces');
@@ -148,22 +147,20 @@ ShopJS.refreshShop = async (stateParam, playerIndex) => {
     newUnitAmounts = obj.newUnitAmounts;
   }
   const shop = state.getIn(['players', playerIndex, 'shop']);
-  if (shop.size !== 0) {
-    const iter = shop.values();
-    let temp = iter.next();
-    let tempShopList = List([]);
-    while (!temp.done) {
-      tempShopList = tempShopList.push(temp.value.get('name'));
-      temp = iter.next();
-    }
-    const shopList = await tempShopList;
+  if (Object.keys(shop).length) {
+    // todo check this
+    const shopList = [];
+    Object.keys(shop).forEach((pawn) => {
+      shopList.push(pawn.name);
+    });
+
     const filteredShop = shopList.filter(piece => !f.isUndefined(piece));
-    const shopToList = fromJS(Array.from(filteredShop.map((value, key) => value).values()));
-    // console.log('@refreshShop:', shopToList, '(', pieceStorage.size, '/', discPieces.size, ')');
-    state = state.set('discardedPieces', discPieces.concat(shopToList));
+    const shopToList = filteredShop.map((value, key) => value); // was .values() not sure now
+    console.log('@refreshShop:', shopToList, '(', pieceStorage, '/', discPieces, ')');
+    state.set('discardedPieces', discPieces.concat(shopToList));
   }
-  state = state.setIn(['players', playerIndex, 'shop'], newShop);
-  state = state.set('pieces', pieceStorage);
+  state.setIn(['players', playerIndex, 'shop'], newShop);
+  state.set('pieces', pieceStorage);
   return state;
 };
 

@@ -6,6 +6,8 @@ const rewire = require('rewire');
 const ConnectedPlayers = rewire('../src/models/ConnectedPlayers.js');
 const SessionsStore = rewire('../src/models/SessionsStore.js');
 
+const GameController = rewire('../src/game.js');
+
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
 
@@ -56,12 +58,21 @@ describe('Core Modules', () => {
       session.should.have.property('ID');
     });
 
-    it('Can store session', () => {
+    it('Can store and retrieve session', () => {
       sessionsStore.store(session);
       const sessID = session.get('ID');
       const savedSession = sessionsStore.get(sessID);
       savedSession.ID.should.equal(sessID);
     });
+  });
 
+  describe('Game Controller', () => {
+    it('Can initialize game', async () => {
+      const gameState = await GameController.initialize(['socket1', 'socket2']);
+      gameState.should.be.an.Object();
+      gameState.should.have.property('pieces');
+      gameState.should.have.property('players');
+      gameState.players['socket1']['index'].should.be.equal('socket1');
+    });
   });
 });

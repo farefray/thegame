@@ -39,8 +39,6 @@ const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type 
   });
 };
 
-const getStateToSend = state => state.delete('pieces').delete('discardedPieces');
-
 const emitMessage = (socket, io, sessionId, callback) => {
   connectedPlayers.keys().forEach((socketID) => {
     const customer = connectedPlayers.get(socketID);
@@ -135,7 +133,7 @@ function SocketController(socket, io) {
         throw new Error(err);
       }
 
-      const state = await gameController.initGame(clients.length); // TODO
+      const state = await gameController.initialize(clients); // TODO
       session.set('state', state);
       session.set('customers', clients);
       session.set('session', sessionJS.makeSession(clients, state.get('pieces'))); // TODO
@@ -147,8 +145,8 @@ function SocketController(socket, io) {
         io.to(socketID).emit('ADD_PLAYER', socketID); // ??
       });
 
-      const stateToSend = getStateToSend(state);
-      io.to('WAITING_ROOM').emit('UPDATED_STATE', stateToSend);
+      state.prepareForSending();
+      io.to('WAITING_ROOM').emit('UPDATED_STATE', state);
 
       const scheduleBattleRound = () => {
         //socket.emit('BATTLE_READY', state);
@@ -404,7 +402,7 @@ function SocketController(socket, io) {
             } else {
               sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, stateEndedTurn);
               sessions = sessionJS.updateSessionPlayers(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              const stateToSend = getStateToSend(stateEndedTurn);
+              stateEndedTurn.prepareForSending();
               const round = stateToSend.get('round');
               const upcomingRoundType = gameConstantsJS.getRoundType(round);
               const upcomingGymLeader = gameConstantsJS.getGymLeader(round);

@@ -122,16 +122,16 @@ exports.removeDeadPlayer = async (stateParam, playerIndex) => {
 
 const deckJS = require('./deck');
 
-exports.initGame = async (amountPlaying) => {
+exports.initialize = async (clients) => {
   const playersArray = [];
-  for (let i = 0; i < amountPlaying; i++) {
-    playersArray.push(new Player(String(i)));
-  }
+  clients.forEach((client) => {
+    playersArray.push(new Player(client));
+  });
 
   let state = new State(playersArray, deckJS.getDecks());
 
   // TODO better way
-  for (let i = 0; i < amountPlaying; i++) {
+  for (let i = 0; i < playersArray.length; i++) {
     state = await shopJS.refreshShop(state, playersArray[i].get('index'));
   }
 
