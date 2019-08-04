@@ -22,9 +22,21 @@ const sessionsStore = new SessionsStore();
 
 const TIME_FACTOR = 15;
 
-
-const getSessionId = socketId => connectedPlayers.get(socketId).get('sessionId');
-const getPlayerIndex = socketId => sessionJS.getPlayerIndex(sessions.get(connectedPlayers.get(socketId).get('sessionId')), socketId);
+/**
+ * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
+ * @todo better way for this or at least test this performance
+ * @param {Object} object
+ * @returns {Object}
+ */
+function asNetworkMessage(object) {
+  try {
+    return JSON.parse(JSON.stringify(object));
+  } catch (e) {
+    console.log('asNetworkMessage critical error: ', e.message);
+    console.log(object);
+    return '';
+  }
+}
 
 const sessionExist = (socketId) => {
   if (f.isUndefined(connectedPlayers) || f.isUndefined(connectedPlayers.get(socketId))) return false;
@@ -36,16 +48,6 @@ const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type 
   sessionJS.pushSessionMessage(socketIdParam, connectedPlayers, sessions, newMessage);
   emitMessage(socket, io, getSessionId(socketIdParam), (socketId) => {
     io.to(socketId).emit('NEW_CHAT_MESSAGE', senderName, newMessage, type);
-  });
-};
-
-const emitMessage = (socket, io, sessionId, callback) => {
-  connectedPlayers.keys().forEach((socketID) => {
-    const customer = connectedPlayers.get(socketID);
-    // TODO
-    if (customer && (customer.get('sessionId') === sessionId || (sessionId === true && (connectedUser.get('sessionId') === true || connectedUser.get('sessionId') === false)))) {
-        callback(socketID);
-    }
   });
 };
 
@@ -125,7 +127,6 @@ function SocketController(socket, io) {
 
   socket.on('START_GAME', async () => {
     // TODO: check if all customers are ready
-    const session = new Session();
     io.in('WAITING_ROOM').clients(async (err, clients) => {
       console.log('setting session for waiting room', clients);
 
@@ -134,56 +135,56 @@ function SocketController(socket, io) {
       }
 
       const state = await gameController.initialize(clients); // TODO
-      session.set('state', state);
-      session.set('customers', clients);
-      session.set('session', sessionJS.makeSession(clients, state.get('pieces'))); // TODO
+      const session = new Session(clients, state);
+      const sessionID = session.get('ID');
       sessionsStore.store(session);
 
       console.log('Starting game!');
-      clients.forEach((socketID) => {
-        connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers
-        io.to(socketID).emit('ADD_PLAYER', socketID); // ??
-      });
-
       state.prepareForSending();
-      io.to('WAITING_ROOM').emit('UPDATED_STATE', state);
+
+      clients.forEach((socketID) => {
+        connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
+        io.to(socketID).emit('ADD_PLAYER', socketID); // ??
+        
+        // TODO fixme
+        socket.join(sessionID, () => {
+          let rooms = Object.keys(socket.rooms);
+          console.log(rooms); // [ <socket.id>, 'room 237' ]
+          io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
+        });
+      });
 
       const scheduleBattleRound = () => {
         //socket.emit('BATTLE_READY', state);
-        // send battleReady event to players, so they upda
+        // send battleReady event to players, so they update their state
       };
 
       scheduleBattleRound();
     });
   });
 
-  
+  socket.on('BUY_UNIT', async (pieceIndex) => {
+    // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable)
+    const sessionID = connectedPlayers.getSessionID(socket.id);
+    const session = sessionsStore.get(sessionID);
+    const state = await gameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
+    if (state) {
+      session.set('state', state);
+      sessionsStore.store(session);
 
-  socket.on('TOGGLE_LOCK', async (stateParam) => {
-    const index = getPlayerIndex(socket.id);
-    // const state = await gameController.toggleLock(fromJS(stateParam), index);
-    const prevLock = (fromJS(stateParam)).getIn(['players', index, 'locked']);
-    console.log('Toggling Lock for Shop! prev lock =', prevLock);
-    socket.emit('LOCK_TOGGLED', index, !prevLock);
-    const state = await gameController.toggleLock((fromJS(stateParam)), index);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
+      // todo some abstract sending with try catch, to not crash app every time it bugs :)
+      const playerState = state.getIn(['players', socket.id]);
+      io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
+    }
   });
 
-  socket.on('BUY_UNIT', async (stateParam, pieceIndex) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    // console.log('@BuyUnit', stateWithPieces,'\nSTATE BEFORE', fromJS(stateParam), stateParam);
-    // console.log('Discarded pieces inc', fromJS(stateParam).get('discardedPieces'));
-    const state = await gameController.buyUnit(stateWithPieces, index, pieceIndex);
-    // Gold, shop, hand
-    // URGENT TODO CHECK GOLD HERE
-    console.log('Bought unit at', pieceIndex, '. #discarded =', state.get('discardedPieces').size);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    // socket.emit('UPDATED_STATE', getStateToSend(state)); // Was updateplayer
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
+  socket.on('TOGGLE_LOCK', async (stateParam) => {
+    // const state = await gameController.toggleLock(fromJS(stateParam), index);
+    const prevLock = (fromJS(stateParam)).getIn(['players', socket.id, 'locked']);
+    console.log('Toggling Lock for Shop! prev lock =', prevLock);
+    socket.emit('LOCK_TOGGLED', socket.id, !prevLock);
+    const state = await gameController.toggleLock((fromJS(stateParam)), socket.id);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, socket.id);
   });
 
   socket.on('BUY_EXP', async (stateParam) => {

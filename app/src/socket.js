@@ -51,6 +51,7 @@ export const configureSocket = dispatch => {
   });
 
   socket.on('UPDATE_PLAYER', (index, player) => {
+    console.log('socket on update player')
     dispatch({ type: 'UPDATE_PLAYER', index: index, player: player});
   });
   
@@ -124,8 +125,8 @@ export const startGame = () =>
 export const toggleLock = (state) => 
   socket.emit('TOGGLE_LOCK', state);
 
-export const buyUnit = (state, pieceIndex) =>
-  socket.emit('BUY_UNIT', state, pieceIndex);  
+export const buyUnit = (pieceIndex) =>
+  socket.emit('BUY_UNIT', pieceIndex);
 
 export const buyExp = (state) =>
   socket.emit('BUY_EXP', state);  

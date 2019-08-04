@@ -1,23 +1,5 @@
 
 
-const { Map, List, Set } = require('immutable');
-
-const START_COUNTER_VALUE = 0; // 0, 1 is for testing alone
-
-const getPlayerIndex = (session, socketId) => session.get('connectedPlayers').get(socketId);
-exports.getPlayerIndex = (session, socketId) => getPlayerIndex(session, socketId);
-
-
-// Default: prepBattleState = undefined
-exports.makeSession = (connectedPlayersInit, pieces) => Map({
-  connectedPlayers: connectedPlayersInit, // Bind socket.id -> playerid (previous connectedPlayer in socket controller)
-  counter: START_COUNTER_VALUE,
-  pieces,
-  discardedPieces: List([]),
-  players: Map({}),
-  messages: List([]),
-});
-
 // Remove Session when all connected sockets are disconnected
 exports.sessionPlayerDisconnect = (socketId, session) => {
   const newConnectedPlayers = session.get('connectedPlayers').delete(socketId);
@@ -34,11 +16,6 @@ const getSession = (socketId, connectedPlayers, sessions) => {
 
 exports.getSession = (socketId, connectedPlayers, sessions) => getSession(socketId, connectedPlayers, sessions);
 
-exports.addPiecesToState = (socketId, connectedPlayers, sessions, state) => {
-  const session = getSession(socketId, connectedPlayers, sessions);
-  return state.set('pieces', session.get('pieces')).set('discardedPieces', session.get('discardedPieces'));
-};
-
 exports.updateSessionPieces = (socketId, connectedPlayers, sessions, state) => {
   const sessionId = connectedPlayers.get(socketId).get('sessionId');
   const session = sessions.get(sessionId);
@@ -50,20 +27,6 @@ exports.updateSessionPieces = (socketId, connectedPlayers, sessions, state) => {
 exports.buildStateAfterBattle = (socketId, connectedPlayers, sessions, state) => {
   const session = getSession(socketId, connectedPlayers, sessions);
   return state.set('players', session.get('players'));
-};
-
-exports.updateSessionPlayers = (socketId, connectedPlayers, sessions, state) => {
-  const sessionId = connectedPlayers.get(socketId).get('sessionId');
-  const session = sessions.get(sessionId);
-  const newSession = session.set('players', state.get('players'));
-  return sessions.set(sessionId, newSession);
-};
-
-exports.updateSessionPlayer = (socketId, connectedPlayers, sessions, state, index) => {
-  const sessionId = connectedPlayers.get(socketId).get('sessionId');
-  const session = sessions.get(sessionId);
-  const newSession = session.setIn(['players', index], state.getIn(['players', index]));
-  return sessions.set(sessionId, newSession);
 };
 
 exports.updateSessionPlayerName = (socketId, connectedPlayers, sessions, index, name) => {

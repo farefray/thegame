@@ -130,20 +130,11 @@ async function _checkPieceUpgrade(stateParam, playerIndex, piece, position) {
 /**
  * Create unit for board/hand placement from name and spawn position
  */
-BoardJS.getBoardUnit = async (name, x, y) => {
-  const unitInfo = await pawns.getStats(name);
+BoardJS.getBoardUnit = async (name) => {
+  const unitInfo = await pawns.getStats(name); // this may be a overuse. Maybe units should be always Uni
   if (f.isUndefined(unitInfo)) console.log('UNDEFINED:', name);
   // console.log('@getBoardUnit', name, unitInfo)
-  let unit = Map({
-    name,
-    displayName: unitInfo.get('displayName'),
-    position: f.pos(x, y),
-    type: unitInfo.get('type'),
-  });
-  if (unitInfo.get('reqEvolve')) {
-    unit = unit.set('reqEvolve', unitInfo.get('reqEvolve'));
-  }
-  return unit;
+  return unitInfo;
 };
 
 /**

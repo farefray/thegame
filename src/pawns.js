@@ -30,6 +30,8 @@ async function loadMonstersJSON() {
 }
 
 const monstersMap = loadMonstersJSON();
+
+// todo perf this, maybe its reading json every function call?
 exports.getStats = async (name) => {
   const mobsMap = await monstersMap;
   // console.log('getStats', name);//, pokeMap.get(name.toLowerCase()));

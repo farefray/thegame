@@ -9,9 +9,14 @@ function ConnectedPlayers() {
   return this;
 }
 
+/**
+ * @description returns {Customer} by `socketID`
+ * @param socketID
+ * @returns {Customer}
+ */
 ConnectedPlayers.prototype.get = function (socketID) {
-  const session = this.storage[socketID];
-  return session || null;
+  const customer = this.storage[socketID];
+  return customer || null;
 };
 
 ConnectedPlayers.prototype.keys = function () {
@@ -58,6 +63,15 @@ ConnectedPlayers.prototype.setIn = function (socketID, updateArray) {
   if (customer) {
     customer.set(updateArray[0], updateArray[1]);
   }
+};
+
+/**
+ * @param socketID
+ * @returns {SessionID}
+ */
+ConnectedPlayers.prototype.getSessionID = function (socketID) {
+  const customer = this.get(socketID);
+  return customer && customer.get('sessionID');
 };
 
 module.exports = ConnectedPlayers;

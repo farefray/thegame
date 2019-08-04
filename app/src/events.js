@@ -31,7 +31,7 @@ export function buyUnitEvent(props, index) {
     if(props.newProps.gold >= props.ShopPawn.cost){
       const size = Object.keys(props.newProps.myHand).length;
       if(size < 8){
-        buyUnit(props.newProps.storedState, index);
+        buyUnit(index); // todo rework all the other stuff related to buy. We just need to send piece index, nothing more
       } else{
         updateMessage(props.newProps, 'Hand is full!', 'error');
         props.newProps.dispatch({type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid')});

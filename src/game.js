@@ -10,6 +10,7 @@ const shopJS = require('./game/shop');
 const BattleJS = require('./game/battle');
 const StateJS = require('./game/state');
 const BoardJS = require('./game/board');
+const SessionJS = require('./session');
 
 const State = require('./objects/State');
 const Player = require('./objects/Player');
@@ -19,39 +20,6 @@ const Player = require('./objects/Player');
 exports.refreshShopGlobal = async (stateParam, index) => {
   const state = stateParam.setIn(['players', index, 'gold'], stateParam.getIn(['players', index, 'gold']) - 2);
   return shopJS.refreshShop(state, index);
-};
-
-/**
- * *Assumed hand not full here
- * *Assumed can afford
- * Remove unit from shop
- * Add unit to hand
- * Remove money from player
- *  Amount of money = getUnit(unitId).cost
- */
-exports.buyUnit = async (stateParam, playerIndex, unitID) => {
-  let state = stateParam;
-  // console.log('@buyunit', unitID, playerIndex, f.pos(unitID));
-  // console.log(state.getIn(['players', playerIndex, 'shop']));
-  let shop = state.getIn(['players', playerIndex, 'shop']);
-  const unit = shop.get(f.pos(unitID)).get('name');
-  if (!f.isUndefined(unit)) {
-    shop = shop.delete(f.pos(unitID));
-    state = state.setIn(['players', playerIndex, 'shop'], shop);
-
-    const hand = state.getIn(['players', playerIndex, 'hand']);
-    const unitInfo = await pawns.getStats(unit);
-    const handIndex = await BoardJS.getFirstAvailableSpot(state, playerIndex); // TODO: Go: Get first best hand index
-    // console.log('@buyUnit handIndex', handIndex);
-    const unitHand = await BoardJS.getBoardUnit(unit, f.x(handIndex));
-    // console.log('@buyUnit unitHand', unitHand)
-    state = state.setIn(['players', playerIndex, 'hand'], hand.set(unitHand.get('position'), unitHand));
-
-    const currentGold = state.getIn(['players', playerIndex, 'gold']);
-    state = state.setIn(['players', playerIndex, 'gold'], currentGold - unitInfo.get('cost'));
-    state = state.setIn(['players', playerIndex, 'unitAmounts', unit], (state.getIn(['players', playerIndex, 'unitAmounts', unit]) || 0) + 1);
-  }
-  return state;
 };
 
 /**
@@ -121,6 +89,51 @@ exports.removeDeadPlayer = async (stateParam, playerIndex) => {
 
 
 const deckJS = require('./deck');
+
+const HAND_UNITS_LIMIT = 9;
+
+/**
+ *
+ *
+ * @param {*} state
+ * @param {*} playerIndex
+ * @param {*} pieceIndex
+ * @returns {null||Object}
+ */
+exports.purchasePawn = async (state, playerIndex, pieceIndex) => {
+  const player = state.getIn(['players', playerIndex]);
+  /**
+   * Checks to be done:
+   * unit exist in shop
+   * hand is not full
+   * can afford
+   */
+  const unit = player.shop[pieceIndex];
+  if (!unit
+    || Object.keys(player.hand) >= HAND_UNITS_LIMIT
+    || player.gold < unit.cost) {
+    return null;
+  }
+
+  /**
+  * remove unit from shop
+  * add unit to hand
+  * remove gold
+  * set player state
+  */
+  const boardUnit = await BoardJS.getBoardUnit(unit.name);
+  if (player.addToHand(boardUnit)) {
+    delete player.shop[pieceIndex];
+    player.gold -= unit.cost;
+
+    // ????
+    player.unitAmounts[unit.name] = player.unitAmounts[unit.name] ? player.unitAmounts[unit.name] + 1 : 0;
+    state.setIn(['players', playerIndex], player);
+    return state;
+  }
+
+  return null;
+};
 
 exports.initialize = async (clients) => {
   const playersArray = [];

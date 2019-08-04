@@ -36,6 +36,10 @@ State.prototype.prepareForSending = function () {
 };
 
 // bad [todo get rid of setIn getIn methods, they are present only cuz of compatibility with immutable]
+/**
+ * @param {Array[firstIndex, secondIndex, thirdIndex]}
+ * @returns {Any} this[firstIndex][secondIndex][thirdIndex]
+ */
 State.prototype.getIn = function ([what, index, param]) {
   if (param) {
     return this.get(what)[index][param];
@@ -46,8 +50,13 @@ State.prototype.getIn = function ([what, index, param]) {
 
 State.prototype.setIn = function ([what, where, which], value) {
   const whatToModify = this.get(what);
-  whatToModify[where][which] = value;
+  if (which) {
+    whatToModify[where][which] = value;
+  } else {
+    whatToModify[where] = value;
+  }
+
   this.set(what, whatToModify);
-}
+};
 
 module.exports = State;

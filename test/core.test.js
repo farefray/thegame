@@ -17,13 +17,13 @@ describe('Core Modules', () => {
     const socketID_1 = 'socketID_1';
     const socketID_2 = 'socketID_2';
 
-    it('Can add customer session', () => {
+    it('Can add customer', () => {
       connectedPlayers.set(socketID_1, new Customer(socketID_1));
       const savedCustomer = connectedPlayers.get(socketID_1);
       savedCustomer.socketID.should.equal(socketID_1);
     });
 
-    it('Can add second customer session', () => {
+    it('Can add second customer', () => {
       connectedPlayers.set(socketID_2, new Customer(socketID_2));
       const savedCustomer = connectedPlayers.get(socketID_2);
       savedCustomer.socketID.should.equal(socketID_2);
@@ -47,6 +47,11 @@ describe('Core Modules', () => {
       const status = connectedPlayers.getWaitingRoomStatus();
       status.allReady.should.equal(true);
       status.totalCustomers.should.equal(1);
+    });
+
+    it('Can retrieve customer 1 sessionID', () => {
+      const sessionID = connectedPlayers.getSessionID(socketID_1);
+      should(sessionID).null();
     });
   });
 
@@ -72,7 +77,18 @@ describe('Core Modules', () => {
       gameState.should.be.an.Object();
       gameState.should.have.property('pieces');
       gameState.should.have.property('players');
-      gameState.players['socket1']['index'].should.be.equal('socket1');
+      gameState.players['socket1'].index.should.be.equal('socket1');
     });
+
+    it('can buy pawn', async () => {
+      const initialState = await GameController.initialize(['socket1', 'socket2']);
+      const state = await GameController.purchasePawn(initialState, 'socket1', 0);
+      state.should.be.an.Object();
+      state.players['socket1'].hand[0].should.be.an.Object();
+      state.players['socket1'].hand[0].should.have.property('looktype');
+    });
+
+    // negative test, (hand is full, unit too expensive)
+
   });
 });

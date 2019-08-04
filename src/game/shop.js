@@ -14,11 +14,11 @@ ShopJS.getPieceFromRarity = async (random, prob, index, pieceStorage, unitAmount
   let piece;
   let pieceIndex;
   if (prob > random) {
-    if (!unitAmounts) {
+    const keys = Object.keys(newUnitAmounts);
+    if (!keys.length) {
       piece = pieceStorage[index][0];
       pieceIndex = 0;
     } else {
-      const keys = Array.from(unitAmounts.keys());
       for (let i = 0; i < keys.length; i++) {
         const tempPiece = pieceStorage[index][i];
         if (!keys.includes(tempPiece) || (keys.includes(tempPiece) && (((unitAmounts.get(tempPiece) || 0) + (newUnitAmounts.get(tempPiece) || 0)) < 9))) {
