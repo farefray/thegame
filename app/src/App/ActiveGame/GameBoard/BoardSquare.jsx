@@ -11,7 +11,7 @@ import Cell from './Cell';
 import Pawn from './Pawn';
 
 export default function BoardSquare({ cellPosition }) {
-  const { isDead, isActiveBattleGoing, isBattle, battleStartBoard, myBoard, myHand, storedState } = useStateValue();
+  const { isDead, isActiveBattleGoing, isBattle, battleStartBoard, myBoard, myHand } = useStateValue();
 
   // TODO the same check must be added to backend[without repeating the code!]
   const canMovePawn = (fromPosition, toPosition) => {
@@ -41,7 +41,7 @@ export default function BoardSquare({ cellPosition }) {
 
   const movePawn = (fromPosition, toPosition) => {
     if (canMovePawn(fromPosition, toPosition)) {
-      placePiece(storedState, fromPosition.toBoardPosition(), toPosition.toBoardPosition());
+      placePiece(fromPosition.toBoardPosition(), toPosition.toBoardPosition());
     }
   }
 

@@ -42,7 +42,9 @@ exports.buyExp = (state, playerIndex) => {
   return StateJS.increaseExp(newState, playerIndex, 4);
 };
 
-exports.placePieceGlobal = async (stateParam, playerIndex, fromPosition, toPosition, shouldSwap = 'true') => BoardJS.placePiece(stateParam, playerIndex, fromPosition, toPosition, shouldSwap);
+exports.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') => {
+  return BoardJS.mutateStateByPawnPlacing(state, playerIndex, fromPosition, toPosition, shouldSwap);
+}
 
 exports.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleJS.withdrawPiece(state, playerIndex, piecePosition);
 

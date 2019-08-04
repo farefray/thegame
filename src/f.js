@@ -29,9 +29,11 @@ exports.x = position => x(position);
 exports.y = position => y(position);
 
 /**
- * Given a position, returns if it is on hand or board
+ * @description Given a position, returns if it is on hand or board
+ * @param {BoardPosition}
+ * @returns {Boolean}
  */
-exports.checkHandUnit = position => isUndefined(y(position));
+exports.isPositionBelongsToHand = position => isUndefined(y(position));
 
 /**
  * Reverses position, your units position on enemy boards

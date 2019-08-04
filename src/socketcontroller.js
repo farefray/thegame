@@ -4,7 +4,7 @@ const { Map, fromJS } = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
-const gameController = require('./game');
+const GameController = require('./game');
 const BattleJS = require('./game/battle.js');
 const StateJS = require('./game/state');
 const sessionJS = require('./session');
@@ -125,7 +125,7 @@ function SocketController(socket, io) {
         throw new Error(err);
       }
 
-      const state = await gameController.initialize(clients); // deep TODO, mostly for shop and so on
+      const state = await GameController.initialize(clients); // deep TODO, mostly for shop and so on
       const session = new Session(clients, state);
       const sessionID = session.get('ID');
       sessionsStore.store(session);
@@ -158,7 +158,7 @@ function SocketController(socket, io) {
     // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable)
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
-    const state = await gameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
+    const state = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
     if (state) {
       session.set('state', state);
       sessionsStore.store(session);
@@ -169,47 +169,11 @@ function SocketController(socket, io) {
     }
   });
 
-  socket.on('TOGGLE_LOCK', async (stateParam) => {
-    // const state = await gameController.toggleLock(fromJS(stateParam), index);
-    const prevLock = (fromJS(stateParam)).getIn(['players', socket.id, 'locked']);
-    console.log('Toggling Lock for Shop! prev lock =', prevLock);
-    socket.emit('LOCK_TOGGLED', socket.id, !prevLock);
-    const state = await gameController.toggleLock((fromJS(stateParam)), socket.id);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, socket.id);
-  });
-
-  socket.on('BUY_EXP', async (stateParam) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameController.buyExp(stateWithPieces, index);
-    // Gold, shop, hand
-    console.log('Bought exp, Player', index);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('REFRESH_SHOP', async (stateParam) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameController.refreshShopGlobal(stateWithPieces, index);
-    console.log('Refreshes Shop, level', state.getIn(['players', index, 'level']), 'Player', index);
-    // Requires Shop and Pieces
-    // socket.emit('UPDATED_PIECES', state);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('PLACE_PIECE', async (stateParam, from, to) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const obj = await gameController.placePieceGlobal(stateWithPieces, index, from, to);
-    const state = obj.get('state');
-    const evolutionDisplayName = obj.get('upgradeOccured');
+  socket.on('PLACE_PIECE', async (fromPosition, toPosition) => {
+    const sessionID = connectedPlayers.getSessionID(socket.id);
+    const session = sessionsStore.get(sessionID);
+    const result = await GameController.mutateStateByPawnPlacing(session.get('state'), socket.id, fromPosition, toPosition);
+    const evolutionDisplayName = result['upgradeOccured'];
     //  console.log('@PlacePieceSocket', evolutionDisplayName);
     if (evolutionDisplayName) {
       for (let i = 0; i < evolutionDisplayName.size; i++) {
@@ -226,10 +190,49 @@ function SocketController(socket, io) {
     });
   });
 
+  //////////// OLD STUFF \/
+
+  socket.on('TOGGLE_LOCK', async (stateParam) => {
+    // const state = await GameController.toggleLock(fromJS(stateParam), index);
+    const prevLock = (fromJS(stateParam)).getIn(['players', socket.id, 'locked']);
+    console.log('Toggling Lock for Shop! prev lock =', prevLock);
+    socket.emit('LOCK_TOGGLED', socket.id, !prevLock);
+    const state = await GameController.toggleLock((fromJS(stateParam)), socket.id);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, socket.id);
+  });
+
+  socket.on('BUY_EXP', async (stateParam) => {
+    const index = getPlayerIndex(socket.id);
+    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
+    const state = await GameController.buyExp(stateWithPieces, index);
+    // Gold, shop, hand
+    console.log('Bought exp, Player', index);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
+    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
+    });
+  });
+
+  socket.on('REFRESH_SHOP', async (stateParam) => {
+    const index = getPlayerIndex(socket.id);
+    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
+    const state = await GameController.refreshShopGlobal(stateWithPieces, index);
+    console.log('Refreshes Shop, level', state.getIn(['players', index, 'level']), 'Player', index);
+    // Requires Shop and Pieces
+    // socket.emit('UPDATED_PIECES', state);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
+    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
+    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
+    });
+  });
+
+  
+
   socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameController.withdrawPieceGlobal(stateWithPieces, index, from);
+    const state = await GameController.withdrawPieceGlobal(stateWithPieces, index, from);
     console.log('Withdraw piece at ', from);
     // Hand and board
     emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
@@ -240,7 +243,7 @@ function SocketController(socket, io) {
   socket.on('SELL_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await gameController.sellPieceGlobal(stateWithPieces, index, from);
+    const state = await GameController.sellPieceGlobal(stateWithPieces, index, from);
     console.log('Sell piece at ', from);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
     sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
@@ -372,7 +375,7 @@ function SocketController(socket, io) {
               });
             } else { // Player eliminated but game is not over
               console.log('Death:', pid);
-              stateEndedTurn = await gameController.removeDeadPlayer(stateEndedTurn, pid);
+              stateEndedTurn = await GameController.removeDeadPlayer(stateEndedTurn, pid);
               const playerName = sessionJS.getPlayerNameSession(session, pid);
               const amountOfPlayers = stateEndedTurn.get('amountOfPlayers');
               newChatMessage(socket, io, socket.id, `${playerName} Eliminated - `, `Alive players: ${amountOfPlayers}`, 'playerEliminated');

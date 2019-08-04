@@ -134,8 +134,8 @@ export const buyExp = (state) =>
 export const refreshShop = (state) => 
   socket.emit('REFRESH_SHOP', state);
 
-export const placePiece = (state, from, to) => 
-  socket.emit('PLACE_PIECE', state, from, to);
+export const placePiece = (fromBoardPosition, toBoardPosition) => 
+  socket.emit('PLACE_PIECE', fromBoardPosition, toBoardPosition);
 
 export const withdrawPiece = (state, from) => 
   socket.emit('WITHDRAW_PIECE', state, from);

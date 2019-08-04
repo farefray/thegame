@@ -298,7 +298,7 @@ function ActiveGame (props) {
   
   
   /*
-   index, storedState, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
+   index, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
   */
   const appState = useSelector(state => state.app, shallowEqual);
   /* TODO start battle from hooks */

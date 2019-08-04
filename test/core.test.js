@@ -96,13 +96,27 @@ describe('Core Modules', () => {
 
   describe('Game Mechanics', () => {
     it('can buy pawn', async () => {
-      const state = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
-      state.should.be.an.Object();
-      state.players[MOCK_SOCKETID_1].hand[0].should.be.an.Object();
-      state.players[MOCK_SOCKETID_1].hand[0].should.have.property('looktype');
+      gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
+      gameState.should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[0].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[0].should.have.property('looktype');
     });
 
-    // negative test, (hand is full, unit too expensive)
+    it('cannot buy pawn when no gold', async () => {
+      gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0);
+      const state = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
+      should(state).Null();
+    });
 
+    it('player 1 can move pawn to board', async () => {
+      const fromPosition = '0';
+      const toPosition = '1,1';
+      const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, fromPosition, toPosition);
+      result.upgradeOccured.should.be.false();
+      console.log(gameState.players[MOCK_SOCKETID_1].hand);
+      console.log(gameState.players[MOCK_SOCKETID_1].board);
+      should(gameState.players[MOCK_SOCKETID_1].hand[fromPosition]).undefined();
+      gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
+    });
   });
 });

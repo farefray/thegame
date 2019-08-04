@@ -13,12 +13,6 @@
     "chatHelpMode": "chat",
     "senderMessages": [],
     "chatMessages": [],
-    "storedState": {
-        "amountOfPlayers": 1,
-        "players": {},
-        "round": 1,
-        "income_basic": 1
-    },
     "players": {
         "0": {
             "board": {

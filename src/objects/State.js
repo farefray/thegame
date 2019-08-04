@@ -36,6 +36,7 @@ State.prototype.prepareForSending = function () {
 };
 
 // bad [todo get rid of setIn getIn methods, they are present only cuz of compatibility with immutable]
+// UPD seems we cannot remove them, as I'm already getting used to their usage. Need optimize then :)
 /**
  * @param {Array[firstIndex, secondIndex, thirdIndex]}
  * @returns {Any} this[firstIndex][secondIndex][thirdIndex]

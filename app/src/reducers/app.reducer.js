@@ -73,7 +73,6 @@ export function app(state = {
     chatHelpMode: 'chat',
     chatMessages: [],
     senderMessages: [],
-    storedState: {},
     players: {},
     myHand: {},
     myBoard: {},
@@ -149,7 +148,6 @@ export function app(state = {
       // Update state with incoming data from server
       state = {
         ...state,
-        storedState: action.newState,
         message: 'Received State',
         messageMode: '',
         players: action.newState.players,
@@ -185,7 +183,6 @@ export function app(state = {
         chatHelpMode: 'chat',
         chatMessages: [],
         senderMessages: [],
-        storedState: {},
         lock: false,
         isActiveBattleGoing: false,
         enemyIndex: -1,
@@ -254,14 +251,12 @@ export function app(state = {
           ...players
         }
       }
-      state.storedState.players[action.index] = action.player;
       break;
     case 'LOCK_TOGGLED':
       state = {
         ...state,
         lock: action.lock
       }
-      state.storedState.players[state.index]['locked'] = action.lock;
       break;
     case 'UPDATE_MESSAGE':
       state = {

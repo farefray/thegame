@@ -19,41 +19,39 @@ const BoardJS = {};
  * Set(['pikachu']) (no more pikachus or raichus)
  */
 async function _countUniqueOccurences(board, teamParam = '0') {
-  const boardKeysIter = board.keys();
-  let tempUnit = boardKeysIter.next();
-  let buffMap = Map({
-    0: Map({}),
-    1: Map({}),
-  });
-  let unique = Map({
-    0: Set([]),
-    1: Set([]),
-  });
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const unit = board.get(unitPos);
-    const name = unit.get('name');
-    // console.log('@countUnique UNIT', name)
-    const team = unit.get('team') || teamParam;
-    // console.log(unique, team, unit, unitPos)
-    // console.log('@countUniqueOccurences', unique.get(String(team)), pawns.getBaseMonster(name))
-    const basePokemon = await pawns.getBaseMonster(name);
-    if (!unique.get(String(team)).has(basePokemon)) { // TODO: Check
-      // f.p('@CountUniqueOccurences Unique', basePokemon, team, unique);
-      const newSet = await unique.get(String(team)).add(basePokemon);
-      unique = await unique.set(String(team), newSet); // Store unique version, only count each once
-      const types = unit.get('type'); // Value or List
+  let buffMap = {
+    0: {},
+    1: {},
+  };
+  let unique = {
+    0: [],
+    1: [],
+  };
+
+  const keys = Object.keys(board);
+  for (let index = 0; index < keys.length; index++) {
+    const unitPos = keys[index];
+    const unit = board[unitPos];
+    const team = unit['team'] || teamParam;
+    const name = unit['name'];
+    const baseMonser = await pawns.getBaseMonster(name);
+
+    if (!unique[String(team)].includes(name)) { // TODO: Check
+      f.p('@CountUniqueOccurences Unique', baseMonser, team, unique);
+      const newSet = unique[String(team)].push(baseMonser);
+      unique[String(team)] = newSet; // Store unique version, only count each once
+      const types = unit['type']; // Value or List
       if (!f.isUndefined(types.size)) { // List
         for (let i = 0; i < types.size; i++) {
-          buffMap = buffMap.setIn([String(team), types.get(i)], (buffMap.getIn([String(team), types.get(i)]) || 0) + 1);
+          buffMap[String(team)][types[i]] = (buffMap[String(team)][types[i]] || 0) + 1;
         }
       } else { // Value
-        buffMap = buffMap.setIn([String(team), types], (buffMap.getIn([String(team), types]) || 0) + 1);
-        // console.log('adding type occurence', name, team, buffMap.getIn([String(team), types]))
+        buffMap[String(team)][types] = (buffMap[String(team)][types] || 0) + 1;
+        console.log('adding type occurence', name, team, buffMap[String(team)][types])
       }
     }
-    tempUnit = boardKeysIter.next();
   }
+
   f.p('@CountUniqueOccurences', unique);
   return buffMap;
 }
@@ -63,66 +61,62 @@ async function _countUniqueOccurences(board, teamParam = '0') {
  * if 3 units are found, remove those 3 units and replace @ position with evolution
  * No units are added to discardedPieces
  */
-async function _checkPieceUpgrade(stateParam, playerIndex, piece, position) {
-  let state = stateParam;
-  const boardUnits = state.getIn(['players', playerIndex, 'board']);
-  const name = piece.get('name');
+async function _checkPieceUpgrade(board, playerIndex, piece, position) {
+  const name = piece['name'];
   const stats = await pawns.getStats(name);
-  if (f.isUndefined(stats.get('evolves_to'))) {
-    return Map({
-      state,
+  if (f.isUndefined(stats['evolves_to'])) {
+    return {
+      board,
       upgradeOccured: false,
-    });
+    };
   }
 
   let pieceCounter = 0;
-  let positions = List([]);
-  const keysIter = boardUnits.keys();
-  let tempUnit = keysIter.next();
-  while (!tempUnit.done) {
-    const unit = boardUnits.get(tempUnit.value);
-    if (unit.get('name') === name) {
+  let positions = [];
+
+  const takenPositions = Object.keys(board);
+  for (let index = 0; index < takenPositions.length; index++) {
+    const key = takenPositions[index];
+    const unit = board[key];
+    if (unit['name'] === name) {
       pieceCounter += 1;
-      positions = positions.push(unit.get('position'));
-      // TODO: Check for bug buff here (baby pkmns)
+      positions = positions.push(unit[position]);
     }
-    tempUnit = keysIter.next();
   }
+
   let requiredAmount = 3;
-  if (piece.get('reqEvolve')) {
-    requiredAmount = piece.get('reqEvolve');
-    console.log('LESS UNITS REQUIRED FOR UPGRADE', piece.get('name'), requiredAmount);
+  if (piece['reqEvolve']) {
+    requiredAmount = piece['reqEvolve'];
+    console.log('LESS UNITS REQUIRED FOR UPGRADE', piece['name'], requiredAmount);
   }
   if (pieceCounter >= requiredAmount) { // Upgrade unit @ position
     // console.log('UPGRADING UNIT', name);
-    let board = state.getIn(['players', playerIndex, 'board']);
-    let discPieces = state.get('discardedPieces');
+    //let discPieces = state.get('discardedPieces'); // TODO discardedPieces???
     for (let i = 0; i < positions.size; i++) {
-      const unit = board.get(positions.get(i));
-      discPieces = discPieces.push(unit.get('name'));
-      board = board.delete(positions.get(i));
+      const unit = board[positions[i]];
+      //discPieces = discPieces.push(unit['name']);
+      delete board[positions[i]];
     }
-    state = state.set('discardedPieces', discPieces);
-    state = state.setIn(['players', playerIndex, 'board'], board);
-    const evolvesUnit = stats.get('evolves_to');
+    //state = state.set('discardedPieces', discPieces);
+    const evolvesUnit = stats['evolves_to'];
     let evolvesTo = evolvesUnit;
-    if (!f.isUndefined(evolvesTo.size)) { // List
-      evolvesTo = evolvesUnit.get(f.getRandomInt(evolvesTo.size));
+    if (!f.isUndefined(evolvesTo.length)) { // List
+      evolvesTo = evolvesUnit[f.getRandomInt(evolvesTo.length)];
     }
     // Check if multiple evolutions exist, random between
-    const newPiece = await BoardJS.getBoardUnit(evolvesTo, f.x(position), f.y(position));
-    state = state.setIn(['players', playerIndex, 'board', position], newPiece);
+    const newPiece = await BoardJS.getBoardUnit(evolvesTo); // not needed I guess
     // TODO: List -> handle differently
     const evolutionDisplayName = (await pawns.getStats(evolvesTo)).get('displayName');
     // console.log('evolutionDisplayName', evolutionDisplayName);
-    const nextPieceUpgrade = await _checkPieceUpgrade(state, playerIndex, newPiece, position);
+    const nextPieceUpgrade = await _checkPieceUpgrade(board, playerIndex, newPiece, position);
     // Get both upgrades
+    // TODO
     return nextPieceUpgrade.set('upgradeOccured', List([evolutionDisplayName]).concat(nextPieceUpgrade.get('upgradeOccured') || List([])));
   }
-  return Map({
-    state,
+  return {
+    board,
     upgradeOccured: false
-  });
+  };
 }
 
 /** Public methods */
@@ -145,21 +139,22 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
   const buffMap = await _countUniqueOccurences(board);
 
   // Map({0: Map({grass: 40})})
-  let typeBuffMapSolo = Map({
-    0: Map({}),
-    1: Map({})
-  }); // Solo buffs, only for that type
-  let typeBuffMapAll = Map({
-    0: Map({}),
-    1: Map({})
-  }); // For all buff
-  let typeDebuffMapEnemy = Map({
-    0: Map({}),
-    1: Map({})
-  }); // For all enemies debuffs
+  let typeBuffMapSolo = {
+    0: {},
+    1: {}
+  }; // Solo buffs, only for that type
+  let typeBuffMapAll = {
+    0: {},
+    1: {}
+  }; // For all buff
+  let typeDebuffMapEnemy = {
+    0: {},
+    1: {}
+  }; // For all enemies debuffs
   // Find if any bonuses need applying
-  for (let i = 0; i <= 1; i++) {
-    const buffsKeysIter = buffMap.get(String(i)).keys();
+  // TODO
+  /*for (let i = 0; i <= 1; i++) {
+    const buffsKeysIter = Object.keys();
     let tempBuff = buffsKeysIter.next();
     while (!tempBuff.done) {
       const buff = tempBuff.value;
@@ -273,7 +268,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
   }
   if (f.isUndefined(newBoard) || Object.keys(newBoard).length === 0) {
     console.log('@markBoardBonuses CHECK ME', newBoard);
-  }
+  }*/
   // console.log('NEWBOARD: ', newBoard);
   return Map({
     newBoard,
@@ -376,51 +371,61 @@ BoardJS.withdrawPiece = async (state, playerIndex, piecePosition) => {
  *       Do buff calculations and mark on board
  *       Return if PieceUpgrade occured Map({state, upgradeOccured: true})
  */
-BoardJS.placePiece = async (stateParam, playerIndex, fromPosition, toPosition, shouldSwap = 'true') => {
+BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') => {
+  const hand = state.getIn(['players', playerIndex, 'hand']);
+  let board = state.getIn(['players', playerIndex, 'board']);
+
   let piece;
-  let state = stateParam;
-  if (f.checkHandUnit(fromPosition)) { // from hand
-    // console.log('@placePiece placeOnBoard', fromPosition, state.getIn(['players', playerIndex, 'hand']));
-    piece = state.getIn(['players', playerIndex, 'hand', fromPosition]).set('position', toPosition);
-    const newHand = state.getIn(['players', playerIndex, 'hand']).delete(fromPosition);
-    state = state.setIn(['players', playerIndex, 'hand'], newHand);
-  } else { // from board
-    // console.log('@placePiece', fromPosition);
-    // console.log('@placePiece board', state.getIn(['players', playerIndex, 'board']));
-    piece = state.getIn(['players', playerIndex, 'board', fromPosition]).set('position', toPosition);
-    const newBoard = state.getIn(['players', playerIndex, 'board']).delete(fromPosition);
-    state = state.setIn(['players', playerIndex, 'board'], newBoard);
+  // Update pawns positions and remove from old stores based on fromPosition
+  if (f.isPositionBelongsToHand(fromPosition)) {
+    piece = hand[fromPosition];
+    hand[fromPosition].position = toPosition;
+    delete hand[fromPosition];
+  } else {
+    piece = board[fromPosition];
+    board[fromPosition].position = toPosition;
+    delete board[fromPosition];
   }
+
   let newPiece;
-  if (f.checkHandUnit(toPosition)) { // to hand
-    newPiece = state.getIn(['players', playerIndex, 'hand', toPosition]);
-    state = state.setIn(['players', playerIndex, 'hand', toPosition], piece);
-  } else { // to board
-    newPiece = state.getIn(['players', playerIndex, 'board', toPosition]);
-    state = state.setIn(['players', playerIndex, 'board', toPosition], piece);
+  if (f.isPositionBelongsToHand(toPosition)) {
+    newPiece = hand[toPosition];
+    hand[toPosition] = piece;
+  } else {
+    newPiece = board[toPosition];
+    board[toPosition] = piece;
   }
-  if (shouldSwap && !f.isUndefined(newPiece)) { // Swap allowed
-    if (f.checkHandUnit(fromPosition)) { // Swap newPiece to hand
-      state = state.setIn(['players', playerIndex, 'hand', fromPosition], newPiece.set('position', fromPosition));
-    } else { // Swap newPiece to board
-      state = state.setIn(['players', playerIndex, 'board', fromPosition], newPiece.set('position', fromPosition));
+
+  if (shouldSwap && !f.isUndefined(newPiece)) {
+    newPiece.position = fromPosition;
+
+    if (f.isPositionBelongsToHand(fromPosition)) {
+      hand[fromPosition] = newPiece;
+    } else {
+      board[fromPosition] = newPiece;
     }
   }
-  // console.log(state.getIn(['players', playerIndex, 'board']));
-  const tempMarkedResults = await BoardJS.markBoardBonuses(state.getIn(['players', playerIndex, 'board']));
-  const tempBoard = tempMarkedResults.get('newBoard');
+
+
+
+  // TODO
+  //const tempMarkedResults = await BoardJS.markBoardBonuses(board);
+  //const tempBoard = tempMarkedResults.get('newBoard');
+
   let upgradeOccured = false;
-  if (!f.checkHandUnit(toPosition)) {
-    const obj = await _checkPieceUpgrade(state.setIn(['players', playerIndex, 'board'], tempBoard), playerIndex, tempBoard.get(toPosition), toPosition);
-    state = obj.get('state');
-    upgradeOccured = obj.get('upgradeOccured');
+  if (!f.isPositionBelongsToHand(toPosition)) {
+    const obj = await _checkPieceUpgrade(board, playerIndex, board[toPosition], toPosition);
+    board = obj['board'];
+    upgradeOccured = obj['upgradeOccured'];
   }
-  if (shouldSwap && !f.isUndefined(newPiece) && !f.checkHandUnit(fromPosition)) {
-    const obj = await _checkPieceUpgrade(state.setIn(['players', playerIndex, 'board'], tempBoard), playerIndex, tempBoard.get(fromPosition), fromPosition);
-    state = obj.get('state');
-    upgradeOccured = obj.get('upgradeOccured') || upgradeOccured;
+
+  if (shouldSwap && !f.isUndefined(newPiece) && !f.isPositionBelongsToHand(fromPosition)) {
+    const obj = await _checkPieceUpgrade(board, playerIndex, board[fromPosition], fromPosition);
+    board = obj['board'];
+    upgradeOccured = obj['upgradeOccured'] || upgradeOccured;
   }
-  const markedResults = await BoardJS.markBoardBonuses(state.getIn(['players', playerIndex, 'board']));
+
+  /*const markedResults = await BoardJS.markBoardBonuses(board);
   const buffMap = markedResults.get('buffMap').get('0');
   const typeBuffMapSolo = markedResults.get('typeBuffMapSolo').get('0');
   const typeBuffMapAll = markedResults.get('typeBuffMapAll').get('0');
@@ -434,13 +439,12 @@ BoardJS.placePiece = async (stateParam, playerIndex, fromPosition, toPosition, s
     typeDebuffMapEnemy,
   });
   // console.log('@boardBuffs', boardBuffs);
-  state = state.setIn(['players', playerIndex, 'boardBuffs'], boardBuffs);
-  const markedBoard = markedResults.get('newBoard');
-  state = state.setIn(['players', playerIndex, 'board'], markedBoard);
-  return Map({
-    state,
-    upgradeOccured
-  });
+  state = state.setIn(['players', playerIndex, 'boardBuffs'], boardBuffs);*/
+  //const markedBoard = markedResults.get('newBoard');
+
+  state.setIn(['players', playerIndex, 'hand'], hand); 
+  state.setIn(['players', playerIndex, 'board'], board);
+  return { upgradeOccured };
 };
 
 
@@ -484,7 +488,7 @@ BoardJS.discardBaseUnits = async (stateParam, playerIndex, name, depth = 1) => {
  */
 BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
   let pieceTemp;
-  if (f.checkHandUnit(piecePosition)) {
+  if (f.isPositionBelongsToHand(piecePosition)) {
     pieceTemp = state.getIn(['players', playerIndex, 'hand', piecePosition]);
   } else {
     pieceTemp = state.getIn(['players', playerIndex, 'board', piecePosition]);
@@ -494,7 +498,7 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
   const cost = unitStats.get('cost');
   const gold = state.getIn(['players', playerIndex, 'gold']);
   let newState = state.setIn(['players', playerIndex, 'gold'], +gold + +cost);
-  if (f.checkHandUnit(piecePosition)) {
+  if (f.isPositionBelongsToHand(piecePosition)) {
     const unitToSell = newState.getIn(['players', playerIndex, 'hand', piecePosition]);
     const newHand = newState.getIn(['players', playerIndex, 'hand']).delete(piecePosition);
     const newDiscardedPieces = newState.set('discardedPieces', newState.get('discardedPieces').push(unitToSell.get('name')));

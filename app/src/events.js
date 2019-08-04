@@ -157,12 +157,12 @@ export function placePieceEvent(prop, fromParam, to) {
     // console.log('@placePieceEvent', fromSplitted, validPos, unitExists, prop.myHand);
     if(validPos && unitExists && !prop.isActiveBattleGoing){
       // console.log('Sending place piece!')
-      placePiece(prop.storedState, from, to);
+      placePiece(from, to);
       prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
     } else {
       // Hand to hand movement during battle allowed
       if(validPos && unitExists && prop.isActiveBattleGoing && !from.includes(',') && !to.includes(',')) {
-          placePiece(prop.storedState, from, to);
+          placePiece(from, to);
           prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: {pos: ''}});
       } else {
         updateMessage(prop, 'Invalid target placing!', 'error');
