@@ -1,14 +1,3 @@
-
-
-// Remove Session when all connected sockets are disconnected
-exports.sessionPlayerDisconnect = (socketId, session) => {
-  const newConnectedPlayers = session.get('connectedPlayers').delete(socketId);
-  if (newConnectedPlayers.size === 0) {
-    return undefined;
-  }
-  return session.set('connectedPlayers', newConnectedPlayers);
-};
-
 const getSession = (socketId, connectedPlayers, sessions) => {
   const sessionId = connectedPlayers.get(socketId).get('sessionId');
   return sessions.get(sessionId);
@@ -33,13 +22,6 @@ exports.updateSessionPlayerName = (socketId, connectedPlayers, sessions, index, 
   const sessionId = connectedPlayers.get(socketId).get('sessionId');
   const session = sessions.get(sessionId);
   const newSession = session.setIn(['players', index, 'name'], name);
-  return sessions.set(sessionId, newSession);
-};
-
-exports.pushSessionMessage = (socketId, connectedPlayers, sessions, message) => {
-  const sessionId = connectedPlayers.get(socketId).get('sessionId');
-  const session = sessions.get(sessionId);
-  const newSession = session.set('messages', session.get('messages').push(message));
   return sessions.set(sessionId, newSession);
 };
 

@@ -45,10 +45,7 @@ const sessionExist = (socketId) => {
 };
 
 const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type = 'chat') => {
-  sessionJS.pushSessionMessage(socketIdParam, connectedPlayers, sessions, newMessage);
-  emitMessage(socket, io, getSessionId(socketIdParam), (socketId) => {
-    io.to(socketId).emit('NEW_CHAT_MESSAGE', senderName, newMessage, type);
-  });
+  io.to(socketIdParam).emit('NEW_CHAT_MESSAGE', senderName, newMessage, type);
 };
 
 
@@ -89,29 +86,23 @@ function SocketController(socket, io) {
     console.log('@disconnect', socket.id);
     const customer = connectedPlayers.get(socket.id);
     if (customer) {
-      // need to make sure no links to this customer left in memory, else garbage collector will not clean this...
+      // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
       connectedPlayers.disconnect(socket.id);
     }
 
     // update rooms
     const sessionID = customer.get('sessionID');
     if (sessionID) {
-      // Player is in active game [TODO]
-      const playerName = sessionJS.getPlayerName(socket.id, connectedPlayers, sessions); // On disconnect, shows undefined
-      const updatedSession = sessionJS.sessionPlayerDisconnect(socket.id, sessionID);
-      if (f.isUndefined(updatedSession)) {
-        console.log('Removing Session:', sessionID, '(All players left)');
-        sessions = sessions.delete(sessionID);
-      } else {
-        const playersLeft = updatedSession.get('connectedPlayers').size;
-        console.log(`Session ${sessionID} players left: `, playersLeft);
-        sessions = sessions.set(sessionID, updatedSession);
-        newChatMessage(socket, io, socket.id, `${playerName} disconnected - `, `${playersLeft} still connected`, 'disconnect');
+      const session = sessionsStore.get(sessionID);
+      session.disconnect(socket.id);
+      if (session.hasClients()) {
+        return newChatMessage(socket, io, socket.id, 'Player disconnected - ', `${session.clients.length} still connected`, 'disconnect');
       }
-    } else {
-      // Waiting room
-      waitingRoomUpdateStatus();
+
+      return sessionsStore.destroy(sessionID);
     }
+
+    return waitingRoomUpdateStatus();
   });
 
   socket.on('READY', () => {
@@ -134,7 +125,7 @@ function SocketController(socket, io) {
         throw new Error(err);
       }
 
-      const state = await gameController.initialize(clients); // TODO
+      const state = await gameController.initialize(clients); // deep TODO, mostly for shop and so on
       const session = new Session(clients, state);
       const sessionID = session.get('ID');
       sessionsStore.store(session);

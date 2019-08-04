@@ -1,7 +1,7 @@
 /**
  * Instance for storing connected players and their sessions.
  * Also includes helper methods which are supposed to make easier data extracting and workout
- *
+ * @todo its supposed to be connected customers instead...
  * @returns {ConnectedPlayers}
  */
 function ConnectedPlayers() {

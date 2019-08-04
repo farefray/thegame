@@ -12,80 +12,94 @@ const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
 
 describe('Core Modules', () => {
-  describe('ConnectedPlayers Storage and Game start', () => {
-    const connectedPlayers = new ConnectedPlayers();
-    const socketID_1 = 'socketID_1';
-    const socketID_2 = 'socketID_2';
+  const connectedPlayers = new ConnectedPlayers();
+  const MOCK_SOCKETID_1 = 'MOCK_SOCKETID_1';
+  const MOCK_SOCKETID_2 = 'MOCK_SOCKETID_2';
+  const MOCK_SOCKETID_3 = 'MOCK_SOCKETID_3';
 
+  const sessionsStore = new SessionsStore();
+  const MOCK_CLIENTS = [MOCK_SOCKETID_1, MOCK_SOCKETID_2, MOCK_SOCKETID_3];
+
+  let gameState = null;
+
+  describe('ConnectedPlayers Storage and Game start', () => {
     it('Can add customer', () => {
-      connectedPlayers.set(socketID_1, new Customer(socketID_1));
-      const savedCustomer = connectedPlayers.get(socketID_1);
-      savedCustomer.socketID.should.equal(socketID_1);
+      connectedPlayers.set(MOCK_SOCKETID_1, new Customer(MOCK_SOCKETID_1));
+      const savedCustomer = connectedPlayers.get(MOCK_SOCKETID_1);
+      savedCustomer.socketID.should.equal(MOCK_SOCKETID_1);
     });
 
     it('Can add second customer', () => {
-      connectedPlayers.set(socketID_2, new Customer(socketID_2));
-      const savedCustomer = connectedPlayers.get(socketID_2);
-      savedCustomer.socketID.should.equal(socketID_2);
+      connectedPlayers.set(MOCK_SOCKETID_2, new Customer(MOCK_SOCKETID_2));
+      const savedCustomer = connectedPlayers.get(MOCK_SOCKETID_2);
+      savedCustomer.socketID.should.equal(MOCK_SOCKETID_2);
+    });
+
+    it('Can add third customer', () => {
+      connectedPlayers.set(MOCK_SOCKETID_3, new Customer(MOCK_SOCKETID_3));
+      const savedCustomer = connectedPlayers.get(MOCK_SOCKETID_3);
+      savedCustomer.socketID.should.equal(MOCK_SOCKETID_3);
     });
 
     it('Can update ready status', () => {
       const status = connectedPlayers.getWaitingRoomStatus();
       status.allReady.should.equal(false);
-      status.totalCustomers.should.equal(2);
-    });
-
-    it('Customer 2 can disconnect', () => {
-      connectedPlayers.disconnect(socketID_2);
-      const status = connectedPlayers.getWaitingRoomStatus();
-      status.allReady.should.equal(false);
-      status.totalCustomers.should.equal(1);
+      status.totalCustomers.should.equal(MOCK_CLIENTS.length);
     });
 
     it('Customer 1 can toggle ready', () => {
-      connectedPlayers.setIn(socketID_1, ['isReady', true]);
+      connectedPlayers.setIn(MOCK_SOCKETID_1, ['isReady', true]);
       const status = connectedPlayers.getWaitingRoomStatus();
-      status.allReady.should.equal(true);
-      status.totalCustomers.should.equal(1);
+      status.allReady.should.equal(false);
+      status.totalCustomers.should.equal(MOCK_CLIENTS.length);
     });
 
     it('Can retrieve customer 1 sessionID', () => {
-      const sessionID = connectedPlayers.getSessionID(socketID_1);
+      const sessionID = connectedPlayers.getSessionID(MOCK_SOCKETID_1);
       should(sessionID).null();
     });
   });
 
-  describe('Sessions and SessionStore', () => {
-    const sessionsStore = new SessionsStore();
+  describe('Sessions and game init', () => {
     let session = null;
-    it('Can create session', () => {
-      session = new Session();
-      session.should.have.property('ID');
-    });
 
-    it('Can store and retrieve session', () => {
-      sessionsStore.store(session);
-      const sessID = session.get('ID');
-      const savedSession = sessionsStore.get(sessID);
-      savedSession.ID.should.equal(sessID);
-    });
-  });
-
-  describe('Game Controller', () => {
     it('Can initialize game', async () => {
-      const gameState = await GameController.initialize(['socket1', 'socket2']);
+      gameState = await GameController.initialize(MOCK_CLIENTS);
       gameState.should.be.an.Object();
       gameState.should.have.property('pieces');
       gameState.should.have.property('players');
-      gameState.players['socket1'].index.should.be.equal('socket1');
+      gameState.players[MOCK_SOCKETID_1].index.should.be.equal(MOCK_SOCKETID_1);
     });
 
+    it('Can create session', () => {
+      session = new Session(MOCK_CLIENTS, gameState);
+      session.should.have.property('ID');
+      session.clients.length.should.be.equal(MOCK_CLIENTS.length);
+    });
+
+    it('Can store and retrieve session', () => {
+      const sessID = session.get('ID');
+      sessionsStore.store(session);
+      const savedSession = sessionsStore.get(sessID);
+      savedSession.ID.should.equal(sessID);
+    });
+
+    it('Customer 2 can disconnect', () => {
+      connectedPlayers.disconnect(MOCK_SOCKETID_3);
+      session.disconnect(MOCK_SOCKETID_3);
+      const status = connectedPlayers.getWaitingRoomStatus();
+      status.allReady.should.equal(false);
+      status.totalCustomers.should.equal(MOCK_CLIENTS.length - 1);
+      session.clients.length.should.be.equal(MOCK_CLIENTS.length - 1);
+    });
+  });
+
+  describe('Game Mechanics', () => {
     it('can buy pawn', async () => {
-      const initialState = await GameController.initialize(['socket1', 'socket2']);
-      const state = await GameController.purchasePawn(initialState, 'socket1', 0);
+      const state = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       state.should.be.an.Object();
-      state.players['socket1'].hand[0].should.be.an.Object();
-      state.players['socket1'].hand[0].should.have.property('looktype');
+      state.players[MOCK_SOCKETID_1].hand[0].should.be.an.Object();
+      state.players[MOCK_SOCKETID_1].hand[0].should.have.property('looktype');
     });
 
     // negative test, (hand is full, unit too expensive)
