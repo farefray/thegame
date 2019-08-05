@@ -1,5 +1,4 @@
 /* global describe, it */
-const assert = require('assert');
 const should = require('should');
 const rewire = require('rewire');
 
@@ -7,9 +6,11 @@ const ConnectedPlayers = rewire('../src/models/ConnectedPlayers.js');
 const SessionsStore = rewire('../src/models/SessionsStore.js');
 
 const GameController = rewire('../src/game.js');
-
+const BattleJS = rewire('../src/game/battle.js');
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
+
+const gameConstantsJS = rewire('../src/game_constants.js');
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -113,10 +114,19 @@ describe('Core Modules', () => {
       const toPosition = '1,1';
       const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, fromPosition, toPosition);
       result.upgradeOccured.should.be.false();
-      console.log(gameState.players[MOCK_SOCKETID_1].hand);
-      console.log(gameState.players[MOCK_SOCKETID_1].board);
       should(gameState.players[MOCK_SOCKETID_1].hand[fromPosition]).undefined();
       gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
     });
+
+    // todo test for mutateStateByFixingUnitLimit
+    it('battle can executed', async () => {
+      const npcBoard = await gameConstantsJS.getSetRound(1);
+      const playerBoard = gameState.getIn(['players', MOCK_SOCKETID_1, 'board']);
+      const result = await BattleJS.executeBattle(playerBoard, npcBoard);
+      result.should.be.ok();
+      result.actionStacks.should.be.an.Array();
+    });
+
+
   });
 });

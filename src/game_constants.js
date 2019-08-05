@@ -1,51 +1,50 @@
 
 
-const { Map, List } = require('immutable');
 const BoardJS = require('./game/board');
 
 const f = require('./f');
 
-const rarityAmount = List([45, 30, 25, 15, 10]); // Real version
-// const rarityAmount = List([3, 3, 3, 3, 3]); // Test version
-// const rarityAmount = List([9, 9, 9, 9, 9]); // Test version
+const rarityAmount = [45, 30, 25, 15, 10]; // Real version
+// const rarityAmount = [3, 3, 3, 3, 3]); // Test version
+// const rarityAmount = [9, 9, 9, 9, 9]); // Test version
 
 exports.debugMode = true;
 
-const levelPieceProbability = Map({
-  1: Map({
+const levelPieceProbability = {
+  1: {
     1: 1.00, 2: 0.00, 3: 0.00, 4: 0.00, 5: 0.00,
-  }),
-  2: Map({
+  },
+  2: {
     1: 0.70, 2: 0.30, 3: 0.00, 4: 0.00, 5: 0.00,
-  }),
-  3: Map({
+  },
+  3: {
     1: 0.60, 2: 0.35, 3: 0.05, 4: 0.00, 5: 0.00,
-  }),
-  4: Map({
+  },
+  4: {
     1: 0.50, 2: 0.35, 3: 0.15, 4: 0.00, 5: 0.00,
-  }),
-  5: Map({
+  },
+  5: {
     1: 0.40, 2: 0.35, 3: 0.23, 4: 0.02, 5: 0.00,
-  }),
-  6: Map({
+  },
+  6: {
     1: 0.33, 2: 0.30, 3: 0.30, 4: 0.07, 5: 0.00,
-  }),
-  7: Map({
+  },
+  7: {
     1: 0.30, 2: 0.30, 3: 0.30, 4: 0.10, 5: 0.00,
-  }),
-  8: Map({
+  },
+  8: {
     1: 0.24, 2: 0.30, 3: 0.30, 4: 0.15, 5: 0.01,
-  }),
-  9: Map({
+  },
+  9: {
     1: 0.22, 2: 0.30, 3: 0.25, 4: 0.20, 5: 0.03,
-  }),
-  10: Map({
+  },
+  10: {
     1: 0.19, 2: 0.25, 3: 0.25, 4: 0.25, 5: 0.06,
-  }),
-});
+  },
+};
 
 // TODO: Correct numbers
-const expRequiredPerLevel = Map({
+const expRequiredPerLevel = {
   1: 1,
   2: 1,
   3: 2,
@@ -55,76 +54,55 @@ const expRequiredPerLevel = Map({
   7: 24,
   8: 32,
   9: 40,
-});
+};
 
-exports.getExpRequired = index => expRequiredPerLevel.get(String(index));
+exports.getExpRequired = index => expRequiredPerLevel[String(index)];
 
-const damageFactorType = Map({
+const damageFactorType = {
   attack: 0.125,
   spell: 0.5,
-});
+};
 
-exports.getDamageFactorType = actionType => damageFactorType.get(actionType);
+exports.getDamageFactorType = actionType => damageFactorType[actionType];
 
 /**
  * Set level setups
  * 1,2,3 Npc levels
- * 10+ Gym battles
- *  10: Rock: Geodude, Onix
-    15: Water: Staryu, Starmie
-    20: Electric: voltorb, pikachu, raichu
-    25: Grass: victreebel, tangela, vileplume
-    30: Poison: koffing, muk, koffing, weezing
-    35: Psychic: kadabra, mr. mime, venomoth, alakazam
-    40: Fire: Growlithe, ponyta, rapidash, arcanine
-    45: Ground: rhyhorn, dugtrio, nidoqueen, nidoking, rhydon
-    50: Ice: dewgong, cloyster, slowbro, jynx, lapras
-    55: Fighting + Onix: Onix, hitmonlee, hitmonchan, onix, machamp
-    60: Ghost + goldbat/arbok: Gengar, golbat, haunter, arbok, gengar
-    65: Flying + Dragon: Gyarados, Dragonair, aerodactyl, dragonite
-    70: Final Boss: Pidgeot, alakazam, rhydon, arcanine, exeggutor, blastoise
  */
-const roundSetConfiguration = Map({
-  1: async () => BoardJS.createBattleBoard(List([
-    Map({ name: 'minotaur', x: 3, y: 1 }),
-  ])),
-  2: async () => BoardJS.createBattleBoard(List([
-    Map({ name: 'minotaur', x: 3, y: 1 }),
-    Map({ name: 'minotaur', x: 5, y: 1 }),
-  ])),
-  3: async () => BoardJS.createBattleBoard(List([
-    Map({ name: 'minotaur', x: 3, y: 1 }),
-    Map({ name: 'minotaur', x: 5, y: 1 }),
-  ]))
-});
+const roundSetConfiguration = {
+  1: async () => BoardJS.createBattleBoard([
+    { name: 'minotaur', x: 3, y: 1 },
+  ]),
+  2: async () => BoardJS.createBattleBoard([
+    { name: 'minotaur', x: 3, y: 1 },
+    { name: 'minotaur', x: 5, y: 1 },
+  ]),
+  3: async () => BoardJS.createBattleBoard([
+    { name: 'minotaur', x: 3, y: 1 },
+    { name: 'minotaur', x: 5, y: 1 },
+  ])
+};
 
 exports.getSetRound = async (round) => {
-  const board = await roundSetConfiguration.get(String(round))();
+  const board = await roundSetConfiguration[String(round)]();
   // console.log('@getSetRound', board);
   if (f.isUndefined(board)) {
-    return BoardJS.createBattleBoard(List([
-      Map({ name: 'rhyhorn', x: 3, y: 1 }),
-      Map({ name: 'dugtrio', x: 4, y: 1 }),
-      Map({ name: 'nidoqueen', x: 5, y: 1 }),
-      Map({ name: 'nidoking', x: 6, y: 1 }),
-      Map({ name: 'rhydon', x: 2, y: 1 }),
-    ]));
+    return BoardJS.createBattleBoard([
+      { name: 'rhyhorn', x: 3, y: 1 },
+      { name: 'dugtrio', x: 4, y: 1 },
+      { name: 'nidoqueen', x: 5, y: 1 },
+      { name: 'nidoking', x: 6, y: 1 },
+      { name: 'rhydon', x: 2, y: 1 },
+    ]);
   }
   return board;
 };
 
-const gymLeader = Map({
-  10: 'Brock',
-  15: 'Misty',
-  20: 'Lt.Surge',
-  25: 'Erika',
-  30: 'Koga',
-  35: 'Sabrina',
-  40: 'Blaine',
-  45: 'Giovanni',
-});
+const gymLeader = {
+  10: 'Brock'
+};
 
-exports.getGymLeader = round => gymLeader.get(String(round));
+exports.getGymLeader = round => gymLeader[String(round)];
 
 
 exports.getRoundType = (round) => {
@@ -141,16 +119,16 @@ exports.getRoundType = (round) => {
 };
 
 // index - 1, Handles 0-4 indexes, send cost directly
-exports.getRarityAmount = index => rarityAmount.get(index - 1);
+exports.getRarityAmount = index => rarityAmount[index - 1];
 
-exports.getLevelPieceProbability = index => levelPieceProbability.get(String(index));
+exports.getLevelPieceProbability = index => levelPieceProbability[String(index)];
 
 exports.getPieceProbabilityNum = (index) => {
-  const probs = levelPieceProbability.get(String(index));
+  const probs = levelPieceProbability[String(index)];
   if (f.isUndefined(probs)) console.log('getPieceProbability', index);
-  return [probs.get('1'), probs.get('1') + probs.get('2'), probs.get('1') + probs.get('2') + probs.get('3'),
-    probs.get('1') + probs.get('2') + probs.get('3') + probs.get('4'),
-    probs.get('1') + probs.get('2') + probs.get('3') + probs.get('4') + probs.get('5')];
+  return [probs['1'], probs['1'] + probs['2'], probs['1'] + probs['2'] + probs['3'],
+    probs['1'] + probs['2'] + probs['3'] + probs['4'],
+    probs['1'] + probs['2'] + probs['3'] + probs['4'] + probs['5']];
 };
 
 exports.getTypeEffectString = (typeFactor) => {

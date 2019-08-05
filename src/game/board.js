@@ -19,11 +19,11 @@ const BoardJS = {};
  * Set(['pikachu']) (no more pikachus or raichus)
  */
 async function _countUniqueOccurences(board, teamParam = '0') {
-  let buffMap = {
+  const buffMap = {
     0: {},
     1: {},
   };
-  let unique = {
+  const unique = {
     0: [],
     1: [],
   };
@@ -139,15 +139,15 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
   const buffMap = await _countUniqueOccurences(board);
 
   // Map({0: Map({grass: 40})})
-  let typeBuffMapSolo = {
+  const typeBuffMapSolo = {
     0: {},
     1: {}
   }; // Solo buffs, only for that type
-  let typeBuffMapAll = {
+  const typeBuffMapAll = {
     0: {},
     1: {}
   }; // For all buff
-  let typeDebuffMapEnemy = {
+  const typeDebuffMapEnemy = {
     0: {},
     1: {}
   }; // For all enemies debuffs
@@ -270,40 +270,48 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
     console.log('@markBoardBonuses CHECK ME', newBoard);
   }*/
   // console.log('NEWBOARD: ', newBoard);
-  return Map({
-    newBoard,
+  return {
+    board,
     buffMap,
     typeBuffMapSolo,
     typeBuffMapAll,
     typeDebuffMapEnemy,
-  });
+  };
 };
 
 /**
  * Create unit for board battle from createBoardUnit unit given newpos/pos and team
  */
 BoardJS.createBattleUnit = async (unit, unitPos, team) => {
-  const unitStats = await pawns.getStats(unit.get('name'));
-  const ability = await abilitiesJS.getAbility(unit.get('name'));
-  // if(ability.get('mana')) console.log('@createBattleUnit', unit.get('name'), unitStats.get('ability'), ability.get('mana'));
-  return unit.set('team', team).set('attack', unitStats.get('attack'))
-    .set('hp', unitStats.get('hp'))
-    .set('maxHp', unitStats.get('hp'))
-    .set('startHp', unitStats.get('hp'))
-    .set('type', unitStats.get('type'))
-    .set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'))
-    .set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'))
-    .set('ability', unitStats.get('ability'))
-    .set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'))
-    .set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')))
-    /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
-    .set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
-    .set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'))
-    .set('specialAttack', unitStats.get('specialAttack'))
-    .set('specialDefense', unitStats.get('specialDefense'))
-    .set('position', unitPos)
-    .set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
-    .set('manaCost', (ability && ability.get('mana')) || abilitiesJS.getDefault('mana'));
+  const unitStats = await pawns.getStats(unit['name']);
+  const ability = await abilitiesJS.getAbility(unit['name']);
+
+  const battleUnit = unit;
+  const set = (where, what) => {
+    battleUnit[where] = what;
+    return this;
+  };
+
+  set('team', team).set('attack', unitStats.get('attack'))
+  set('hp', unitStats.get('hp'))
+  set('maxHp', unitStats.get('hp'))
+  set('startHp', unitStats.get('hp'))
+  set('type', unitStats.get('type'))
+  set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'))
+  set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'))
+  set('ability', unitStats.get('ability'))
+  set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'))
+  set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')))
+  /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
+  set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
+  set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'))
+  set('specialAttack', unitStats.get('specialAttack'))
+  set('specialDefense', unitStats.get('specialDefense'))
+  set('position', unitPos)
+  set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
+  set('manaCost', (ability && ability.get('mana')) || abilitiesJS.getDefault('mana'));
+
+    return unit;
 };
 
 /**
@@ -312,26 +320,24 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
  * Reverses position for enemy units
  */
 BoardJS.combineBoards = async (board1, board2) => {
-  const keysIter = board1.keys();
-  let tempUnit = keysIter.next();
-  let newBoard = Map({});
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const unit = board1.get(unitPos);
+  const newBoard = {};
+
+  const firstBoard = Object.keys(board1);
+  for (let index = 0; index < firstBoard.length; index++) {
+    const unitPos = firstBoard[index];
+    const unit = board1[unitPos];
     const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 0);
-    newBoard = await newBoard.set(unitPos, battleUnit);
-    tempUnit = keysIter.next();
+    newBoard[unitPos] = battleUnit;
   }
-  const keysIter2 = board2.keys();
-  tempUnit = keysIter2.next();
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const newUnitPos = f.reverseUnitPos(unitPos); // Reverse unitPos
-    const unit = board2.get(unitPos);
-    const battleUnit = await BoardJS.createBattleUnit(unit, newUnitPos, 1);
-    newBoard = await newBoard.set(newUnitPos, battleUnit);
-    tempUnit = keysIter2.next();
+
+  const secondBoard = Object.keys(board2);
+  for (let index = 0; index < secondBoard.length; index++) {
+    const unitPos = secondBoard[index];
+    const unit = board2[unitPos];
+    const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 1);
+    newBoard[unitPos] = battleUnit;
   }
+
   return newBoard;
 };
 
@@ -518,7 +524,7 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
  * Use together with combine boards
  */
 BoardJS.createBattleBoard = async (inputList) => {
-  let board = Map({});
+  let board = {};
   for (let i = 0; i < inputList.size; i++) {
     const el = inputList.get(i);
     const pokemon = el.get('name');

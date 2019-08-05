@@ -46,7 +46,7 @@ async function _manaChangeBoard(boardParam, manaChanges) {
  * TODO: Maybe, Load from defaults here, so mana stats don't have to be stored in vain
  */
 async function _manaIncrease(board, damage, unitPos, enemyPos) {
-  let manaChanges = Map({});
+  let manaChanges = {};
   const unitMana = board.get(unitPos).get('mana');
   const unitManaMult = board.get(unitPos).get('mana_multiplier');
   const unitManaInc = Math.round(Math.min(Math.max(unitManaMult * damage, 5), 15)); // Move 5 and 15 to pokemon.js
@@ -100,7 +100,7 @@ async function _useAbility(board, ability, damageParam, unitPos, target) {
   const newMana = board.getIn([unitPos, 'mana']) - manaCost;
   const manaChanges = Map({ unitPos: newMana });
   let newBoard = board.setIn([unitPos, 'mana'], newMana);
-  let effectMap = Map({});
+  let effectMap = {};
   if (!f.isUndefined(ability.get('effect'))) {
     const effect = ability.get('effect');
     const mode = (f.isUndefined(effect.size) ? effect : effect.get(0));
@@ -193,29 +193,6 @@ async function _handleDotDamage(board, unitPos) {
   return Map({ board });
 }
 
-/**
- * Board with first_move: pos set for all units
- */
-async function _setRandomFirstMove(board) {
-  const boardKeysIter = board.keys();
-  let tempUnit = boardKeysIter.next();
-  let newBoard = board;
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const newPos = unitPos;
-    // TODO: Factor for movement from pokemon
-    // Temp: 0.5
-    const isMoving = Math.random() > 0.5;
-    if (isMoving) {
-      // TODO Make logical movement calculation,
-      // Approved Temp: currently starts default spot, makes no firstmove
-    }
-    // console.log('\n@setRandomFirstMove', board)
-    newBoard = newBoard.setIn([unitPos, 'first_move'], newPos);
-    tempUnit = boardKeysIter.next();
-  }
-  return newBoard;
-}
 
 /**
  * Battle:
@@ -225,15 +202,14 @@ async function _setRandomFirstMove(board) {
  * Continue until battle over
  */
 async function _startBattle(boardParam) {
-  let actionStack = List([]);
-  let unitMoveMap = Map({});
-  let dmgBoard = Map({});
+  let actionStack = [];
+  let unitMoveMap = {};
+  let dmgBoard = {};
   let board = boardParam;
   // f.print(board, '@startBattle')
   let battleOver = false;
 
   // First move for all units first
-  // Remove first_move from all units when doing first movement
   // First move used for all units (order doesn't matter) and set next_move to + speed accordingly
   // Update actionStack and board accordingly
   const iter = board.keys();
@@ -375,13 +351,13 @@ async function _startBattle(boardParam) {
  * if hand is full, sell cheapest unit
  * Do this until board.size == level
  */
-BattleJS.fixTooManyUnits = async (state, playerIndex) => {
+BattleJS.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
   const board = state.getIn(['players', playerIndex, 'board']);
   // Find cheapest unit
   const iter = board.keys();
   let temp = iter.next();
   let cheapestCost = 100;
-  let cheapestCostIndex = List([]);
+  let cheapestCostIndex = [];
   while (!temp.done) {
     const unitPos = temp.value;
     const cost = (await pawns.getStats(board.get(unitPos).get('name'))).get('cost');
@@ -430,68 +406,42 @@ BattleJS.executeBattle = async (board1, board2) => {
   // Check to see if a battle is required
   // Lose when empty, even if enemy no units aswell (tie with no damage taken)
   const board = await BoardJS.combineBoards(board1, board2);
-  if (board1.size === 0) {
-    return Map({
-      actionStack: List([]), winner: 1, board, startBoard: board,
-    });
-  } if (board2.size === 0) {
-    return Map({
-      actionStack: List([]), winner: 0, board, startBoard: board,
-    });
-  }
+  if (!Object.keys(board1).length) {
+    return {
+      actionStack: [], winner: 1, board, startBoard: board,
+    };
+  } if (!Object.keys(board2).length) {
+    return {
+      actionStack: [], winner: 0, board, startBoard: board,
+    };
+  } // todo case when both boards are empty?
 
-  // f.print(board, '@executeBattle')
   // Both players have units, battle required
-  const boardWithBonuses = (await BoardJS.markBoardBonuses(board)).get('newBoard');
-  // f.print(boardWithBonuses);
-  const boardWithMovement = await _setRandomFirstMove(boardWithBonuses);
-  if (f.isUndefined(boardWithMovement)) {
-    console.log('@executeBattle UNDEFINED BOARD', board1, board2);
-  }
-  const result = await _startBattle(boardWithMovement);
-  return result.set('startBoard', boardWithMovement);
+  // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
+  const result = await _startBattle(board);
+  return result.set('startBoard', board);
 };
 
-BattleJS.npcRound = async (stateParam, npcBoard) => {
-  const state = stateParam;
-  let battleObject = Map({});
-  const playerIter = state.get('players').keys();
-  let tempPlayer = playerIter.next();
+BattleJS.npcRound = async (state, players, npcBoard) => {
+  const battleObject = {}; // investigate if we need all of this
+
   // TODO: Future: All battles calculate concurrently
-  while (!tempPlayer.done) {
-    const currentPlayer = tempPlayer.value;
-    const board1 = state.getIn(['players', currentPlayer, 'board']);
-    // {actionStack: actionStack, board: newBoard, winner: winningTeam, startBoard: initialBoard}
-    const resultBattle = await BattleJS.executeBattle(board1, npcBoard);
-
-    const actionStack = resultBattle.get('actionStack');
-    const startBoard = resultBattle.get('startBoard');
-    const dmgBoard = resultBattle.get('dmgBoard');
-    battleObject = battleObject.setIn(['actionStacks', currentPlayer], actionStack);
-    battleObject = battleObject.setIn(['startingBoards', currentPlayer], startBoard);
-    battleObject = battleObject.setIn(['dmgBoards', currentPlayer], dmgBoard);
-
-    // For endbattle calculations
-    const winner = (resultBattle.get('winner') === 0);
-    const finalBoard = resultBattle.get('board');
-    const battleEndTime = resultBattle.get('battleEndTime');
-    battleObject = battleObject.setIn(['winners', currentPlayer], winner);
-    battleObject = battleObject.setIn(['finalBoards', currentPlayer], finalBoard);
-    battleObject = battleObject.setIn(['battleEndTimes', currentPlayer], battleEndTime);
-
-    tempPlayer = playerIter.next();
+  for (let i = 0; i < players.length; i++) {
+    const playerBoard = state.getIn(['players', players[i], 'board']);
+    const resultBattle = await BattleJS.executeBattle(playerBoard, npcBoard);
+    battleObject['actionStacks'][players[i]] = resultBattle['actionStacks'];
+    battleObject['startBoard'][players[i]] = resultBattle['startBoard'];
+    battleObject['dmgBoards'][players[i]] = resultBattle['dmgBoards'];
+    battleObject['winners'][players[i]] = resultBattle['winner'] === 0;
+    battleObject['finalBoards'][players[i]] = resultBattle['board'];
+    battleObject['battleEndTimes'][players[i]] = resultBattle['battleEndTime'];
   }
-  // Post battle state
-  const newState = await state;
-  return Map({
-    state: newState,
-    battleObject,
-    preBattleState: stateParam,
-  });
+
+  return battleObject;
 };
 
 async function buildMatchups(players) {
-  let matchups = Map({});
+  let matchups = {};
   const jsPlayers = players.toJS();
   const keys = Object.keys(jsPlayers);
   const immutableKeys = fromJS(keys);
@@ -579,20 +529,15 @@ BattleJS.battleTime = async (stateParam) => {
  * Check not too many units on board
  * Calculate battle for given board, either pvp or npc/gym round
  */
-BattleJS.battleSetup = async (stateParam) => {
-  let state = stateParam;
-  const iter = state.get('players').keys();
-  let temp = iter.next();
-  while (!temp.done) {
-    const playerIndex = temp.value;
-    const board = state.getIn(['players', playerIndex, 'board']);
-    const level = state.getIn(['players', playerIndex, 'level']);
-    if (board.size > level) {
-      const newPlayer = await BattleJS.fixTooManyUnits(state, playerIndex);
-      state = state.setIn(['players', playerIndex], newPlayer);
+BattleJS.battleSetup = async (state) => {
+  const players = Object.keys(state.get('players')); // maybe this should be moved to some iterable logic
+  for (let i = 0; i < players.length; i++) {
+    const player = state.getIn(['players', players[i]]);
+    if (Object.keys(player.board).length > player.level) {
+      await BattleJS.mutateStateByFixingUnitLimit(state, players[i]);
     }
-    temp = iter.next();
   }
+
   const round = state.get('round');
   const roundType = gameConstantsJS.getRoundType(round);
   switch (roundType) {
@@ -603,7 +548,9 @@ BattleJS.battleSetup = async (stateParam) => {
     }
     case 'npc': {
       const boardNpc = await gameConstantsJS.getSetRound(round);
-      return (await BattleJS.npcRound(state, boardNpc)).set('roundType', roundType);
+      const roundState = (await BattleJS.npcRound(state, players, boardNpc));
+      roundState.set('roundType', roundType);
+      return roundState;
     }
     case 'shop':
     case 'pvp':

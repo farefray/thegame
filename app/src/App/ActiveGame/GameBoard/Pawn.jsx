@@ -33,6 +33,7 @@ export default function Pawn ({ cellPosition, name, direction, idle, classList, 
       cursor: 'move',
     }}>
       <PawnImage name={name} idle={idle} direction={direction} classList={classList} isBoard={isBoard} lookType={lookType}/>
+      pawn
     </div>
   </>
 }
