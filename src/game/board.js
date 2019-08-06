@@ -323,6 +323,8 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
  * Reverses position for enemy units
  */
 BoardJS.combineBoards = async (board1, board2) => {
+  console.log("TCL: BoardJS.combineBoards -> board2", board2)
+  console.log("TCL: BoardJS.combineBoards -> board1", board1)
   const newBoard = {};
 
   const firstBoard = Object.keys(board1);
@@ -341,6 +343,7 @@ BoardJS.combineBoards = async (board1, board2) => {
     newBoard[unitPos] = battleUnit;
   }
 
+  console.log(newBoard);
   return newBoard;
 };
 

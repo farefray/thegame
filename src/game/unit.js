@@ -158,54 +158,54 @@ function _handleNeighbor(pathFindParam, board, current, enemyPos, pos) {
  *    team 1: S, N, W, E, SW, SE, NW, NE
  */
 UnitJS.getClosestEnemy = (board, unitPos, range, team, exceptionsList = []) => {
-  f.print(unitPos, '@getClosestEnemy unitPos')
   const x = f.x(unitPos);
   const y = f.y(unitPos);
   const enemyTeam = 1 - team;
   let pos;
   // Check N S W E
   pos = f.pos(x, y + 1);
-  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
     return { closestEnemy: pos, withinRange: true, direction: 'N' };
   }
   pos = f.pos(x, y - 1);
-  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
     return { closestEnemy: pos, withinRange: true, direction: 'S' };
   }
   pos = f.pos(x - 1, y);
-  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
     return { closestEnemy: pos, withinRange: true, direction: 'W' };
   }
   pos = f.pos(x + 1, y);
-  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+  if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
     return { closestEnemy: pos, withinRange: true, direction: 'E' };
   }
 
   for (let i = 1; i <= 8; i++) {
     const withinRange = i <= range;
-    // console.log(withinRange, x, y, i, (x-i), (y-i))
+    console.log(withinRange, x, y, i, Math.abs(x-i), Math.abs(y-i), Math.abs(x+i), Math.abs(y+i))
 
     // Normal checks
     for (let j = x - i; j <= x + i; j++) {
-      pos = f.pos(j, y - i);
-      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+      pos = f.pos(j, Math.abs(y - i));
+      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
         const direction = _getDirection(unitPos, pos);
         return { closestEnemy: pos, withinRange, direction };
       }
-      pos = f.pos(j, y + i);
-      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+      pos = f.pos(j, Math.abs(y + i));
+      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
         const direction = _getDirection(unitPos, pos);
         return { closestEnemy: pos, withinRange, direction };
       }
     }
+
     for (let j = y - i + 1; j < y + i; j++) {
-      pos = f.pos(x - i, j);
-      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+      pos = f.pos(Math.abs(x - i), j);
+      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
         const direction = _getDirection(unitPos, pos);
         return { closestEnemy: pos, withinRange, direction };
       }
-      pos = f.pos(x + i, j);
-      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.contains(pos)) {
+      pos = f.pos(Math.abs(x + i), j);
+      if (!f.isUndefined(board[pos]) && board[pos]['team'] === enemyTeam && !exceptionsList.includes(pos)) {
         const direction = _getDirection(unitPos, pos);
         return { closestEnemy: pos, withinRange, direction };
       }
@@ -218,6 +218,7 @@ UnitJS.getClosestEnemy = (board, unitPos, range, team, exceptionsList = []) => {
 
 UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exceptionsList = []) => {
   const stepsToTake = Math.floor(Math.random() * 2 + 1); // 1 currently //  1 - 2, * 2
+  console.log(unitPos, closestEnemyPos);
   const rangeToTarget = _getHeuristicScore(unitPos, closestEnemyPos);
   if (stepsToTake > rangeToTarget) { // Within range, move to closest available space // && rangeToTarget === 1
     const goal = _getMovePos(board, closestEnemyPos, 1, team);

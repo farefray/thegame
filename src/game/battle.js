@@ -233,7 +233,7 @@ async function _executeBattle(preBattleBoard) {
 
     let nextMoveResult;
     if (!f.isUndefined(previousMove)) { // Use same target as last round
-      // console.log('previousMove in @startBattle', previousMove.get('nextMove').get('target'));
+      // console.log('previousMove in @startBattle', previousMove.get('nextMove')['target']);
       const previousTarget = previousMove['nextMove']['target'];
       const previousDirection = previousMove['nextMove']['direction'];
       nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove, { target: previousTarget, direction: previousDirection });
@@ -251,7 +251,7 @@ async function _executeBattle(preBattleBoard) {
     let nextMoveValue;
     if (moveAction === 'move') { // Faster recharge on moves
       nextMoveValue = +unit.get('next_move') + Math.round(+unit.get('speed') / 3);
-      pos = result.get('nextMove').get('target');
+      pos = result.get('nextMove')['target'];
     } else {
       nextMoveValue = +unit.get('next_move') + +unit.get('speed');
       // Add to dpsBoard
@@ -273,8 +273,8 @@ async function _executeBattle(preBattleBoard) {
       } else { // Unit died, Delete every key mapping to nextMoveResult
         const nextMoveAction = moveAction;
         if (nextMoveAction === 'attack' || nextMoveAction === 'spell') { // Unit attacked died
-          // console.log('Deleting all keys connected to this: ', nextMoveResult.get('nextMove').get('target'))
-          unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, result.get('nextMove').get('target'));
+          // console.log('Deleting all keys connected to this: ', nextMoveResult.get('nextMove')['target'])
+          unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, result.get('nextMove')['target']);
         } else if (nextMoveAction === 'move') { // Unit moved, remove units that used to attack him
           // console.log('Deleting all keys connected to this: ', nextUnitToMove)
           unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, nextUnitToMove);
@@ -301,7 +301,7 @@ async function _executeBattle(preBattleBoard) {
         damageDealt = dotObj['unitDied'];
         battleOver = battleOver || await BattleJS.isBattleOver(board, 1 - team);
         // Delete every key mapping to nextMoveResult
-        // console.log('Deleting all keys connected to this: ', nextMoveResult.get('nextMove').get('target'))
+        // console.log('Deleting all keys connected to this: ', nextMoveResult.get('nextMove')['target'])
         unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, nextUnitToMove);
       }
       const move = await {
@@ -390,6 +390,7 @@ BattleJS.executeBattle = async (board1, board2) => {
   // Check to see if a battle is required
   // Lose when empty, even if enemy no units aswell (tie with no damage taken)
   const board = await BoardJS.combineBoards(board1, board2);
+  console.log("TCL: BattleJS.executeBattle -> board2", board)
   if (!Object.keys(board1).length) {
     return {
       actionStack: [], winner: 1, board, startBoard: board,
@@ -648,7 +649,7 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
       effect,
       manaChanges,
       typeEffective: gameConstantsJS.getTypeEffectString(typeFactor),
-      direction: enemyPos.get('direction'),
+      direction: enemyPos['direction'],
     };
 
     return {
@@ -661,11 +662,14 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
   const range = unit.get('range');
   const team = unit.get('team');
   let tarpos;
-  if (!f.isUndefined(optPreviousTarget)) {
-    tarpos = { closestEnemy: optPreviousTarget.get('target'), withinRange: true, direction: optPreviousTarget.get('direction') };
+  console.log("TCL: BattleJS.generateNextMove -> optPreviousTarget", optPreviousTarget)
+  if (optPreviousTarget) {
+    tarpos = { closestEnemy: optPreviousTarget['target'], withinRange: true, direction: optPreviousTarget['direction'] };
   } else {
+    console.log('asda');
     tarpos = UnitJS.getClosestEnemy(board, unitPos, range, team);
   }
+  console.log(tarpos);
   const enemyPos = tarpos; // await
   if (enemyPos['withinRange']) { // Attack action
     const action = 'attack';
@@ -700,7 +704,7 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
       target,
       manaChanges,
       typeEffective: gameConstantsJS.getTypeEffectString(typeFactor),
-      direction: enemyPos.get('direction'),
+      direction: enemyPos['direction'],
     };
     return {
       nextMove: move,
@@ -713,7 +717,7 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
   // console.log('Moving ...', unitPos, 'to', closestEnemyPos, range)
   const movePosObj = await UnitJS.getStepMovePos(board, unitPos, closestEnemyPos, range, team);
   const movePos = movePosObj.get('movePos');
-  const direction = movePosObj.get('direction');
+  const direction = movePosObj['direction'];
   f.p('Move: ', unitPos, 'to', movePos);
   let newBoard;
   let action;
