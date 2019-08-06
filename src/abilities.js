@@ -1,19 +1,18 @@
-const { Map, List, fromJS } = require('immutable');
 const fs = require('fs');
 const pawns = require('./pawns');
 const f = require('./f');
 
-const abilityDefaults = Map({
+const abilityDefaults = {
   mana: 100,
   lifestealValue: 0.5,
   dotAccuracy: 1.0,
   dotDamage: 1 / 16,
   aoeRange: 1,
   range: 8,
-  multiStrikePercentage: List([0.375, 0.375, 0.125, 0.125]),
-});
+  multiStrikePercentage: [0.375, 0.375, 0.125, 0.125],
+};
 
-exports.getAbilityDefault = name => abilityDefaults.get(name);
+exports.getAbilityDefault = name => abilityDefaults[name];
 
 /**
   * Read from json file
@@ -26,20 +25,21 @@ exports.getAbilityDefault = name => abilityDefaults.get(name);
   * unique TODO
   */
 async function loadImmutableAbilitiesJSON() {
-  const pokemonJSON = JSON.parse(fs.readFileSync('pokemonAbilities.json', 'utf8'));
-  return fromJS(pokemonJSON);
+  return JSON.parse(fs.readFileSync('pokemonAbilities.json', 'utf8'));
 }
 
 const abilitiesMap = loadImmutableAbilitiesJSON();
 
-exports.getDefault = name => abilityDefaults.get(name);
+exports.getDefault = name => abilityDefaults[name];
 
 exports.getAbility = async (name) => {
   // console.log('@abilties.getAbility', name);
-  const ability = (await pawns.getStats(name)).get('ability');
-  const returnMe = (await abilitiesMap).get(ability);
+  const ability = (await pawns.getStats(name))['ability'];
+  const returnMe = (await abilitiesMap)[ability];
   if (f.isUndefined(returnMe)) console.log('@getAbility undefined', name);
   return returnMe;
 };
 
 exports.getMap = () => abilitiesMap;
+
+// TODO perf all this...

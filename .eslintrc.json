@@ -16,6 +16,8 @@
         "linebreak-style": "off",
         "no-mixed-operators": "off",
         "func-names": "off",
-        "dot-notation": "off"
+        "dot-notation": "off",
+        "no-restricted-syntax": "off",
+        "guard-for-in": "off"
     }
 }

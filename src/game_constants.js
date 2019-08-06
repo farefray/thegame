@@ -85,16 +85,6 @@ const roundSetConfiguration = {
 
 exports.getSetRound = async (round) => {
   const board = await roundSetConfiguration[String(round)]();
-  // console.log('@getSetRound', board);
-  if (f.isUndefined(board)) {
-    return BoardJS.createBattleBoard([
-      { name: 'rhyhorn', x: 3, y: 1 },
-      { name: 'dugtrio', x: 4, y: 1 },
-      { name: 'nidoqueen', x: 5, y: 1 },
-      { name: 'nidoking', x: 6, y: 1 },
-      { name: 'rhydon', x: 2, y: 1 },
-    ]);
-  }
   return board;
 };
 

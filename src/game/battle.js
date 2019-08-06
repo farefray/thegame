@@ -1,8 +1,4 @@
-const {
-  Map,
-  List,
-  fromJS,
-} = require('immutable');
+const _ = require('lodash');
 const pawns = require('../pawns');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
@@ -24,7 +20,7 @@ async function _healUnit(board, unitPos, heal) {
   const maxHp = (await pawns.getStats(board.get(unitPos).get('name'))).get('hp');
   const newHp = (board.getIn([unitPos, 'hp']) + heal >= maxHp ? maxHp : board.getIn([unitPos, 'hp']) + heal);
   const hpHealed = newHp - board.getIn([unitPos, 'hp']);
-  return Map({ board: board.setIn([unitPos, 'hp'], newHp), hpHealed });
+  return { board: board.setIn([unitPos, 'hp'], newHp), hpHealed };
 }
 
 async function _manaChangeBoard(boardParam, manaChanges) {
@@ -47,14 +43,14 @@ async function _manaChangeBoard(boardParam, manaChanges) {
  */
 async function _manaIncrease(board, damage, unitPos, enemyPos) {
   let manaChanges = {};
-  const unitMana = board.get(unitPos).get('mana');
+  const unitMana = board.get(unitPos)['mana'];
   const unitManaMult = board.get(unitPos).get('mana_multiplier');
   const unitManaInc = Math.round(Math.min(Math.max(unitManaMult * damage, 5), 15)); // Move 5 and 15 to pokemon.js
   const manaCost = board.get(unitPos).get('manaCost');
   const newMana = Math.min(+unitMana + +unitManaInc, manaCost);
   manaChanges = manaChanges.set(unitPos, newMana);
   if (!f.isUndefined(enemyPos)) {
-    const enemyMana = board.get(enemyPos).get('mana');
+    const enemyMana = board.get(enemyPos)['mana'];
     const enemyManaMult = board.get(enemyPos).get('mana_multiplier');
     const enemyManaInc = Math.round(Math.min(enemyManaMult * damage, 15));
     const enemyManaCost = board.get(enemyPos).get('manaCost');
@@ -96,15 +92,15 @@ async function _calcDamage(actionType, power, unit, target, typeFactor, useSpeci
  */
 async function _useAbility(board, ability, damageParam, unitPos, target) {
   let damage = damageParam;
-  const manaCost = ability.get('mana') || abilitiesJS.getAbilityDefault('mana');
-  const newMana = board.getIn([unitPos, 'mana']) - manaCost;
-  const manaChanges = Map({ unitPos: newMana });
-  let newBoard = board.setIn([unitPos, 'mana'], newMana);
+  const manaCost = ability['mana'] || abilitiesJS.getAbilityDefault('mana');
+  const newMana = board[unitPos].mana - manaCost;
+  const manaChanges = { unitPos: newMana };
+  board[unitPos].mana = newMana;
   let effectMap = {};
-  if (!f.isUndefined(ability.get('effect'))) {
-    const effect = ability.get('effect');
-    const mode = (f.isUndefined(effect.size) ? effect : effect.get(0));
-    const args = (f.isUndefined(effect.size) ? undefined : effect.shift(0));
+  if (!f.isUndefined(ability['effect'])) {
+    const effect = ability['effect'];
+    const mode = (f.isUndefined(effect.length) ? effect : effect[0]);
+    const args = (f.isUndefined(effect.length) ? undefined : effect.shift(0));
     console.log('@useAbility mode', mode, ', args', args);
     switch (mode) {
       case 'buff': {
@@ -124,13 +120,13 @@ async function _useAbility(board, ability, damageParam, unitPos, target) {
           console.log('@NoTarget HMMM', damage);
           damage = 0;
         }
-        // return Map({ board: Map({ board: newBoard }) });
+        // return { board: { board: newBoard }) };
         break;
       }
       case 'lifesteal': {
         const lsFactor = (!f.isUndefined(args) ? args.get(0) : abilitiesJS.getAbilityDefault('lifestealValue'));
         const healObj = await _healUnit(newBoard, unitPos, Math.round(lsFactor * damage));
-        newBoard = healObj.get('board');
+        newBoard = healObj['board'];
         effectMap = effectMap.setIn([unitPos, 'heal'], healObj.get('hpHealed'));
         break;
       }
@@ -167,7 +163,7 @@ async function _useAbility(board, ability, damageParam, unitPos, target) {
         console.log('@useAbility - default, mode =', mode);
     }
   }
-  return Map({ removeHpBoard: (await BattleJS.removeHpBattle(newBoard, target, damage)), effect: effectMap, manaChanges });
+  return { removeHpBoard: (await BattleJS.removeHpBattle(newBoard, target, damage)), effect: effectMap, manaChanges };
 }
 
 /**
@@ -180,17 +176,17 @@ async function _dmgPercToHp(board, unitPos, percentDmg) {
 
 /**
  * Gives new board after dot damage is handled for unit
- * Returns Map({board, damage, unitDied})
+ * Returns {board, damage, unitDied})
  */
 async function _handleDotDamage(board, unitPos) {
   const dot = board.getIn([unitPos, 'dot']);
   if (!f.isUndefined(dot)) {
     const dmgHp = await _dmgPercToHp(board, unitPos, dot);
     const removedHPBoard = await BattleJS.removeHpBattle(board, unitPos, dmgHp); // {board, unitDied}
-    const newBoard = removedHPBoard.get('board');
-    return Map({ board: newBoard, damage: dmgHp, unitDied: removedHPBoard.get('unitDied') });
+    const newBoard = removedHPBoard['board'];
+    return { board: newBoard, damage: dmgHp, unitDied: removedHPBoard['unitDied'] };
   }
-  return Map({ board });
+  return { board };
 }
 
 
@@ -201,58 +197,46 @@ async function _handleDotDamage(board, unitPos) {
  * add that move to actionStack
  * Continue until battle over
  */
-async function _startBattle(boardParam) {
+async function _executeBattle(preBattleBoard) {
   let actionStack = [];
-  let unitMoveMap = {};
   let dmgBoard = {};
-  let board = boardParam;
-  // f.print(board, '@startBattle')
+  let board = _.clone(preBattleBoard);
   let battleOver = false;
 
   // First move for all units first
   // First move used for all units (order doesn't matter) and set next_move to + speed accordingly
   // Update actionStack and board accordingly
-  const iter = board.keys();
-  let temp = iter.next();
-  while (!temp.done) {
-    const unitPos = temp.value;
+  for (const unitPos in board) {
+    const unit = board[unitPos];
     const action = 'move';
-    const unit = board.get(unitPos);
-    if (unit.get('hp') <= 0) {
-      board = board.delete(unitPos);
-      battleOver = battleOver || await BattleJS.isBattleOver(board, 1 - unit.get('team'));
-      console.log('Removing unit with hp < 0 before battle start', unit.get('name'), unit.get('hp'), 'battleOver', battleOver);
+    if (unit['hp'] <= 0) {
+      // shouldnt happen on game start tho...
+      delete board[unitPos];
+      battleOver = battleOver || await BattleJS.isBattleOver(board, 1 - unit['team']);
     } else {
-      const target = unit.get('first_move');
+      const target = unit['team'] === 0 ? 'S' : 'N'; // todo
       const time = 0;
-      const move = Map({
+      const move = {
         unitPos, action, target, time,
-      });
-      actionStack = actionStack.push(move);
-      const newUnit = unit.set('next_move', +unit.get('next_move') + +unit.get('speed'))
-        .delete('first_move');
-      board = board.set(unitPos, newUnit);
+      };
+      actionStack.push(move);
+      board[unitPos]['next_action'] = unit['speed'];
     }
-    temp = iter.next();
   }
-  // Start battle
+
+  // Start battle (todo this async or in workers or somehow optimized)
+  let unitMoveMap = {};
   while (!battleOver) {
-    board = await board;
-    // console.log('board @startBattle', board)
-    if (f.isUndefined(board)) {
-      console.log('board undefined in startBattle');
-    }
-    const nextUnitToMove = await BoardJS.getUnitWithNextMove(board);
-    const unit = board.get(nextUnitToMove);
-    // console.log('\n@startbattle Next unit to do action: ', nextUnitToMove);
-    const previousMove = unitMoveMap.get(nextUnitToMove);
-    // console.log(' --- ', (f.isUndefined(previousMove) ? '' : previousMove.get('nextMove').get('target')), nextUnitToMove)
+    const nextUnitToMove = await BoardJS.getPositionForUnitWithNextMove(board);
+    const unit = board[nextUnitToMove];
+    const previousMove = unitMoveMap[nextUnitToMove];
+
     let nextMoveResult;
     if (!f.isUndefined(previousMove)) { // Use same target as last round
       // console.log('previousMove in @startBattle', previousMove.get('nextMove').get('target'));
-      const previousTarget = previousMove.get('nextMove').get('target');
-      const previousDirection = previousMove.get('nextMove').get('direction');
-      nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove, Map({ target: previousTarget, direction: previousDirection }));
+      const previousTarget = previousMove['nextMove']['target'];
+      const previousDirection = previousMove['nextMove']['direction'];
+      nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove, { target: previousTarget, direction: previousDirection });
     } else {
       if (f.isUndefined(nextUnitToMove)) {
         console.log('Unit is undefined');
@@ -272,7 +256,7 @@ async function _startBattle(boardParam) {
       nextMoveValue = +unit.get('next_move') + +unit.get('speed');
       // Add to dpsBoard
       if (unit.get('team') === 0) {
-        dmgBoard = dmgBoard.set(unit.get('displayName'), (dmgBoard.get(unit.get('displayName')) || 0) + result.get('nextMove').get('value'));
+        dmgBoard = dmgBoard.set(unit['displayName'], (dmgBoard.get(unit['displayName']) || 0) + result.get('nextMove').get('value'));
       }
     }
     board = board.setIn([pos, 'next_move'], nextMoveValue);
@@ -306,29 +290,29 @@ async function _startBattle(boardParam) {
     const dotObj = await _handleDotDamage(board, nextUnitToMove, team);
     if (!f.isUndefined(dotObj.get('damage'))) {
       console.log('@Dot Damage');
-      board = await dotObj.get('board');
+      board = await dotObj['board'];
       // console.log('@dotDamage battleover', battleOver, dotObj.get('battleOver'), battleOver || dotObj.get('battleOver'));
       const action = 'dotDamage';
       const dotDamage = dotObj.get('damage');
       // console.log('dot damage dealt!', board);
       let damageDealt = dotDamage;
-      if (dotObj.get('unitDied')) { // Check if battle ends
+      if (dotObj['unitDied']) { // Check if battle ends
         console.log('@dot - unitdied');
-        damageDealt = dotObj.get('unitDied');
+        damageDealt = dotObj['unitDied'];
         battleOver = battleOver || await BattleJS.isBattleOver(board, 1 - team);
         // Delete every key mapping to nextMoveResult
         // console.log('Deleting all keys connected to this: ', nextMoveResult.get('nextMove').get('target'))
         unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, nextUnitToMove);
       }
-      const move = await Map({
+      const move = await {
         unitPos: nextUnitToMove, action, value: damageDealt, target: nextUnitToMove,
-      });
+      };
       if (unit.get('team') === 1) {
         dmgBoard = dmgBoard.set('dot', (dmgBoard.get('dot') || 0) + damageDealt);
       }
       console.log('@dotDamage', dotDamage);
       f.printBoard(board, move);
-      actionStack = actionStack.push(Map({ nextMove: move, newBoard: board }).set('time', unit.get('next_move')));
+      actionStack = actionStack.push({ nextMove: move, newBoard: board }).set('time', unit.get('next_move'));
     }
   }
   const newBoard = await board;
@@ -339,9 +323,9 @@ async function _startBattle(boardParam) {
   const team = newBoard.get(newBoard.keys().next().value).get('team');
   const winningTeam = team;
   const battleEndTime = actionStack.get(actionStack.size - 1).get('time');
-  return Map({
+  return {
     actionStack, board: newBoard, winner: winningTeam, dmgBoard, battleEndTime,
-  });
+  };
 }
 
 /** Public methods */
@@ -363,7 +347,7 @@ BattleJS.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
     const cost = (await pawns.getStats(board.get(unitPos).get('name'))).get('cost');
     if (cost < cheapestCost) {
       cheapestCost = cost;
-      cheapestCostIndex = List([unitPos]);
+      cheapestCostIndex = [unitPos];
     } else if (cost === cheapestCost) {
       cheapestCostIndex = cheapestCostIndex.push(unitPos);
     }
@@ -418,7 +402,7 @@ BattleJS.executeBattle = async (board1, board2) => {
 
   // Both players have units, battle required
   // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
-  const result = await _startBattle(board);
+  const result = await _executeBattle(board);
   return result.set('startBoard', board);
 };
 
@@ -444,7 +428,7 @@ async function buildMatchups(players) {
   let matchups = {};
   const jsPlayers = players.toJS();
   const keys = Object.keys(jsPlayers);
-  const immutableKeys = fromJS(keys);
+  const immutableKeys = keys;
   console.log('immutableKeys', immutableKeys);
   let shuffledKeys = f.shuffleImmutable(immutableKeys);
   console.log('shuffledKeys', shuffledKeys);
@@ -479,7 +463,7 @@ async function buildMatchups(players) {
 BattleJS.battleTime = async (stateParam) => {
   let state = stateParam;
   const matchups = await buildMatchups(state.get('players'));
-  let battleObject = Map({ matchups });
+  let battleObject = { matchups };
   const iter = matchups.keys();
   let temp = iter.next();
   while (!temp.done) {
@@ -502,7 +486,7 @@ BattleJS.battleTime = async (stateParam) => {
 
     // For endbattle calculations
     const winner = (resultBattle.get('winner') === 0);
-    const finalBoard = resultBattle.get('board');
+    const finalBoard = resultBattle['board'];
     const battleEndTime = resultBattle.get('battleEndTime');
     battleObject = battleObject.setIn(['winners', index], winner);
     battleObject = battleObject.setIn(['finalBoards', index], finalBoard);
@@ -518,11 +502,11 @@ BattleJS.battleTime = async (stateParam) => {
   }
   // Post battle state
   const newState = await state;
-  return Map({
+  return {
     state: newState,
     battleObject,
     preBattleState: stateParam,
-  });
+  };
 };
 
 /**
@@ -594,7 +578,7 @@ BattleJS.removeHpBattle = async (board, unitPos, hpToRemove, percent = false) =>
   if (newHp <= 0) {
     f.p('@removeHpBattle UNIT DIED!', currentHp, '->', (percent ? `${newHp}(%)` : `${newHp}(-)`));
 
-    return Map({ board: board.delete(unitPos), unitDied: currentHp });
+    return { board: board.delete(unitPos), unitDied: currentHp };
   }
   // Caused a crash0
   if (Number.isNaN(currentHp - hpToRemove)) {
@@ -602,7 +586,7 @@ BattleJS.removeHpBattle = async (board, unitPos, hpToRemove, percent = false) =>
     console.log(hpToRemove);
     process.exit();
   }
-  return Map({ board: board.setIn([unitPos, 'hp'], newHp), unitDied: false });
+  return { board: board.setIn([unitPos, 'hp'], newHp), unitDied: false };
 };
 
 /**
@@ -614,48 +598,48 @@ BattleJS.removeHpBattle = async (board, unitPos, hpToRemove, percent = false) =>
  *  if attack is made, increase mana for both units
  * If not, make a move to closest enemy unit
  *
- * Map({nextMove: Map({action: action, value: value, target: target}),
+ * {nextMove: {action: action, value: value, target: target}),
  * newBoard: newBoard, battleOver: true, allowSameMove: true})
  */
 BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
-  const unit = board.get(unitPos);
-  if (unit.get('mana') >= unit.get('manaCost')) { // Use spell, && withinRange for spell
+  const unit = board[unitPos];
+  if (unit.mana >= unit.manaCost) { // Use spell, && withinRange for spell
     // TODO AOE spell logic
     // Idea: Around every adjacent enemy in range of 1 from closest enemy
-    const team = unit.get('team');
-    const ability = await abilitiesJS.getAbility(unit.get('name'));
+    const team = unit.team;
+    const ability = await abilitiesJS.getAbility(unit.name);
     // TODO Check aoe / notarget here instead
     // console.log('@spell ability', ability)
     if (f.isUndefined(ability)) {
-      console.log(`${unit.get('name')} buggy ability`);
+      console.log(`${unit.name} buggy ability`);
     }
     let range = 1;
     if (ability) {
-      range = (!f.isUndefined(ability.get('acc_range')) && !f.isUndefined(ability.get('acc_range').size)
-        ? ability.get('acc_range').get(1) : abilitiesJS.getAbilityDefault('range'));
+      range = (!f.isUndefined(ability.acc_range) && !f.isUndefined(ability.acc_range.size)
+        ? ability.acc_range[1] : abilitiesJS.getAbilityDefault('range'));
     }
     const enemyPos = UnitJS.getClosestEnemy(board, unitPos, range, team);
     const action = 'spell';
-    const target = await enemyPos.get('closestEnemy');
+    const target = await enemyPos['closestEnemy'];
     // console.log('@nextmove - ability target: ', target, enemyPos)
-    const typeFactor = await typesJS.getTypeFactor(ability.get('type'), board.get(target).get('type'));
-    const abilityDamage = (ability.get('power') ? await _calcDamage(action, ability.get('power'), unit, board.get(target), typeFactor, true) : 0);
-    const abilityName = ability.get('displayName');
+    const typeFactor = await typesJS.getTypeFactor(ability['type'], board[target]['type']);
+    const abilityDamage = (ability['power'] ? await _calcDamage(action, ability['power'], unit, board[target], typeFactor, true) : 0);
+    const abilityName = ability['displayName'];
     const abilityResult = await _useAbility(board, ability, abilityDamage, unitPos, target);
     // console.log('@abilityResult', abilityResult)
-    const removedHPBoard = abilityResult.get('removeHpBoard');
-    const effect = abilityResult.get('effect');
-    const manaChanges = abilityResult.get('manaChanges');
+    const removedHPBoard = abilityResult['removeHpBoard'];
+    const effect = abilityResult['effect'];
+    const manaChanges = abilityResult['manaChanges'];
     // Do game over check
-    const newBoard = removedHPBoard.get('board');
+    const newBoard = removedHPBoard['board'];
     // console.log('@spell', newBoard)
     let battleOver = false;
     let damageDealt = abilityDamage;
-    if (removedHPBoard.get('unitDied')) {
+    if (removedHPBoard['unitDied']) {
       battleOver = await BattleJS.isBattleOver(newBoard, team);
-      damageDealt = removedHPBoard.get('unitDied');
+      damageDealt = removedHPBoard['unitDied'];
     }
-    const move = Map({
+    const move = {
       unitPos,
       action,
       value: damageDealt,
@@ -665,51 +649,51 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
       manaChanges,
       typeEffective: gameConstantsJS.getTypeEffectString(typeFactor),
       direction: enemyPos.get('direction'),
-    });
+    };
 
-    return Map({
+    return {
       nextMove: move,
       newBoard,
       battleOver,
-    });
+    };
   }
   // Attack
   const range = unit.get('range');
   const team = unit.get('team');
   let tarpos;
   if (!f.isUndefined(optPreviousTarget)) {
-    tarpos = Map({ closestEnemy: optPreviousTarget.get('target'), withinRange: true, direction: optPreviousTarget.get('direction') });
+    tarpos = { closestEnemy: optPreviousTarget.get('target'), withinRange: true, direction: optPreviousTarget.get('direction') };
   } else {
     tarpos = UnitJS.getClosestEnemy(board, unitPos, range, team);
   }
   const enemyPos = tarpos; // await
-  if (enemyPos.get('withinRange')) { // Attack action
+  if (enemyPos['withinRange']) { // Attack action
     const action = 'attack';
-    const target = enemyPos.get('closestEnemy');
+    const target = enemyPos['closestEnemy'];
     f.p('Closest Enemy: ', unitPos, team, target);
-    const attackerType = (!f.isUndefined(unit.get('type').size) ? unit.get('type').get(0) : unit.get('type'));
+    const attackerType = (!f.isUndefined(unit['type'].length) ? unit['type'][0] : unit['type']);
     // console.log('@nextmove - normal attack target: ', target, enemyPos)
-    const typeFactor = await typesJS.getTypeFactor(attackerType, board.get(target).get('type'));
-    const value = await _calcDamage(action, unit.get('attack'), unit, board.get(target), typeFactor);
+    const typeFactor = await typesJS.getTypeFactor(attackerType, board[target]['type']);
+    const value = await _calcDamage(action, unit.get('attack'), unit, board[target], typeFactor);
     // Calculate newBoard from action
     const removedHPBoard = await BattleJS.removeHpBattle(board, target, value); // {board, unitDied}
-    const newBoard = removedHPBoard.get('board');
+    const newBoard = removedHPBoard['board'];
     let battleOver = false;
     let allowSameMove = false;
     let newBoardMana;
     let manaChanges;
     let damageDealt = value;
-    if (removedHPBoard.get('unitDied')) { // Check if battle ends
+    if (removedHPBoard['unitDied']) { // Check if battle ends
       battleOver = await BattleJS.isBattleOver(newBoard, team);
       manaChanges = await _manaIncrease(newBoard, value, unitPos); // target = dead
       newBoardMana = await _manaChangeBoard(newBoard, manaChanges);
-      damageDealt = removedHPBoard.get('unitDied');
+      damageDealt = removedHPBoard['unitDied'];
     } else { // Mana increase, return newBoard
       allowSameMove = true;
       manaChanges = await _manaIncrease(newBoard, value, unitPos, target);
       newBoardMana = await _manaChangeBoard(newBoard, manaChanges);
     }
-    const move = Map({
+    const move = {
       unitPos,
       action,
       value: damageDealt,
@@ -717,15 +701,15 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
       manaChanges,
       typeEffective: gameConstantsJS.getTypeEffectString(typeFactor),
       direction: enemyPos.get('direction'),
-    });
-    return Map({
+    };
+    return {
       nextMove: move,
       newBoard: newBoardMana,
       allowSameMove,
       battleOver,
-    });
+    };
   } // Move action
-  const closestEnemyPos = enemyPos.get('closestEnemy');
+  const closestEnemyPos = enemyPos['closestEnemy'];
   // console.log('Moving ...', unitPos, 'to', closestEnemyPos, range)
   const movePosObj = await UnitJS.getStepMovePos(board, unitPos, closestEnemyPos, range, team);
   const movePos = movePosObj.get('movePos');
@@ -740,10 +724,10 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     newBoard = board.set(movePos, unit.set('position', movePos)).delete(unitPos);
     action = 'move';
   }
-  const move = Map({
+  const move = {
     unitPos, action, target: movePos, direction,
-  });
-  return Map({ nextMove: move, newBoard });
+  };
+  return { nextMove: move, newBoard };
 };
 
 module.exports = BattleJS;

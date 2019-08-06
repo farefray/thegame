@@ -47,7 +47,7 @@ async function _countUniqueOccurences(board, teamParam = '0') {
         }
       } else { // Value
         buffMap[String(team)][types] = (buffMap[String(team)][types] || 0) + 1;
-        console.log('adding type occurence', name, team, buffMap[String(team)][types])
+        console.log('adding type occurence', name, team, buffMap[String(team)][types]);
       }
     }
   }
@@ -287,31 +287,34 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
   const ability = await abilitiesJS.getAbility(unit['name']);
 
   const battleUnit = unit;
+  // todo proper way :)
+  unitStats.get = field => unitStats[field];
   const set = (where, what) => {
     battleUnit[where] = what;
     return this;
   };
 
-  set('team', team).set('attack', unitStats.get('attack'))
-  set('hp', unitStats.get('hp'))
-  set('maxHp', unitStats.get('hp'))
-  set('startHp', unitStats.get('hp'))
-  set('type', unitStats.get('type'))
-  set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'))
-  set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'))
-  set('ability', unitStats.get('ability'))
-  set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'))
-  set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')))
+  set('team', team);
+  set('attack', unitStats.get('attack'));
+  set('hp', unitStats.get('hp'));
+  set('maxHp', unitStats.get('hp'));
+  set('startHp', unitStats.get('hp'));
+  set('type', unitStats.get('type'));
+  set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'));
+  set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'));
+  set('ability', unitStats.get('ability'));
+  set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'));
+  set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')));
   /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
   set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
-  set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'))
-  set('specialAttack', unitStats.get('specialAttack'))
-  set('specialDefense', unitStats.get('specialDefense'))
-  set('position', unitPos)
-  set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
-  set('manaCost', (ability && ability.get('mana')) || abilitiesJS.getDefault('mana'));
+  set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'));
+  set('specialAttack', unitStats.get('specialAttack'));
+  set('specialDefense', unitStats.get('specialDefense'));
+  set('position', unitPos);
+  set('range', unitStats.get('range') || pawns.getStatsDefault('range'));
+  set('manaCost', (ability && ability['mana']) || abilitiesJS.getDefault('mana'));
 
-    return unit;
+  return battleUnit;
 };
 
 /**
@@ -448,9 +451,11 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
   state = state.setIn(['players', playerIndex, 'boardBuffs'], boardBuffs);*/
   //const markedBoard = markedResults.get('newBoard');
 
-  state.setIn(['players', playerIndex, 'hand'], hand); 
+  state.setIn(['players', playerIndex, 'hand'], hand);
   state.setIn(['players', playerIndex, 'board'], board);
-  return { upgradeOccured };
+  return {
+    upgradeOccured
+  };
 };
 
 
@@ -524,14 +529,11 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
  * Use together with combine boards
  */
 BoardJS.createBattleBoard = async (inputList) => {
-  let board = {};
-  for (let i = 0; i < inputList.size; i++) {
-    const el = inputList.get(i);
-    const pokemon = el.get('name');
-    const x = el.get('x');
-    const y = el.get('y');
-    const unit = await BoardJS.getBoardUnit(pokemon, x, y);
-    board = await board.set(f.pos(x, y), unit);
+  const board = {};
+  for (let i = 0; i < inputList.length; i++) {
+    const el = inputList[i];
+    const unit = await BoardJS.getBoardUnit(el['name']);
+    board[f.pos(el.x, el.y)] = unit;
   }
   return board;
 };
@@ -539,33 +541,24 @@ BoardJS.createBattleBoard = async (inputList) => {
 /**
  * Returns position of unit with the next move
  */
-BoardJS.getUnitWithNextMove = async (board) => {
-  // console.log('@getUnitWithNextMove',board)
-  const boardKeysIter = board.keys();
-  let tempUnit = boardKeysIter.next();
-  let lowestNextMove = List([tempUnit.value]);
-  let lowestNextMoveValue = board.get(tempUnit.value).get('next_move');
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const unitNextMove = board.get(unitPos).get('next_move');
-    if (unitNextMove < lowestNextMoveValue) { // New lowest move
-      lowestNextMove = List([unitPos]);
-      lowestNextMoveValue = unitNextMove;
-    } else if (unitNextMove === lowestNextMoveValue) {
-      lowestNextMove = lowestNextMove.push(unitPos);
+BoardJS.getPositionForUnitWithNextMove = async (board) => {
+  let lowestNextMove = null;
+  let lowestNextMoveValue = null;
+  for (const unitPos in board) {
+    const unit = board[unitPos];
+    if (!lowestNextMove) {
+      // first possible unit
+      lowestNextMove = unitPos;
+      lowestNextMoveValue = unit.speed;
+    } else if (unit.speed < lowestNextMoveValue) {
+      lowestNextMove = unitPos;
+      lowestNextMoveValue = unit.speed;
     }
-    tempUnit = boardKeysIter.next();
   }
-  // Find nextMove unit
-  if (lowestNextMove.size === 1) {
-    if (f.isUndefined(lowestNextMove.get(0))) {
-      console.log('@getUnitWithNextMove Undefined', board);
-    }
-    return lowestNextMove.get(0);
-  }
-  // Decide order of equal next move units
-  // Approved Temp: Random order
-  return lowestNextMove.get(Math.floor(Math.random() * lowestNextMove.size));
+
+  // TODO case when multiple units have the same speed
+  // .get(Math.floor(Math.random() * lowestNextMove.size))
+  return lowestNextMove;
 };
 
 module.exports = BoardJS;
