@@ -163,6 +163,7 @@ const distanceFunc = function (a, b) {
  *    team 0: N, S, W, E, NW, NE, SW, SE
  *    team 1: S, N, W, E, SW, SE, NW, NE
  */
+// TODO perf this against old method after finishding direction
 UnitJS.getClosestEnemy = (board, unitPos, range, team, exceptionsList = []) => {
   const x = f.x(unitPos);
   const y = f.y(unitPos);

@@ -57,39 +57,34 @@ const p = (msg, msgs) => {
 
 exports.p = (msg, ...msgs) => p(msg, msgs);
 
-exports.printBoard = async (boardParam, moveParam) => {
-  const board = await boardParam;
-  const move = await moveParam;
-  const keysIter = board.keys();
-  let tempUnit = keysIter.next();
+exports.printBoard = async (board, move) => {
   if (isUndefined(board) || isUndefined(move)) {
-    console.log('@printBoard', board, move);
+    throw new Error('Board is undefined!');
   }
-  p(` -- Move @${move.get('time')}: ${move.get('action')} ${(move.get('action') === 'attack' ? move.get('direction') : '')}`);
-  while (!tempUnit.done) {
-    // console.log('@printBoard', tempUnit.value, board, moveParam)
-    const xPos = x(tempUnit.value);
-    const yPos = y(tempUnit.value);
-    const action = move.get('action');
-    const target = move.get('target');
-    const unitPos = move.get('unitPos');
-    const effect = move.get('effect');
+
+  p(` -- Move @${move['time']}: ${move['action']} ${(move['action'] === 'attack' ? move['direction'] : '')}`);
+  for (const boardPos in board) {
+    const xPos = x(boardPos);
+    const yPos = y(boardPos);
+    const action = move['action'];
+    const target = move['target'];
+    const unitPos = move['unitPos'];
+    const effect = move['effect'];
     // Unit start string
-    const builtString = `${(board.get(tempUnit.value).get('team') === 0 ? 'o' : 'x')}{${xPos},${yPos}}: `
-    + `${board.get(tempUnit.value).get('name')}. hp: ${board.get(tempUnit.value).get('hp')} mana: ${board.get(tempUnit.value).get('mana')}`;
+    const builtString = `${(board[boardPos]['team'] === 0 ? 'o' : 'x')}{${xPos},${yPos}}: `
+    + `${board[boardPos]['name']}. hp: ${board[boardPos]['hp']} mana: ${board[boardPos]['mana']}`;
     let resultString = builtString;
     // Move string TODO Print dot damage here as well
     if ((x(unitPos) === xPos && y(unitPos) === yPos)
     || (action === 'move' && x(target) === xPos && y(target) === yPos)) {
       resultString = `${builtString} : ${action}(`
-      + `${(move.get('abilityName') ? `${move.get('abilityName')}, `
-      + `${(effect && effect.size > 0 ? (effect.get(target) ? `Dot applied: ${effect.get(target).get('dot')}, ` : `Healed: ${effect.get(unitPos).get('heal')}, `) : '')}` : '')}`
+      + `${(move['abilityName'] ? `${move['abilityName']}, `
+      + `${(effect && effect.size > 0 ? (effect[target] ? `Dot applied: ${effect[target]['dot']}, ` : `Healed: ${effect[unitPos]['heal']}, `) : '')}` : '')}`
       + `target: {${x(target)},${y(target)}} ${
-        isUndefined(move.get('value')) ? '' : `dmg: ${move.get('value')}`
+        isUndefined(move['value']) ? '' : `dmg: ${move['value']}`
       }${action === 'move' ? `from: {${x(unitPos)},${y(unitPos)}}` : ''})`;
     }
     p(resultString);
-    tempUnit = keysIter.next();
   }
   p('');
 };

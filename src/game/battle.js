@@ -17,7 +17,7 @@ const BattleJS = {};
  * Heals unit at unitPos by heal amount, not over max hp
  */
 async function _healUnit(board, unitPos, heal) {
-  const maxHp = (await pawns.getStats(board.get(unitPos).get('name'))).get('hp');
+  const maxHp = (await pawns.getStats(board.get(unitPos).get('name')))['hp'];
   const newHp = (board.getIn([unitPos, 'hp']) + heal >= maxHp ? maxHp : board.getIn([unitPos, 'hp']) + heal);
   const hpHealed = newHp - board.getIn([unitPos, 'hp']);
   return { board: board.setIn([unitPos, 'hp'], newHp), hpHealed };
@@ -170,7 +170,7 @@ async function _useAbility(board, ability, damageParam, unitPos, target) {
  * Convert damage in percentage to value
  */
 async function _dmgPercToHp(board, unitPos, percentDmg) {
-  const maxHp = (await pawns.getStats(board.get(unitPos).get('name'))).get('hp');
+  const maxHp = (await pawns.getStats(board.get(unitPos).get('name')))['hp'];
   return Math.round(maxHp * percentDmg);
 }
 
@@ -227,7 +227,7 @@ async function _executeBattle(preBattleBoard) {
   // Start battle (todo this async or in workers or somehow optimized)
   let unitMoveMap = {};
   while (!battleOver) {
-    const nextUnitToMove = await BoardJS.getPositionForUnitWithNextMove(board);
+    const nextUnitToMove = BoardJS.getPositionForUnitWithNextMove(board);
     const unit = board[nextUnitToMove];
     const previousMove = unitMoveMap[nextUnitToMove];
 
@@ -239,7 +239,7 @@ async function _executeBattle(preBattleBoard) {
       nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove, { target: previousTarget, direction: previousDirection });
     } else {
       if (f.isUndefined(nextUnitToMove)) {
-        console.log('Unit is undefined');
+        throw new Error('Unit is undefined!');
       }
       nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove);
     }
@@ -256,7 +256,7 @@ async function _executeBattle(preBattleBoard) {
       nextMoveValue = +unit['next_move'] + +unit['speed'];
       // Add to dpsBoard
       if (unit['team'] === 0) {
-        dmgBoard[unit['displayName']] = (dmgBoard.get(unit['displayName']) || 0) + result['nextMove']['value'];
+        dmgBoard[unit['displayName']] = (dmgBoard[unit['displayName']] || 0) + result['nextMove']['value'];
       }
     }
     board[pos]['next_move'] = nextMoveValue;
@@ -268,7 +268,7 @@ async function _executeBattle(preBattleBoard) {
     }
     f.printBoard(board, madeMove);
     if (moveAction !== 'noAction') { // Is a valid action
-      actionStack = actionStack.push(madeMove);
+      actionStack.push(madeMove);
       if (result['allowSameMove']) { // Store target to be used as next Target
         unitMoveMap[nextUnitToMove] = result;
       } else { // Unit died, Delete every key mapping to nextMoveResult
@@ -287,7 +287,8 @@ async function _executeBattle(preBattleBoard) {
     battleOver = result['battleOver'];
     if (battleOver) break; // Breaks if battleover (no dot damage if last unit standing)
     // Dot damage
-    const team = board[nextUnitToMove]['team'];
+    
+    /*const team = board[nextUnitToMove]['team'];
     const dotObj = await _handleDotDamage(board, nextUnitToMove, team);
     if (!f.isUndefined(dotObj['damage'])) {
       console.log('@Dot Damage');
@@ -314,16 +315,16 @@ async function _executeBattle(preBattleBoard) {
       console.log('@dotDamage', dotDamage);
       f.printBoard(board, move);
       actionStack = actionStack.push({ nextMove: move, newBoard: board }).set('time', unit['next_move']);
-    }
+    }*/
   }
-  const newBoard = await board;
+  const newBoard = _.cloneDeep(board); // Maybe not required at all, just adding perf problems
   // Return the winner
   // f.print(newBoard, '@startBattle newBoard after');
-  // f.print(actionStack, '@startBattle actionStack after');
-  f.p('@Last - A Survivor', newBoard.keys().next().value, newBoard.get(newBoard.keys().next().value).get('name'));
-  const team = newBoard.get(newBoard.keys().next().value)['team'];
+  f.print(actionStack, '@startBattle actionStack after');
+  // f.p('@Last - A Survivor', newBoard.keys().next().value, newBoard.get(newBoard.keys().next().value).get('name'));
+  const team = 0; // TODO newBoard.get(newBoard.keys().next().value)['team'];
   const winningTeam = team;
-  const battleEndTime = actionStack.get(actionStack.size - 1).get('time');
+  const battleEndTime = actionStack[actionStack.size - 1]['time'];
   return {
     actionStack, board: newBoard, winner: winningTeam, dmgBoard, battleEndTime,
   };
@@ -573,7 +574,7 @@ BattleJS.removeHpBattle = async (board, unitPos, hpToRemove, percent = false) =>
   // console.log('@removeHpBattle', hpToRemove)
   let newHp = currentHp - hpToRemove;
   if (percent) {
-    const maxHp = (await pawns.getStats(board.get(unitPos).get('name'))).get('hp');
+    const maxHp = (await pawns.getStats(board.get(unitPos).get('name')))['hp'];
     newHp = await Math.round(currentHp - (maxHp * hpToRemove)); // HptoRemove is percentage to remove
   }
   if (newHp <= 0) {
