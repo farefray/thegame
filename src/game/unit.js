@@ -1,8 +1,3 @@
-const {
-  Map,
-  List,
-  Set,
-} = require('immutable');
 const f = require('../f');
 
 
@@ -156,7 +151,7 @@ const distanceFunc = function (a, b) {
  * return closest enemy and marks if within range or not
  * If someones at spot && its enemy unit
  * Does this handle positioning good for both teams?
- * Map({closestEnemy, withinRange, direction})
+ * {closestEnemy, withinRange, direction})
  * Current order: SW, NW, S, N, SE, NE, SW, SE, W, E, NW, NE
  * New Current Order: N S W E SW NW SE NE
  * Wanted order:
@@ -201,44 +196,49 @@ UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exc
     const goal = _getMovePos(board, closestEnemyPos, 1, team);
     const direction = _getDirection(unitPos, goal);
     // console.log('Move direction: ', direction);
-    return Map({ movePos: goal, direction });
+    return { movePos: goal, direction };
   } // More TOWARDS unit with stepsToTake amount of steps
-  let pathFind = Map({
-    fromStartScore: Map({}).set(unitPos, 0), // gScore
-    heuristicScore: Map({}).set(unitPos, rangeToTarget), // fScore
-    toVisit: Set([]).add(unitPos), // openSet
-    visited: Set([]), // closedSet
-    cameFrom: Map({}), // cameFrom
-  });
+
+  const fromStartScore = {};
+  fromStartScore[unitPos] = 0;
+  const heuristicScore = {};
+  heuristicScore[unitPos] = rangeToTarget;
+  let pathFind = {
+    fromStartScore, // gScore
+    heuristicScore, // fScore
+    toVisit: [unitPos], // openSet
+    visited: [], // closedSet
+    cameFrom: {}, // cameFrom
+  };
     // console.log('@Path Start', unitPos, closestEnemyPos);
-  while (pathFind.get('toVisit').size > 0) {
+  while (pathFind['toVisit'].length > 0) {
     // console.log('@Path ToVisit: ', pathFind.get('toVisit'))
-    const current = _getLowestKey(pathFind.get('toVisit'), pathFind.get('heuristicScore'));
+    const current = _getLowestKey(pathFind['toVisit'], pathFind['heuristicScore']);
     if (current === closestEnemyPos) {
       let cameFrom = current;
-      let path = List([]);
+      let path = [];
       while (cameFrom !== unitPos) {
-        cameFrom = pathFind.getIn(['cameFrom', cameFrom]);
+        cameFrom = pathFind['cameFrom'][cameFrom];
         path = path.unshift(cameFrom);
       }
-      if (path.size <= 1) {
+      if (path.length <= 1) {
         console.log('Shouldnt get here @path goal');
       } else {
         let index;
-        if (path.size <= stepsToTake) {
-          index = path.size - 1;
+        if (path.length <= stepsToTake) {
+          index = path.length - 1;
         } else {
           index = stepsToTake;
         }
         // console.log('Finished Path Finding! Return Path[' + index + ']:', path.get(index), path);
-        const direction = _getDirection(unitPos, path.get(index));
+        const direction = _getDirection(unitPos, path[index]);
         // console.log('Move direction: ', direction);
-        return Map({ movePos: path.get(index), direction });
+        return { movePos: path[index], direction };
       }
     }
-    // console.log('@Path Current', current);
-    pathFind = pathFind.set('toVisit', pathFind.get('toVisit').delete(current)).set('visited', pathFind.get('visited').add(current));
-    // console.log('@Path Visited', pathFind.get('visited'));
+    console.log('@Path Current', current);
+    pathFind.set('toVisit', pathFind.get('toVisit').delete(current)).set('visited', pathFind.get('visited').add(current));
+    console.log('@Path Visited', pathFind.get('visited'));
 
     const ux = f.x(current);
     const uy = f.y(current);
@@ -255,7 +255,7 @@ UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exc
   const newClosestEnemyObj = UnitJS.getClosestEnemy(board, unitPos, range, team, exceptionsList.push(closestEnemyPos));
   if (f.isUndefined(newClosestEnemyObj.get('closestEnemy'))) {
     console.log('DIDNT FIND PATH. RETURNING ', unitPos);
-    return Map({ movePos: unitPos, direction: '' });
+    return { movePos: unitPos, direction: '' };
   }
   // TODO: Check so not blocked in
   console.log(`No path available to piece, ${closestEnemyPos} from ${unitPos} (Range: ${range}). Going deeper`);

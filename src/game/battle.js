@@ -198,9 +198,9 @@ async function _handleDotDamage(board, unitPos) {
  * Continue until battle over
  */
 async function _executeBattle(preBattleBoard) {
-  let actionStack = [];
-  let dmgBoard = {};
-  let board = _.clone(preBattleBoard);
+  const actionStack = [];
+  const dmgBoard = {};
+  let board = _.clone(preBattleBoard); // maybe its not required and just adding overhead
   let battleOver = false;
 
   // First move for all units first
@@ -209,19 +209,13 @@ async function _executeBattle(preBattleBoard) {
   for (const unitPos in board) {
     const unit = board[unitPos];
     const action = 'move';
-    if (unit['hp'] <= 0) {
-      // shouldnt happen on game start tho...
-      delete board[unitPos];
-      battleOver = battleOver || await BattleJS.isBattleOver(board, 1 - unit['team']);
-    } else {
-      const target = unit['team'] === 0 ? 'S' : 'N'; // todo
-      const time = 0;
-      const move = {
-        unitPos, action, target, time,
-      };
-      actionStack.push(move);
-      board[unitPos]['next_action'] = unit['speed'];
-    }
+    const target = unit['team'] === 0 ? 'S' : 'N'; // todo get first move position
+    const time = 0;
+    const move = {
+      unitPos, action, target, time,
+    };
+    actionStack.push(move);
+    board[unitPos]['next_action'] = unit['speed'];
   }
 
   // Start battle (todo this async or in workers or somehow optimized)
@@ -713,9 +707,9 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     };
   } // Move action
   const closestEnemyPos = enemyPos['closestEnemy'];
-  // console.log('Moving ...', unitPos, 'to', closestEnemyPos, range)
+  console.log('Moving ...', unitPos, 'to', closestEnemyPos, range)
   const movePosObj = await UnitJS.getStepMovePos(board, unitPos, closestEnemyPos, range, team);
-  const movePos = movePosObj.get('movePos');
+  const movePos = movePosObj['movePos'];
   const direction = movePosObj['direction'];
   f.p('Move: ', unitPos, 'to', movePos);
   let newBoard;
@@ -725,7 +719,7 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     newBoard = board;
   } else {
     unit['position'] = movePos;
-    newBoard = _.clone(board);
+    newBoard = _.clone(board); // ??
     delete newBoard[unitPos];
     newBoard[movePos] = unit;
     action = 'move';
