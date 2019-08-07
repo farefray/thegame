@@ -126,7 +126,12 @@ describe('Core Modules', () => {
       result.should.be.ok();
       result.actionStacks.should.be.an.Array();
     });
+  });
 
-
+  describe('Pathfinding', () => {
+    it('can pathfind', async () => {
+      const npcBoard = await gameConstantsJS.getSetRound(1);
+      const playerBoard = await gameConstantsJS.getTestingPlayerBoard(1);
+    });
   });
 });

@@ -84,6 +84,17 @@ const roundSetConfiguration = {
   ])
 };
 
+const playerTestingBoards = {
+  1: async () => BoardJS.createBattleBoard([
+    { name: 'minotaur', x: 6, y: 5 },
+  ])
+};
+
+exports.getTestingPlayerBoard = async (boardID) => {
+  const board = await playerTestingBoards[boardID]();
+  return board;
+};
+
 exports.getSetRound = async (round) => {
   const board = await roundSetConfiguration[String(round)]();
   return board;
