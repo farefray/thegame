@@ -268,20 +268,16 @@ UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exc
 UnitJS.deleteNextMoveResultEntries = async (unitMoveMapParam, targetToRemove) => {
   // console.log('@deleteNextMoveResultEntries', targetToRemove)
   let unitMoveMap = unitMoveMapParam;
-  const keysIter = unitMoveMap.keys();
-  let tempUnit = keysIter.next();
-  // console.log('@deleteNextMoveResultEntries', unitMoveMap, targetToRemove);
-  while (!tempUnit.done) {
-    const tempPrevMove = unitMoveMap.get(tempUnit.value);
-    const target = tempPrevMove.get('nextMove').get('target');
+  for (const key in unitMoveMap) {
+    const tempPrevMove = unitMoveMap.get(key);
+    const target = tempPrevMove['nextMove']['target'];
     const invalidPrevTarget = targetToRemove;
     if (f.x(target) === f.x(invalidPrevTarget) && f.y(target) === f.y(invalidPrevTarget)) {
-      unitMoveMap = await unitMoveMap.delete(tempUnit.value);
-      // console.log('Deleting prevMove for: ', tempUnit.value, nextMoveResult.get('nextMove').get('target'))
+      delete unitMoveMap[tempPrevMove];
     }
-    tempUnit = keysIter.next();
   }
-  return unitMoveMap.delete(targetToRemove);
+  delete unitMoveMap[targetToRemove];
+  return unitMoveMap;
 };
 
 module.exports = UnitJS;

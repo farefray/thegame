@@ -233,7 +233,7 @@ async function _executeBattle(preBattleBoard) {
 
     let nextMoveResult;
     if (!f.isUndefined(previousMove)) { // Use same target as last round
-      // console.log('previousMove in @startBattle', previousMove.get('nextMove')['target']);
+      // console.log('previousMove in @startBattle', previousMove['nextMove']['target']);
       const previousTarget = previousMove['nextMove']['target'];
       const previousDirection = previousMove['nextMove']['direction'];
       nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove, { target: previousTarget, direction: previousDirection });
@@ -244,37 +244,38 @@ async function _executeBattle(preBattleBoard) {
       nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove);
     }
     const result = await nextMoveResult;
-    board = result.get('newBoard');
-    const moveAction = result.get('nextMove').get('action');
+    board = result['newBoard'];
+    const moveAction = result['nextMove']['action'];
     let pos = nextUnitToMove;
     // Calc nextMove value
     let nextMoveValue;
     if (moveAction === 'move') { // Faster recharge on moves
-      nextMoveValue = +unit.get('next_move') + Math.round(+unit.get('speed') / 3);
-      pos = result.get('nextMove')['target'];
+      nextMoveValue = +unit['next_move'] + Math.round(+unit['speed'] / 3);
+      pos = result['nextMove']['target'];
     } else {
-      nextMoveValue = +unit.get('next_move') + +unit.get('speed');
+      nextMoveValue = +unit['next_move'] + +unit['speed'];
       // Add to dpsBoard
-      if (unit.get('team') === 0) {
-        dmgBoard = dmgBoard.set(unit['displayName'], (dmgBoard.get(unit['displayName']) || 0) + result.get('nextMove').get('value'));
+      if (unit['team'] === 0) {
+        dmgBoard[unit['displayName']] = (dmgBoard.get(unit['displayName']) || 0) + result['nextMove']['value'];
       }
     }
-    board = board.setIn([pos, 'next_move'], nextMoveValue);
+    board[pos]['next_move'] = nextMoveValue;
     // console.log('Updating next_move', nextMoveValue, board.get(pos));
-    const madeMove = result.get('nextMove').set('time', unit.get('next_move'));
+    result['nextMove']['time'] = unit['next_move']
+    const madeMove = result['nextMove'];
     if (f.isUndefined(board)) {
       console.log('@startBattle CHECK ME', madeMove, board);
     }
     f.printBoard(board, madeMove);
     if (moveAction !== 'noAction') { // Is a valid action
       actionStack = actionStack.push(madeMove);
-      if (result.get('allowSameMove')) { // Store target to be used as next Target
-        unitMoveMap = unitMoveMap.set(nextUnitToMove, result);
+      if (result['allowSameMove']) { // Store target to be used as next Target
+        unitMoveMap[nextUnitToMove] = result;
       } else { // Unit died, Delete every key mapping to nextMoveResult
         const nextMoveAction = moveAction;
         if (nextMoveAction === 'attack' || nextMoveAction === 'spell') { // Unit attacked died
-          // console.log('Deleting all keys connected to this: ', nextMoveResult.get('nextMove')['target'])
-          unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, result.get('nextMove')['target']);
+          // console.log('Deleting all keys connected to this: ', nextMoveResult['nextMove']['target'])
+          unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, result['nextMove']['target']);
         } else if (nextMoveAction === 'move') { // Unit moved, remove units that used to attack him
           // console.log('Deleting all keys connected to this: ', nextUnitToMove)
           unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, nextUnitToMove);
@@ -283,17 +284,17 @@ async function _executeBattle(preBattleBoard) {
         }
       }
     }
-    battleOver = result.get('battleOver');
+    battleOver = result['battleOver'];
     if (battleOver) break; // Breaks if battleover (no dot damage if last unit standing)
     // Dot damage
-    const team = board.getIn([nextUnitToMove, 'team']);
+    const team = board[nextUnitToMove]['team'];
     const dotObj = await _handleDotDamage(board, nextUnitToMove, team);
-    if (!f.isUndefined(dotObj.get('damage'))) {
+    if (!f.isUndefined(dotObj['damage'])) {
       console.log('@Dot Damage');
       board = await dotObj['board'];
-      // console.log('@dotDamage battleover', battleOver, dotObj.get('battleOver'), battleOver || dotObj.get('battleOver'));
+      // console.log('@dotDamage battleover', battleOver, dotObj['battleOver'], battleOver || dotObj['battleOver']);
       const action = 'dotDamage';
-      const dotDamage = dotObj.get('damage');
+      const dotDamage = dotObj['damage'];
       // console.log('dot damage dealt!', board);
       let damageDealt = dotDamage;
       if (dotObj['unitDied']) { // Check if battle ends
@@ -301,18 +302,18 @@ async function _executeBattle(preBattleBoard) {
         damageDealt = dotObj['unitDied'];
         battleOver = battleOver || await BattleJS.isBattleOver(board, 1 - team);
         // Delete every key mapping to nextMoveResult
-        // console.log('Deleting all keys connected to this: ', nextMoveResult.get('nextMove')['target'])
+        // console.log('Deleting all keys connected to this: ', nextMoveResult['nextMove']['target'])
         unitMoveMap = await UnitJS.deleteNextMoveResultEntries(unitMoveMap, nextUnitToMove);
       }
       const move = await {
         unitPos: nextUnitToMove, action, value: damageDealt, target: nextUnitToMove,
       };
-      if (unit.get('team') === 1) {
+      if (unit['team'] === 1) {
         dmgBoard = dmgBoard.set('dot', (dmgBoard.get('dot') || 0) + damageDealt);
       }
       console.log('@dotDamage', dotDamage);
       f.printBoard(board, move);
-      actionStack = actionStack.push({ nextMove: move, newBoard: board }).set('time', unit.get('next_move'));
+      actionStack = actionStack.push({ nextMove: move, newBoard: board }).set('time', unit['next_move']);
     }
   }
   const newBoard = await board;
@@ -320,7 +321,7 @@ async function _executeBattle(preBattleBoard) {
   // f.print(newBoard, '@startBattle newBoard after');
   // f.print(actionStack, '@startBattle actionStack after');
   f.p('@Last - A Survivor', newBoard.keys().next().value, newBoard.get(newBoard.keys().next().value).get('name'));
-  const team = newBoard.get(newBoard.keys().next().value).get('team');
+  const team = newBoard.get(newBoard.keys().next().value)['team'];
   const winningTeam = team;
   const battleEndTime = actionStack.get(actionStack.size - 1).get('time');
   return {
@@ -552,8 +553,8 @@ BattleJS.isBattleOver = async (board, team) => {
   const keysIter = board.keys();
   let tempUnit = keysIter.next();
   while (!tempUnit.done) {
-    // console.log('in battleover: ', board.get(tempUnit.value).get('team'))
-    if (board.get(tempUnit.value).get('team') === 1 - team) {
+    // console.log('in battleover: ', board.get(tempUnit.value)['team'])
+    if (board.get(tempUnit.value)['team'] === 1 - team) {
       return false;
     }
     tempUnit = keysIter.next();
@@ -657,10 +658,9 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
       battleOver,
     };
   }
-
- // Attack
-  const range = unit.get('range');
-  const team = unit.get('team');
+  // Attack
+  const range = unit['range'];
+  const team = unit['team'];
   let tarpos;
   if (optPreviousTarget) {
     tarpos = { closestEnemy: optPreviousTarget['target'], withinRange: true, direction: optPreviousTarget['direction'] };
@@ -723,7 +723,10 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     action = 'noAction';
     newBoard = board;
   } else {
-    newBoard = board.set(movePos, unit.set('position', movePos)).delete(unitPos);
+    unit['position'] = movePos;
+    newBoard = _.clone(board);
+    delete newBoard[unitPos];
+    newBoard[movePos] = unit;
     action = 'move';
   }
   const move = {

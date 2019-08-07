@@ -1,8 +1,3 @@
-const {
-  Map,
-  List,
-  Set,
-} = require('immutable');
 const _ = require('lodash');
 const f = require('../f');
 const pawns = require('../pawns');
@@ -112,7 +107,7 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
     const nextPieceUpgrade = await _checkPieceUpgrade(board, playerIndex, newPiece, position);
     // Get both upgrades
     // TODO
-    return nextPieceUpgrade.set('upgradeOccured', List([evolutionDisplayName]).concat(nextPieceUpgrade.get('upgradeOccured') || List([])));
+    return nextPieceUpgrade.set('upgradeOccured', [evolutionDisplayName]).concat(nextPieceUpgrade.get('upgradeOccured') || []);
   }
   return {
     board,
@@ -326,17 +321,13 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
 BoardJS.combineBoards = async (board1, board2) => {
   const newBoard = {};
 
-  const firstBoard = Object.keys(board1);
-  for (let index = 0; index < firstBoard.length; index++) {
-    const unitPos = firstBoard[index];
+  for (const unitPos in board1) {
     const unit = board1[unitPos];
     const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 0);
     newBoard[unitPos] = battleUnit;
   }
 
-  const secondBoard = Object.keys(board2);
-  for (let index = 0; index < secondBoard.length; index++) {
-    const unitPos = secondBoard[index];
+  for (const unitPos in board2) {
     const unit = board2[unitPos];
     const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 1);
     newBoard[unitPos] = battleUnit;
