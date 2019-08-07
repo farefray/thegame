@@ -3,6 +3,7 @@ const {
   List,
   Set,
 } = require('immutable');
+const _ = require('lodash');
 const f = require('../f');
 const pawns = require('../pawns');
 const abilitiesJS = require('../abilities');
@@ -286,7 +287,7 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
   const unitStats = await pawns.getStats(unit['name']);
   const ability = await abilitiesJS.getAbility(unit['name']);
 
-  const battleUnit = unit;
+  const battleUnit = _.cloneDeep(unit);
   // todo proper way :)
   unitStats.get = field => unitStats[field];
   const set = (where, what) => {
@@ -323,8 +324,6 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
  * Reverses position for enemy units
  */
 BoardJS.combineBoards = async (board1, board2) => {
-  console.log("TCL: BoardJS.combineBoards -> board2", board2)
-  console.log("TCL: BoardJS.combineBoards -> board1", board1)
   const newBoard = {};
 
   const firstBoard = Object.keys(board1);
@@ -343,7 +342,6 @@ BoardJS.combineBoards = async (board1, board2) => {
     newBoard[unitPos] = battleUnit;
   }
 
-  console.log(newBoard);
   return newBoard;
 };
 

@@ -390,7 +390,6 @@ BattleJS.executeBattle = async (board1, board2) => {
   // Check to see if a battle is required
   // Lose when empty, even if enemy no units aswell (tie with no damage taken)
   const board = await BoardJS.combineBoards(board1, board2);
-  console.log("TCL: BattleJS.executeBattle -> board2", board)
   if (!Object.keys(board1).length) {
     return {
       actionStack: [], winner: 1, board, startBoard: board,
@@ -658,18 +657,17 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
       battleOver,
     };
   }
-  // Attack
+
+ // Attack
   const range = unit.get('range');
   const team = unit.get('team');
   let tarpos;
-  console.log("TCL: BattleJS.generateNextMove -> optPreviousTarget", optPreviousTarget)
   if (optPreviousTarget) {
     tarpos = { closestEnemy: optPreviousTarget['target'], withinRange: true, direction: optPreviousTarget['direction'] };
   } else {
-    console.log('asda');
     tarpos = UnitJS.getClosestEnemy(board, unitPos, range, team);
   }
-  console.log(tarpos);
+
   const enemyPos = tarpos; // await
   if (enemyPos['withinRange']) { // Attack action
     const action = 'attack';
