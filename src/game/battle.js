@@ -377,6 +377,8 @@ BattleJS.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
   return newState.getIn(['players', playerIndex]);
 };
 
+
+const Battle = require('../objects/Battle');
 /**
  * Spawn opponent in reverse board
  * Mark owners of units
@@ -398,8 +400,9 @@ BattleJS.executeBattle = async (board1, board2) => {
 
   // Both players have units, battle required
   // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
-  const result = await _executeBattle(board);
-  return result.set('startBoard', board);
+  const battle = new Battle(board, 1);
+  const battleResult = await battle.execute();
+  return battleResult;
 };
 
 BattleJS.npcRound = async (state, players, npcBoard) => {
@@ -518,6 +521,7 @@ BattleJS.battleSetup = async (state) => {
     }
   }
 
+  // TODO use one single new Battle(board).execute()
   const round = state.get('round');
   const roundType = gameConstantsJS.getRoundType(round);
   switch (roundType) {

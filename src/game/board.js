@@ -530,27 +530,4 @@ BoardJS.createBattleBoard = async (inputList) => {
   return board;
 };
 
-/**
- * Returns position of unit with the next move
- */
-BoardJS.getPositionForUnitWithNextMove = (board) => {
-  let lowestNextMove = null;
-  let lowestNextMoveValue = null;
-  for (const unitPos in board) {
-    const unit = board[unitPos];
-    if (!lowestNextMove) {
-      // first possible unit
-      lowestNextMove = unitPos;
-      lowestNextMoveValue = unit.speed;
-    } else if (unit.speed < lowestNextMoveValue) {
-      lowestNextMove = unitPos;
-      lowestNextMoveValue = unit.speed;
-    }
-  }
-
-  // TODO case when multiple units have the same speed
-  // .get(Math.floor(Math.random() * lowestNextMove.size))
-  return lowestNextMove;
-};
-
 module.exports = BoardJS;

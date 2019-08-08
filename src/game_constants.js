@@ -71,16 +71,16 @@ exports.getDamageFactorType = actionType => damageFactorType[actionType];
  */
 const roundSetConfiguration = {
   1: async () => BoardJS.createBattleBoard([
-    { name: 'minotaur', x: 6, y: 1 },
+    { name: 'dwarf', x: 0, y: 8 },
   ]),
   2: async () => BoardJS.createBattleBoard([
-    { name: 'minotaur', x: 6, y: 1 },
-    { name: 'minotaur', x: 8, y: 1 },
+    { name: 'dwarf', x: 3, y: 6 },
+    { name: 'dwarf', x: 6, y: 8 },
   ]),
   3: async () => BoardJS.createBattleBoard([
-    { name: 'minotaur', x: 8, y: 1 },
-    { name: 'minotaur', x: 7, y: 1 },
-    { name: 'minotaur', x: 6, y: 1 },
+    { name: 'dwarf', x: 3, y: 6 },
+    { name: 'dwarf', x: 6, y: 8 },
+    { name: 'dwarf', x: 1, y: 8 },
   ])
 };
 
