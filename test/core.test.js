@@ -124,7 +124,7 @@ describe('Core Modules', () => {
       const playerBoard = gameState.getIn(['players', MOCK_SOCKETID_1, 'board']);
       const result = await BattleJS.executeBattle(playerBoard, npcBoard);
       result.should.be.ok();
-      result.actionStacks.should.be.an.Array();
+      result.actionStack.should.be.an.Array();
     });
   });
 

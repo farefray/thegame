@@ -221,8 +221,6 @@ async function _executeBattle(preBattleBoard) {
   // Start battle (todo this async or in workers or somehow optimized)
   let unitMoveMap = {};
   while (!battleOver) {
-    const nextUnitToMove = BoardJS.getPositionForUnitWithNextMove(board);
-    const unit = board[nextUnitToMove];
     const previousMove = unitMoveMap[nextUnitToMove];
 
     let nextMoveResult;

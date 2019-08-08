@@ -1,4 +1,8 @@
 const _ = require('lodash');
+const f = require('../f');
+const { kdTree } = require('../alg/kdTree');
+
+const BattleUnit = require('./BattleUnit');
 
 const BATTLE_TIME_LIMIT = 30 * 1000; // time limit for battle
 
@@ -21,12 +25,21 @@ function Battle(board) {
 
   // internal values
   this.isOver = false;
-  this.battleBoard = _.cloneDeep(board);
+  this.battleBoard = {};
   this.nextTickSchedule = null;
+  this.coords = {
+    0: [],
+    1: []
+  };
 
-  // int setup, maybe move to some unit creation
-  for (const unitPos in board) {
-    this.battleBoard[unitPos]['next_action'] = this.battleBoard[unitPos]['speed'];
+  // internal setup
+  for (const boardPos in board) {
+    const battleUnit = new BattleUnit(board[boardPos], f.coords(boardPos)); // maybe f.* is overhead
+    this.battleBoard[boardPos] = battleUnit;
+    this.coords[battleUnit.team].push({
+      x: f.x(boardPos),
+      y: f.y(boardPos)
+    });
   }
 }
 
@@ -41,7 +54,22 @@ Battle.prototype.execute = async function () {
 
 Battle.prototype.nextTick = async function () {
   return new Promise((resolve) => {
-    resolve(this.tick());
+    this.nextTickSchedule = (this.nextTickSchedule || 0) + 1000;
+
+    const units = this.getNextUnitsToAction();
+    units.forEach((battleUnit) => {
+      if (battleUnit.canCast()) {
+        // tODO
+      } else if (battleUnit.hasTarget()) {
+        // TODO
+      } else {
+        // get target
+        const closestEnemy = this.getClosestEnemy(battleUnit);
+        // Moving to our target
+      }
+    });
+
+    resolve();
   });
 };
 
@@ -54,30 +82,36 @@ Battle.prototype.getNextUnitsToAction = function () {
   let units = [];
   let closestActionTime = null;
   for (const unitPos in this.battleBoard) {
-    const unit = this.battleBoard[unitPos];
-    if (!closestActionTime || unit['next_action'] < closestActionTime) {
-      units = [unitPos];
-      closestActionTime = unit['next_action'];
-    } else if (unit['next_action'] === closestActionTime) {
+    const battleUnit = this.battleBoard[unitPos];
+    if (!closestActionTime || battleUnit.nextAction() < closestActionTime) {
+      units = [battleUnit];
+      closestActionTime = battleUnit.nextAction();
+    } else if (battleUnit.nextAction() === closestActionTime) {
       // this unit's action is same time with some other units
-      units.push(unitPos);
+      units.push(battleUnit);
     }
   }
 
   return units;
 };
 
-/**
- * Single tick for battle execution.
- */
-Battle.prototype.tick = function () {
-  this.nextTickSchedule = (this.nextTickSchedule || 0) + 1000;
 
-  const units = this.getNextUnitsToAction();
-  units.forEach((unitPos) => {
-    
-  });
-  console.log("TCL: Battle.prototype.tick -> unit", unit);
+// TODO perf this against old method after finishding direction(for_perf_kdtree.js)
+Battle.prototype.getClosestEnemy = function (battleUnit) {
+  const enemiesCoords = this.coords[battleUnit.oppositeTeam()];
+  // eslint-disable-next-line
+  const tree = new kdTree(enemiesCoords, function (a, b) {
+    return ((a.x - b.x) ** 2) +  ((a.y - b.y) ** 2);
+  }, ['x', 'y']);
+  const range = 1;
+  const closestEnemy = tree.nearest({ x: battleUnit.x, y: battleUnit.y }, range);
+  console.log(closestEnemy);
+  if (closestEnemy.length) {
+    return { closestEnemy: f.pos(closestEnemy[0][0].x, closestEnemy[0][0].y), withinRange: closestEnemy[0][1] === 1 };
+  }
+
+  // f.print(board, '@getClosestEnemy Returning undefined: Board\n');
+  return { closestEnemy: undefined, withinRange: false };
 };
 
 module.exports = Battle;

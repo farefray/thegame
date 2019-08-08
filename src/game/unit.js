@@ -139,54 +139,6 @@ function _handleNeighbor(pathFindParam, board, current, enemyPos, pos) {
   return pathFind.setIn(['cameFrom', pos], current).setIn(['fromStartScore', pos], distanceTraveled).setIn(['heuristicScore', pos], heuristicScore);
 }
 
-const { kdTree } = require('../alg/kdTree');
-
-const distanceFunc = function (a, b) {
-  return Math.pow(a.x - b.x, 2) +  Math.pow(a.y - b.y, 2);
-};
-
-/** Public methods */
-
-/**
- * return closest enemy and marks if within range or not
- * If someones at spot && its enemy unit
- * Does this handle positioning good for both teams?
- * {closestEnemy, withinRange, direction})
- * Current order: SW, NW, S, N, SE, NE, SW, SE, W, E, NW, NE
- * New Current Order: N S W E SW NW SE NE
- * Wanted order:
- *    team 0: N, S, W, E, NW, NE, SW, SE
- *    team 1: S, N, W, E, SW, SE, NW, NE
- */
-// TODO perf this against old method after finishding direction
-UnitJS.getClosestEnemy = (board, unitPos, range, team, exceptionsList = []) => {
-  const x = f.x(unitPos);
-  const y = f.y(unitPos);
-  const enemyTeam = 1 - team;
-
-  const enemies = [];
-  for (const boardPos in board) {
-    const potentialEnemy = board[boardPos];
-    if (potentialEnemy.team === enemyTeam && !exceptionsList.includes(boardPos)) {
-      enemies.push({
-        x: f.x(unitPos),
-        y: f.y(unitPos)
-      });
-    }
-  }
-
-  const tree = new kdTree(enemies, distanceFunc, ['x', 'y']);
-  const closestEnemy = tree.nearest({ x, y }, 1);
-  console.log(closestEnemy);
-  if (closestEnemy.length) {
-    const direction = 'N'; // TODO
-    return { closestEnemy: f.pos(closestEnemy[0][0].x, closestEnemy[0][0].y), withinRange: closestEnemy[0][1] === 1, direction };
-  }
-
-  // f.print(board, '@getClosestEnemy Returning undefined: Board\n');
-  console.log('@getClosestEnemy Returning undefined: ', x, y, range, team);
-  return { closestEnemy: undefined, withinRange: false, direction: '' };
-};
 
 UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exceptionsList = []) => {
   const stepsToTake = Math.floor(Math.random() * 2 + 1); // 1 currently //  1 - 2, * 2

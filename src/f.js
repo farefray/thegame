@@ -25,6 +25,13 @@ const y = (position) => {
 };
 
 exports.pos = (px, py) => new Position(px, py).toBoardPosition();
+exports.coords = (position) => {
+  return {
+    x: position.split(',')[0],
+    y: position.split(',')[1]
+  };
+};
+
 exports.x = position => x(position);
 exports.y = position => y(position);
 
