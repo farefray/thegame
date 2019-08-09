@@ -3,12 +3,11 @@ const _ = require('lodash');
 
 function BattleUnit(unit, coords) {
   _.assign(this, unit);
-  this.x = coords.x;
-  this.y = coords.y;
+  this.x = +(coords.x);
+  this.y = +(coords.y);
   this.nextAction(this.speed);
   return this;
-};
-
+}
 
 BattleUnit.prototype.nextAction = function (actionTime) {
   if (actionTime) {
