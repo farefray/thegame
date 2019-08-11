@@ -29,4 +29,14 @@ BattleUnit.prototype.oppositeTeam = function () {
   return 1 - this.team;
 };
 
+BattleUnit.prototype.move = function (coords) {
+  this.x = +(coords.x);
+  this.y = +(coords.y);
+};
+
+
+BattleUnit.prototype.getBoardPosition = function () {
+  return `${this.x},${this.y}`;
+}
+
 module.exports = BattleUnit;

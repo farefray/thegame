@@ -83,8 +83,24 @@ Battle.prototype.execute = async function () {
  * @param {BattleUnit} battleUnit
  * @param {Object} step
  */
-Battle.prototype.moveUnit = function (battleUnit, step) {
+Battle.prototype.moveUnit = function (battleUnit, position) {
+  const fromPosition = {
+    x: battleUnit.x,
+    y: battleUnit.y
+  };
 
+  // Remove from old position, move unit itself, add to new position
+  delete this.battleBoard[battleUnit.getBoardPosition()];
+  battleUnit.move(position);
+  this.battleBoard[battleUnit.getBoardPosition()] = battleUnit;
+
+  // update internal coords
+  this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== fromPosition.x && pos.y !== fromPosition.y);
+  this.pathMap[fromPosition.x][fromPosition.y] = FREE_TILE;
+  this.pathMap[battleUnit.x][battleUnit.y] = TAKEN_TILE;
+
+  // set monster's next action time
+  battleUnit.nextAction(+battleUnit.nextAction() + battleUnit.speed);
 };
 
 /**
@@ -110,13 +126,9 @@ Battle.prototype.nextTick = async function () {
         // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
         this.pathfinder.setGrid(this.pathMap);
         this.pathfinder.setAcceptableTiles([FREE_TILE]);
-        console.log('setted up pathfinder');
-        console.log(battleUnit.x, battleUnit.y, closestEnemy.position.x, closestEnemy.position.y);
         this.pathfinder.findPath(battleUnit.x, battleUnit.y, closestEnemy.position.x, closestEnemy.position.y, (path) => {
-          console.log("TCL: path", path)
           if (path && path.length > 0) {
             const nextStep = path[1];
-            console.log("TCL: nextStep", nextStep)
             f.p('Move: ', battleUnit.x, ', ', battleUnit.y, 'to', nextStep);
             this.moveUnit(battleUnit, nextStep);
           } else {
@@ -125,7 +137,6 @@ Battle.prototype.nextTick = async function () {
           finishTick();
         });
 
-        console.log('launching up pathfinder');
         this.pathfinder.calculate(); // running our path finding. Next action will be taken inside callback.
         // Moving to our target
       }
