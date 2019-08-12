@@ -3,9 +3,11 @@ const _ = require('lodash');
 const f = require('../f');
 const { kdTree } = require('../alg/kdTree');
 
+const Position = require('../../app/src/objects/Position');
+
 const BattleUnit = require('./BattleUnit');
 
-const BATTLE_TIME_LIMIT = 10 * 1000; // time limit for battle
+const BATTLE_TIME_LIMIT = 30 * 1000; // time limit for battle
 
 /*
 [ [ '0,8', '1,8', '2,8', '3,8', '4,8', '5,8', '6,8', '7,8' ],
@@ -81,7 +83,7 @@ Battle.prototype.execute = async function () {
 
 /**
  * @param {BattleUnit} battleUnit
- * @param {Object} step
+ * @param {Object/null} position if null, then removing from board
  */
 Battle.prototype.moveUnit = function (battleUnit, position) {
   const fromPosition = {
@@ -91,16 +93,28 @@ Battle.prototype.moveUnit = function (battleUnit, position) {
 
   // Remove from old position, move unit itself, add to new position
   delete this.battleBoard[battleUnit.getBoardPosition()];
-  battleUnit.move(position);
-  this.battleBoard[battleUnit.getBoardPosition()] = battleUnit;
+  if (position) {
+    battleUnit.move(position);
+    this.battleBoard[battleUnit.getBoardPosition()] = battleUnit;
+  }
 
   // update internal coords
-  this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== fromPosition.x && pos.y !== fromPosition.y);
+  this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== fromPosition.x && pos.y !== fromPosition.y); // todo finish battle here
   this.pathMap[fromPosition.x][fromPosition.y] = FREE_TILE;
-  this.pathMap[battleUnit.x][battleUnit.y] = TAKEN_TILE;
 
-  // set monster's next action time
-  battleUnit.nextAction(+battleUnit.nextAction() + battleUnit.speed);
+  if (position) {
+    this.pathMap[battleUnit.x][battleUnit.y] = TAKEN_TILE;
+  }
+
+  // set monster's next action time [if no position, then monster is removed]
+  if (position) {
+    battleUnit.nextAction(+battleUnit.nextAction() + battleUnit.speed);
+
+    // update distance to target [TODO]
+  } else if (this.coordsBoardMap[battleUnit.team].length === 0) {
+    // unit was removed, so maybe its time to end the battle
+    this.isOver = true;
+  }
 };
 
 /**
@@ -118,28 +132,43 @@ Battle.prototype.nextTick = async function () {
       if (battleUnit.canCast()) {
         // tODO
       } else if (battleUnit.hasTarget()) {
-        // TODO
-      } else {
-        // get target
-        const closestEnemy = this.getClosestEnemy(battleUnit);
+        const target = battleUnit.getTarget();
+        if (target.range <= battleUnit.range) {
+          const targetUnit = this.battleBoard[target.position.toBoardPosition()];
+          battleUnit.doAttack(targetUnit);
 
-        // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
-        this.pathfinder.setGrid(this.pathMap);
-        this.pathfinder.setAcceptableTiles([FREE_TILE]);
-        this.pathfinder.findPath(battleUnit.x, battleUnit.y, closestEnemy.position.x, closestEnemy.position.y, (path) => {
-          if (path && path.length > 0) {
-            const nextStep = path[1];
-            f.p('Move: ', battleUnit.x, ', ', battleUnit.y, 'to', nextStep);
-            this.moveUnit(battleUnit, nextStep);
-          } else {
-            // no path found. Lets skip step and try next tick(todo)
+          // update board
+          if (!targetUnit.isAlive()) {
+            this.moveUnit(targetUnit, null);
           }
-          finishTick();
-        });
 
-        this.pathfinder.calculate(); // running our path finding. Next action will be taken inside callback.
-        // Moving to our target
+          return finishTick();
+        }
+
+        // else Nothing, it will just go to next phase(moving)
       }
+
+      // get target
+      const closestEnemy = this.getClosestEnemy(battleUnit);
+      battleUnit.setTarget(closestEnemy);
+
+      // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
+      this.pathfinder.setGrid(this.pathMap);
+      this.pathfinder.setAcceptableTiles([FREE_TILE]);
+      this.pathfinder.findPath(battleUnit.x, battleUnit.y, closestEnemy.position.x, closestEnemy.position.y, (path) => {
+        if (path && path.length > 0) {
+          const nextStep = path[1];
+          f.p('Move: ', battleUnit.x, ', ', battleUnit.y, 'to', nextStep);
+          this.moveUnit(battleUnit, nextStep);
+        } else {
+          // no path found. Lets skip step and try next tick(todo)
+        }
+        finishTick();
+      });
+
+      this.pathfinder.calculate(); // running our path finding. Next action will be taken inside callback.
+
+      return true;
     });
   });
 };
@@ -182,11 +211,9 @@ Battle.prototype.getClosestEnemy = function (battleUnit) {
   const closestEnemy = tree.nearest({ x: battleUnit.x, y: battleUnit.y }, range);
   if (closestEnemy.length) {
     return {
-      position: {
-        x: +(closestEnemy[0][0].x),
-        y: +(closestEnemy[0][0].y)
-      },
-      withinRange: closestEnemy[0][1] === 1
+      position: new Position(+(closestEnemy[0][0].x),
+        +(closestEnemy[0][0].y)),
+      range: closestEnemy[0][1]
     };
   }
 

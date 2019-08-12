@@ -60,24 +60,6 @@ async function _manaIncrease(board, damage, unitPos, enemyPos) {
   return manaChanges;
 }
 
-
-/**
- * Calculate amount of damage to be dealt to defender
- * Take defense of defender into account
- * Take type differences into account
- * Calculate factor against both defending types (if super effective against both, 4x damage)
- * Attack should use one type, main one preferrbly
- * Temp: Assumed typesAttacker is first listed type for normal attacks, set in ability for abilities
- * Power might be wanted
- */
-async function _calcDamage(actionType, power, unit, target, typeFactor, useSpecial = false) { // attack, defense, typesAttacker, typesDefender
-  // console.log('@calcDamage', unit, target)
-  const damageRatio = (useSpecial ? unit.get('specialAttack') / target.get('specialDefense') : unit.get('attack') / target.get('defense'));
-  const factor = gameConstantsJS.getDamageFactorType(actionType) * power * damageRatio;
-  f.p('@calcDamage returning: ', typeFactor, '*', Math.round(factor), '+ 1 =', Math.round(factor * typeFactor + 1));
-  return Math.round(factor * typeFactor + 1);
-}
-
 /**
  * Use ability
  * Remove mana for spell

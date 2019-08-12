@@ -58,12 +58,6 @@ const expRequiredPerLevel = {
 
 exports.getExpRequired = index => expRequiredPerLevel[String(index)];
 
-const damageFactorType = {
-  attack: 0.125,
-  spell: 0.5,
-};
-
-exports.getDamageFactorType = actionType => damageFactorType[actionType];
 
 /**
  * Set level setups
