@@ -133,8 +133,11 @@ Battle.prototype.nextTick = async function () {
         // tODO
       } else if (battleUnit.hasTarget()) {
         const target = battleUnit.getTarget();
+        console.log(target.range);
         if (target.range <= battleUnit.range) {
           const targetUnit = this.battleBoard[target.position.toBoardPosition()];
+          console.log('Attack from ', battleUnit.x, battleUnit.y);
+          
           battleUnit.doAttack(targetUnit);
 
           // update board
@@ -158,7 +161,7 @@ Battle.prototype.nextTick = async function () {
       this.pathfinder.findPath(battleUnit.x, battleUnit.y, closestEnemy.position.x, closestEnemy.position.y, (path) => {
         if (path && path.length > 0) {
           const nextStep = path[1];
-          f.p('Move: ', battleUnit.x, ', ', battleUnit.y, 'to', nextStep);
+          f.p('Move: ', battleUnit.x, ', ', battleUnit.y, 'to', nextStep.x, nextStep.y);
           this.moveUnit(battleUnit, nextStep);
         } else {
           // no path found. Lets skip step and try next tick(todo)
@@ -209,6 +212,7 @@ Battle.prototype.getClosestEnemy = function (battleUnit) {
   }, ['x', 'y']);
   const range = 1;
   const closestEnemy = tree.nearest({ x: battleUnit.x, y: battleUnit.y }, range);
+  console.log("TCL: Battle.prototype.getClosestEnemy -> closestEnemy", closestEnemy)
   if (closestEnemy.length) {
     return {
       position: new Position(+(closestEnemy[0][0].x),

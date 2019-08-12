@@ -7,8 +7,11 @@ const SessionsStore = rewire('../src/models/SessionsStore.js');
 
 const GameController = rewire('../src/game.js');
 const BattleJS = rewire('../src/game/battle.js');
+const BoardJS = rewire('../src/game/board.js');
+
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
+const Battle = rewire('../src/objects/Battle.js');
 
 const gameConstantsJS = rewire('../src/game_constants.js');
 
@@ -119,20 +122,25 @@ describe('Core Modules', () => {
     });
 
     // todo test for mutateStateByFixingUnitLimit
-    it('battle can executed', async () => {
-      const npcBoard = await gameConstantsJS.getSetRound(1);
-      const playerBoard = gameState.getIn(['players', MOCK_SOCKETID_1, 'board']);
-      const result = await BattleJS.executeBattle(playerBoard, npcBoard);
+  });
+
+  describe('Battle', () => {
+    it('can find target', async () => {
+      const npcBoard = await BoardJS.createBattleBoard([
+        { name: 'dwarf', x: 3, y: 3 },
+      ]);
+      const playerBoard = await BoardJS.createBattleBoard([
+        { name: 'minotaur', x: 2, y: 4 },
+      ]);
+      const combinedBoard = await BoardJS.combineBoards(playerBoard, npcBoard);
+      const battle = new Battle(combinedBoard);
+
+      const units = battle.getNextUnitsToAction();
+      units.should.be.ok();
+      const result = await battle.getClosestEnemy(units[0]);
       result.should.be.ok();
-      result.actionStack.should.be.an.Array();
+      result.range.should.be.equal(1);
     });
   });
 
-  describe('Pathfinding', () => {
-    it('can pathfind', async () => {
-      const npcBoard = await gameConstantsJS.getSetRound(1);
-      const playerBoard = await gameConstantsJS.getTestingPlayerBoard(1);
-      // TODO
-    });
-  });
 });

@@ -380,7 +380,7 @@ BattleJS.executeBattle = async (board1, board2) => {
 
   // Both players have units, battle required
   // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
-  const battle = new Battle(board, 1);
+  const battle = new Battle(board);
   const battleResult = await battle.execute();
   return battleResult;
 };

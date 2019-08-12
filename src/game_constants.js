@@ -80,7 +80,7 @@ const roundSetConfiguration = {
 
 const playerTestingBoards = {
   1: async () => BoardJS.createBattleBoard([
-    { name: 'minotaur', x: 6, y: 5 },
+    { name: 'minotaur', x: 3, y: 1 },
   ])
 };
 
