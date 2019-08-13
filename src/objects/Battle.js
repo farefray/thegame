@@ -96,10 +96,18 @@ Battle.prototype.moveUnit = function (battleUnit, position) {
   if (position) {
     battleUnit.move(position);
     this.battleBoard[battleUnit.getBoardPosition()] = battleUnit;
+
+    // update internal coords
+    this.coordsBoardMap[battleUnit.team] = this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== fromPosition.x && pos.y !== fromPosition.y);
+  } else {
+    this.coordsBoardMap[battleUnit.team] = this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== battleUnit.x && pos.y !== battleUnit.y);
+    
+    if (this.coordsBoardMap[battleUnit.team].length === 0) {
+      // no more units left. Battle is over;
+      this.isOver = true;
+    }
   }
 
-  // update internal coords
-  this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== fromPosition.x && pos.y !== fromPosition.y); // todo finish battle here
   this.pathMap[fromPosition.x][fromPosition.y] = FREE_TILE;
 
   if (position) {
@@ -133,11 +141,13 @@ Battle.prototype.nextTick = async function () {
         // tODO
       } else if (battleUnit.hasTarget()) {
         const target = battleUnit.getTarget();
-        console.log(target.range);
-        if (target.range <= battleUnit.range) {
+        if (battleUnit.isTargetInRange()) {
           const targetUnit = this.battleBoard[target.position.toBoardPosition()];
-          console.log('Attack from ', battleUnit.x, battleUnit.y);
-          
+
+          if (!targetUnit) {
+            return finishTick();
+          }
+
           battleUnit.doAttack(targetUnit);
 
           // update board
@@ -212,12 +222,11 @@ Battle.prototype.getClosestEnemy = function (battleUnit) {
   }, ['x', 'y']);
   const range = 1;
   const closestEnemy = tree.nearest({ x: battleUnit.x, y: battleUnit.y }, range);
-  console.log("TCL: Battle.prototype.getClosestEnemy -> closestEnemy", closestEnemy)
   if (closestEnemy.length) {
     return {
       position: new Position(+(closestEnemy[0][0].x),
         +(closestEnemy[0][0].y)),
-      range: closestEnemy[0][1]
+      kDistance: closestEnemy[0][1]
     };
   }
 

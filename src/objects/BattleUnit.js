@@ -58,6 +58,10 @@ BattleUnit.prototype.removeHealth = function (amount) {
   this.hp = this.hp <= amount ? 0 : this.hp - amount;
 };
 
+BattleUnit.prototype.isTargetInRange = function () {
+  return this.hasTarget() && this._target.kDistance <= this.range + 1; // kDistance is not a real distance, todo for distance:)
+};
+
 /**
  * @description Mutating both units by attacking
  * @warning Mutating objects
