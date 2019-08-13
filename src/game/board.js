@@ -1,8 +1,4 @@
-const {
-  Map,
-  List,
-  Set,
-} = require('immutable');
+const _ = require('lodash');
 const f = require('../f');
 const pawns = require('../pawns');
 const abilitiesJS = require('../abilities');
@@ -19,11 +15,11 @@ const BoardJS = {};
  * Set(['pikachu']) (no more pikachus or raichus)
  */
 async function _countUniqueOccurences(board, teamParam = '0') {
-  let buffMap = {
+  const buffMap = {
     0: {},
     1: {},
   };
-  let unique = {
+  const unique = {
     0: [],
     1: [],
   };
@@ -47,7 +43,7 @@ async function _countUniqueOccurences(board, teamParam = '0') {
         }
       } else { // Value
         buffMap[String(team)][types] = (buffMap[String(team)][types] || 0) + 1;
-        console.log('adding type occurence', name, team, buffMap[String(team)][types])
+        console.log('adding type occurence', name, team, buffMap[String(team)][types]);
       }
     }
   }
@@ -111,7 +107,7 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
     const nextPieceUpgrade = await _checkPieceUpgrade(board, playerIndex, newPiece, position);
     // Get both upgrades
     // TODO
-    return nextPieceUpgrade.set('upgradeOccured', List([evolutionDisplayName]).concat(nextPieceUpgrade.get('upgradeOccured') || List([])));
+    return nextPieceUpgrade.set('upgradeOccured', [evolutionDisplayName]).concat(nextPieceUpgrade.get('upgradeOccured') || []);
   }
   return {
     board,
@@ -139,15 +135,15 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
   const buffMap = await _countUniqueOccurences(board);
 
   // Map({0: Map({grass: 40})})
-  let typeBuffMapSolo = {
+  const typeBuffMapSolo = {
     0: {},
     1: {}
   }; // Solo buffs, only for that type
-  let typeBuffMapAll = {
+  const typeBuffMapAll = {
     0: {},
     1: {}
   }; // For all buff
-  let typeDebuffMapEnemy = {
+  const typeDebuffMapEnemy = {
     0: {},
     1: {}
   }; // For all enemies debuffs
@@ -165,19 +161,19 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
           switch (typesJS.getBonusType(buff)) {
             case 'bonus':
               typeBuffMapSolo = typeBuffMapSolo
-                .setIn([String(i), buff, 'value'], (typeBuffMapSolo.get(String(i)).get(buff) ? typeBuffMapSolo.get(String(i)).get(buff).get('value') : 0) + typesJS.getBonusAmount(buff, j))
+                .setIn([String(i), buff, 'value'], (typeBuffMapSolo.get(String(i)).get(buff) ? typeBuffMapSolo.get(String(i)).get(buff)['value'] : 0) + typesJS.getBonusAmount(buff, j))
                 .setIn([String(i), buff, 'typeBuff'], typesJS.getBonusStatType(buff))
                 .setIn([String(i), buff, 'tier'], j);
               break;
             case 'allBonus':
               typeBuffMapAll = typeBuffMapAll
-                .setIn([String(i), buff, 'value'], (typeBuffMapAll.get(String(i)).get(buff) ? typeBuffMapAll.get(String(i)).get(buff).get('value') : 0) + typesJS.getBonusAmount(buff, j))
+                .setIn([String(i), buff, 'value'], (typeBuffMapAll.get(String(i)).get(buff) ? typeBuffMapAll.get(String(i)).get(buff)['value'] : 0) + typesJS.getBonusAmount(buff, j))
                 .setIn([String(i), buff, 'typeBuff'], typesJS.getBonusStatType(buff))
                 .setIn([String(i), buff, 'tier'], j);
               break;
             case 'enemyDebuff':
               typeDebuffMapEnemy = typeDebuffMapEnemy
-                .setIn([String(i), buff, 'value'], (typeDebuffMapEnemy.get(String(i)).get(buff) ? typeDebuffMapEnemy.get(String(i)).get(buff).get('value') : 0) + typesJS.getBonusAmount(buff, j))
+                .setIn([String(i), buff, 'value'], (typeDebuffMapEnemy.get(String(i)).get(buff) ? typeDebuffMapEnemy.get(String(i)).get(buff)['value'] : 0) + typesJS.getBonusAmount(buff, j))
                 .setIn([String(i), buff, 'typeBuff'], typesJS.getBonusStatType(buff))
                 .setIn([String(i), buff, 'tier'], j);
               break;
@@ -214,7 +210,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
           // console.log('@markBoardBonuses Marking unit', newUnit.get('name'));
           const buff = typesJS.getType(types.get(i));
           const buffName = buff.get('name');
-          const bonusValue = typeBuffMapSolo.get(String(team)).get(types.get(i)).get('value');
+          const bonusValue = typeBuffMapSolo.get(String(team)).get(types.get(i))['value'];
           const bonusType = buff.get('bonusStatType');
           const buffTextContent = (bonusType.includes('unique') ? bonusType.split('_')[1] + bonusValue : `${bonusType} +${bonusValue}`);
           const buffText = `${buffName}: ${buffTextContent}`;
@@ -227,7 +223,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
       // console.log('@markBoardBonuses Marking unit', unit.get('name'));
       const buff = typesJS.getType(types);
       const buffName = buff.get('name');
-      const bonusValue = typeBuffMapSolo.get(String(team)).get(types).get('value');
+      const bonusValue = typeBuffMapSolo.get(String(team)).get(types)['value'];
       const bonusType = buff.get('bonusStatType');
       const buffTextContent = (bonusType.includes('unique') ? bonusType.split('_')[1] + bonusValue : `${bonusType} +${bonusValue}`);
       const buffText = `${buffName}: ${buffTextContent}`;
@@ -241,7 +237,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
     let tempBuffAll = allBuffIter.next();
     while (!tempBuffAll.done) {
       const buff = tempBuffAll.value;
-      const bonusValue = typeBuffMapAll.get(String(team)).get(buff).get('value');
+      const bonusValue = typeBuffMapAll.get(String(team)).get(buff)['value'];
       const bonusType = typesJS.getBonusStatType(buff);
       const buffText = `${buff}: ${bonusType} +${bonusValue}`;
       const newUnit = typesJS.getBuffFuncAll(buff)(newBoard.get(unitPos), bonusValue)
@@ -256,7 +252,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
     let tempEnemy = enemyDebuffIter.next();
     while (!tempEnemy.done) {
       const buff = tempEnemy.value;
-      const bonusValue = typeDebuffMapEnemy.get(String(enemyTeam)).get(buff).get('value');
+      const bonusValue = typeDebuffMapEnemy.get(String(enemyTeam)).get(buff)['value'];
       const bonusType = typesJS.getBonusStatType(buff);
       const buffText = `${buff}: ${bonusType} +${bonusValue}`;
       const newUnit = typesJS.getEnemyDebuff(buff)(newBoard.get(unitPos), bonusValue)
@@ -270,40 +266,51 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
     console.log('@markBoardBonuses CHECK ME', newBoard);
   }*/
   // console.log('NEWBOARD: ', newBoard);
-  return Map({
-    newBoard,
+  return {
+    board,
     buffMap,
     typeBuffMapSolo,
     typeBuffMapAll,
     typeDebuffMapEnemy,
-  });
+  };
 };
 
 /**
  * Create unit for board battle from createBoardUnit unit given newpos/pos and team
  */
 BoardJS.createBattleUnit = async (unit, unitPos, team) => {
-  const unitStats = await pawns.getStats(unit.get('name'));
-  const ability = await abilitiesJS.getAbility(unit.get('name'));
-  // if(ability.get('mana')) console.log('@createBattleUnit', unit.get('name'), unitStats.get('ability'), ability.get('mana'));
-  return unit.set('team', team).set('attack', unitStats.get('attack'))
-    .set('hp', unitStats.get('hp'))
-    .set('maxHp', unitStats.get('hp'))
-    .set('startHp', unitStats.get('hp'))
-    .set('type', unitStats.get('type'))
-    .set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'))
-    .set('mana', unitStats.get('mana') || pawns.getStatsDefault('mana'))
-    .set('ability', unitStats.get('ability'))
-    .set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'))
-    .set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')))
-    /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
-    .set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
-    .set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'))
-    .set('specialAttack', unitStats.get('specialAttack'))
-    .set('specialDefense', unitStats.get('specialDefense'))
-    .set('position', unitPos)
-    .set('range', unitStats.get('range') || pawns.getStatsDefault('range'))
-    .set('manaCost', (ability && ability.get('mana')) || abilitiesJS.getDefault('mana'));
+  const unitStats = await pawns.getStats(unit['name']);
+  const ability = await abilitiesJS.getAbility(unit['name']);
+
+  const battleUnit = _.cloneDeep(unit);
+  // todo proper way :)
+  unitStats.get = field => unitStats[field];
+  const set = (where, what) => {
+    battleUnit[where] = what;
+    return this;
+  };
+
+  set('team', team);
+  set('attack', unitStats.get('attack'));
+  set('hp', unitStats['hp']);
+  set('maxHp', unitStats['hp']);
+  set('startHp', unitStats['hp']);
+  set('type', unitStats.get('type'));
+  set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'));
+  set('mana', unitStats['mana'] || pawns.getStatsDefault('mana'));
+  set('ability', unitStats.get('ability'));
+  set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'));
+  set('speed', pawns.getStatsDefault('upperLimitSpeed') - (unitStats.get('speed') || pawns.getStatsDefault('speed')));
+  /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
+  set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
+  set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'));
+  set('specialAttack', unitStats.get('specialAttack'));
+  set('specialDefense', unitStats.get('specialDefense'));
+  set('position', unitPos);
+  set('range', unitStats.get('range') || pawns.getStatsDefault('range'));
+  set('manaCost', (ability && ability['mana']) || abilitiesJS.getDefault('mana'));
+
+  return battleUnit;
 };
 
 /**
@@ -312,26 +319,20 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
  * Reverses position for enemy units
  */
 BoardJS.combineBoards = async (board1, board2) => {
-  const keysIter = board1.keys();
-  let tempUnit = keysIter.next();
-  let newBoard = Map({});
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const unit = board1.get(unitPos);
+  const newBoard = {};
+
+  for (const unitPos in board1) {
+    const unit = board1[unitPos];
     const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 0);
-    newBoard = await newBoard.set(unitPos, battleUnit);
-    tempUnit = keysIter.next();
+    newBoard[unitPos] = battleUnit;
   }
-  const keysIter2 = board2.keys();
-  tempUnit = keysIter2.next();
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const newUnitPos = f.reverseUnitPos(unitPos); // Reverse unitPos
-    const unit = board2.get(unitPos);
-    const battleUnit = await BoardJS.createBattleUnit(unit, newUnitPos, 1);
-    newBoard = await newBoard.set(newUnitPos, battleUnit);
-    tempUnit = keysIter2.next();
+
+  for (const unitPos in board2) {
+    const unit = board2[unitPos];
+    const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 1);
+    newBoard[unitPos] = battleUnit;
   }
+
   return newBoard;
 };
 
@@ -442,9 +443,11 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
   state = state.setIn(['players', playerIndex, 'boardBuffs'], boardBuffs);*/
   //const markedBoard = markedResults.get('newBoard');
 
-  state.setIn(['players', playerIndex, 'hand'], hand); 
+  state.setIn(['players', playerIndex, 'hand'], hand);
   state.setIn(['players', playerIndex, 'board'], board);
-  return { upgradeOccured };
+  return {
+    upgradeOccured
+  };
 };
 
 
@@ -518,48 +521,13 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
  * Use together with combine boards
  */
 BoardJS.createBattleBoard = async (inputList) => {
-  let board = Map({});
-  for (let i = 0; i < inputList.size; i++) {
-    const el = inputList.get(i);
-    const pokemon = el.get('name');
-    const x = el.get('x');
-    const y = el.get('y');
-    const unit = await BoardJS.getBoardUnit(pokemon, x, y);
-    board = await board.set(f.pos(x, y), unit);
+  const board = {};
+  for (let i = 0; i < inputList.length; i++) {
+    const el = inputList[i];
+    const unit = await BoardJS.getBoardUnit(el['name']);
+    board[f.pos(el.x, el.y)] = unit;
   }
   return board;
-};
-
-/**
- * Returns position of unit with the next move
- */
-BoardJS.getUnitWithNextMove = async (board) => {
-  // console.log('@getUnitWithNextMove',board)
-  const boardKeysIter = board.keys();
-  let tempUnit = boardKeysIter.next();
-  let lowestNextMove = List([tempUnit.value]);
-  let lowestNextMoveValue = board.get(tempUnit.value).get('next_move');
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const unitNextMove = board.get(unitPos).get('next_move');
-    if (unitNextMove < lowestNextMoveValue) { // New lowest move
-      lowestNextMove = List([unitPos]);
-      lowestNextMoveValue = unitNextMove;
-    } else if (unitNextMove === lowestNextMoveValue) {
-      lowestNextMove = lowestNextMove.push(unitPos);
-    }
-    tempUnit = boardKeysIter.next();
-  }
-  // Find nextMove unit
-  if (lowestNextMove.size === 1) {
-    if (f.isUndefined(lowestNextMove.get(0))) {
-      console.log('@getUnitWithNextMove Undefined', board);
-    }
-    return lowestNextMove.get(0);
-  }
-  // Decide order of equal next move units
-  // Approved Temp: Random order
-  return lowestNextMove.get(Math.floor(Math.random() * lowestNextMove.size));
 };
 
 module.exports = BoardJS;

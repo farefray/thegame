@@ -1,5 +1,4 @@
 /* global describe, it */
-const assert = require('assert');
 const should = require('should');
 const rewire = require('rewire');
 
@@ -7,9 +6,14 @@ const ConnectedPlayers = rewire('../src/models/ConnectedPlayers.js');
 const SessionsStore = rewire('../src/models/SessionsStore.js');
 
 const GameController = rewire('../src/game.js');
+const BattleJS = rewire('../src/game/battle.js');
+const BoardJS = rewire('../src/game/board.js');
 
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
+const Battle = rewire('../src/objects/Battle.js');
+
+const gameConstantsJS = rewire('../src/game_constants.js');
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -113,10 +117,30 @@ describe('Core Modules', () => {
       const toPosition = '1,1';
       const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, fromPosition, toPosition);
       result.upgradeOccured.should.be.false();
-      console.log(gameState.players[MOCK_SOCKETID_1].hand);
-      console.log(gameState.players[MOCK_SOCKETID_1].board);
       should(gameState.players[MOCK_SOCKETID_1].hand[fromPosition]).undefined();
       gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
     });
+
+    // todo test for mutateStateByFixingUnitLimit
   });
+
+  describe('Battle', () => {
+    it('can find target', async () => {
+      const npcBoard = await BoardJS.createBattleBoard([
+        { name: 'dwarf', x: 3, y: 3 },
+      ]);
+      const playerBoard = await BoardJS.createBattleBoard([
+        { name: 'minotaur', x: 2, y: 4 },
+      ]);
+      const combinedBoard = await BoardJS.combineBoards(playerBoard, npcBoard);
+      const battle = new Battle(combinedBoard);
+
+      const units = battle.getNextUnitsToAction();
+      units.should.be.ok();
+      const result = await battle.getClosestEnemy(units[0]);
+      result.should.be.ok();
+      result.range.should.be.equal(1);
+    });
+  });
+
 });

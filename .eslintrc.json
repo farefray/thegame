@@ -15,6 +15,10 @@
         "comma-dangle": "off",
         "linebreak-style": "off",
         "no-mixed-operators": "off",
-        "func-names": "off"
+        "func-names": "off",
+        "dot-notation": "off",
+        "no-restricted-syntax": "off",
+        "guard-for-in": "off",
+        "prefer-arrow-callback": "off"
     }
 }

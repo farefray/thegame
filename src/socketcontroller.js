@@ -145,184 +145,18 @@ function SocketController(socket, io) {
         });
       });
 
-      const scheduleBattleRound = () => {
-        //socket.emit('BATTLE_READY', state);
-        // send battleReady event to players, so they update their state
-      };
+      const scheduleBattleRound = async () => {
+        console.log("TCL: scheduleBattleRound -> scheduleBattleRound", socket.id)
+        // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
+        const battleRoundResult = await BattleJS.battleSetup(state);
+        clients.forEach((socketID) => {
+          const playerState = battleRoundResult.getIn(['players', socketID]);
+          io.to(`${socketID}`).emit('UPDATE_PLAYER', socketID, asNetworkMessage(playerState));
 
-      scheduleBattleRound();
-    });
-  });
-
-  socket.on('BUY_UNIT', async (pieceIndex) => {
-    // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable)
-    const sessionID = connectedPlayers.getSessionID(socket.id);
-    const session = sessionsStore.get(sessionID);
-    const state = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
-    if (state) {
-      session.set('state', state);
-      sessionsStore.store(session);
-
-      // todo some abstract sending with try catch, to not crash app every time it bugs :)
-      const playerState = state.getIn(['players', socket.id]);
-      io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
-    }
-  });
-
-  socket.on('PLACE_PIECE', async (fromPosition, toPosition) => {
-    const sessionID = connectedPlayers.getSessionID(socket.id);
-    const session = sessionsStore.get(sessionID);
-    const result = await GameController.mutateStateByPawnPlacing(session.get('state'), socket.id, fromPosition, toPosition);
-    const evolutionDisplayName = result['upgradeOccured'];
-    //  console.log('@PlacePieceSocket', evolutionDisplayName);
-    if (evolutionDisplayName) {
-      for (let i = 0; i < evolutionDisplayName.size; i++) {
-        const playerName = sessionJS.getPlayerName(socket.id, connectedPlayers, sessions);
-        newChatMessage(socket, io, socket.id, `${playerName} -> `, evolutionDisplayName.get(i), 'pieceUpgrade');
-      }
-    }
-    console.log('Place piece from', from, 'at', to, '(evolution =', `${evolutionDisplayName})`);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    // Hand and board
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  //////////// OLD STUFF \/
-
-  socket.on('TOGGLE_LOCK', async (stateParam) => {
-    // const state = await GameController.toggleLock(fromJS(stateParam), index);
-    const prevLock = (fromJS(stateParam)).getIn(['players', socket.id, 'locked']);
-    console.log('Toggling Lock for Shop! prev lock =', prevLock);
-    socket.emit('LOCK_TOGGLED', socket.id, !prevLock);
-    const state = await GameController.toggleLock((fromJS(stateParam)), socket.id);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, socket.id);
-  });
-
-  socket.on('BUY_EXP', async (stateParam) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.buyExp(stateWithPieces, index);
-    // Gold, shop, hand
-    console.log('Bought exp, Player', index);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('REFRESH_SHOP', async (stateParam) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.refreshShopGlobal(stateWithPieces, index);
-    console.log('Refreshes Shop, level', state.getIn(['players', index, 'level']), 'Player', index);
-    // Requires Shop and Pieces
-    // socket.emit('UPDATED_PIECES', state);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  
-
-  socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.withdrawPieceGlobal(stateWithPieces, index, from);
-    console.log('Withdraw piece at ', from);
-    // Hand and board
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('SELL_PIECE', async (stateParam, from) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.sellPieceGlobal(stateWithPieces, index, from);
-    console.log('Sell piece at ', from);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    // Hand and board
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('BATTLE_READY', async (stateParam) => {
-    if (!sessionExist(socket.id)) return;
-
-    const index = getPlayerIndex(socket.id);
-    const state = fromJS(stateParam); // Shouldn't require pieces in battle
-    const amount = state.get('amountOfPlayers');
-    const sessionId = getSessionId(socket.id);
-    const session = sessions.get(sessionId);
-    const connectedSessionPlayers = session.get('connectedPlayers');
-    let counter = session.get('counter');
-    let prepBattleState = session.get('prepBattleState');
-    // console.log('@battleReady', index, state.getIn(['players', index]));
-    if (index !== -1 && state.getIn(['players', index])) {
-      // console.log('@battleReady', counter, amount);
-      if (f.isUndefined(prepBattleState)) { // First ready player
-        counter += 1;
-        prepBattleState = state.set('players', Map({})).setIn(['players', index], state.getIn(['players', index]));
-      } else if (prepBattleState.getIn(['players', index])) { // Update from player already registered
-        prepBattleState = prepBattleState.setIn(['players', index], state.getIn(['players', index]));
-      } else { // New player
-        counter += 1;
-        prepBattleState = prepBattleState.setIn(['players', index], state.getIn(['players', index]));
-      }
-      if (counter === amount) {
-        // Set Session to reset counter and remove prepBattleStatess
-        const newSession = (session.get('prepBattleState') ? session.set('counter', 0).delete('prepBattleState') : session.set('counter', 0));
-        sessions = sessions.set(sessionId, newSession);
-        console.log('@sc.battleReady _________________________ Starting Battle');
-        // console.log('@sc.battleReady state', prepBattleState.getIn(['players']));
-        // Battle
-        const prepBSWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, prepBattleState);
-        // console.log('@sc.battleReady State sent in', prepBSWithPieces)
-
-        const obj = await BattleJS.battleSetup(prepBSWithPieces);
-        const newState = obj.get('state');
-        const preBattleState = obj.get('preBattleState');
-        const roundType = obj.get('roundType');
-        const gymLeader = obj.get('gymLeader');
-        const battleObject = obj.get('battleObject');
-        // console.log('@sc.battleReady Players in state after Battle', newState.getIn(['players']));
-        // console.log('@sc.battleReady Pre battle state', preBattleState.getIn(['players']));
-        const actionStacks = battleObject.get('actionStacks');
-        const startingBoards = battleObject.get('startingBoards');
-        const dmgBoards = battleObject.get('dmgBoards');
-        // console.log('dmgBoards', dmgBoards);
-
-        const winners = battleObject.get('winners');
-        const finalBoards = battleObject.get('finalBoards');
-        const matchups = battleObject.get('matchups');
-        const battleEndTimes = battleObject.get('battleEndTimes');
-
-        sessions = sessionJS.updateSessionPlayers(socket.id, connectedPlayers, sessions, newState);
-        sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, newState);
-        if (f.isUndefined(actionStacks)) console.log('@socketController undefined actionStacks', battleObject);
-
-        const iter = connectedSessionPlayers.keys();
-        let temp = iter.next();
-        while (!temp.done) {
-          const socketId = temp.value;
-          const tempIndex = connectedSessionPlayers.get(socketId);
           const enemy = (matchups ? matchups.get(tempIndex) : (roundType === 'gym' ? gymLeader : 'Npc Battle'));
-          // const index = getPlayerIndex(socketId);
-          // console.log('Player update', index, preBattleState.getIn(['players', index]));
-          emitMessage(socket, io, sessionId, (innerSocketId) => {
-            io.to(innerSocketId).emit('UPDATE_PLAYER', tempIndex, preBattleState.getIn(['players', tempIndex]));
-          });
-          // io.to(`${socketId}`).emit('UPDATE_PLAYER', tempIndex, preBattleState.getIn(['players', tempIndex]));
           io.to(`${socketId}`).emit('BATTLE_TIME', actionStacks, startingBoards, winners, dmgBoards, enemy, roundType);
-          temp = iter.next();
-        }
+        });
+
         const longestBattleTime = await sessionJS.getLongestBattleTime(actionStacks);
         const longestTime = TIME_FACTOR * longestBattleTime + 3500;
         if (longestTime !== 3000) console.log('sc.LongestTime:', longestTime, longestBattleTime, TIME_FACTOR);
@@ -412,11 +246,111 @@ function SocketController(socket, io) {
             }
           }
         }, longestTime);
-      } else {
-        const newSession = session.set('counter', counter).set('prepBattleState', prepBattleState);
-        sessions = sessions.set(sessionId, newSession);
+      };
+
+      setTimeout(() => {
+        scheduleBattleRound();
+      }, 30000); // TODO better way
+    });
+  });
+
+  socket.on('BUY_UNIT', async (pieceIndex) => {
+    // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable)
+    const sessionID = connectedPlayers.getSessionID(socket.id);
+    const session = sessionsStore.get(sessionID);
+    const state = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
+    if (state) {
+      session.set('state', state);
+      sessionsStore.store(session);
+
+      // todo some abstract sending with try catch, to not crash app every time it bugs :)
+      const playerState = state.getIn(['players', socket.id]);
+      io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
+    }
+  });
+
+  socket.on('PLACE_PIECE', async (fromPosition, toPosition) => {
+    const sessionID = connectedPlayers.getSessionID(socket.id);
+    const session = sessionsStore.get(sessionID);
+    const state = session.get('state');
+    const result = await GameController.mutateStateByPawnPlacing(state, socket.id, fromPosition, toPosition);
+    const evolutionDisplayName = result['upgradeOccured'];
+    //  console.log('@PlacePieceSocket', evolutionDisplayName);
+    if (evolutionDisplayName) {
+      for (let i = 0; i < evolutionDisplayName.size; i++) {
+        const playerName = session.getPlayerName(socket.id);
+        newChatMessage(socket, io, socket.id, `${playerName} -> `, evolutionDisplayName.get(i), 'pieceUpgrade');
       }
     }
+    console.log('Place piece from', fromPosition, 'at', toPosition, '(evolution =', `${evolutionDisplayName})`);
+    session.set('state', state);
+    sessionsStore.store(session);
+    // todo some abstract sending with try catch, to not crash app every time it bugs :)
+    const playerState = state.getIn(['players', socket.id]);
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
+  });
+
+  //////////// OLD STUFF \/
+
+  socket.on('TOGGLE_LOCK', async (stateParam) => {
+    // const state = await GameController.toggleLock(fromJS(stateParam), index);
+    const prevLock = (fromJS(stateParam)).getIn(['players', socket.id, 'locked']);
+    console.log('Toggling Lock for Shop! prev lock =', prevLock);
+    socket.emit('LOCK_TOGGLED', socket.id, !prevLock);
+    const state = await GameController.toggleLock((fromJS(stateParam)), socket.id);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, socket.id);
+  });
+
+  socket.on('BUY_EXP', async (stateParam) => {
+    const index = getPlayerIndex(socket.id);
+    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
+    const state = await GameController.buyExp(stateWithPieces, index);
+    // Gold, shop, hand
+    console.log('Bought exp, Player', index);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
+    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
+    });
+  });
+
+  socket.on('REFRESH_SHOP', async (stateParam) => {
+    const index = getPlayerIndex(socket.id);
+    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
+    const state = await GameController.refreshShopGlobal(stateWithPieces, index);
+    console.log('Refreshes Shop, level', state.getIn(['players', index, 'level']), 'Player', index);
+    // Requires Shop and Pieces
+    // socket.emit('UPDATED_PIECES', state);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
+    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
+    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
+    });
+  });
+
+  
+
+  socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
+    const index = getPlayerIndex(socket.id);
+    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
+    const state = await GameController.withdrawPieceGlobal(stateWithPieces, index, from);
+    console.log('Withdraw piece at ', from);
+    // Hand and board
+    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
+    });
+  });
+
+  socket.on('SELL_PIECE', async (stateParam, from) => {
+    const index = getPlayerIndex(socket.id);
+    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
+    const state = await GameController.sellPieceGlobal(stateWithPieces, index, from);
+    console.log('Sell piece at ', from);
+    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
+    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
+    // Hand and board
+    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
+    });
   });
 
   socket.on('SEND_MESSAGE', async (message) => {

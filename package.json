@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Lolispo/pkmn_auto_chess#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "easystarjs": "^0.4.3",
     "eslint": "^5.16.0",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
@@ -34,6 +35,7 @@
     "immutable": "^4.0.0-rc.12",
     "immutable-shuffle": "^1.0.3",
     "keyv": "^3.1.0",
+    "lodash": "^4.17.15",
     "mocha": "^5.2.0",
     "nodemon": "^1.19.1",
     "npm": "^6.9.0",
