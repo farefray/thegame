@@ -25,18 +25,12 @@ const TEAM_B = 1;
 const FREE_TILE = 0;
 const TAKEN_TILE = 1;
 
-const createPathMap = function (width, height) {
-  const grid = [];
-  for (let y = 0; y < height; y++) {
-    grid.push([]);
-    for (let x = 0; x < width; x++) {
-      grid[y][x] = FREE_TILE;
-    }
-  }
+const ACTION_MOVE = 1; // todo share with frontend
+const ACTION_ATTACK = 2;
 
-  return grid;
-};
-
+/**
+ * @consider Using Map/Set instead of Object/Array
+ */
 function Battle(board) {
   // returnable values
   this.startBoard = _.cloneDeep(board); // test if thats needed or just adding perf issues
@@ -53,7 +47,17 @@ function Battle(board) {
   };
 
   // used for pathfinding (todo func)
-  this.pathMap = createPathMap(9, 9);
+  this.pathMap = (function (width, height) {
+    const grid = [];
+    for (let y = 0; y < height; y++) {
+      grid.push([]);
+      for (let x = 0; x < width; x++) {
+        grid[y][x] = FREE_TILE;
+      }
+    }
+
+    return grid;
+  }(9, 9));
 
   // internal setup
   for (const boardPos in board) {
@@ -81,6 +85,11 @@ Battle.prototype.execute = async function () {
   return this;
 };
 
+Battle.prototype.action = function (actionObject, time) {
+  this.actionStack.push({ ...actionObject, time });
+  return this;
+};
+
 /**
  * @param {BattleUnit} battleUnit
  * @param {Object/null} position if null, then removing from board
@@ -91,6 +100,12 @@ Battle.prototype.moveUnit = function (battleUnit, position) {
     y: battleUnit.y
   };
 
+  this.action({
+    action: ACTION_MOVE,
+    from: fromPosition,
+    to: position
+  }, battleUnit.nextAction());
+
   // Remove from old position, move unit itself, add to new position
   delete this.battleBoard[battleUnit.getBoardPosition()];
   if (position) {
@@ -99,9 +114,10 @@ Battle.prototype.moveUnit = function (battleUnit, position) {
 
     // update internal coords
     this.coordsBoardMap[battleUnit.team] = this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== fromPosition.x && pos.y !== fromPosition.y);
+    this.coordsBoardMap[battleUnit.team].push(position);
   } else {
     this.coordsBoardMap[battleUnit.team] = this.coordsBoardMap[battleUnit.team].filter(pos => pos.x !== battleUnit.x && pos.y !== battleUnit.y);
-    
+
     if (this.coordsBoardMap[battleUnit.team].length === 0) {
       // no more units left. Battle is over;
       this.isOver = true;
@@ -114,9 +130,8 @@ Battle.prototype.moveUnit = function (battleUnit, position) {
     this.pathMap[battleUnit.x][battleUnit.y] = TAKEN_TILE;
   }
 
-  // set monster's next action time [if no position, then monster is removed]
+  // next action is set inside monster move() [if no position, then monster is removed]
   if (position) {
-    battleUnit.nextAction(+battleUnit.nextAction() + battleUnit.speed);
 
     // update distance to target [TODO]
   } else if (this.coordsBoardMap[battleUnit.team].length === 0) {
@@ -142,13 +157,20 @@ Battle.prototype.nextTick = async function () {
       } else if (battleUnit.hasTarget()) {
         const target = battleUnit.getTarget();
         if (battleUnit.isTargetInRange()) {
-          const targetUnit = this.battleBoard[target.position.toBoardPosition()];
+          const targetPos = target.position.toBoardPosition();
+          const targetUnit = this.battleBoard[targetPos];
 
           if (!targetUnit) {
             return finishTick();
           }
 
-          battleUnit.doAttack(targetUnit);
+          const attackResult = battleUnit.doAttack(targetUnit);
+          this.action({
+            action: ACTION_ATTACK,
+            from: battleUnit.getPosition(),
+            to: targetPos,
+            damage: attackResult.damage
+          }, battleUnit.nextAction());
 
           // update board
           if (!targetUnit.isAlive()) {
@@ -171,7 +193,6 @@ Battle.prototype.nextTick = async function () {
       this.pathfinder.findPath(battleUnit.x, battleUnit.y, closestEnemy.position.x, closestEnemy.position.y, (path) => {
         if (path && path.length > 0) {
           const nextStep = path[1];
-          f.p('Move: ', battleUnit.x, ', ', battleUnit.y, 'to', nextStep.x, nextStep.y);
           this.moveUnit(battleUnit, nextStep);
         } else {
           // no path found. Lets skip step and try next tick(todo)

@@ -128,7 +128,7 @@ describe('Core Modules', () => {
     let battle;
     it('can find target and measure distance', async () => {
       const npcBoard = await BoardJS.createBattleBoard([
-        { name: 'dwarf', x: 3, y: 3 },
+        { name: 'dwarf', x: 1, y: 8 },
       ]);
       const playerBoard = await BoardJS.createBattleBoard([
         { name: 'minotaur', x: 3, y: 4 },
@@ -141,12 +141,15 @@ describe('Core Modules', () => {
       units.should.be.ok();
       const result = await battle.getClosestEnemy(units[0]);
       result.should.be.ok();
-      result.kDistance.should.be.equal(1);
+      result.kDistance.should.be.above(0);
     });
 
     it('whole battle can be executed', async () => {
       const battleResult = await battle.execute();
       battleResult.should.be.ok();
+      battleResult.isOver.should.be.true();
+      battleResult.actionStack.should.be.an.Array();
+      battleResult.actionStack.length.should.be.above(0);
     });
   });
 });

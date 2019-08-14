@@ -5,13 +5,15 @@ function BattleUnit(unit, coords) {
   _.assign(this, unit);
   this.x = +(coords.x);
   this.y = +(coords.y);
-  this.nextAction(this.speed);
+  
+  // internal
+  this._next_action = this.speed;
   return this;
 }
 
 BattleUnit.prototype.nextAction = function (actionTime) {
   if (actionTime) {
-    this._next_action = actionTime;
+    this._next_action = this._next_action + actionTime;
   }
 
   return this._next_action;
@@ -43,11 +45,20 @@ BattleUnit.prototype.oppositeTeam = function () {
 BattleUnit.prototype.move = function (coords) {
   this.x = +(coords.x);
   this.y = +(coords.y);
+
+  this.nextAction(this.speed);
 };
 
 
 BattleUnit.prototype.getBoardPosition = function () {
   return `${this.x},${this.y}`;
+};
+
+BattleUnit.prototype.getPosition = function () {
+  return {
+    x: this.x,
+    y: this.y
+  };
 };
 
 BattleUnit.prototype.isAlive = function () {
@@ -73,6 +84,10 @@ BattleUnit.prototype.doAttack = function (targetUnit) {
   const damage = Math.round(factor);
 
   targetUnit.removeHealth(damage);
+  this.nextAction(this.attackSpeed);
+  return {
+    damage
+  };
 };
 
 module.exports = BattleUnit;
