@@ -146,18 +146,17 @@ function SocketController(socket, io) {
       });
 
       const scheduleBattleRound = async () => {
-        console.log("TCL: scheduleBattleRound -> scheduleBattleRound", socket.id)
         // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
         const battleRoundResult = await BattleJS.battleSetup(state);
         clients.forEach((socketID) => {
-          const playerState = battleRoundResult.getIn(['players', socketID]);
-          io.to(`${socketID}`).emit('UPDATE_PLAYER', socketID, asNetworkMessage(playerState));
+          // const playerState = battleRoundResult.getIn(['players', socketID]);
+          // io.to(`${socketID}`).emit('UPDATE_PLAYER', socketID, asNetworkMessage(playerState));
 
-          const enemy = (matchups ? matchups.get(tempIndex) : (roundType === 'gym' ? gymLeader : 'Npc Battle'));
-          io.to(`${socketId}`).emit('BATTLE_TIME', actionStacks, startingBoards, winners, dmgBoards, enemy, roundType);
+          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.actionStack[socketID], battleRoundResult.startBoard[socketID], battleRoundResult.winners[socketID]);
         });
 
-        const longestBattleTime = await sessionJS.getLongestBattleTime(actionStacks);
+        /* TODO
+        const longestBattleTime = await sessionJS.getLongestBattleTime(actionStack);
         const longestTime = TIME_FACTOR * longestBattleTime + 3500;
         if (longestTime !== 3000) console.log('sc.LongestTime:', longestTime, longestBattleTime, TIME_FACTOR);
         setTimeout(async () => {
@@ -246,6 +245,7 @@ function SocketController(socket, io) {
             }
           }
         }, longestTime);
+        */
       };
 
       setTimeout(() => {

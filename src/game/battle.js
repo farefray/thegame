@@ -359,49 +359,7 @@ BattleJS.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
 
 
 const Battle = require('../objects/Battle');
-/**
- * Spawn opponent in reverse board
- * Mark owners of units
- * Start battle
- */
-BattleJS.executeBattle = async (board1, board2) => {
-  // Check to see if a battle is required
-  // Lose when empty, even if enemy no units aswell (tie with no damage taken)
-  const board = await BoardJS.combineBoards(board1, board2);
-  if (!Object.keys(board1).length) {
-    return {
-      actionStack: [], winner: 1, board, startBoard: board,
-    };
-  } if (!Object.keys(board2).length) {
-    return {
-      actionStack: [], winner: 0, board, startBoard: board,
-    };
-  } // todo case when both boards are empty?
 
-  // Both players have units, battle required
-  // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
-  const battle = new Battle(board);
-  const battleResult = await battle.execute();
-  return battleResult;
-};
-
-BattleJS.npcRound = async (state, players, npcBoard) => {
-  const battleObject = {}; // investigate if we need all of this
-
-  // TODO: Future: All battles calculate concurrently
-  for (let i = 0; i < players.length; i++) {
-    const playerBoard = state.getIn(['players', players[i], 'board']);
-    const resultBattle = await BattleJS.executeBattle(playerBoard, npcBoard);
-    battleObject['actionStacks'][players[i]] = resultBattle['actionStacks'];
-    battleObject['startBoard'][players[i]] = resultBattle['startBoard'];
-    battleObject['dmgBoards'][players[i]] = resultBattle['dmgBoards'];
-    battleObject['winners'][players[i]] = resultBattle['winner'] === 0;
-    battleObject['finalBoards'][players[i]] = resultBattle['board'];
-    battleObject['battleEndTimes'][players[i]] = resultBattle['battleEndTime'];
-  }
-
-  return battleObject;
-};
 
 async function buildMatchups(players) {
   let matchups = {};
@@ -459,7 +417,7 @@ BattleJS.battleTime = async (stateParam) => {
     const actionStack = resultBattle.get('actionStack');
     const startBoard = resultBattle.get('startBoard');
     const dmgBoard = resultBattle.get('dmgBoard');
-    battleObject = battleObject.setIn(['actionStacks', index], actionStack);
+    battleObject = battleObject.setIn(['actionStack', index], actionStack);
     battleObject = battleObject.setIn(['startingBoards', index], startBoard);
     battleObject = battleObject.setIn(['dmgBoards', index], dmgBoard);
 
@@ -493,6 +451,7 @@ BattleJS.battleTime = async (stateParam) => {
  * Calculate battle for given board, either pvp or npc/gym round
  */
 BattleJS.battleSetup = async (state) => {
+
   const players = Object.keys(state.get('players')); // maybe this should be moved to some iterable logic
   for (let i = 0; i < players.length; i++) {
     const player = state.getIn(['players', players[i]]);
@@ -501,27 +460,47 @@ BattleJS.battleSetup = async (state) => {
     }
   }
 
-  // TODO use one single new Battle(board).execute()
   const round = state.get('round');
-  const roundType = gameConstantsJS.getRoundType(round);
-  switch (roundType) {
-    case 'gym': {
-      const gymLeader = gameConstantsJS.getGymLeader(round);
-      const boardNpc = await gameConstantsJS.getSetRound(round);
-      return (await BattleJS.npcRound(state, boardNpc)).set('roundType', roundType).set('gymLeader', gymLeader);
-    }
-    case 'npc': {
-      const boardNpc = await gameConstantsJS.getSetRound(round);
-      const roundState = (await BattleJS.npcRound(state, players, boardNpc));
-      roundState.set('roundType', roundType);
-      return roundState;
-    }
-    case 'shop':
-    case 'pvp':
-    default: {
-      return (await BattleJS.battleTime(state)).set('roundType', roundType);
-    }
+  const npcBoard = await gameConstantsJS.getSetRound(round);
+
+
+  // TODO: Future: All battles calculate concurrently
+  const battleObject = {
+    actionStack: [],
+    startBoard: [],
+    winners: false
+  };
+
+  for (let i = 0; i < players.length; i++) {
+    const playerBoard = state.getIn(['players', players[i], 'board']);
+    // Check to see if a battle is required
+    // Lose when empty, even if enemy no units aswell (tie with no damage taken)
+    const board = await BoardJS.combineBoards(playerBoard, npcBoard);
+
+    /* TODO this case
+    if (!Object.keys(npcBoard).length) {
+      return {
+        actionStack: [], winner: 1, board, startBoard: board,
+      };
+    } if (!Object.keys(playerBoard).length) {
+      return {
+        actionStack: [], winner: 0, board, startBoard: board,
+      };
+    } // todo case when both boards are empty?
+    */
+
+    // Both players have units, battle required
+    // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
+    const battle = new Battle(board);
+    const battleResult = await battle.execute();
+    battleObject['actionStack'][players[i]] = battleResult['actionStack'];
+    battleObject['startBoard'][players[i]] = battleResult['startBoard'];
+    battleObject['winners'][players[i]] = battleResult['winner'] === 0;
   }
+
+  return battleObject;
+  // todo pvp
+  // return (await BattleJS.battleTime(state));
 };
 
 /**

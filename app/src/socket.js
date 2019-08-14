@@ -67,8 +67,8 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'WAITINGROOM_STATUS', playersReady: readyCustomers, connectedPlayers: totalCustomers, allReady: allReady});
   });
 
-  socket.on('BATTLE_TIME', (actionStacks, battleStartBoards, winners, dmgBoards, enemy, roundType) => {
-    dispatch({ type: 'BATTLE_TIME', actionStacks, battleStartBoards, winners, enemy, dmgBoards, roundType});
+  socket.on('BATTLE_TIME', (actionStack, battleStartBoards, winners) => {
+    dispatch({ type: 'BATTLE_TIME', actionStack, battleStartBoards, winners});
   });
 
   socket.on('END_BATTLE', (upcomingRoundType, upcomingGymLeader) => {

@@ -56,14 +56,14 @@ exports.findSocketId = (session, pid) => {
   return -1;
 };
 
-exports.getLongestBattleTime = (actionStacks) => {
+exports.getLongestBattleTime = (actionStack) => {
   let longestTime = -1;
-  const iter = actionStacks.keys();
+  const iter = actionStack.keys();
   let temp = iter.next();
   while (!temp.done) {
     const id = temp.value;
-    const actionStack = actionStacks.get(id);
-    const time = (actionStack.get(actionStack.size - 1) ? actionStack.get(actionStack.size - 1)['time'] : 0);
+    const actionStack_ = actionStack.get(id);
+    const time = (actionStack_.get(actionStack_.size - 1) ? actionStack_.get(actionStack_.size - 1)['time'] : 0);
     if (time > longestTime) {
       longestTime = time;
     }

@@ -113,7 +113,7 @@ export function app(state = {
     unitJson: {},
     loadedUnitJson: false,
     visiting: -1,
-    actionStacks: {},
+    actionStack: {},
     battleStartBoards: {},
     winners: {},
     dmgBoards: {},
@@ -279,10 +279,9 @@ export function app(state = {
       }
       break;
     case 'BATTLE_TIME':
-      const actionStack = action.actionStacks[state.index];
+      const actionStack = action.actionStack[state.index];
       const battleStartBoard = action.battleStartBoards[state.index];
-      const winner = action.winners[state.index];
-      const dmgBoard = action.dmgBoards[state.index];
+      const winner = false; // TODO action.winners[state.index];
       if (!state.musicEnabled) {
         tempSoundEffects = getNewSoundEffects(state.soundEffects, getSoundEffect('horn'));
         state = {
@@ -294,26 +293,20 @@ export function app(state = {
         ...state,
         music: (action.enemy ? getBackgroundAudio('pvpbattle') : getBackgroundAudio('battle')),
         isActiveBattleGoing: true,
-        enemyIndex: action.enemy,
-        roundType: action.roundType,
         startBattle: true,
-        actionStacks: action.actionStacks,
+        actionStack: action.actionStack,
         battleStartBoard: action.battleStartBoards,
         winners: action.winners,
-        dmgBoards: action.dmgBoards,
-        prevDmgBoard: state.dmgBoard,
       }
       if (!state.isDead) {
         state = {
           ...state,
           actionStack,
           battleStartBoard,
-          winner,
-          dmgBoard,
-          dmgBoardTotalDmg: sumObj(dmgBoard),
+          winner
         }
       } else if (state.visiting !== state.index && action.battleStartBoards[state.visiting]) {
-        const actionStackVisit = action.actionStacks[state.visiting];
+        const actionStackVisit = action.actionStack[state.visiting];
         const battleStartBoardVisit = action.battleStartBoards[state.visiting];
         const winnerVisit = action.winners[state.visiting];
         const dmgBoardVisit = action.dmgBoards[state.visiting];
@@ -563,7 +556,7 @@ export function app(state = {
         myBoard: state.players[index].board,
         boardBuffs: state.players[index].boardBuffs,
         /*
-          Requires redo logic of battle / how actionStacks are stored to jump between battles
+          Requires redo logic of battle / how actionStack are stored to jump between battles
           battleStartBoard: state.battleStartBoards[index],
           actionMove: state.actionMoves[index],
           winners: state.winner[index],
