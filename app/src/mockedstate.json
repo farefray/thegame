@@ -61,7 +61,6 @@
     "isBattle": true,
     "enemyIndex": "Npc Battle",
     "roundType": "npc",
-    "startBattle": false,
     "actionStack": [
         {
             "action": "move",

@@ -86,7 +86,6 @@ export function app(state = {
     isBattle: false, // Used for checking interactions before battle state is received
     enemyIndex: -1,
     roundType: '',
-    startBattle: false,
     actionStack: {},
     battleStartBoard: {},
     winner: false,
@@ -113,7 +112,6 @@ export function app(state = {
     unitJson: {},
     loadedUnitJson: false,
     visiting: -1,
-    actionStack: {},
     battleStartBoards: {},
     winners: {},
     dmgBoards: {},
@@ -152,7 +150,7 @@ export function app(state = {
         messageMode: '',
         players: action.newState.players,
         round: action.newState.round,
-        countdown: 15,
+        countdown: 10,
       };
       if (action.newState.players[state.index]) {
         state = {
@@ -186,7 +184,6 @@ export function app(state = {
         lock: false,
         isActiveBattleGoing: false,
         enemyIndex: -1,
-        startBattle: false,
         actionStack: {},
         battleStartBoard: {},
         winner: false,
@@ -279,9 +276,8 @@ export function app(state = {
       }
       break;
     case 'BATTLE_TIME':
-      const actionStack = action.actionStack[state.index];
-      const battleStartBoard = action.battleStartBoards[state.index];
-      const winner = false; // TODO action.winners[state.index];
+      console.log("TCL: action", action)
+      const { actionStack, startBoard, winner} = action;
       if (!state.musicEnabled) {
         tempSoundEffects = getNewSoundEffects(state.soundEffects, getSoundEffect('horn'));
         state = {
@@ -291,21 +287,15 @@ export function app(state = {
       }
       state = {
         ...state,
-        music: (action.enemy ? getBackgroundAudio('pvpbattle') : getBackgroundAudio('battle')),
         isActiveBattleGoing: true,
-        startBattle: true,
-        actionStack: action.actionStack,
-        battleStartBoard: action.battleStartBoards,
-        winners: action.winners,
+        actionStack: actionStack,
+        battleStartBoard: startBoard,
+        winners: winner,
       }
-      if (!state.isDead) {
-        state = {
-          ...state,
-          actionStack,
-          battleStartBoard,
-          winner
-        }
-      } else if (state.visiting !== state.index && action.battleStartBoards[state.visiting]) {
+      console.log("TCL: state", state)
+
+      // visiting will be kicked from game
+      /* if (state.visiting !== state.index && action.battleStartBoards[state.visiting]) {
         const actionStackVisit = action.actionStack[state.visiting];
         const battleStartBoardVisit = action.battleStartBoards[state.visiting];
         const winnerVisit = action.winners[state.visiting];
@@ -318,24 +308,9 @@ export function app(state = {
           dmgBoard: dmgBoardVisit,
           dmgBoardTotalDmg: sumObj(dmgBoardVisit),
         }
-      }
+      } */
       // TODO: BattleStartBoard contain unneccessary amount of information
       break;
-    case 'CHANGE_STARTBATTLE':
-      state = {
-        ...state,
-        startBattle: action.value
-      }
-      break;
-    case 'UPDATE_BATTLEBOARD': {
-      state = {
-        ...state,
-        battleStartBoard: action.board,
-        message: 'Move ' + action.moveNumber,
-        messageMode: ''
-      }
-      break;
-    }
     /*
     case 'RESET_BATTLEBOARD_ACTIONMESSAGE': {
       const battleBoard = state.battleStartBoard;

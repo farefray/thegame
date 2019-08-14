@@ -137,6 +137,7 @@ Battle.prototype.moveUnit = function (battleUnit, position) {
   } else if (this.coordsBoardMap[battleUnit.team].length === 0) {
     // unit was removed, so maybe its time to end the battle
     this.isOver = true;
+    this.winner = battleUnit.oppositeTeam();
   }
 };
 

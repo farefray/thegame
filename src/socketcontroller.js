@@ -20,8 +20,6 @@ const SessionsStore = require('./models/SessionsStore');
 const connectedPlayers = new ConnectedPlayers();
 const sessionsStore = new SessionsStore();
 
-const TIME_FACTOR = 15;
-
 /**
  * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
  * @todo better way for this or at least test this performance
@@ -147,12 +145,16 @@ function SocketController(socket, io) {
 
       const scheduleBattleRound = async () => {
         // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
-        const battleRoundResult = await BattleJS.battleSetup(state);
+        const preBattleSession = sessionsStore.get(sessionID);
+        const battleRoundResult = await BattleJS.battleSetup(preBattleSession.get('state'));
         clients.forEach((socketID) => {
+          console.log("TCL: scheduleBattleRound -> socketID", socketID)
           // const playerState = battleRoundResult.getIn(['players', socketID]);
           // io.to(`${socketID}`).emit('UPDATE_PLAYER', socketID, asNetworkMessage(playerState));
 
-          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.actionStack[socketID], battleRoundResult.startBoard[socketID], battleRoundResult.winners[socketID]);
+          console.log(battleRoundResult.actionStack);
+          console.log(battleRoundResult.actionStack[socketID]);
+          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.actionStack[socketID], battleRoundResult.startBoard[socketID], battleRoundResult.winner[socketID]);
         });
 
         /* TODO

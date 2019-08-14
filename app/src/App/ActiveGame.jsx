@@ -1,33 +1,37 @@
-import React, { useState } from 'react';
-import { useSelector, shallowEqual } from 'react-redux'
+import React, {
+  useEffect,
+  useState
+} from 'react';
+import {
+  useSelector,
+  shallowEqual
+} from 'react-redux'
+import _ from 'lodash';
 
 import TopBar from './ActiveGame/TopBar.jsx';
 import LeftBar from './ActiveGame/LeftBar.jsx';
 import Timer from './ActiveGame/Timer.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
-import { StateProvider } from './ActiveGame/GameBoard.context.js';
+import {
+  StateProvider
+} from './ActiveGame/GameBoard.context.js';
 
 import GameBoardBottom from './ActiveGame/GameBoardBottom.jsx';
 
 import RightPanel from './ActiveGame/RightPanel.jsx';
 
-import { isUndefined, updateMessage } from '../f';
-import { getSoundEffect } from '../audio.js';
-
-const TIME_FACTOR = 15;
+import {
+  isUndefined,
+  updateMessage
+} from '../f';
+import {
+  getSoundEffect
+} from '../audio.js';
 
 const wait = async (ms) => {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
-}
-
-var removeClassAnimation = (nextMove, board) => {
-  const unitPos = nextMove.unitPos;
-  if (board && board[unitPos]) {
-    board[unitPos].attackAnimation = '';
-  }
-  return board;
 }
 
 var endOfBattleClean = (battleBoard, winner) => {
@@ -90,62 +94,6 @@ var damageUnit = async (newBoard, target, value, unitPos, direction, actionMessa
   return newBoard;
 }
 
-var startBattleEvent = async () => {
-  const { dispatch, actionStack, battleStartBoard, winner } = this.props;
-  if (this.props.isDead && this.props.visiting === this.props.index) {
-    return;
-  }
-  const currentRound = this.props.round;
-  dispatch({ type: 'CHANGE_STARTBATTLE', value: false });
-  let board = battleStartBoard
-  let currentTime = 0;
-
-  console.log('Starting Battle with', actionStack.length, 'moves');
-  // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
-  let counter = 0;
-  while (actionStack.length > 0) {
-    if (currentRound < this.props.round) {
-      return;
-    }
-    const nextMove = actionStack.shift(); // actionStack is mutable
-    const time = nextMove.time;
-    const nextRenderTime = (time - currentTime) * TIME_FACTOR; // magic time factor, fixme
-    if (isUndefined(board)) {
-      console.log('CHECK ME: Board is undefined', board, nextMove, nextRenderTime);
-    }
-    await this.wait(nextRenderTime);
-    // Fix remove class Animation
-    board = await this.removeClassAnimation(nextMove, board);
-    dispatch({ type: 'UPDATE_BATTLEBOARD', board, moveNumber: counter });
-    board = await this.removeActionMessage(nextMove, board);
-    dispatch({ type: 'UPDATE_BATTLEBOARD', board, moveNumber: counter });
-    board = await this.renderMove(nextMove, board);
-
-    // console.log('Next action in', nextRenderTime, '(', currentTime, time, ')')
-    currentTime = time;
-    dispatch({ type: 'UPDATE_BATTLEBOARD', board, moveNumber: counter });
-    counter += 1;
-    if (actionStack.length === 0) {
-      await this.wait(1500);
-      if (currentRound < this.props.round) {
-        return;
-      }
-      board = await this.endOfBattleClean(battleStartBoard, winner);
-      dispatch({ type: 'UPDATE_BATTLEBOARD', board, moveNumber: 'Ended' });
-      // console.log('END OF BATTLE: winningTeam', winningTeam, 'x', Object.values(battleStartBoard));
-      if (winner) {
-        updateMessage(this.props, 'Battle won!', 'big');
-        dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('cheer') });
-      } else {
-        updateMessage(this.props, 'Battle lost!', 'big');
-        dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('battleLose') });
-      }
-    }
-  }
-}
-
-
-
 var removeActionMessage = (nextMove, board) => {
   const target = nextMove.target;
   if (board && board[target]) {
@@ -177,12 +125,12 @@ var renderMove = async (nextMove, board) => {
   const typeEffective = nextMove.typeEffective;
   const direction = nextMove.direction;
   const manaChanges = nextMove.manaChanges;
-  const unit = newBoard[unitPos];  // Save unit from prev pos
+  const unit = newBoard[unitPos]; // Save unit from prev pos
   switch (action) {
     case 'move':
       console.log('Move from', unitPos, 'to', target);
-      delete newBoard[unitPos];        // Remove unit from previous pos
-      newBoard[target] = unit;         // Add unit to new pos on board
+      delete newBoard[unitPos]; // Remove unit from previous pos
+      newBoard[target] = unit; // Add unit to new pos on board
       newBoard[target].actionMessage = '';
       newBoard[target].animateMove = {
         animation: 'move' + direction + ' 0.5s',
@@ -289,36 +237,67 @@ var renderMove = async (nextMove, board) => {
 
 var visitPlayer = (playerIndex) => {
   console.log('Visiting Player', playerIndex, '...')
-  this.props.dispatch({ type: 'SPEC_PLAYER', playerIndex })
+  this.props.dispatch({
+    type: 'SPEC_PLAYER',
+    playerIndex
+  })
 }
 
 
-function ActiveGame (props) {
-  const activeBattle = false;
-  
-  
+function ActiveGame () {
+  const [activeBattle, setActiveBattle] = useState(false);
+
   /*
-   index, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, startBattle, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
+  index, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
   */
   const appState = useSelector(state => state.app, shallowEqual);
-  /* TODO start battle from hooks */
-  /*
-  if (this.props.startBattle === true && !this.state.activeBattle) {
-      this.setState({ ...this.state, activeBattle: true })
-      this.startBattleEvent();
+
+  const startBattleEvent = async (actionStack) => {
+    let currentTime = 0;
+
+    console.log('Starting Battle with', actionStack.length, 'moves');
+    // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
+    const actions = _.clone(actionStack);
+    while (actions.length > 0) {
+      const nextMove = actions.shift(); // actionStack is mutable
+      const time = nextMove.time;
+      const nextRenderTime = (time - currentTime); // magic time factor, fixme
+
+      await wait(nextRenderTime);
+      // await this.renderMove(nextMove);
+      console.log("TCL: startBattleEvent -> nextMove", nextMove)
+
+      console.log('Next action in', nextRenderTime, '(', currentTime, time, ')')
+      currentTime = time;
+
+      if (actionStack.length === 0) {
+        await this.wait(1500);
+        // await this.endOfBattleClean(battleStartBoard, winner);
+        console.log('END OF BATTLE: winningTeam');
+      }
     }
-    */
+  }
+
+  useEffect(() => {
+    if (!activeBattle && appState.isActiveBattleGoing) {
+      console.log("TCL: ActiveGame -> appState", appState)
+      console.log("TCL: ActiveGame -> activeBattle", activeBattle)
+      setActiveBattle(true);
+      console.log("TCL: ActiveGame -> appState.actionStack", appState.actionStack)
+      startBattleEvent(appState.actionStack);
+    }
+  }, [activeBattle, appState.isActiveBattleGoing, appState.actionStack]);
 
   return (<div className='gameDiv' tabIndex='0'>
     {/* <TopBar {...this.props} /> */}
-    <div className='flex wholeBody'>
-      {/* <LeftBar {...this.props} /> */}
-      {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
-      <StateProvider initialState={{...appState}}>
-        <GameBoard />
-      </StateProvider>
-      {/* <GameBoardBottom {...this.props} /> */}
-      <RightPanel {...appState} />
+    <div className='flex wholeBody'> 
+    {/* <LeftBar {...this.props} /> */} 
+    {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
+    <StateProvider initialState={{ ...appState }}>
+      <GameBoard />
+    </StateProvider>
+    {/* <GameBoardBottom {...this.props} /> */}
+    <RightPanel {...appState} />
     </div>
   </div>);
 }

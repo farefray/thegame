@@ -33,7 +33,6 @@
     "isBattle": true,
     "enemyIndex": "Npc Battle",
     "roundType": "npc",
-    "startBattle": false,
     "actionStack": {},
     "battleStartBoard": {},
     "winner": false,

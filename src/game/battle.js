@@ -468,7 +468,7 @@ BattleJS.battleSetup = async (state) => {
   const battleObject = {
     actionStack: [],
     startBoard: [],
-    winners: false
+    winner: []
   };
 
   for (let i = 0; i < players.length; i++) {
@@ -495,7 +495,7 @@ BattleJS.battleSetup = async (state) => {
     const battleResult = await battle.execute();
     battleObject['actionStack'][players[i]] = battleResult['actionStack'];
     battleObject['startBoard'][players[i]] = battleResult['startBoard'];
-    battleObject['winners'][players[i]] = battleResult['winner'] === 0;
+    battleObject['winner'][players[i]] = battleResult.winner;
   }
 
   return battleObject;

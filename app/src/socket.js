@@ -45,11 +45,6 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'NEW_STATE', newState: state});
   });
 
-  // TODO
-  socket.on('START_BATTLE_ROUND', () => {
-    dispatch({ type: 'START_BATTLE_ROUND', startBattle: true});
-  });
-
   socket.on('UPDATE_PLAYER', (index, player) => {
     console.log('socket on update player')
     dispatch({ type: 'UPDATE_PLAYER', index: index, player: player});
@@ -67,8 +62,9 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'WAITINGROOM_STATUS', playersReady: readyCustomers, connectedPlayers: totalCustomers, allReady: allReady});
   });
 
-  socket.on('BATTLE_TIME', (actionStack, battleStartBoards, winners) => {
-    dispatch({ type: 'BATTLE_TIME', actionStack, battleStartBoards, winners});
+  socket.on('BATTLE_TIME', (actionStack, startBoard, winner) => {
+    console.log(actionStack, startBoard, winner);
+    dispatch({ type: 'BATTLE_TIME', actionStack, startBoard, winner});
   });
 
   socket.on('END_BATTLE', (upcomingRoundType, upcomingGymLeader) => {
