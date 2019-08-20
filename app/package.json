@@ -25,6 +25,7 @@
     "react-dnd": "^9.3.2",
     "react-dnd-html5-backend": "^9.3.2",
     "react-dom": "^16.7.0",
+    "react-flip-toolkit": "^7.0.2",
     "react-redux": "^7.1.0",
     "react-scripts": "3.0.1",
     "redux": "^4.0.1",
@@ -44,7 +45,7 @@
   "devDependencies": {
     "@react-mock/state": "^0.1.8",
     "html-webpack-plugin": "^3.2.0",
-    "react-cosmos": "^5.0.0-alpha.21",
+    "react-cosmos": "5.0.0-alpha.25",
     "react-cosmos-redux": "^1.0.2",
     "react-mock": "^6.0.1"
   }

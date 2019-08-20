@@ -6,12 +6,10 @@ import { placePiece} from '../../../socket';
 import ItemTypes from './ItemTypes';
 
 import { useStateValue } from '../GameBoard.context.js';
-
 import Cell from './Cell';
-import Pawn from './Pawn';
 
-export default function BoardSquare({ cellPosition }) {
-  const { isDead, isActiveBattleGoing, isBattle, battleStartBoard, myBoard, myHand } = useStateValue();
+export default function BoardSquare({ cellPosition, children }) {
+  const { isDead, isActiveBattleGoing, isBattle, myBoard, myHand } = useStateValue();
 
   // TODO the same check must be added to backend[without repeating the code!]
   const canMovePawn = (fromPosition, toPosition) => {
@@ -57,12 +55,6 @@ export default function BoardSquare({ cellPosition }) {
 
   const isBoard = cellPosition.isBoard();
 
-  // Picking map, its hand, board or battleBoard
-  const boardMap = isBoard && isActiveBattleGoing
-    ? battleStartBoard : (isBoard ? myBoard : myHand);
-
-  const creature = boardMap[cellPosition.toBoardPosition()];
-
   let extraClasses = isOver && canDrop ? 'highlighted' :
     (isOver && !canDrop ? 'highlighted__red' : '');
 
@@ -72,7 +64,7 @@ export default function BoardSquare({ cellPosition }) {
 
   return <div ref={drop}>
     <Cell cellPosition={cellPosition} extraClasses={extraClasses}>
-      {!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
+      {children}
     </Cell>
   </div>
 }

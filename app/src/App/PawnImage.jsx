@@ -14,6 +14,8 @@ const imageBackends = {
   idle: 'http://18.200.195.197/phpsprites/outfit.php?'
 }
 
+const DEBUG = true;
+
 class PawnImage extends Component {
   constructor (props) {
     super(props);
@@ -48,6 +50,10 @@ class PawnImage extends Component {
       id: this.props.lookType || 1,
       direction: this.props.direction
     });
+
+    if (DEBUG) {
+      return 'https://vignette.wikia.nocookie.net/tibia/images/7/73/Dwarf.gif/revision/latest?cb=20150418075532&path-prefix=en';
+    }
 
     return (this.props.idle ? imageBackends.idle : imageBackends.animated) + params;
   }

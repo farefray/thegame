@@ -1,6 +1,7 @@
 import React, {
   useEffect,
-  useState
+  useState,
+  useReducer
 } from 'react';
 import {
   useSelector,
@@ -8,6 +9,7 @@ import {
 } from 'react-redux'
 import _ from 'lodash';
 
+import Position from '../objects/Position';
 import TopBar from './ActiveGame/TopBar.jsx';
 import LeftBar from './ActiveGame/LeftBar.jsx';
 import Timer from './ActiveGame/Timer.jsx';
@@ -243,61 +245,89 @@ var visitPlayer = (playerIndex) => {
   })
 }
 
+const ACTION_MOVE = 1; // todo share with backend
+const ACTION_ATTACK = 2;
 
-function ActiveGame () {
-  const [activeBattle, setActiveBattle] = useState(false);
+
+function boardReducer(board, action) {
+  console.log("TCL: boardReducer -> action", action)
+  console.log("TCL: boardReducer -> board", board)
+  switch (action.action) { // todo make it type
+    case ACTION_MOVE:
+      //fix thismess
+      const messyBoard = _.clone(board);
+      const boardPos = new Position(action.from.x, action.from.y).toBoardPosition();
+      const creature = _.clone(board[boardPos]);
+      delete messyBoard[boardPos];
+      messyBoard[new Position(action.to.x, action.to.y).toBoardPosition()] = creature;
+      return messyBoard;
+    case ACTION_ATTACK:
+      return board;
+    default:
+      throw new Error();
+  }
+}
+
+function ActiveGame() {
+  const [activeBattle, setActiveBattle] = useState(false)
 
   /*
   index, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
   */
   const appState = useSelector(state => state.app, shallowEqual);
+  const { isActiveBattleGoing, actionStack } = appState;
 
-  const startBattleEvent = async (actionStack) => {
-    let currentTime = 0;
+  const combineBoard = () => {
+    const boardMap = isActiveBattleGoing ? appState.battleStartBoard : appState.myBoard;
+    return _.merge(boardMap, appState.myHand);
+  };
 
-    console.log('Starting Battle with', actionStack.length, 'moves');
-    // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
-    const actions = _.clone(actionStack);
-    while (actions.length > 0) {
-      const nextMove = actions.shift(); // actionStack is mutable
-      const time = nextMove.time;
-      const nextRenderTime = (time - currentTime); // magic time factor, fixme
+  const combinedBoard = combineBoard();
+  console.log("TCL: ActiveGame -> combinedBoard", combinedBoard)
 
-      await wait(nextRenderTime);
-      // await this.renderMove(nextMove);
-      console.log("TCL: startBattleEvent -> nextMove", nextMove)
-
-      console.log('Next action in', nextRenderTime, '(', currentTime, time, ')')
-      currentTime = time;
-
-      if (actionStack.length === 0) {
-        await this.wait(1500);
-        // await this.endOfBattleClean(battleStartBoard, winner);
-        console.log('END OF BATTLE: winningTeam');
-      }
-    }
-  }
+  const [gameBoard, dispatchGameBoard] = useReducer(boardReducer, combinedBoard);
 
   useEffect(() => {
-    if (!activeBattle && appState.isActiveBattleGoing) {
-      console.log("TCL: ActiveGame -> appState", appState)
-      console.log("TCL: ActiveGame -> activeBattle", activeBattle)
+    if (!activeBattle && isActiveBattleGoing) {
       setActiveBattle(true);
-      console.log("TCL: ActiveGame -> appState.actionStack", appState.actionStack)
-      startBattleEvent(appState.actionStack);
+
+      const startBattleEvent = async (actions) => {
+        let currentTime = 0;
+
+        console.log('Starting Battle with', actions.length, 'moves');
+        // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
+        while (actions.length > 0) {
+          const nextAction = actions.shift(); // actionStack is mutable
+          const time = nextAction.time;
+          const nextRenderTime = (time - currentTime); // magic time factor, fixme
+
+          await wait(nextRenderTime);
+          dispatchGameBoard(nextAction);
+
+          currentTime = time;
+
+          if (actions.length === 0) {
+            await wait(1500);
+            // await this.endOfBattleClean(battleStartBoard, winner);
+            console.log('END OF BATTLE: winningTeam');
+          }
+        }
+      }
+
+      startBattleEvent(_.clone(actionStack));
     }
-  }, [activeBattle, appState.isActiveBattleGoing, appState.actionStack]);
+  }, [activeBattle, isActiveBattleGoing, actionStack]);
 
   return (<div className='gameDiv' tabIndex='0'>
     {/* <TopBar {...this.props} /> */}
-    <div className='flex wholeBody'> 
-    {/* <LeftBar {...this.props} /> */} 
-    {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
-    <StateProvider initialState={{ ...appState }}>
-      <GameBoard />
-    </StateProvider>
-    {/* <GameBoardBottom {...this.props} /> */}
-    <RightPanel {...appState} />
+    <div className='flex wholeBody'>
+      {/* <LeftBar {...this.props} /> */}
+      {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
+      <StateProvider initialState={{ ...appState }}>
+        <GameBoard board={gameBoard} />
+      </StateProvider>
+      {/* <GameBoardBottom {...this.props} /> */}
+      <RightPanel {...appState} />
     </div>
   </div>);
 }
