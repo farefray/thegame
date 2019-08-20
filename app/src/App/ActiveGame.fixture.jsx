@@ -1,11 +1,12 @@
 import React from 'react';
-import { StateMock } from '@react-mock/state';
+import { ReduxMock } from 'react-cosmos-redux';
+import { createStore } from 'redux';
 
 import ActiveGame from './ActiveGame';
 import myMockedReduxState from '../mockedstate.json';
+import rootReducer from '../reducers';
 
-export default <StateMock state={{ activeBattle: false }} >
-    <ActiveGame {...myMockedReduxState} dispatch={(obj) => {
-        console.log('Dispatch', obj);
-    }} />
-</StateMock>;
+export default <ReduxMock configureStore={state => createStore(rootReducer, state)}
+    initialState={myMockedReduxState} >
+    <ActiveGame />
+</ReduxMock>;
