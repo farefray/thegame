@@ -127,21 +127,20 @@ describe('Core Modules', () => {
   describe('Battle', () => {
     let battle;
     it('can find target and measure distance', async () => {
-      const npcBoard = await BoardJS.createBattleBoard([
-        { name: 'dwarf', x: 1, y: 8 },
+      const npcBoard = await BoardJS.createBoard([
+        { name: 'minotaur', x: 1, y: 8 },
       ]);
-      const playerBoard = await BoardJS.createBattleBoard([
+      const playerBoard = await BoardJS.createBoard([
         { name: 'minotaur', x: 3, y: 4 },
       ]);
 
-      const combinedBoard = await BoardJS.combineBoards(playerBoard, npcBoard);
+      const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
 
       const units = battle.getNextUnitsToAction();
       units.should.be.ok();
-      const result = await battle.getClosestEnemy(units[0]);
+      const result = await battle.getClosestTarget(units[0]);
       result.should.be.ok();
-      result.kDistance.should.be.above(0);
     });
 
     it('whole battle can be executed', async () => {

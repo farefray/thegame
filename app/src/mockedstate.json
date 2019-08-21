@@ -1,144 +1,328 @@
 {
     "app": {
         "gameIsLive": true,
-        "connected": true,
-        "index": "0",
-        "ready": false,
-        "playersReady": -1,
-        "connectedPlayers": -1,
-        "allReady": false,
-        "message": "Move 65",
+        "index": "O-2iSOJIkK-2QImMAAAA",
+        "message": "Received State",
         "messageMode": "",
-        "playerName": "cvxc",
         "help": true,
         "chatHelpMode": "chat",
-        "senderMessages": [],
         "chatMessages": [],
+        "senderMessages": [],
         "players": {
-            "0": {
-                "board": {
-                    "0,1": {
-                        "buff": [],
-                        "displayName": "Minotaur★",
+            "O-2iSOJIkK-2QImMAAAA": {
+                "index": "O-2iSOJIkK-2QImMAAAA",
+                "hp": 100,
+                "level": 1,
+                "exp": 0,
+                "expToReach": 1,
+                "gold": 0,
+                "shop": {
+                    "1": {
                         "name": "minotaur",
-                        "position": "0,1",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
+                        "type": "normal"
+                    },
+                    "2": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
+                        "type": "normal"
+                    },
+                    "3": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
+                        "type": "normal"
+                    },
+                    "4": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
                         "type": "normal"
                     }
                 },
-                "boardBuffs": {
-                    "buffMap": {},
-                    "typeBuffMapSolo": {},
-                    "typeBuffMapAll": {},
-                    "typeDebuffMapEnemy": {}
-                },
-                "exp": 0,
-                "expToReach": 1,
-                "gold": 9999,
                 "hand": {},
-                "hp": 50,
-                "index": "0",
-                "level": 5,
-                "name": "Mock",
+                "board": {
+                    "0,1": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "looktype": 25,
+                        "cost": 1,
+                        "hp": 75,
+                        "attack": 100,
+                        "defense": 55,
+                        "speed": 600,
+                        "attackSpeed": 1000,
+                        "type": "normal",
+                        "ability": "splash",
+                        "evolves_to": null,
+                        "specialAttack": 15,
+                        "specialDefense": 20,
+                        "position": "0,1"
+                    }
+                },
                 "rivals": {},
-                "shop": {},
                 "unitAmounts": {
-                    "minotaur": 1
+                    "minotaur": 0
                 }
             }
         },
         "myHand": {},
         "myBoard": {
-            "0,1": {}
+            "0,1": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "looktype": 25,
+                "cost": 1,
+                "hp": 75,
+                "attack": 100,
+                "defense": 55,
+                "speed": 600,
+                "attackSpeed": 1000,
+                "type": "normal",
+                "ability": "splash",
+                "evolves_to": null,
+                "specialAttack": 15,
+                "specialDefense": 20,
+                "position": "0,1"
+            }
         },
         "myShop": {
-            "0": {}
+            "1": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            },
+            "2": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            },
+            "3": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            },
+            "4": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            }
         },
         "lock": false,
-        "level": 5,
+        "level": 1,
         "exp": 0,
         "expToReach": 1,
-        "gold": 9999,
+        "gold": 0,
         "isActiveBattleGoing": true,
-        "isBattle": true,
-        "enemyIndex": "Npc Battle",
-        "roundType": "npc",
+        "isBattle": false,
+        "enemyIndex": -1,
+        "roundType": "",
         "actionStack": [
             {
-                "action": "move",
-                "direction": "N",
-                "effect": {},
-                "manaChanges": {
-                    "unitPos": 0
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 8
                 },
-                "target": "0,2",
-                "time": 500,
-                "typeEffective": "",
-                "unitPos": "0,1",
-                "value": 1
+                "to": {
+                    "x": 3,
+                    "y": 7
+                },
+                "time": 1000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 0,
+                    "y": 1
+                },
+                "to": {
+                    "x": 0,
+                    "y": 2
+                },
+                "time": 1000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 7
+                },
+                "to": {
+                    "x": 3,
+                    "y": 6
+                },
+                "time": 2000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 0,
+                    "y": 2
+                },
+                "to": {
+                    "x": 0,
+                    "y": 3
+                },
+                "time": 2000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 6
+                },
+                "to": {
+                    "x": 3,
+                    "y": 5
+                },
+                "time": 3000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 0,
+                    "y": 3
+                },
+                "to": {
+                    "x": 1,
+                    "y": 3
+                },
+                "time": 3000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 5
+                },
+                "to": {
+                    "x": 3,
+                    "y": 4
+                },
+                "time": 4000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 1,
+                    "y": 3
+                },
+                "to": {
+                    "x": 2,
+                    "y": 3
+                },
+                "time": 4000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 4
+                },
+                "to": {
+                    "x": 2,
+                    "y": 4
+                },
+                "time": 5000
+            },
+            {
+                "action": 2,
+                "from": {
+                    "x": 2,
+                    "y": 3
+                },
+                "to": "2,4",
+                "damage": 8,
+                "time": 5000
+            },
+            {
+                "action": 2,
+                "from": {
+                    "x": 2,
+                    "y": 4
+                },
+                "to": "2,3",
+                "damage": 8,
+                "time": 6000
+            },
+            {
+                "action": 2,
+                "from": {
+                    "x": 2,
+                    "y": 3
+                },
+                "to": "2,4",
+                "damage": 8,
+                "time": 6000
             }
         ],
         "battleStartBoard": {
             "0,1": {
-                "ability": "splash",
-                "actionMessage": "-1",
-                "animateMove": "",
-                "attack": 10,
-                "attackAnimation": "animateN",
-                "buff": [],
-                "defense": 55,
-                "displayName": "Minotaur★",
-                "hp": 75,
-                "mana": 0,
-                "mana_multiplier": 1,
-                "maxHp": 75,
                 "name": "minotaur",
-                "next_move": 0,
+                "displayName": "Minotaur★",
+                "looktype": 25,
+                "cost": 1,
+                "hp": 75,
+                "attack": 100,
+                "defense": 55,
+                "speed": 600,
+                "attackSpeed": 1000,
+                "type": "normal",
+                "ability": "splash",
+                "evolves_to": null,
+                "specialAttack": 15,
+                "specialDefense": 20,
                 "position": "0,1",
-                "range": 1,
-                "specialAttack": 15,
-                "specialDefense": 20,
-                "speed": 150,
-                "startHp": 75,
                 "team": 0,
-                "type": "normal"
-            },
-            "4,6": {
-                "ability": "splash",
-                "actionMessage": "-1",
-                "animateMove": "",
-                "attack": 10,
-                "attackAnimation": "animateN",
-                "buff": [],
-                "defense": 55,
-                "displayName": "Minotaur★",
-                "hp": 75,
+                "maxHp": 75,
+                "startHp": 75,
+                "next_move": 0,
                 "mana": 0,
                 "mana_multiplier": 1,
-                "maxHp": 75,
-                "name": "minotaur",
-                "next_move": 0,
-                "position": "4,6",
                 "range": 1,
-                "specialAttack": 15,
-                "specialDefense": 20,
-                "speed": 150,
-                "startHp": 75,
+                "manaCost": 100
+            },
+            "3,8": {
+                "name": "dwarf",
+                "displayName": "Dwarf",
+                "looktype": 69,
+                "cost": 1,
+                "hp": 65,
+                "attack": 100,
+                "defense": 155,
+                "speed": 350,
+                "attackSpeed": 1500,
+                "type": "normal",
+                "ability": "splash",
+                "evolves_to": null,
+                "specialAttack": 0,
+                "specialDefense": 0,
                 "team": 1,
-                "type": "normal"
+                "maxHp": 65,
+                "startHp": 65,
+                "next_move": 0,
+                "mana": 0,
+                "mana_multiplier": 1,
+                "position": "3,8",
+                "range": 1,
+                "manaCost": 100
             }
         },
         "winner": false,
-        "dmgBoard": {
-            "Minotaur★": 749
-        },
-        "selectedUnit": {
-            "pos": ""
-        },
-        "mouseOverId": "7,8",
+        "dmgBoard": {},
+        "selectedUnit": -1,
+        "mouseOverId": -1,
         "stats": {},
         "statsMap": {},
-        "typeStatsString": "Types:\nRock: \n-   Strong against: Fire, Ice, Flying, Bug\n-   Ineffective against: Fighting, Ground, Steel\nNormal: \n-   Ineffective against: Rock, Steel\n-   No effect against: Ghost\nGround: \n-   Strong against: Fire, Electric, Poison, Rock, Steel\n-   Ineffective against: Grass, Bug\n-   No effect against: Flying\nPoison: \n-   Strong against: Grass, Fairy\n-   Ineffective against: Poison, Ground, Rock, Ghost\n-   No effect against: Steel\nSteel: \n-   Strong against: Ice, Rock, Fairy\n-   Ineffective aga...",
-        "typeBonusString": "Type bonuses:\nRock: [2,4,6] Increases defense for all rock typed units [20,25,30]\nNormal: [3,5,7] Increases hp for all units [10,20,25]\nGround: [2,4,5] Decreases speed for all enemy units [15,15,10]\nPoison: [3,5,7] Decreases speed for all enemy units [20,25,30]\nSteel: [2] Increases hp for all steel typed units [25]\nIce: [2,4] Increases hp for all units [25,40]\nFlying: [3,6,9] Increases speed for all flying typed units [20,20,25]\nGhost: [1,2] Increases attack for all ghost typed units [20,25]\nFig...",
+        "typeStatsString": "",
+        "typeBonusString": "",
         "round": 1,
         "musicEnabled": false,
         "soundEnabled": false,
@@ -146,69 +330,44 @@
         "selectedSound": "",
         "soundEffects": [
             "/static/media/horn.9c341502.mp3",
-            "/static/media/Tick.b685cef5.mp3",
-            "/static/media/Tick.b685cef5.mp3",
-            "/static/media/Tick.b685cef5.mp3",
-            "/static/media/Tick.b685cef5.mp3",
-            "/static/media/Tick.b685cef5.mp3",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
             ""
         ],
-        "music": "/static/media/trainerBattle.7900e874.mp3",
+        "music": "/static/media/pokemonCenter.231b89c0.mp3",
         "volume": 0.05,
-        "startTimer": false,
         "isDead": false,
         "selectedShopUnit": "",
         "isSelectModeShop": false,
-        "boardBuffs": {
-            "buffMap": {},
-            "typeBuffMapSolo": {},
-            "typeBuffMapAll": {},
-            "typeDebuffMapEnemy": {}
-        },
         "deadPlayers": [],
-        "unitJson": {
-            "minotaur": {
-                "name": "minotaur",
-                "displayName": "Minotaur★",
-                "looktype": 25,
-                "cost": 1,
-                "hp": 75,
-                "attack": 10,
-                "defense": 55,
-                "speed": 100,
-                "type": "normal",
-                "ability": "splash",
-                "evolves_to": null,
-                "specialAttack": 15,
-                "specialDefense": 20
-            },
-            "dwarf": {
-                "name": "dwarf",
-                "displayName": "Dwarf",
-                "looktype": 69,
-                "cost": 1,
-                "hp": 65,
-                "attack": 10,
-                "defense": 155,
-                "speed": 80,
-                "type": "normal",
-                "ability": "splash",
-                "evolves_to": null,
-                "specialAttack": 0,
-                "specialDefense": 0
-            }
-        },
-        "alternateAnimation": true,
-        "visiting": "0",
+        "unitJson": {},
+        "loadedUnitJson": false,
+        "visiting": "O-2iSOJIkK-2QImMAAAA",
+        "battleStartBoards": {},
+        "winners": null,
+        "dmgBoards": {},
         "showDmgBoard": false,
-        "dmgBoardTotalDmg": 749,
+        "dmgBoardTotalDmg": -1,
         "markedBuff": "",
         "displayMarkedBuff": false,
-        "debugMode": false,
         "prevDmgBoard": {},
-        "loadingCounter": 1
+        "loadingCounter": 1,
+        "connectedPlayers": -1,
+        "allReady": false,
+        "countdown": 0
+    },
+    "startscreen": {
+        "ready": true,
+        "playersReady": 1,
+        "playerName": "asd",
+        "loadedUnitJson": false,
+        "connected": true,
+        "connectedPlayers": 1
     }
 }

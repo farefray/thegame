@@ -5,11 +5,16 @@ function BattleUnit(unit, coords) {
   _.assign(this, unit);
   this.x = +(coords.x);
   this.y = +(coords.y);
-  
+
   // internal
+  this._uid = this.getBoardPosition(); // uid = starting position for mob
   this._next_action = this.speed;
   return this;
 }
+
+BattleUnit.prototype.getUID = function () {
+  return this._uid;
+};
 
 BattleUnit.prototype.nextAction = function (actionTime) {
   if (actionTime) {
@@ -24,7 +29,7 @@ BattleUnit.prototype.canCast = function () {
 };
 
 BattleUnit.prototype.hasTarget = function () {
-  return !!this._target && this._target.position;
+  return !!this._target;
 };
 
 BattleUnit.prototype.getTarget = function () {
@@ -70,7 +75,23 @@ BattleUnit.prototype.removeHealth = function (amount) {
 };
 
 BattleUnit.prototype.isTargetInRange = function () {
-  return this.hasTarget() && this._target.kDistance <= this.range + 1; // kDistance is not a real distance, todo for distance:)
+  const target = this.hasTarget() && this.getTarget();
+
+  if (target) {
+    const distanceApprox = (p1, p2) => {
+      // Approximation by using octagons approach
+      const x = p2.x - p1.x;
+      const y = p2.y - p1.y;
+
+      // Magic distance formula. ~1 for 1 tile distance, ~1.4 for diagonal
+      return 1.426776695 * Math.min(0.7071067812 * (Math.abs(x) + Math.abs(y)), Math.max(Math.abs(x), Math.abs(y)));
+    };
+
+    const range = this.range + 1; // +1 for diagonal math tiles
+    return distanceApprox(target.getPosition(), this.getPosition()) < range;
+  }
+
+  return false;
 };
 
 /**

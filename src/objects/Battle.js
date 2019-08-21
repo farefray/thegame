@@ -153,14 +153,12 @@ Battle.prototype.nextTick = async function () {
 
     const units = this.getNextUnitsToAction();
     units.forEach((battleUnit) => {
+      let closestTarget;
       if (battleUnit.canCast()) {
         // tODO
       } else if (battleUnit.hasTarget()) {
-        const target = battleUnit.getTarget();
         if (battleUnit.isTargetInRange()) {
-          const targetPos = target.position.toBoardPosition();
-          const targetUnit = this.battleBoard[targetPos];
-
+          const targetUnit = battleUnit.getTarget();
           if (!targetUnit) {
             return finishTick();
           }
@@ -169,7 +167,7 @@ Battle.prototype.nextTick = async function () {
           this.action({
             action: ACTION_ATTACK,
             from: battleUnit.getPosition(),
-            to: targetPos,
+            to: targetUnit.getPosition(),
             damage: attackResult.damage
           }, battleUnit.nextAction());
 
@@ -181,17 +179,17 @@ Battle.prototype.nextTick = async function () {
           return finishTick();
         }
 
-        // else Nothing, it will just go to next phase(moving)
+        closestTarget = battleUnit.getTarget()
+      } else {
+        // get target (todo use previous target if exist)
+        closestTarget = this.getClosestTarget(battleUnit);
+        battleUnit.setTarget(closestTarget);
       }
-
-      // get target
-      const closestEnemy = this.getClosestEnemy(battleUnit);
-      battleUnit.setTarget(closestEnemy);
 
       // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
       this.pathfinder.setGrid(this.pathMap);
       this.pathfinder.setAcceptableTiles([FREE_TILE]);
-      this.pathfinder.findPath(battleUnit.x, battleUnit.y, closestEnemy.position.x, closestEnemy.position.y, (path) => {
+      this.pathfinder.findPath(battleUnit.x, battleUnit.y, closestTarget.x, closestTarget.y, (path) => {
         if (path && path.length > 0) {
           const nextStep = path[1];
           this.moveUnit(battleUnit, nextStep);
@@ -234,22 +232,23 @@ Battle.prototype.getNextUnitsToAction = function () {
 /**
  * @todo perf this against old method after finishding direction(for_perf_kdtree.js)
  * @param {BattleUnit} battleUnit
- * @returns {Object({position: {Position}, withinRange: {Boolean}})} 
+ * @returns {BattleUnit} 
  */
-Battle.prototype.getClosestEnemy = function (battleUnit) {
+Battle.prototype.getClosestTarget = function (battleUnit) {
   const enemiesCoords = this.coordsBoardMap[battleUnit.oppositeTeam()];
   // eslint-disable-next-line
   const tree = new kdTree(enemiesCoords, function (a, b) {
     return ((a.x - b.x) ** 2) + ((a.y - b.y) ** 2);
   }, ['x', 'y']);
-  const range = 1;
-  const closestEnemy = tree.nearest({ x: battleUnit.x, y: battleUnit.y }, range);
+  const AMOUNT = 1;
+  const closestEnemy = tree.nearest({ x: battleUnit.x, y: battleUnit.y }, AMOUNT);
   if (closestEnemy.length) {
-    return {
-      position: new Position(+(closestEnemy[0][0].x),
-        +(closestEnemy[0][0].y)),
-      kDistance: closestEnemy[0][1]
-    };
+    const targetPosition = new Position(+(closestEnemy[0][0].x), +(closestEnemy[0][0].y));
+    const targetUnit = this.battleBoard[targetPosition.toBoardPosition()];
+
+    if (targetUnit) {
+      return targetUnit;
+    }
   }
 
   throw new Error('No unit found for target');

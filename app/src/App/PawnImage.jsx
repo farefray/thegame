@@ -14,6 +14,8 @@ const imageBackends = {
   idle: 'http://18.200.195.197/phpsprites/outfit.php?'
 }
 
+const DEBUG = true;
+
 class PawnImage extends Component {
   constructor (props) {
     super(props);
@@ -49,6 +51,10 @@ class PawnImage extends Component {
       direction: this.props.direction
     });
 
+    if (DEBUG) {
+      return 'https://vignette.wikia.nocookie.net/tibia/images/7/73/Dwarf.gif/revision/latest?cb=20150418075532&path-prefix=en';
+    }
+
     return (this.props.idle ? imageBackends.idle : imageBackends.animated) + params;
   }
   render () {
@@ -66,8 +72,10 @@ class PawnImage extends Component {
       } key={src} style={{
           width: width,
           height: height,
+          /*
           marginTop: width === 32 ? '32px' : 'auto',
           marginLeft: width === 32 ? '32px' : 'auto'
+          */
         }} src={src} alt='Pawn' onLoad={this.onImgLoad} />
 
     return (<div> {(this.props.renderBase ? <div key={this.props.renderBase} className={`${this.props.renderBase}`} style={{
