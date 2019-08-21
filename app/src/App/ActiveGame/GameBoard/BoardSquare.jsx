@@ -6,7 +6,6 @@ import { placePiece} from '../../../socket';
 import ItemTypes from './ItemTypes';
 
 import { useStateValue } from '../GameBoard.context.js';
-import Cell from './Cell';
 
 export default function BoardSquare({ cellPosition, children }) {
   const { isDead, isActiveBattleGoing, isBattle, myBoard, myHand } = useStateValue();
@@ -62,9 +61,9 @@ export default function BoardSquare({ cellPosition, children }) {
     extraClasses += ' isHand';
   }
 
-  return <div ref={drop}>
-    <Cell cellPosition={cellPosition} extraClasses={extraClasses}>
+  extraClasses += ' cell';
+
+  return <div ref={drop} class={extraClasses}>
       {children}
-    </Cell>
   </div>
 }

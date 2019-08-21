@@ -23,21 +23,10 @@ const GameBoard = ({ board }) => {
   let counter = 0;
   return <div className='board-container rpgui-container framed'>
     <div className='flex center board'>
-      <Flipper flipKey={Object.keys(board).join('')} staggerConfig={{
-          default: {
-            reverse: true,
-            // default is .1, 0 < n < 1
-            speed: 0.1,
-            stiffness: 100,
-            damping: 10
-          }
-      }} spring={{
-            reverse: true,
-            // default is .1, 0 < n < 1
-            speed: 0.01,
-            stiffness: 100,
-            damping: 10
-          }}>
+      <Flipper flipKey={Object.keys(board).join('')} spring={{
+            stiffness: 50,
+            damping: 25
+          }} stagger={false}>
         <DndProvider backend={HTML5Backend}>
           {createGameBoard(9, 8).map((boardColumn) => {
             return <div className='board-column' key={counter++}>{
@@ -45,11 +34,11 @@ const GameBoard = ({ board }) => {
 
                 const creature = board[cellPosition.toBoardPosition()];
                 const key = creature && creature.position ? `c_${creature.position}` : cellPosition.toBoardPosition();
-                return (
+                return (<BoardSquare cellPosition={cellPosition}>
                   <Flipped key={key} flipId={key}>
-                    {flippedProps => (<BoardSquare cellPosition={cellPosition}>
-                    {!!creature && (<Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} flippedProps={flippedProps}/>)}</BoardSquare>)}
+                    {flippedProps => ((!!creature && (<Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} flippedProps={flippedProps}/>)) || <div/>)}
                   </Flipped>
+                  </BoardSquare>
                 );
               })}
             </div>
