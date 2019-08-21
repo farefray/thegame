@@ -72,8 +72,10 @@ class PawnImage extends Component {
       } key={src} style={{
           width: width,
           height: height,
+          /*
           marginTop: width === 32 ? '32px' : 'auto',
           marginLeft: width === 32 ? '32px' : 'auto'
+          */
         }} src={src} alt='Pawn' onLoad={this.onImgLoad} />
 
     return (<div> {(this.props.renderBase ? <div key={this.props.renderBase} className={`${this.props.renderBase}`} style={{

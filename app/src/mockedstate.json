@@ -127,14 +127,14 @@
             {
                 "action": 1,
                 "from": {
-                    "x": 0,
+                    "x": 3,
                     "y": 8
                 },
                 "to": {
-                    "x": 0,
+                    "x": 3,
                     "y": 7
                 },
-                "time": 350
+                "time": 1000
             },
             {
                 "action": 1,
@@ -146,19 +146,19 @@
                     "x": 0,
                     "y": 2
                 },
-                "time": 600
+                "time": 1000
             },
             {
                 "action": 1,
                 "from": {
-                    "x": 0,
+                    "x": 3,
                     "y": 7
                 },
                 "to": {
-                    "x": 0,
+                    "x": 3,
                     "y": 6
                 },
-                "time": 700
+                "time": 2000
             },
             {
                 "action": 1,
@@ -170,19 +170,19 @@
                     "x": 0,
                     "y": 3
                 },
-                "time": 1200
+                "time": 2000
             },
             {
                 "action": 1,
                 "from": {
-                    "x": 0,
+                    "x": 3,
                     "y": 6
                 },
                 "to": {
-                    "x": 0,
+                    "x": 3,
                     "y": 5
                 },
-                "time": 1400
+                "time": 3000
             },
             {
                 "action": 1,
@@ -191,59 +191,76 @@
                     "y": 3
                 },
                 "to": {
-                    "x": 0,
-                    "y": 4
+                    "x": 1,
+                    "y": 3
                 },
-                "time": 1750
-            },
-            {
-                "action": 2,
-                "from": {
-                    "x": 0,
-                    "y": 4
-                },
-                "to": "0,5",
-                "damage": 8,
-                "time": 3600
-            },
-            {
-                "action": 2,
-                "from": {
-                    "x": 0,
-                    "y": 5
-                },
-                "to": "0,4",
-                "damage": 8,
-                "time": 5100
-            },
-            {
-                "action": 2,
-                "from": {
-                    "x": 0,
-                    "y": 4
-                },
-                "to": "0,5",
-                "damage": 8,
-                "time": 6600
-            },
-            {
-                "action": 2,
-                "from": {
-                    "x": 0,
-                    "y": 5
-                },
-                "to": "0,4",
-                "damage": 8,
-                "time": 8100
+                "time": 3000
             },
             {
                 "action": 1,
                 "from": {
-                    "x": 0,
+                    "x": 3,
                     "y": 5
                 },
-                "to": null,
-                "time": 15600
+                "to": {
+                    "x": 3,
+                    "y": 4
+                },
+                "time": 4000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 1,
+                    "y": 3
+                },
+                "to": {
+                    "x": 2,
+                    "y": 3
+                },
+                "time": 4000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 4
+                },
+                "to": {
+                    "x": 2,
+                    "y": 4
+                },
+                "time": 5000
+            },
+            {
+                "action": 2,
+                "from": {
+                    "x": 2,
+                    "y": 3
+                },
+                "to": "2,4",
+                "damage": 8,
+                "time": 5000
+            },
+            {
+                "action": 2,
+                "from": {
+                    "x": 2,
+                    "y": 4
+                },
+                "to": "2,3",
+                "damage": 8,
+                "time": 6000
+            },
+            {
+                "action": 2,
+                "from": {
+                    "x": 2,
+                    "y": 3
+                },
+                "to": "2,4",
+                "damage": 8,
+                "time": 6000
             }
         ],
         "battleStartBoard": {
@@ -272,7 +289,7 @@
                 "range": 1,
                 "manaCost": 100
             },
-            "0,8": {
+            "3,8": {
                 "name": "dwarf",
                 "displayName": "Dwarf",
                 "looktype": 69,
@@ -293,7 +310,7 @@
                 "next_move": 0,
                 "mana": 0,
                 "mana_multiplier": 1,
-                "position": "0,8",
+                "position": "3,8",
                 "range": 1,
                 "manaCost": 100
             }
@@ -343,7 +360,7 @@
         "loadingCounter": 1,
         "connectedPlayers": -1,
         "allReady": false,
-        "countdown": 10
+        "countdown": 0
     },
     "startscreen": {
         "ready": true,

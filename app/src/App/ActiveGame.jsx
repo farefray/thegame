@@ -262,7 +262,6 @@ function boardReducer(board, action) {
         reducedBoard[new Position(action.to.x, action.to.y).toBoardPosition()] = creature;
       }
 
-      console.log("TCL: boardReducer -> reducedBoard", reducedBoard)
       return reducedBoard;
     case ACTION_ATTACK:
       return board;

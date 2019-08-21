@@ -7,9 +7,14 @@ function BattleUnit(unit, coords) {
   this.y = +(coords.y);
 
   // internal
+  this._uid = this.getBoardPosition(); // uid = starting position for mob
   this._next_action = this.speed;
   return this;
 }
+
+BattleUnit.prototype.getUID = function () {
+  return this._uid;
+};
 
 BattleUnit.prototype.nextAction = function (actionTime) {
   if (actionTime) {

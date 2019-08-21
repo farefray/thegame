@@ -64,14 +64,14 @@ exports.getExpRequired = index => expRequiredPerLevel[String(index)];
  * 1,2,3 Npc levels
  */
 const roundSetConfiguration = {
-  1: async () => BoardJS.createBattleBoard([
+  1: async () => BoardJS.createBoard([
     { name: 'dwarf', x: 0, y: 8 },
   ]),
-  2: async () => BoardJS.createBattleBoard([
+  2: async () => BoardJS.createBoard([
     { name: 'dwarf', x: 3, y: 6 },
     { name: 'dwarf', x: 6, y: 8 },
   ]),
-  3: async () => BoardJS.createBattleBoard([
+  3: async () => BoardJS.createBoard([
     { name: 'dwarf', x: 3, y: 6 },
     { name: 'dwarf', x: 6, y: 8 },
     { name: 'dwarf', x: 1, y: 8 },
@@ -79,7 +79,7 @@ const roundSetConfiguration = {
 };
 
 const playerTestingBoards = {
-  1: async () => BoardJS.createBattleBoard([
+  1: async () => BoardJS.createBoard([
     { name: 'minotaur', x: 3, y: 1 },
   ])
 };

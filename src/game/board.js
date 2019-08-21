@@ -277,6 +277,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
 
 /**
  * Create unit for board battle from createBoardUnit unit given newpos/pos and team
+ * @TODO maybe we need to use BattleUnit class here instead -.- !!!
  */
 BoardJS.createBattleUnit = async (unit, unitPos, team) => {
   const unitStats = await pawns.getStats(unit['name']);
@@ -289,6 +290,8 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
     battleUnit[where] = what;
     return this;
   };
+
+  set('_uid', unitPos); // this is hack for BattleUnit functionality which is required on front.
 
   set('team', team);
   set('attack', unitStats.get('attack'));
@@ -306,7 +309,7 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
   set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'));
   set('specialAttack', unitStats.get('specialAttack'));
   set('specialDefense', unitStats.get('specialDefense'));
-  set('position', unitPos);
+  set('position', unitPos); // its not being updated on move, imho need BattleUnit usage here
   set('range', unitStats.get('range') || pawns.getStatsDefault('range'));
   set('manaCost', (ability && ability['mana']) || abilitiesJS.getDefault('mana'));
 
@@ -318,7 +321,7 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
  * Adds all relevant stats for the unit to the unit
  * Reverses position for enemy units
  */
-BoardJS.combineBoards = async (board1, board2) => {
+BoardJS.createBattleBoard = async (board1, board2) => {
   const newBoard = {};
 
   for (const unitPos in board1) {
@@ -520,7 +523,7 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
  * Help function in creating battle boards
  * Use together with combine boards
  */
-BoardJS.createBattleBoard = async (inputList) => {
+BoardJS.createBoard = async (inputList) => {
   const board = {};
   for (let i = 0; i < inputList.length; i++) {
     const el = inputList[i];

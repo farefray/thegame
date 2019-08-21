@@ -192,8 +192,8 @@ body {
   margin-left: 0px;
   */
   margin: auto;
-  position: relative;
-  z-index: 3;
+  position: absolute;
+  z-index: 99;
 }
 
 .pokemonShopEmpty {

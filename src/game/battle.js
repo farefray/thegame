@@ -475,7 +475,7 @@ BattleJS.battleSetup = async (state) => {
     const playerBoard = state.getIn(['players', players[i], 'board']);
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
-    const board = await BoardJS.combineBoards(playerBoard, npcBoard);
+    const board = await BoardJS.createBattleBoard(playerBoard, npcBoard);
 
     /* TODO this case
     if (!Object.keys(npcBoard).length) {

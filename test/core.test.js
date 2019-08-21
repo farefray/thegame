@@ -127,14 +127,14 @@ describe('Core Modules', () => {
   describe('Battle', () => {
     let battle;
     it('can find target and measure distance', async () => {
-      const npcBoard = await BoardJS.createBattleBoard([
+      const npcBoard = await BoardJS.createBoard([
         { name: 'minotaur', x: 1, y: 8 },
       ]);
-      const playerBoard = await BoardJS.createBattleBoard([
+      const playerBoard = await BoardJS.createBoard([
         { name: 'minotaur', x: 3, y: 4 },
       ]);
 
-      const combinedBoard = await BoardJS.combineBoards(playerBoard, npcBoard);
+      const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
 
       const units = battle.getNextUnitsToAction();
@@ -149,7 +149,6 @@ describe('Core Modules', () => {
       battleResult.isOver.should.be.true();
       battleResult.actionStack.should.be.an.Array();
       battleResult.actionStack.length.should.be.above(0);
-      console.log("TCL: battleResult.actionStack", battleResult.actionStack)
     });
   });
 });
