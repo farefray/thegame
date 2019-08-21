@@ -1,6 +1,6 @@
 # Pixel Auto Chess
 
-#### Author: Maksym Fedan && Iryna Kashyna :P
+#### Author: Maksym Fedan && Iryna Kashyna && Jacek(!) :P
 
 Also, thanks for Andrey Ilchenko :D
 
