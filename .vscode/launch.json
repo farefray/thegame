@@ -24,7 +24,7 @@
         "--timeout",
         "999999",
         "--colors",
-        "'${workspaceFolder}/{,!(node_modules)/}*/*.test.js'"
+        "${workspaceFolder}/{,!(node_modules)/}*/*.test.js"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"

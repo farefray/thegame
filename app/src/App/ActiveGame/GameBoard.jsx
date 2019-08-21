@@ -20,6 +20,8 @@ const GameBoard = ({ board }) => {
     return data;
   }
 
+  console.log('FLIPPER');
+  console.log(Object.keys(board).join(''));
   let counter = 0;
   return <div className='board-container rpgui-container framed'>
     <div className='flex center board'>

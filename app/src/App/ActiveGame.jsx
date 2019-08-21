@@ -250,17 +250,20 @@ const ACTION_ATTACK = 2;
 
 
 function boardReducer(board, action) {
-  console.log("TCL: boardReducer -> action", action)
-  console.log("TCL: boardReducer -> board", board)
   switch (action.action) { // todo make it type
     case ACTION_MOVE:
-      //fix thismess
-      const messyBoard = _.clone(board);
-      const boardPos = new Position(action.from.x, action.from.y).toBoardPosition();
+      const reducedBoard = _.clone(board);
+      const boardPos = new Position(action.from.x, action.from.y).toBoardPosition(); // todo make board already contain Positions
+      console.log("Moving from ", action.from.x, action.from.y, ' to ', action.to)
       const creature = _.clone(board[boardPos]);
-      delete messyBoard[boardPos];
-      messyBoard[new Position(action.to.x, action.to.y).toBoardPosition()] = creature;
-      return messyBoard;
+      delete reducedBoard[boardPos];
+
+      if (action.to) {
+        reducedBoard[new Position(action.to.x, action.to.y).toBoardPosition()] = creature;
+      }
+
+      console.log("TCL: boardReducer -> reducedBoard", reducedBoard)
+      return reducedBoard;
     case ACTION_ATTACK:
       return board;
     default:
@@ -283,7 +286,6 @@ function ActiveGame() {
   };
 
   const combinedBoard = combineBoard();
-  console.log("TCL: ActiveGame -> combinedBoard", combinedBoard)
 
   const [gameBoard, dispatchGameBoard] = useReducer(boardReducer, combinedBoard);
 
@@ -297,12 +299,12 @@ function ActiveGame() {
         console.log('Starting Battle with', actions.length, 'moves');
         // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
         while (actions.length > 0) {
-          const nextAction = actions.shift(); // actionStack is mutable
-          const time = nextAction.time;
+          const boardAction = actions.shift(); // actionStack is mutable
+          const time = boardAction.time;
           const nextRenderTime = (time - currentTime); // magic time factor, fixme
 
           await wait(nextRenderTime);
-          dispatchGameBoard(nextAction);
+          dispatchGameBoard(boardAction);
 
           currentTime = time;
 
