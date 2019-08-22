@@ -4,9 +4,8 @@ import { useDrag, DragPreviewImage } from 'react-dnd'
 import ItemTypes from './ItemTypes';
 import PawnImage from '../../PawnImage.jsx';
 
-const previewImage = 'data:image/gif;base64,R0lGODlhQABAAPcAAAAAABAAABAQABDGACEAACEQACkAACkpKTEAADEQADk5OUIhMUIxEEJCQkoAAEohEFIAAFIhEFIxMVopGFopIWspEGsxEGs5KWtra3MpGHMxEHMxGHMxIXsAAHs5GHs5IXtCIYQAAIRCIYRSMYw5KYxKKYxSKYxSMZQxAJRCMZRKKZRKOZxKOZxSMZxSQq1aKa1aMa1jMa2cnLVjMbVrObWllL1rOb1rQr1zQr1zSr17SsZrQsZzQsZ7SsZ7Usa1tc57Ss57Us6EUs6MY9aEY9aMa9aca9alc9ate9bGxt6Ma96Mc96cc96te96thN69Wvfn1v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAP8ALAAAAABAAEAAAAj+AP8JHEiwoMGDCBMqXMiwocOHECNKnEixosWLGDNq3Mixo8ePIEOKHEmypMmTKFOqXMmyJUMAMGG6fDkhxYwVG2ICmFkQpocNGmjwIEJDBIcMMXkCKJFiRQqmK4bSSEGjBwsOO1suvUHjxs0UIlbMENEDyRIfLrBqXYLEiY8eNGI6LfLE7A0XSLOiBPBDyJIiQnzchFIDwAoaS/6i/ZA2wN4fUG4EFkKDRo0khAF0deEDRw4cNNLqJQkAyoIGN0B/iFkDCoAZPW6AmODC712kJgP8ADDgQokLAybgEAGgcFQaEQKcwFHER4sVo0fuBDAhRlyxJSLATNHj5gQAH07+nPAR92RWAESIdBeh3TCPGWC/AwiwYgiP6KSP9OBxRMQDACTQkAMRN6QAwn//AMABEdCp9Fpcq6UAww1EGAGDBTdQMB0DRTDgmIMlfBBACi1MyMOFJLQAggEGAFDEDGqtpNMGH1iwgQUBWmBACAJExSB+JgEQQw4+AGABVSngSEAHECAQFxM6AFkSAFHmAJOPKRCAQpMJwKRDDFKSFgN0AQTAIoshNAkCdF+uUIBWMWAF3o4oRIAAB2JZCYAAAYRJGgEJOkUnBA742EMKAXBA3EwA2JBDCQYgEAJ4Q/GwglgeLKoVC+9BCgAEhtFwE3xL+TnlVCJo2Cd9NkH3AQxwOTHa53wjaBhTnyXkEIMHpu4lAg0kyKSgCDqoIEGvQQIwggAHnCfACAAc8KFSGDDbwHkYAKCAAsiWJEADMmDQrEAAgCtut1M2MO5A5R4gAE89vVuQAOjCa++9+Oar77789uvvvwAHLPDABBdsML8BAQA7'; // TODO :)
-
-export default function Pawn ({ cellPosition, name, direction, idle, classList, isBoard, flippedProps }) {
+import getPawnImageSrc from './Pawn/pawnImage.helper';
+export default function Pawn ({ cellPosition, name, direction, idle, flippedProps }) {
   const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.PAWN,
@@ -22,17 +21,18 @@ export default function Pawn ({ cellPosition, name, direction, idle, classList, 
     const unitJson = JSON.parse(localStorage.getItem('unitJSON'))
     creature = unitJson[name];
   } catch (e) {}
+  console.log("TCL: creature", creature)
   
-  let lookType = creature ? creature.looktype : 1;
-
+  let lookType = creature.looktype || 25;
+  console.log("TCL: lookType", lookType)
   return <div className="pawn" {...flippedProps} style={{height: '64px', width: '64px'}}>
-    <DragPreviewImage connect={preview} src={previewImage} />
+    <DragPreviewImage connect={preview} src={getPawnImageSrc(lookType, 3, true)} />
     <div ref={drag} style={{
       opacity: isDragging ? 0.5 : 1,
       fontSize: 25,
       cursor: 'move',
     }}>
-      <PawnImage name={name} idle={idle} direction={direction} classList={classList} isBoard={isBoard} lookType={lookType} />
+      <PawnImage src={getPawnImageSrc(lookType, direction, idle)} />
     </div>
   </div>
 }
