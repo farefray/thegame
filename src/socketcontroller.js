@@ -252,7 +252,7 @@ function SocketController(socket, io) {
 
       setTimeout(() => {
         scheduleBattleRound();
-      }, 30000); // TODO better way
+      }, 15000); // TODO better way
     });
   });
 

@@ -39,11 +39,13 @@ Player.prototype.set = function (field, value) {
 
 
 // not sure if we should carry such support functions with all the objects. Assuming it may affect performance...
-Player.prototype.addToHand = function (unit) {
+const BoardJS = require('..//game/board'); // todo get rid of this dependency here
+
+Player.prototype.addToHand = async function (unit) {
   const position = this.get('availableHandPosition');
   if (position !== null) {
     const hand = this.get('hand');
-    hand[position] = unit;
+    hand[position] = await BoardJS.createBattleUnit(unit, position, 0);
     this.set('hand', hand);
     return position;
   }
