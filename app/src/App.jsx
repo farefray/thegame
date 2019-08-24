@@ -9,16 +9,16 @@ import StartScreen from './App/StartScreen.jsx';
 import ActiveGame from './App/ActiveGame.jsx';
 
 const App = () => {
-  useEffect(() => {
-    document.title = `Pixel Auto Chess`;
-  });
+	useEffect(() => {
+		document.title = `Pixel Auto Chess`;
+	});
 
-  const gameIsLive = useSelector(state => state.app.gameIsLive)
-  if (!gameIsLive) {
-    return <StartScreen />;
-  }
+	const gameIsLive = useSelector(state => state.app.gameIsLive);
+	if (!gameIsLive) {
+		return <StartScreen />;
+	}
 
-  return <ActiveGame />;
-}
+	return <ActiveGame />;
+};
 
 export default connect()(App);
