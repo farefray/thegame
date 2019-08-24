@@ -468,9 +468,11 @@ BattleJS.battleSetup = async (state) => {
   const battleObject = {
     actionStack: [],
     startBoard: [],
-    winner: []
+    winner: [],
+    battleTime: 0
   };
 
+  let battleTime = 0;
   for (let i = 0; i < players.length; i++) {
     const playerBoard = state.getIn(['players', players[i], 'board']);
     // Check to see if a battle is required
@@ -496,8 +498,13 @@ BattleJS.battleSetup = async (state) => {
     battleObject['actionStack'][players[i]] = battleResult['actionStack'];
     battleObject['startBoard'][players[i]] = battleResult['startBoard'];
     battleObject['winner'][players[i]] = battleResult.winner;
+
+    if (battleResult.actionStack[battleResult.actionStack.length - 1].time > battleTime) {
+      battleTime = battleResult.actionStack[battleResult.actionStack.length - 1].time;
+    }
   }
 
+  battleObject.battleTime = battleTime;
   return battleObject;
   // todo pvp
   // return (await BattleJS.battleTime(state));

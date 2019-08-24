@@ -13,11 +13,6 @@ exports.updateSessionPieces = (socketId, connectedPlayers, sessions, state) => {
   return sessions.set(sessionId, newSession);
 };
 
-exports.buildStateAfterBattle = (socketId, connectedPlayers, sessions, state) => {
-  const session = getSession(socketId, connectedPlayers, sessions);
-  return state.set('players', session.get('players'));
-};
-
 exports.updateSessionPlayerName = (socketId, connectedPlayers, sessions, index, name) => {
   const sessionId = connectedPlayers.get(socketId).get('sessionId');
   const session = sessions.get(sessionId);
@@ -54,20 +49,4 @@ exports.findSocketId = (session, pid) => {
     temp = iter.next();
   }
   return -1;
-};
-
-exports.getLongestBattleTime = (actionStack) => {
-  let longestTime = -1;
-  const iter = actionStack.keys();
-  let temp = iter.next();
-  while (!temp.done) {
-    const id = temp.value;
-    const actionStack_ = actionStack.get(id);
-    const time = (actionStack_.get(actionStack_.size - 1) ? actionStack_.get(actionStack_.size - 1)['time'] : 0);
-    if (time > longestTime) {
-      longestTime = time;
-    }
-    temp = iter.next();
-  }
-  return longestTime;
 };

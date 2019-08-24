@@ -20,6 +20,7 @@ const SessionsStore = require('./models/SessionsStore');
 const connectedPlayers = new ConnectedPlayers();
 const sessionsStore = new SessionsStore();
 
+const STARTBATTLE_TIMER = 30000;
 /**
  * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
  * @todo better way for this or at least test this performance
@@ -134,7 +135,7 @@ function SocketController(socket, io) {
       clients.forEach((socketID) => {
         connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
         io.to(socketID).emit('ADD_PLAYER', socketID); // ??
-        
+
         // TODO fixme
         socket.join(sessionID, () => {
           let rooms = Object.keys(socket.rooms);
@@ -148,31 +149,16 @@ function SocketController(socket, io) {
         const preBattleSession = sessionsStore.get(sessionID);
         const battleRoundResult = await BattleJS.battleSetup(preBattleSession.get('state'));
         clients.forEach((socketID) => {
-          console.log("TCL: scheduleBattleRound -> socketID", socketID)
-          // const playerState = battleRoundResult.getIn(['players', socketID]);
-          // io.to(`${socketID}`).emit('UPDATE_PLAYER', socketID, asNetworkMessage(playerState));
-
-          console.log(battleRoundResult.actionStack);
-          console.log(battleRoundResult.actionStack[socketID]);
           io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.actionStack[socketID], battleRoundResult.startBoard[socketID], battleRoundResult.winner[socketID]);
         });
 
-        /* TODO
-        const longestBattleTime = await sessionJS.getLongestBattleTime(actionStack);
-        const longestTime = TIME_FACTOR * longestBattleTime + 3500;
-        if (longestTime !== 3000) console.log('sc.LongestTime:', longestTime, longestBattleTime, TIME_FACTOR);
         setTimeout(async () => {
-          // After all battles are over
-          f.p('Time to End Battle');
-          if (!sessionExist(socket.id)) return;
-          const stateAfterBattle = sessionJS.buildStateAfterBattle(socket.id, connectedPlayers, sessions, newState);
-          // Endbattle and get endTurned state
-
-          const stateCheckDead = await StateJS.endBattleForAll(stateAfterBattle, winners, finalBoards, matchups, roundType);
-
-          let stateEndedTurn = stateCheckDead;
-          const iter2 = stateCheckDead.get('players').keys();
-          temp = iter2.next();
+          /*
+            Update state with:
+            round change, reward winners, punishment for losers
+            save state to session,
+            update players
+          */
           // TODO: player.get(dead) gets time of death (last actionStack move)
           // Add all dead players to temp list, remove in order
           // Handle if only one player left (amount===1 below) within this directly
@@ -246,13 +232,12 @@ function SocketController(socket, io) {
               });
             }
           }
-        }, longestTime);
-        */
+        }, battleRoundResult.battleTime);
       };
 
       setTimeout(() => {
         scheduleBattleRound();
-      }, 30000); // TODO better way
+      }, STARTBATTLE_TIMER); // TODO better way
     });
   });
 
@@ -329,7 +314,7 @@ function SocketController(socket, io) {
     });
   });
 
-  
+
 
   socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
