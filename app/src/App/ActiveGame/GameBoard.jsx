@@ -5,7 +5,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import Position from '../../objects/Position';
 import Pawn from './GameBoard/Pawn';
-import PawnImage from '../../objects/PawnImage';
+import Unit from '../../objects/Unit';
 
 const gameBoardWidth = 8;
 const gameBoardHeight = 9;
@@ -42,20 +42,22 @@ class GameBoard extends React.Component {
 	}
 
 	render() {
-		const { board, subscribeToActions, units } = this.props;
+		const { board, addToUnitArray, units, allUnits } = this.props;
 		const { gameBoard, isMounted } = this.state;
+
 		return (
 			<div className="board-container rpgui-container framed">
 				<div className="flex center board" ref={e => (this.boardRef = e)}>
 					{isMounted &&
 						units.map(unit => (
-							<PawnImage
-								key={unit.key}
-								creatureData={unit.creatureData}
+							<Unit
+								key={unit.id}
+								unit={unit}
 								getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
 								gameBoardWidth={gameBoardWidth}
 								gameBoardHeight={gameBoardHeight}
-								subscribeToActions={subscribeToActions}
+								addToUnitArray={addToUnitArray}
+								allUnits={allUnits}
 							/>
 						))}
 					<DndProvider backend={HTML5Backend}>

@@ -234,16 +234,16 @@ var visitPlayer = playerIndex => {
 const ACTION_MOVE = 1; // todo share with backend
 const ACTION_ATTACK = 2;
 
-const actionSubscribers = [];
+const allUnits = [];
 
-const subscribeToActions = subscriber => {
-	actionSubscribers.push(subscriber);
+const addToUnitArray = unit => {
+	allUnits.push(unit);
 };
 
 function boardReducer(board, action) {
-	for (const subscriber of actionSubscribers) {
-		if (subscriber.state.x === action.from.x && subscriber.state.y === action.from.y) {
-			subscriber.onAction(action);
+	for (const unit of allUnits) {
+		if (unit.state.x === action.from.x && unit.state.y === action.from.y) {
+			unit.onAction(action);
 		}
 	}
 	switch (
@@ -252,7 +252,6 @@ function boardReducer(board, action) {
 		case ACTION_MOVE:
 			const reducedBoard = _.clone(board);
 			const boardPos = new Position(action.from.x, action.from.y).toBoardPosition(); // todo make board already contain Positions
-			console.log('Moving from ', action.from.x, action.from.y, ' to ', action.to);
 			const creature = _.clone(board[boardPos]);
 			delete reducedBoard[boardPos];
 
@@ -319,7 +318,7 @@ function ActiveGame() {
 	useEffect(() => {
 		setUnits(
 			Object.keys(combinedBoard).map(key => {
-				return { key, creatureData: combinedBoard[key] };
+				return { ...combinedBoard[key], id: key };
 			})
 		);
 	}, []);
@@ -331,7 +330,7 @@ function ActiveGame() {
 				{/* <LeftBar {...this.props} /> */}
 				{appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
 				<StateProvider initialState={{ ...appState }}>
-					<GameBoard board={gameBoard} units={units} subscribeToActions={subscribeToActions} />
+					<GameBoard board={gameBoard} units={units} addToUnitArray={addToUnitArray} allUnits={allUnits} />
 				</StateProvider>
 				{/* <GameBoardBottom {...this.props} /> */}
 				<RightPanel {...appState} />
