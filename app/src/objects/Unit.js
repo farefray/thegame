@@ -12,7 +12,7 @@ export default class Unit extends React.Component {
 
 		const { unit } = props;
 		console.log(unit);
-		const [x, y] = unit.position.split(',');
+		const [x, y] = (unit.position || '0,0').split(',');
 		const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
 		this.state = {

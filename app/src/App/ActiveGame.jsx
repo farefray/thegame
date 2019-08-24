@@ -321,7 +321,7 @@ function ActiveGame() {
 				return { ...combinedBoard[key], id: key };
 			})
 		);
-	}, []);
+	}, [combinedBoard]);
 
 	return (
 		<div className="gameDiv" tabIndex="0">
