@@ -1,6 +1,7 @@
-
-
-const { Map, fromJS } = require('immutable');
+const {
+  Map,
+  fromJS
+} = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
@@ -147,7 +148,7 @@ function SocketController(socket, io) {
       const scheduleBattleRound = async () => {
         // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
         const preBattleSession = sessionsStore.get(sessionID);
-        const battleRoundResult = await BattleJS.battleSetup(preBattleSession.get('state'));
+        const battleRoundResult = await BattleJS.setup(preBattleSession.get('state'));
         clients.forEach((socketID) => {
           io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.actionStack[socketID], battleRoundResult.startBoard[socketID], battleRoundResult.winner[socketID]);
         });
@@ -159,6 +160,7 @@ function SocketController(socket, io) {
             save state to session,
             update players
           */
+
           // TODO: player.get(dead) gets time of death (last actionStack move)
           // Add all dead players to temp list, remove in order
           // Handle if only one player left (amount===1 below) within this directly

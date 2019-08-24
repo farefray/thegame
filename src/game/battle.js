@@ -20,7 +20,10 @@ async function _healUnit(board, unitPos, heal) {
   const maxHp = (await pawns.getStats(board.get(unitPos).get('name')))['hp'];
   const newHp = (board.getIn([unitPos, 'hp']) + heal >= maxHp ? maxHp : board.getIn([unitPos, 'hp']) + heal);
   const hpHealed = newHp - board.getIn([unitPos, 'hp']);
-  return { board: board.setIn([unitPos, 'hp'], newHp), hpHealed };
+  return {
+    board: board.setIn([unitPos, 'hp'], newHp),
+    hpHealed
+  };
 }
 
 async function _manaChangeBoard(boardParam, manaChanges) {
@@ -76,7 +79,9 @@ async function _useAbility(board, ability, damageParam, unitPos, target) {
   let damage = damageParam;
   const manaCost = ability['mana'] || abilitiesJS.getAbilityDefault('mana');
   const newMana = board[unitPos].mana - manaCost;
-  const manaChanges = { unitPos: newMana };
+  const manaChanges = {
+    unitPos: newMana
+  };
   board[unitPos].mana = newMana;
   let effectMap = {};
   if (!f.isUndefined(ability['effect'])) {
@@ -145,7 +150,11 @@ async function _useAbility(board, ability, damageParam, unitPos, target) {
         console.log('@useAbility - default, mode =', mode);
     }
   }
-  return { removeHpBoard: (await BattleJS.removeHpBattle(newBoard, target, damage)), effect: effectMap, manaChanges };
+  return {
+    removeHpBoard: (await BattleJS.removeHpBattle(newBoard, target, damage)),
+    effect: effectMap,
+    manaChanges
+  };
 }
 
 /**
@@ -166,9 +175,15 @@ async function _handleDotDamage(board, unitPos) {
     const dmgHp = await _dmgPercToHp(board, unitPos, dot);
     const removedHPBoard = await BattleJS.removeHpBattle(board, unitPos, dmgHp); // {board, unitDied}
     const newBoard = removedHPBoard['board'];
-    return { board: newBoard, damage: dmgHp, unitDied: removedHPBoard['unitDied'] };
+    return {
+      board: newBoard,
+      damage: dmgHp,
+      unitDied: removedHPBoard['unitDied']
+    };
   }
-  return { board };
+  return {
+    board
+  };
 }
 
 
@@ -194,7 +209,10 @@ async function _executeBattle(preBattleBoard) {
     const target = unit['team'] === 0 ? 'S' : 'N'; // todo get first move position
     const time = 0;
     const move = {
-      unitPos, action, target, time,
+      unitPos,
+      action,
+      target,
+      time,
     };
     actionStack.push(move);
     board[unitPos]['next_action'] = unit['speed'];
@@ -210,7 +228,10 @@ async function _executeBattle(preBattleBoard) {
       // console.log('previousMove in @startBattle', previousMove['nextMove']['target']);
       const previousTarget = previousMove['nextMove']['target'];
       const previousDirection = previousMove['nextMove']['direction'];
-      nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove, { target: previousTarget, direction: previousDirection });
+      nextMoveResult = await BattleJS.generateNextMove(board, nextUnitToMove, {
+        target: previousTarget,
+        direction: previousDirection
+      });
     } else {
       if (f.isUndefined(nextUnitToMove)) {
         throw new Error('Unit is undefined!');
@@ -261,7 +282,7 @@ async function _executeBattle(preBattleBoard) {
     battleOver = result['battleOver'];
     if (battleOver) break; // Breaks if battleover (no dot damage if last unit standing)
     // Dot damage
-    
+
     /*const team = board[nextUnitToMove]['team'];
     const dotObj = await _handleDotDamage(board, nextUnitToMove, team);
     if (!f.isUndefined(dotObj['damage'])) {
@@ -300,7 +321,11 @@ async function _executeBattle(preBattleBoard) {
   const winningTeam = team;
   const battleEndTime = actionStack[actionStack.size - 1]['time'];
   return {
-    actionStack, board: newBoard, winner: winningTeam, dmgBoard, battleEndTime,
+    actionStack,
+    board: newBoard,
+    winner: winningTeam,
+    dmgBoard,
+    battleEndTime,
   };
 }
 
@@ -400,7 +425,9 @@ async function buildMatchups(players) {
 BattleJS.battleTime = async (stateParam) => {
   let state = stateParam;
   const matchups = await buildMatchups(state.get('players'));
-  let battleObject = { matchups };
+  let battleObject = {
+    matchups
+  };
   const iter = matchups.keys();
   let temp = iter.next();
   while (!temp.done) {
@@ -446,12 +473,17 @@ BattleJS.battleTime = async (stateParam) => {
   };
 };
 
+const {
+  TEAM
+} = require('../../app/src/shared/constants');
+
 /**
  * Check not too many units on board
  * Calculate battle for given board, either pvp or npc/gym round
  */
-BattleJS.battleSetup = async (state) => {
+BattleJS.setup = async (state) => {
 
+  // move this to boardSize
   const players = Object.keys(state.get('players')); // maybe this should be moved to some iterable logic
   for (let i = 0; i < players.length; i++) {
     const player = state.getIn(['players', players[i]]);
@@ -479,28 +511,21 @@ BattleJS.battleSetup = async (state) => {
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
     const board = await BoardJS.createBattleBoard(playerBoard, npcBoard);
 
-    /* TODO this case
-    if (!Object.keys(npcBoard).length) {
-      return {
-        actionStack: [], winner: 1, board, startBoard: board,
-      };
-    } if (!Object.keys(playerBoard).length) {
-      return {
-        actionStack: [], winner: 0, board, startBoard: board,
-      };
-    } // todo case when both boards are empty?
-    */
-
     // Both players have units, battle required
     // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
     const battle = new Battle(board);
     const battleResult = await battle.execute();
-    battleObject['actionStack'][players[i]] = battleResult['actionStack'];
-    battleObject['startBoard'][players[i]] = battleResult['startBoard'];
-    battleObject['winner'][players[i]] = battleResult.winner;
 
-    if (battleResult.actionStack[battleResult.actionStack.length - 1].time > battleTime) {
-      battleTime = battleResult.actionStack[battleResult.actionStack.length - 1].time;
+    // todo handle this by having battleResults[players[i]] = battleResult;
+    battleObject.actionStack[players[i]] = battleResult['actionStack'];
+    battleObject.startBoard[players[i]] = battleResult['startBoard'];
+    battleObject.winner[players[i]] = battleResult.winner;
+
+    if (battleResult['actionStack'].length) {
+      const playerBattleTime = battleResult['actionStack'][battleResult['actionStack'].length - 1].time;
+      if (playerBattleTime > battleTime) {
+        battleTime = playerBattleTime;
+      }
     }
   }
 
@@ -544,7 +569,10 @@ BattleJS.removeHpBattle = async (board, unitPos, hpToRemove, percent = false) =>
   if (newHp <= 0) {
     f.p('@removeHpBattle UNIT DIED!', currentHp, '->', (percent ? `${newHp}(%)` : `${newHp}(-)`));
 
-    return { board: board.delete(unitPos), unitDied: currentHp };
+    return {
+      board: board.delete(unitPos),
+      unitDied: currentHp
+    };
   }
   // Caused a crash0
   if (Number.isNaN(currentHp - hpToRemove)) {
@@ -552,7 +580,10 @@ BattleJS.removeHpBattle = async (board, unitPos, hpToRemove, percent = false) =>
     console.log(hpToRemove);
     process.exit();
   }
-  return { board: board.setIn([unitPos, 'hp'], newHp), unitDied: false };
+  return {
+    board: board.setIn([unitPos, 'hp'], newHp),
+    unitDied: false
+  };
 };
 
 /**
@@ -581,8 +612,8 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     }
     let range = 1;
     if (ability) {
-      range = (!f.isUndefined(ability.acc_range) && !f.isUndefined(ability.acc_range.size)
-        ? ability.acc_range[1] : abilitiesJS.getAbilityDefault('range'));
+      range = (!f.isUndefined(ability.acc_range) && !f.isUndefined(ability.acc_range.size) ?
+        ability.acc_range[1] : abilitiesJS.getAbilityDefault('range'));
     }
     const enemyPos = UnitJS.getClosestEnemy(board, unitPos, range, team);
     const action = 'spell';
@@ -628,7 +659,11 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
   const team = unit['team'];
   let tarpos;
   if (optPreviousTarget) {
-    tarpos = { closestEnemy: optPreviousTarget['target'], withinRange: true, direction: optPreviousTarget['direction'] };
+    tarpos = {
+      closestEnemy: optPreviousTarget['target'],
+      withinRange: true,
+      direction: optPreviousTarget['direction']
+    };
   } else {
     tarpos = UnitJS.getClosestEnemy(board, unitPos, range, team);
   }
@@ -695,9 +730,15 @@ BattleJS.generateNextMove = async (board, unitPos, optPreviousTarget) => {
     action = 'move';
   }
   const move = {
-    unitPos, action, target: movePos, direction,
+    unitPos,
+    action,
+    target: movePos,
+    direction,
   };
-  return { nextMove: move, newBoard };
+  return {
+    nextMove: move,
+    newBoard
+  };
 };
 
 module.exports = BattleJS;

@@ -14,6 +14,9 @@ const Session = rewire('../src/objects/Session.js');
 const Battle = rewire('../src/objects/Battle.js');
 
 const gameConstantsJS = rewire('../src/game_constants.js');
+const {
+  TEAM
+} = rewire('../app/src/shared/constants');
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -127,12 +130,16 @@ describe('Core Modules', () => {
   describe('Battle', () => {
     let battle;
     it('can find target and measure distance', async () => {
-      const npcBoard = await BoardJS.createBoard([
-        { name: 'minotaur', x: 1, y: 8 },
-      ]);
-      const playerBoard = await BoardJS.createBoard([
-        { name: 'minotaur', x: 3, y: 4 },
-      ]);
+      const npcBoard = await BoardJS.createBoard([{
+        name: 'minotaur',
+        x: 1,
+        y: 8
+      }]);
+      const playerBoard = await BoardJS.createBoard([{
+        name: 'minotaur',
+        x: 3,
+        y: 4
+      }]);
 
       const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
@@ -149,6 +156,28 @@ describe('Core Modules', () => {
       battleResult.isOver.should.be.true();
       battleResult.actionStack.should.be.an.Array();
       battleResult.actionStack.length.should.be.above(0);
+
+      let battleTime = 0;
+      if (battleResult.actionStack[battleResult.actionStack.length - 1].time > battleTime) {
+        battleTime = battleResult.actionStack[battleResult.actionStack.length - 1].time;
+      }
+      battleTime.should.be.above(0);
+    });
+
+    it('can handle battle with no units', async () => {
+      const playerBoard = await BoardJS.createBoard([]);
+      const npcBoard = await BoardJS.createBoard([{
+        name: 'minotaur',
+        x: 1,
+        y: 8
+      }]);
+
+      const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+      battle = new Battle(combinedBoard);
+
+      const battleResult = await battle.execute();
+      battleResult.should.be.ok();
+      battleResult.winner.should.equal(TEAM.B);
     });
   });
 });
