@@ -11,7 +11,7 @@ export default class Unit extends React.Component {
 		props.addToUnitArray(this);
 
 		const { unit } = props;
-		const [x, y] = (unit.position && unit.position.includes(',') ? unit.position : `${unit.position},0`).split(',');
+		const [x, y = 0] = unit.position.split(',');
 		const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
 		this.state = {
