@@ -2,51 +2,82 @@ import React from 'react';
 import BoardSquare from './GameBoard/BoardSquare.jsx';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { Flipper, Flipped } from 'react-flip-toolkit';
 
 import Position from '../../objects/Position';
 import Pawn from './GameBoard/Pawn';
+import PawnImage from '../../objects/PawnImage';
 
-const GameBoard = ({ board }) => {
-  const createGameBoard = (height, width) => {
-    let data = [];
-    for (let i = 0; i < height; i++) {
-      data[i] = [];
-      for (let j = 0; j < width; j++) {
-        data[i][j] = new Position(j, width - i);
-      }
-    }
+const gameBoardWidth = 8;
+const gameBoardHeight = 9;
 
-    return data;
-  }
+class GameBoard extends React.Component {
+	constructor(props) {
+		super(props);
 
-  let counter = 0;
-  return <div className='board-container rpgui-container framed'>
-    <div className='flex center board'>
-      <Flipper flipKey={Object.keys(board).join('')} spring={{
-            stiffness: 50,
-            damping: 25
-          }} stagger={false}>
-        <DndProvider backend={HTML5Backend}>
-          {createGameBoard(9, 8).map((boardColumn) => {
-            return <div className='board-column' key={counter++}>{
-              boardColumn.map((cellPosition) => {
+		this.isInitialLoad = true;
+		this.state = {
+			gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth),
+			isMounted: false
+		};
+	}
 
-                const creature = board[cellPosition.toBoardPosition()];
-                const key = creature && creature.position ? `c_${creature.position}` : cellPosition.toBoardPosition();
-                return (<BoardSquare cellPosition={cellPosition}>
-                  <Flipped key={key} flipId={key}>
-                    {flippedProps => ((!!creature && (<Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} flippedProps={flippedProps}/>)) || <div/>)}
-                  </Flipped>
-                  </BoardSquare>
-                );
-              })}
-            </div>
-          })}
-        </DndProvider>
-        </Flipper>
-    </div>
-  </div>
+	componentDidMount() {
+		this.setState({ isMounted: true });
+	}
+
+	createGameBoard(height, width) {
+		let data = [];
+		for (let i = 0; i < height; i++) {
+			data[i] = [];
+			for (let j = 0; j < width; j++) {
+				data[i][j] = new Position(j, width - i);
+			}
+		}
+
+		return data;
+	}
+
+	getBoardBoundingClientRect() {
+		return this.boardRef && this.boardRef.getBoundingClientRect();
+	}
+
+	render() {
+		const { board, subscribeToActions, units } = this.props;
+		const { gameBoard, isMounted } = this.state;
+		return (
+			<div className="board-container rpgui-container framed">
+				<div className="flex center board" ref={e => (this.boardRef = e)}>
+					{isMounted &&
+						units.map(unit => (
+							<PawnImage
+								key={unit.key}
+								creatureData={unit.creatureData}
+								getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
+								gameBoardWidth={gameBoardWidth}
+								gameBoardHeight={gameBoardHeight}
+								subscribeToActions={subscribeToActions}
+							/>
+						))}
+					<DndProvider backend={HTML5Backend}>
+						{gameBoard.map((boardColumn, index) => {
+							return (
+								<div className="board-column" key={index}>
+									{boardColumn.map(cellPosition => {
+										const creature = board[cellPosition.toBoardPosition()];
+										return (
+											<BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+												{!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
+											</BoardSquare>
+										);
+									})}
+								</div>
+							);
+						})}
+					</DndProvider>
+				</div>
+			</div>
+		);
+	}
 }
 
 export default GameBoard;
