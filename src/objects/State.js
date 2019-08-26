@@ -96,4 +96,33 @@ State.prototype.endRound = () => {
   }
 };
 
+/**
+ * @param {Object} battles Battle results for all the players in state
+ */
+State.prototype.damagePlayers = (battles) => {
+  for (const uid in this.players) {
+    const battleResult = battles[uid];
+
+    // actually now there will be always damage, need to finish :D
+    if (battleResult.playerDamage) {
+      const player = this.players[uid];
+      const newHP = player.get('hp') - battleResult.playerDamage;
+      player.set('hp', newHP);
+
+      if (newHP <= 0) {
+        this.amountOfPlayers = this.amountOfPlayers - 1;
+      }
+    }
+  }
+};
+
+State.prototype.dropPlayer = (playerID) => {
+  for (const uid in this.players) {
+    if (uid === playerID) {
+      delete this.players[uid];
+      this.amountOfPlayers -= 1;
+    }
+  }
+};
+
 module.exports = State;

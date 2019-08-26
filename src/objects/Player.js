@@ -1,4 +1,6 @@
 
+const BoardJS = require('..//game/board'); // todo get rid of this dependency here
+
 function Player(id) {
   this.index = id;
   this.hp = 100;
@@ -39,7 +41,6 @@ Player.prototype.set = function (field, value) {
 
 
 // not sure if we should carry such support functions with all the objects. Assuming it may affect performance...
-const BoardJS = require('..//game/board'); // todo get rid of this dependency here
 
 Player.prototype.addToHand = async function (unit) {
   const position = this.get('availableHandPosition');
@@ -55,6 +56,10 @@ Player.prototype.addToHand = async function (unit) {
 
 Player.prototype.increaseExperience = function () {
   // TODO
+};
+
+Player.prototype.isDead = function () {
+  return this.hp <= 0;
 };
 
 module.exports = Player;

@@ -36,19 +36,6 @@ async function _calcDamageTaken(boardUnits) {
   return sum;
 }
 
-/**
- * Remove hp from player
- * Mark player as defeated if hp <= 0, by removal of player from players
- * Also decrease amountOfPlayers
- */
-async function _removeHp(state, playerIndex, hpToRemove) {
-  const currentHp = state.getIn(['players', playerIndex, 'hp']);
-  if (currentHp - hpToRemove <= 0) {
-    return state.setIn(['players', playerIndex, 'dead'], true);
-  }
-  return state.setIn(['players', playerIndex, 'hp'], currentHp - hpToRemove);
-}
-
 StateJS.increaseExp = (stateParam, playerIndex, amountParam) => {
   let state = stateParam;
   let player = state.getIn(['players', playerIndex]);

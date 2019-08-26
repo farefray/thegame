@@ -40,6 +40,7 @@ function Battle(board) {
   this.startBoard = _.cloneDeep(board); // test if thats needed or just adding perf issues
   this.actionStack = [];
   this.winner = null;
+  this.playerDamage = 0;
 
   // internal values
   this.isOver = false;
@@ -98,6 +99,7 @@ Battle.prototype.execute = async function () {
     await this.nextTick();
   }
 
+  this.playerDamage = 5; // TODO some dynamic formula
   return this;
 };
 
