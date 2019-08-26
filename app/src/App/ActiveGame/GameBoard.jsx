@@ -42,7 +42,7 @@ class GameBoard extends React.Component {
 	}
 
 	render() {
-		const { board, addToUnitArray, units, allUnits } = this.props;
+		const { board, addToUnitArray, removeFromUnitArray, units, allUnits } = this.props;
 		const { gameBoard, isMounted } = this.state;
 
 		return (
@@ -56,6 +56,7 @@ class GameBoard extends React.Component {
 								getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
 								gameBoardWidth={gameBoardWidth}
 								gameBoardHeight={gameBoardHeight}
+								removeFromUnitArray={removeFromUnitArray}
 								addToUnitArray={addToUnitArray}
 								allUnits={allUnits}
 							/>

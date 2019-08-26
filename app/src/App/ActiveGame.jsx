@@ -234,21 +234,44 @@ var visitPlayer = playerIndex => {
 const ACTION_MOVE = 1; // todo share with backend
 const ACTION_ATTACK = 2;
 
-const allUnits = [];
+let allUnits = []; // @Jacek, is thats okay to use like this, outside of react component?
 
 const addToUnitArray = unit => {
 	allUnits.push(unit);
 };
 
+function isShallowEqual(v, o) {
+	for (let key in v)
+		if (!(key in o) || v[key] !== o[key])
+			return false;
+
+	for (let key in o)
+		if (!(key in v) || v[key] !== o[key])
+			return false;
+
+	return true;
+}
+
+const removeFromUnitArray = unitToRemove => {
+	allUnits = allUnits.filter(unit => {
+		const res = isShallowEqual(unit, unitToRemove); // When we introduce UID for units, it should be compared by it
+		return !res;
+	});
+};
+
 function boardReducer(board, action) {
 	for (const unit of allUnits) {
-		if (unit.state.x === action.from.x && unit.state.y === action.from.y) {
+		if (action.from && unit.state.x === action.from.x && unit.state.y === action.from.y) {
 			unit.onAction(action);
 		}
 	}
+
 	switch (
 		action.action // todo make it type
 	) {
+		case 'INIT': {
+			return _.clone(action.board);
+		}
 		case ACTION_MOVE:
 			const reducedBoard = _.clone(board);
 			const boardPos = new Position(action.from.x, action.from.y).toBoardPosition(); // todo make board already contain Positions
@@ -271,8 +294,8 @@ function ActiveGame() {
 	const [activeBattle, setActiveBattle] = useState(false);
 	const [units, setUnits] = useState([]);
 	/*
-  index, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
-  */
+		index, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
+	*/
 	const appState = useSelector(state => state.app, shallowEqual);
 	const { isActiveBattleGoing, actionStack } = appState;
 
@@ -315,12 +338,18 @@ function ActiveGame() {
 			startBattleEvent(_.clone(actionStack));
 		}
 	}, [activeBattle, isActiveBattleGoing, actionStack]);
+
 	useEffect(() => {
 		setUnits(
 			Object.keys(combinedBoard).map(key => {
 				return { ...combinedBoard[key], id: key };
 			})
 		);
+
+		dispatchGameBoard({
+			action: 'INIT',
+			board: combinedBoard
+		});
 	}, [combinedBoard]);
 
 	return (
@@ -330,7 +359,7 @@ function ActiveGame() {
 				{/* <LeftBar {...this.props} /> */}
 				{appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
 				<StateProvider initialState={{ ...appState }}>
-					<GameBoard board={gameBoard} units={units} addToUnitArray={addToUnitArray} allUnits={allUnits} />
+					<GameBoard board={gameBoard} units={units} addToUnitArray={addToUnitArray} removeFromUnitArray={removeFromUnitArray} allUnits={allUnits} />
 				</StateProvider>
 				{/* <GameBoardBottom {...this.props} /> */}
 				<RightPanel {...appState} />
