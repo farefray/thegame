@@ -117,7 +117,7 @@ describe('Core Modules', () => {
 
     it('player 1 can move pawn to board', async () => {
       const fromPosition = '0';
-      const toPosition = '1,1';
+      const toPosition = '0,2';
       const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, fromPosition, toPosition);
       result.upgradeOccured.should.be.false();
       should(gameState.players[MOCK_SOCKETID_1].hand[fromPosition]).undefined();
@@ -125,6 +125,12 @@ describe('Core Modules', () => {
     });
 
     // todo test for mutateStateByFixingUnitLimit
+
+    it('can setup whole round', async () => {
+      const battleRoundResult = await BattleJS.setup(gameState);
+      battleRoundResult.should.be.ok();
+      battleRoundResult.winner[MOCK_SOCKETID_1].should.be.above(TEAM.NONE);
+    });
   });
 
   describe('Battle', () => {
@@ -165,19 +171,19 @@ describe('Core Modules', () => {
     });
 
     it('can handle battle with no units', async () => {
-      const playerBoard = await BoardJS.createBoard([]);
-      const npcBoard = await BoardJS.createBoard([{
+      const playerBoard = await BoardJS.createBoard([{
         name: 'minotaur',
         x: 1,
         y: 8
       }]);
+      const npcBoard = await BoardJS.createBoard([]);
 
       const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
 
       const battleResult = await battle.execute();
       battleResult.should.be.ok();
-      battleResult.winner.should.equal(TEAM.B);
+      battleResult.winner.should.equal(TEAM.A);
     });
   });
 });

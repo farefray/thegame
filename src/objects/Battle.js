@@ -198,7 +198,7 @@ Battle.prototype.nextTick = async function () {
           return finishTick();
         }
 
-        closestTarget = battleUnit.getTarget()
+        closestTarget = battleUnit.getTarget();
       } else {
         // get target (todo use previous target if exist)
         closestTarget = this.getClosestTarget(battleUnit);

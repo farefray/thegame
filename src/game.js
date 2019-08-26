@@ -37,6 +37,7 @@ exports.toggleLock = async (state, playerIndex) => {
  * Buy exp for player (setIn)
  */
 exports.buyExp = (state, playerIndex) => {
+  // TODO
   const gold = state.getIn(['players', playerIndex, 'gold']);
   const newState = state.setIn(['players', playerIndex, 'gold'], gold - 5);
   return StateJS.increaseExp(newState, playerIndex, 4);

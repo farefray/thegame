@@ -53,4 +53,8 @@ Player.prototype.addToHand = async function (unit) {
   return null;
 };
 
+Player.prototype.increaseExperience = function () {
+  // TODO
+};
+
 module.exports = Player;

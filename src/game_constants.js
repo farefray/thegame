@@ -101,19 +101,6 @@ const gymLeader = {
 exports.getGymLeader = round => gymLeader[String(round)];
 
 
-exports.getRoundType = (round) => {
-  if (round <= 3) {
-    return 'npc';
-  }
-  if (round % 5 === 0 && round > 5 && round < 50) {
-    return 'gym';
-  }
-  if (round === 21 || round === 31 || round === 41 || round === 51) {
-    return 'shop';
-  }
-  return 'pvp';
-};
-
 // index - 1, Handles 0-4 indexes, send cost directly
 exports.getRarityAmount = index => rarityAmount[index - 1];
 

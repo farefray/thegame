@@ -6,7 +6,7 @@ const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
 const GameController = require('./game');
-const BattleJS = require('./game/battle.js');
+const BattleController = require('./game/battle.js');
 const StateJS = require('./game/state');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
@@ -21,7 +21,7 @@ const SessionsStore = require('./models/SessionsStore');
 const connectedPlayers = new ConnectedPlayers();
 const sessionsStore = new SessionsStore();
 
-const STARTBATTLE_TIMER = 30000;
+const STARTBATTLE_TIMER = 15000;
 /**
  * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
  * @todo better way for this or at least test this performance
@@ -145,43 +145,30 @@ function SocketController(socket, io) {
         });
       });
 
-      const scheduleBattleRound = async () => {
+      // Schedule battle start
+      setTimeout(async () => {
         // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
         const preBattleSession = sessionsStore.get(sessionID);
-        const battleRoundResult = await BattleJS.setup(preBattleSession.get('state'));
+        const preBattleState = preBattleSession.get('state');
+        const battleRoundResult = await BattleController.setup(preBattleState);
         clients.forEach((socketID) => {
           io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.actionStack[socketID], battleRoundResult.startBoard[socketID], battleRoundResult.winner[socketID]);
         });
 
-        setTimeout(async () => {
-          /*
-            Update state with:
-            round change, reward winners, punishment for losers
-            save state to session,
-            update players
-          */
+        // We can actually count battle finish state here already and only schedule update
+        /*
+          Update state with:
+          round change, reward winners, punishment for losers
+          save state to session,
+          update players
+        */
 
-          // TODO: player.get(dead) gets time of death (last actionStack move)
-          // Add all dead players to temp list, remove in order
-          // Handle if only one player left (amount===1 below) within this directly
-          let endTimesMap = Map({});
-          while (!temp.done) {
-            const pid = temp.value;
-            const player = stateEndedTurn.getIn(['players', pid]);
-            if (player.get('dead')) {
-              console.log('Dead Player!', pid);
-              const endTime = battleEndTimes.get(pid) || 0;
-              let tempEndTime = endTime;
-              while (endTimesMap.get(tempEndTime)) {
-                console.log('Increase endTime by 1 since interference'); // Do something more fair, doesnt matter
-                tempEndTime += 1;
-              }
-              endTimesMap = endTimesMap.set(tempEndTime, pid);
-            }
-            temp = iter2.next();
-          }
-          const sortedByEndTimes = Array.from(endTimesMap.keys());
-          sortedByEndTimes.sort((a, b) => endTimesMap.get(b) - endTimesMap.get(a));
+        preBattleState.endRound();
+        
+
+        // Schedule battle finish
+        setTimeout(async () => {
+          // TODO Future: player.get(dead) gets time of death (last actionStack move)
           let gameEnded = false;
           for (let i = 0; i < sortedByEndTimes.length; i++) {
             const timeOfDeath = sortedByEndTimes[i];
@@ -234,11 +221,8 @@ function SocketController(socket, io) {
               });
             }
           }
-        }, battleRoundResult.battleTime);
-      };
 
-      setTimeout(() => {
-        scheduleBattleRound();
+        }, battleRoundResult.battleTime);
       }, STARTBATTLE_TIMER); // TODO better way
     });
   });
