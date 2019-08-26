@@ -496,13 +496,11 @@ BattleJS.setup = async (state) => {
   const npcBoard = await gameConstantsJS.getSetRound(round);
 
 
-  // TODO: Future: All battles calculate concurrently
-  const battleObject = {
-    actionStack: [],
-    startBoard: [],
-    winner: [],
-    battleTime: 0
-  };
+  // TODO: Future: All battles calculate concurrently, structurize this object maybe
+  const results = {
+    battleTime: 0,
+    battles: {}
+  }; // results for all battles and summary info
 
   let battleTime = 0;
   for (let i = 0; i < players.length; i++) {
@@ -516,10 +514,12 @@ BattleJS.setup = async (state) => {
     const battle = new Battle(board);
     const battleResult = await battle.execute();
 
-    // todo handle this by having battleResults[players[i]] = battleResult;
-    battleObject.actionStack[players[i]] = battleResult['actionStack'];
-    battleObject.startBoard[players[i]] = battleResult['startBoard'];
-    battleObject.winner[players[i]] = battleResult.winner;
+    results.battles[players[i]] = {
+      actionStack: battleResult['actionStack'],
+      startBoard: battleResult['startBoard'],
+      winner: battleResult.winner, // actually should be boolean I guess, as every player will have own battleresult(todo)
+      playerDamage: battleResult.playerDamage
+    };
 
     if (battleResult['actionStack'].length) {
       const playerBattleTime = battleResult['actionStack'][battleResult['actionStack'].length - 1].time;
@@ -529,8 +529,8 @@ BattleJS.setup = async (state) => {
     }
   }
 
-  battleObject.battleTime = battleTime;
-  return battleObject;
+  results.battleTime = battleTime;
+  return results;
   // todo pvp
   // return (await BattleJS.battleTime(state));
 };

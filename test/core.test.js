@@ -129,7 +129,7 @@ describe('Core Modules', () => {
     it('can setup whole round', async () => {
       const battleRoundResult = await BattleJS.setup(gameState);
       battleRoundResult.should.be.ok();
-      battleRoundResult.winner[MOCK_SOCKETID_1].should.be.above(TEAM.NONE);
+      battleRoundResult.battles[MOCK_SOCKETID_1].winner.should.be.above(TEAM.NONE);
     });
   });
 
