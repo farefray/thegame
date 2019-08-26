@@ -124,17 +124,14 @@ exports.purchasePawn = async (state, playerIndex, pieceIndex) => {
   * set player state
   */
   const boardUnit = await BoardJS.getBoardUnit(unit.name);
-  if (player.addToHand(boardUnit)) {
-    delete player.shop[pieceIndex];
-    player.gold -= unit.cost;
+  await player.addToHand(boardUnit);
+  delete player.shop[pieceIndex];
+  player.gold -= unit.cost;
 
-    // ????
-    player.unitAmounts[unit.name] = player.unitAmounts[unit.name] ? player.unitAmounts[unit.name] + 1 : 0;
-    state.setIn(['players', playerIndex], player);
-    return state;
-  }
-
-  return null;
+  // ????
+  player.unitAmounts[unit.name] = player.unitAmounts[unit.name] ? player.unitAmounts[unit.name] + 1 : 0;
+  state.setIn(['players', playerIndex], player);
+  return state;
 };
 
 exports.initialize = async (clients) => {

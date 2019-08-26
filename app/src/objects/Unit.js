@@ -1,14 +1,17 @@
 import React from 'react';
 import getPawnImageSrc from '../App/ActiveGame/GameBoard/Pawn/pawnImage.helper';
 import { DIRECTION } from '../shared/constants';
+import { getHealthColorByPercentage } from '../shared/UnitUtils';
 const ACTION_MOVE = 1; // todo share with backend
 const ACTION_ATTACK = 2;
 
-export default class PawnImage extends React.Component {
+export default class Unit extends React.Component {
 	constructor(props) {
 		super(props);
+		props.addToUnitArray(this);
 
-		const [x, y] = props.creatureData.position.split(',');
+		const { unit } = props;
+		const [x, y = 0] = unit.position.split(',');
 		const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
 		this.state = {
@@ -16,15 +19,16 @@ export default class PawnImage extends React.Component {
 			left,
 			x: parseInt(x, 10),
 			y: parseInt(y, 10),
-			direction: props.creatureData.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
-			isMoving: false
+			direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
+			isMoving: false,
+			maxHealth: unit.hp,
+			health: unit.hp
 		};
 	}
 
-	componentDidMount() {
-		this.props.subscribeToActions(this);
+	componentWillUnmount() {
+		this.props.removeFromUnitArray(this);
 	}
-
 	onAction(action) {
 		switch (action.action) {
 			case ACTION_MOVE:
@@ -48,8 +52,8 @@ export default class PawnImage extends React.Component {
 
 	getSprite() {
 		const { direction, isMoving } = this.state;
-		const { creatureData } = this.props;
-		const lookType = creatureData.lookType || 25;
+		const { unit } = this.props;
+		const lookType = unit.lookType || 25;
 		return getPawnImageSrc(lookType, direction, !isMoving);
 	}
 
@@ -68,6 +72,10 @@ export default class PawnImage extends React.Component {
 		return direction;
 	}
 
+	getUnitAtCoordinates(x, y) {
+		return this.props.allUnits.find(unit => unit.state.x === x && unit.state.y === y);
+	}
+
 	move(x, y) {
 		const { top, left } = this.getPositionFromCoordinates(x, y);
 		this.setState({
@@ -82,6 +90,8 @@ export default class PawnImage extends React.Component {
 	}
 
 	attack(x, y) {
+		const target = this.getUnitAtCoordinates(x, y);
+
 		const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
 		const { top, left } = this.state;
 		const midpointTop = (targetTop + top) / 2;
@@ -91,6 +101,7 @@ export default class PawnImage extends React.Component {
 			isMoving: false
 		});
 		setTimeout(() => {
+			target.takeDamage(7.5);
 			this.setState({
 				top: midpointTop,
 				left: midpointLeft,
@@ -102,8 +113,17 @@ export default class PawnImage extends React.Component {
 		}, Math.random() * 700);
 	}
 
+	takeDamage(damage) {
+		const health = Math.max(0, this.state.health - damage);
+		this.setState({
+			health,
+			isDead: health === 0
+		});
+	}
+
 	render() {
-		const { top, left, transition } = this.state;
+		const { top, left, transition, health, maxHealth, isDead } = this.state;
+		if (isDead) return null;
 		return (
 			<div
 				style={{
@@ -119,6 +139,29 @@ export default class PawnImage extends React.Component {
 				}}
 			>
 				<img src={this.getSprite()} alt="Pawn" style={{ position: 'absolute', bottom: 0, right: 0 }} />
+				<div
+					className="healthbar"
+					style={{
+						position: 'absolute',
+						backgroundColor: '#000000',
+						height: '4px',
+						width: '22px',
+						bottom: '32px',
+						right: '5px'
+					}}
+				>
+					<div
+						className="healthbar-fill"
+						style={{
+							position: 'absolute',
+							backgroundColor: getHealthColorByPercentage((health / maxHealth) * 100),
+							height: '2px',
+							top: '1px',
+							left: '1px',
+							right: `${21 - 20 * (health / maxHealth)}px`
+						}}
+					/>
+				</div>
 			</div>
 		);
 	}
