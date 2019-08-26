@@ -67,8 +67,8 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'BATTLE_TIME', actionStack, startBoard, winner});
   });
 
+  /// ???
   socket.on('END_BATTLE', (upcomingRoundType, upcomingGymLeader) => {
-    // console.log('@endBattle', upcomingRoundType, upcomingGymLeader)
     if(upcomingGymLeader) {
       dispatch({ type: 'END_BATTLE', upcomingRoundType, upcomingGymLeader});
     } else {

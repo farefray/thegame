@@ -13,29 +13,12 @@ import GameBoardBottom from './ActiveGame/GameBoardBottom.jsx';
 
 import RightPanel from './ActiveGame/RightPanel.jsx';
 
-import { isUndefined, updateMessage } from '../f';
-import { getSoundEffect } from '../audio.js';
+import { isUndefined } from '../f';
 
 const wait = async ms => {
 	return new Promise(resolve => {
 		setTimeout(resolve, ms);
 	});
-};
-
-var endOfBattleClean = (battleBoard, winner) => {
-	const unitsAlive = Object.keys(battleBoard);
-	for (let i = 0; i < unitsAlive.length; i++) {
-		// Jumping animation
-		if (battleBoard[unitsAlive[i]].hp > 0 && battleBoard[unitsAlive[i]].team === (winner ? 0 : 1)) {
-			battleBoard[unitsAlive[i]].winningAnimation = true;
-			// console.log('Setting winningAnimation', unitsAlive[i], battleBoard[unitsAlive[i]]);
-			battleBoard[unitsAlive[i]].actionMessage = '';
-		} else {
-			// console.log('HEY', battleBoard[unitsAlive[i]].hp > 0, battleBoard[unitsAlive[i]].team === (winner ? 0 : 1), battleBoard[unitsAlive[i]].hp > 0 && battleBoard[unitsAlive[i]].team === (winner ? 0 : 1));
-			// delete battleBoard[unitsAlive[i]];
-		}
-	}
-	return battleBoard;
 };
 
 var damageUnit = async (newBoard, target, value, unitPos, direction, actionMessageTarget, manaChanges, actionMessageAttacker) => {
@@ -80,26 +63,6 @@ var damageUnit = async (newBoard, target, value, unitPos, direction, actionMessa
 	return newBoard;
 };
 
-var removeActionMessage = (nextMove, board) => {
-	const target = nextMove.target;
-	if (board && board[target]) {
-		board[target].actionMessage = '';
-		/*
-    const obj = {...board[target], actionMessage: ''}
-    const keys = Object.keys(board);
-    return keys.map((key, index) => {
-      if (index !== target) {
-        // This isn't the item we care about - keep it as-is
-        return board[key]
-      }
-      // Otherwise, this is the one we want - return an updated value
-      return {
-        ...obj,
-      }
-    })*/
-	}
-	return board;
-};
 
 var renderMove = async (nextMove, board) => {
 	let newBoard = board;
@@ -223,14 +186,6 @@ var renderMove = async (nextMove, board) => {
 	}
 };
 
-var visitPlayer = playerIndex => {
-	console.log('Visiting Player', playerIndex, '...');
-	this.props.dispatch({
-		type: 'SPEC_PLAYER',
-		playerIndex
-	});
-};
-
 const ACTION_MOVE = 1; // todo share with backend
 const ACTION_ATTACK = 2;
 
@@ -327,13 +282,12 @@ function ActiveGame() {
 
 					currentTime = time;
 
-					if (actions.length === 0) {
-						await wait(1500);
-						// await this.endOfBattleClean(battleStartBoard, winner);
-						console.log('END OF BATTLE: winningTeam');
-					}
-				}
-			};
+          if (actions.length === 0) {
+            console.log('END OF BATTLE: winningTeam');
+            await wait(1500);
+          }
+        }
+      }
 
 			startBattleEvent(_.clone(actionStack));
 		}

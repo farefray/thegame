@@ -1,7 +1,9 @@
 const EasyStar = require('easystarjs');
 const _ = require('lodash');
 const f = require('../f');
-const { kdTree } = require('../alg/kdTree');
+const {
+  kdTree
+} = require('../alg/kdTree');
 
 const Position = require('../../app/src/objects/Position');
 
@@ -20,8 +22,10 @@ const BATTLE_TIME_LIMIT = 30 * 1000; // time limit for battle
   [ '0,1', '1,1', '2,1', '3,1', '4,1', '5,1', '6,1', '7,1' ],
   [ '0,0', '1,0', '2,0', '3,0', '4,0', '5,0', '6,0', '7,0' ] ]
 */
-const TEAM_A = 0;
-const TEAM_B = 1;
+const {
+  TEAM
+} = require('../../app/src/shared/constants');
+
 const FREE_TILE = 0;
 const TAKEN_TILE = 1;
 
@@ -36,14 +40,15 @@ function Battle(board) {
   this.startBoard = _.cloneDeep(board); // test if thats needed or just adding perf issues
   this.actionStack = [];
   this.winner = null;
+  this.playerDamage = 0;
 
   // internal values
   this.isOver = false;
   this.battleBoard = {};
   this.nextTickSchedule = null;
   this.coordsBoardMap = {
-    [TEAM_A]: [],
-    [TEAM_B]: []
+    [TEAM.A]: [],
+    [TEAM.B]: []
   };
 
   // used for pathfinding (todo func)
@@ -77,16 +82,32 @@ function Battle(board) {
 }
 
 Battle.prototype.execute = async function () {
-  // Not sure, but this way we probably can split battle executing into multiple ticks, to avoid io blocking. Its not a real solution, but at least it will proceed multiple battles at once, just slower than usually :D need to perf these ways
+  // Not sure, but this way we probably can split battle executing into multiple ticks, to avoid io blocking. Its not a real solution, but at least it will proceed multiple battles at once, just slower than usually :D need to perf test these ways
+
+  if (!this.coordsBoardMap[TEAM.A].length && !this.coordsBoardMap[TEAM.B].length) {
+    this.winner = TEAM.NONE;
+    return this;
+  } else if (!this.coordsBoardMap[TEAM.A].length) {
+    this.winner = TEAM.B;
+    return this;
+  } else if (!this.coordsBoardMap[TEAM.B].length) {
+    this.winner = TEAM.A;
+    return this;
+  }
+
   while (!this.isOver && this.nextTickSchedule <= BATTLE_TIME_LIMIT) {
     await this.nextTick();
   }
 
+  this.playerDamage = 5; // TODO some dynamic formula
   return this;
 };
 
 Battle.prototype.action = function (actionObject, time) {
-  this.actionStack.push({ ...actionObject, time });
+  this.actionStack.push({
+    ...actionObject,
+    time
+  });
   return this;
 };
 
@@ -179,7 +200,7 @@ Battle.prototype.nextTick = async function () {
           return finishTick();
         }
 
-        closestTarget = battleUnit.getTarget()
+        closestTarget = battleUnit.getTarget();
       } else {
         // get target (todo use previous target if exist)
         closestTarget = this.getClosestTarget(battleUnit);
@@ -241,7 +262,10 @@ Battle.prototype.getClosestTarget = function (battleUnit) {
     return ((a.x - b.x) ** 2) + ((a.y - b.y) ** 2);
   }, ['x', 'y']);
   const AMOUNT = 1;
-  const closestEnemy = tree.nearest({ x: battleUnit.x, y: battleUnit.y }, AMOUNT);
+  const closestEnemy = tree.nearest({
+    x: battleUnit.x,
+    y: battleUnit.y
+  }, AMOUNT);
   if (closestEnemy.length) {
     const targetPosition = new Position(+(closestEnemy[0][0].x), +(closestEnemy[0][0].y));
     const targetUnit = this.battleBoard[targetPosition.toBoardPosition()];

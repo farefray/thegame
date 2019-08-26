@@ -14,6 +14,9 @@ const Session = rewire('../src/objects/Session.js');
 const Battle = rewire('../src/objects/Battle.js');
 
 const gameConstantsJS = rewire('../src/game_constants.js');
+const {
+  TEAM
+} = rewire('../app/src/shared/constants');
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -114,7 +117,7 @@ describe('Core Modules', () => {
 
     it('player 1 can move pawn to board', async () => {
       const fromPosition = '0';
-      const toPosition = '1,1';
+      const toPosition = '0,2';
       const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, fromPosition, toPosition);
       result.upgradeOccured.should.be.false();
       should(gameState.players[MOCK_SOCKETID_1].hand[fromPosition]).undefined();
@@ -122,17 +125,27 @@ describe('Core Modules', () => {
     });
 
     // todo test for mutateStateByFixingUnitLimit
+
+    it('can setup whole round', async () => {
+      const battleRoundResult = await BattleJS.setup(gameState);
+      battleRoundResult.should.be.ok();
+      battleRoundResult.battles[MOCK_SOCKETID_1].winner.should.be.above(TEAM.NONE);
+    });
   });
 
   describe('Battle', () => {
     let battle;
     it('can find target and measure distance', async () => {
-      const npcBoard = await BoardJS.createBoard([
-        { name: 'minotaur', x: 1, y: 8 },
-      ]);
-      const playerBoard = await BoardJS.createBoard([
-        { name: 'minotaur', x: 3, y: 4 },
-      ]);
+      const npcBoard = await BoardJS.createBoard([{
+        name: 'minotaur',
+        x: 1,
+        y: 8
+      }]);
+      const playerBoard = await BoardJS.createBoard([{
+        name: 'minotaur',
+        x: 3,
+        y: 4
+      }]);
 
       const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
@@ -149,6 +162,28 @@ describe('Core Modules', () => {
       battleResult.isOver.should.be.true();
       battleResult.actionStack.should.be.an.Array();
       battleResult.actionStack.length.should.be.above(0);
+
+      let battleTime = 0;
+      if (battleResult.actionStack[battleResult.actionStack.length - 1].time > battleTime) {
+        battleTime = battleResult.actionStack[battleResult.actionStack.length - 1].time;
+      }
+      battleTime.should.be.above(0);
+    });
+
+    it('can handle battle with no units', async () => {
+      const playerBoard = await BoardJS.createBoard([{
+        name: 'minotaur',
+        x: 1,
+        y: 8
+      }]);
+      const npcBoard = await BoardJS.createBoard([]);
+
+      const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+      battle = new Battle(combinedBoard);
+
+      const battleResult = await battle.execute();
+      battleResult.should.be.ok();
+      battleResult.winner.should.equal(TEAM.A);
     });
   });
 });

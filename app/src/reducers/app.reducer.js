@@ -434,12 +434,12 @@ export function app(state = {
       break;
     case 'END_GAME': {
       let newMusic = state.music;
-      if (state.index === action.winningPlayer.index) {
+      if (state.index === action.winningPlayer) {
         newMusic = getBackgroundAudio('wonGame')
       }
       console.log('Remaining keys in players ...', Object.keys(state.players));
       Object.keys(state.players).forEach((key) => {
-        if (key !== action.winningPlayer.index) {
+        if (key !== action.winningPlayer) {
           console.log('Deleting key ...', key, state.players)
           delete state.players[key];
         }
@@ -450,11 +450,11 @@ export function app(state = {
       } = state;
       state = {
         ...state,
-        message: state.players[action.winningPlayer.index].name + ' won the game',
+        message: state.players[action.winningPlayer].name + ' won the game',
         messageMode: 'big',
         gameEnded: action.winningPlayer,
         music: newMusic,
-        senderMessages: senderMessages.concat(state.players[action.winningPlayer.index].name + ' won the game'),
+        senderMessages: senderMessages.concat(state.players[action.winningPlayer].name + ' won the game'),
         chatMessages: chatMessages.concat(''),
       }
       break;

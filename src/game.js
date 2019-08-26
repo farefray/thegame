@@ -37,6 +37,7 @@ exports.toggleLock = async (state, playerIndex) => {
  * Buy exp for player (setIn)
  */
 exports.buyExp = (state, playerIndex) => {
+  // TODO
   const gold = state.getIn(['players', playerIndex, 'gold']);
   const newState = state.setIn(['players', playerIndex, 'gold'], gold - 5);
   return StateJS.increaseExp(newState, playerIndex, 4);
@@ -148,4 +149,63 @@ exports.initialize = async (clients) => {
   }
 
   return state;
+};
+
+
+/**
+* winner: Gain 1 gold
+* loser: Lose hp
+*      Calculate amount of hp to lose
+* Parameters: Enemy player index, winningAmount = damage? (units or damage)
+*/
+
+exports.endBattle = async (stateParam, playerIndex, winner, finishedBoard, roundType, enemyPlayerIndex) => {
+  let state = stateParam;
+  // console.log('@Endbattle :', playerIndex, winner);
+  if (f.isUndefined(finishedBoard)) console.log(finishedBoard);
+  // console.log('@endBattle', state, playerIndex, winner, enemyPlayerIndex);
+  const streak = state.getIn(['players', playerIndex, 'streak']) || 0;
+  if (winner) { // Winner
+    // TODO: Npc rewards and gym rewards
+    switch (roundType) {
+      case 'pvp': {
+        const prevGold = state.getIn(['players', playerIndex, 'gold']);
+        state = state.setIn(['players', playerIndex, 'gold'], prevGold + 1);
+        const newStreak = (streak < 0 ? 0 : +streak + 1);
+        state = state.setIn(['players', playerIndex, 'streak'], newStreak);
+        f.p('@endBattle Won Player', playerIndex, prevGold, state.getIn(['players', playerIndex, 'gold']), newStreak);
+        break;
+      }
+      case 'npc':
+      case 'gym':
+      /* TODO: Add item drops / special money drop */
+      case 'shop':
+      default:
+    }
+  } else { // Loser
+    switch (roundType) {
+      case 'pvp': {
+        const newStreak = (streak > 0 ? 0 : +streak - 1);
+        state = state.setIn(['players', playerIndex, 'streak'], newStreak);
+        f.p('@Endbattle pvp', newStreak);
+      }
+      case 'npc': {
+        const hpToRemove = await _calcDamageTaken(finishedBoard);
+        state = await _removeHp(state, playerIndex, hpToRemove);
+        f.p('@endBattle Lost Player', playerIndex, hpToRemove);
+        break;
+      }
+      case 'gym': {
+        const hpToRemove = await _calcDamageTaken(finishedBoard);
+        const gymDamage = Math.min(hpToRemove, 3);
+        state = await _removeHp(state, playerIndex, gymDamage);
+        f.p('@endBattle Gymbattle');
+      }
+      case 'shop':
+      default:
+    }
+  }
+  // console.log('@endBattle prep', stateParam.get('players'));
+  const potentialEndTurnObj = await _prepEndTurn(state, playerIndex);
+  return potentialEndTurnObj;
 };

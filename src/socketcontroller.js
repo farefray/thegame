@@ -1,11 +1,14 @@
-
-
-const { Map, fromJS } = require('immutable');
+/**
+ * Actually it seems like overall game controller already, cuz we handle a lot of logic here, even if trying to move it to different controllers... maybe consider having it renamed :D
+ */
+const {
+  fromJS
+} = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
 const GameController = require('./game');
-const BattleJS = require('./game/battle.js');
+const BattleController = require('./game/battle.js');
 const StateJS = require('./game/state');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
@@ -20,6 +23,7 @@ const SessionsStore = require('./models/SessionsStore');
 const connectedPlayers = new ConnectedPlayers();
 const sessionsStore = new SessionsStore();
 
+const STARTBATTLE_TIMER = 15000;
 /**
  * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
  * @todo better way for this or at least test this performance
@@ -134,7 +138,7 @@ function SocketController(socket, io) {
       clients.forEach((socketID) => {
         connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
         io.to(socketID).emit('ADD_PLAYER', socketID); // ??
-        
+
         // TODO fixme
         socket.join(sessionID, () => {
           let rooms = Object.keys(socket.rooms);
@@ -143,116 +147,52 @@ function SocketController(socket, io) {
         });
       });
 
-      const scheduleBattleRound = async () => {
+      // Schedule battle start
+      setTimeout(async () => {
         // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
         const preBattleSession = sessionsStore.get(sessionID);
-        const battleRoundResult = await BattleJS.battleSetup(preBattleSession.get('state'));
+        const preBattleState = preBattleSession.get('state');
+        const battleRoundResult = await BattleController.setup(preBattleState);
         clients.forEach((socketID) => {
-          console.log("TCL: scheduleBattleRound -> socketID", socketID)
-          // const playerState = battleRoundResult.getIn(['players', socketID]);
-          // io.to(`${socketID}`).emit('UPDATE_PLAYER', socketID, asNetworkMessage(playerState));
-
-          console.log(battleRoundResult.actionStack);
-          console.log(battleRoundResult.actionStack[socketID]);
-          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.actionStack[socketID], battleRoundResult.startBoard[socketID], battleRoundResult.winner[socketID]);
+          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.battles[socketID].actionStack, battleRoundResult.battles[socketID].startBoard, battleRoundResult.battles[socketID].winner);
         });
 
-        /* TODO
-        const longestBattleTime = await sessionJS.getLongestBattleTime(actionStack);
-        const longestTime = TIME_FACTOR * longestBattleTime + 3500;
-        if (longestTime !== 3000) console.log('sc.LongestTime:', longestTime, longestBattleTime, TIME_FACTOR);
-        setTimeout(async () => {
-          // After all battles are over
-          f.p('Time to End Battle');
-          if (!sessionExist(socket.id)) return;
-          const stateAfterBattle = sessionJS.buildStateAfterBattle(socket.id, connectedPlayers, sessions, newState);
-          // Endbattle and get endTurned state
-
-          const stateCheckDead = await StateJS.endBattleForAll(stateAfterBattle, winners, finalBoards, matchups, roundType);
-
-          let stateEndedTurn = stateCheckDead;
-          const iter2 = stateCheckDead.get('players').keys();
-          temp = iter2.next();
-          // TODO: player.get(dead) gets time of death (last actionStack move)
-          // Add all dead players to temp list, remove in order
-          // Handle if only one player left (amount===1 below) within this directly
-          let endTimesMap = Map({});
-          while (!temp.done) {
-            const pid = temp.value;
-            const player = stateEndedTurn.getIn(['players', pid]);
-            if (player.get('dead')) {
-              console.log('Dead Player!', pid);
-              const endTime = battleEndTimes.get(pid) || 0;
-              let tempEndTime = endTime;
-              while (endTimesMap.get(tempEndTime)) {
-                console.log('Increase endTime by 1 since interference'); // Do something more fair, doesnt matter
-                tempEndTime += 1;
-              }
-              endTimesMap = endTimesMap.set(tempEndTime, pid);
-            }
-            temp = iter2.next();
-          }
-          const sortedByEndTimes = Array.from(endTimesMap.keys());
-          sortedByEndTimes.sort((a, b) => endTimesMap.get(b) - endTimesMap.get(a));
-          let gameEnded = false;
-          for (let i = 0; i < sortedByEndTimes.length; i++) {
-            const timeOfDeath = sortedByEndTimes[i];
-            const pid = endTimesMap.get(timeOfDeath);
-            // Now players can get eliminated in order
-            if (stateEndedTurn.get('amountOfPlayers') === 1) { // Last players eliminated same round
-              console.log('ENDING GAME!');
-              gameEnded = true;
-              sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              sessions = sessionJS.updateSessionPlayers(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              const winningPlayer = stateEndedTurn.get('players').values().next().value;
-              emitMessage(socket, io, sessionId, (socketId) => {
-                io.to(socketId).emit('END_GAME', winningPlayer);
-              });
-            } else { // Player eliminated but game is not over
-              console.log('Death:', pid);
-              stateEndedTurn = await GameController.removeDeadPlayer(stateEndedTurn, pid);
-              const playerName = sessionJS.getPlayerNameSession(session, pid);
-              const amountOfPlayers = stateEndedTurn.get('amountOfPlayers');
-              newChatMessage(socket, io, socket.id, `${playerName} Eliminated - `, `Alive players: ${amountOfPlayers}`, 'playerEliminated');
-              emitMessage(socket, io, sessionId, (socketId) => {
-                io.to(socketId).emit('DEAD_PLAYER', pid, amountOfPlayers + 1);
-              });
-            }
-          }
-
-          if (!gameEnded) { // Game wasn't ended in prev stage
-            if (stateEndedTurn.get('amountOfPlayers') === 1) { // No solo play allowed
-              console.log('ENDING GAME!');
-              sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              sessions = sessionJS.updateSessionPlayers(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              const winningPlayer = stateEndedTurn.get('players').values().next().value;
-              emitMessage(socket, io, sessionId, (socketId) => {
-                io.to(socketId).emit('END_GAME', winningPlayer);
-              });
-            } else {
-              sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              sessions = sessionJS.updateSessionPlayers(socket.id, connectedPlayers, sessions, stateEndedTurn);
-              stateEndedTurn.prepareForSending();
-              const round = stateToSend.get('round');
-              const upcomingRoundType = gameConstantsJS.getRoundType(round);
-              const upcomingGymLeader = gameConstantsJS.getGymLeader(round);
-              emitMessage(socket, io, sessionId, (socketId) => {
-                if (f.isUndefined(upcomingGymLeader)) {
-                  io.to(socketId).emit('END_BATTLE', upcomingRoundType);
-                } else {
-                  io.to(socketId).emit('END_BATTLE', upcomingRoundType, upcomingGymLeader);
-                }
-                io.to(socketId).emit('UPDATED_STATE', stateToSend);
-              });
-            }
-          }
-        }, longestTime);
+        // We can actually count battle finish state here already and only schedule update
+        /*
+          Update state with:
+          a - round change, gold reward winners,
+          b - damage for losers
+          c - update state, endgame maybe, save state to session,
+          d - update players
         */
-      };
 
-      setTimeout(() => {
-        scheduleBattleRound();
-      }, 15000); // TODO better way
+        preBattleState.endRound(); // a
+        preBattleState.damagePlayers(battleRoundResult.battles); // b
+
+        // Schedule all this to happen after last battle finished on FE
+        const EXTRA_TIME = 5000;
+        setTimeout(async () => {
+          // TODO Future: handle player dead time, to properly assign placing if multiple players are dead
+          clients.forEach((socketID) => {
+            const player = preBattleState.getIn(['players', socketID]);
+
+            if (player.isDead()) {
+              const amountOfPlayers = preBattleState.get('amountOfPlayers');
+              io.to(socketID).emit('DEAD_PLAYER', socketID, amountOfPlayers + 1);
+              preBattleState.dropPlayer(socketID);
+            } else {
+              io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
+            }
+
+            if (preBattleState.get('amountOfPlayers') === 1) {
+              // game end
+              io.to(socketID).emit('END_GAME', socketID);
+            }
+          });
+        }, battleRoundResult.battleTime + EXTRA_TIME);
+
+        // round ended, next round must be scheduled?
+      }, STARTBATTLE_TIMER); // TODO better way
     });
   });
 
@@ -329,7 +269,7 @@ function SocketController(socket, io) {
     });
   });
 
-  
+
 
   socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);

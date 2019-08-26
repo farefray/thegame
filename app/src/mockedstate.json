@@ -11,36 +11,288 @@
     "players": {
       "O-2iSOJIkK-2QImMAAAA": {
         "index": "O-2iSOJIkK-2QImMAAAA",
-        "hp": 100,
+        "message": "Received State",
+        "messageMode": "",
+        "help": true,
+        "chatHelpMode": "chat",
+        "chatMessages": [],
+        "senderMessages": [],
+        "players": {
+            "O-2iSOJIkK-2QImMAAAA": {
+                "index": "O-2iSOJIkK-2QImMAAAA",
+                "hp": 100,
+                "level": 1,
+                "exp": 0,
+                "expToReach": 1,
+                "gold": 0,
+                "shop": {
+                    "1": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
+                        "type": "normal"
+                    },
+                    "2": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
+                        "type": "normal"
+                    },
+                    "3": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
+                        "type": "normal"
+                    },
+                    "4": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "cost": 1,
+                        "type": "normal"
+                    }
+                },
+                "hand": {},
+                "board": {
+                    "0,1": {
+                        "name": "minotaur",
+                        "displayName": "Minotaur★",
+                        "looktype": 69,
+                        "cost": 1,
+                        "hp": 75,
+                        "attack": 100,
+                        "defense": 55,
+                        "speed": 600,
+                        "attackSpeed": 1000,
+                        "type": "normal",
+                        "ability": "splash",
+                        "evolves_to": null,
+                        "specialAttack": 15,
+                        "specialDefense": 20,
+                        "position": "0,1"
+                    }
+                },
+                "rivals": {},
+                "unitAmounts": {
+                    "minotaur": 0
+                }
+            }
+        },
+        "myHand": {},
+        "myBoard": {
+            "0,1": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "looktype": 69,
+                "cost": 1,
+                "hp": 75,
+                "attack": 100,
+                "defense": 55,
+                "speed": 600,
+                "attackSpeed": 1000,
+                "type": "normal",
+                "ability": "splash",
+                "evolves_to": null,
+                "specialAttack": 15,
+                "specialDefense": 20,
+                "position": "0,1"
+            }
+        },
+        "myShop": {
+            "1": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            },
+            "2": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            },
+            "3": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            },
+            "4": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "cost": 1,
+                "type": "normal"
+            }
+        },
+        "lock": false,
         "level": 1,
         "exp": 0,
         "expToReach": 1,
         "gold": 0,
-        "shop": {
-          "1": {
-            "name": "minotaur",
-            "displayName": "Minotaur★",
-            "cost": 1,
-            "type": "normal"
-          },
-          "2": {
-            "name": "minotaur",
-            "displayName": "Minotaur★",
-            "cost": 1,
-            "type": "normal"
-          },
-          "3": {
-            "name": "minotaur",
-            "displayName": "Minotaur★",
-            "cost": 1,
-            "type": "normal"
-          },
-          "4": {
-            "name": "minotaur",
-            "displayName": "Minotaur★",
-            "cost": 1,
-            "type": "normal"
-          }
+        "isActiveBattleGoing": true,
+        "isBattle": false,
+        "enemyIndex": -1,
+        "roundType": "",
+        "actionStack": [
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 8
+                },
+                "to": {
+                    "x": 3,
+                    "y": 7
+                },
+                "time": 1000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 0,
+                    "y": 1
+                },
+                "to": {
+                    "x": 0,
+                    "y": 2
+                },
+                "time": 1000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 7
+                },
+                "to": {
+                    "x": 3,
+                    "y": 6
+                },
+                "time": 2000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 0,
+                    "y": 2
+                },
+                "to": {
+                    "x": 0,
+                    "y": 3
+                },
+                "time": 2000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 6
+                },
+                "to": {
+                    "x": 3,
+                    "y": 5
+                },
+                "time": 3000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 0,
+                    "y": 3
+                },
+                "to": {
+                    "x": 1,
+                    "y": 3
+                },
+                "time": 3000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 5
+                },
+                "to": {
+                    "x": 3,
+                    "y": 4
+                },
+                "time": 4000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 1,
+                    "y": 3
+                },
+                "to": {
+                    "x": 2,
+                    "y": 3
+                },
+                "time": 4000
+            },
+            {
+                "action": 1,
+                "from": {
+                    "x": 3,
+                    "y": 4
+                },
+                "to": {
+                    "x": 2,
+                    "y": 4
+                },
+                "time": 5000
+            }
+        ],
+        "battleStartBoard": {
+            "0,1": {
+                "name": "minotaur",
+                "displayName": "Minotaur★",
+                "looktype": 69,
+                "cost": 1,
+                "hp": 75,
+                "attack": 100,
+                "defense": 55,
+                "speed": 600,
+                "attackSpeed": 1000,
+                "type": "normal",
+                "ability": "splash",
+                "evolves_to": null,
+                "specialAttack": 15,
+                "specialDefense": 20,
+                "position": "0,1",
+                "team": 0,
+                "maxHp": 75,
+                "startHp": 75,
+                "next_move": 0,
+                "mana": 0,
+                "mana_multiplier": 1,
+                "range": 1,
+                "manaCost": 100
+            },
+            "3,8": {
+                "name": "dwarf",
+                "displayName": "Dwarf",
+                "looktype": 69,
+                "cost": 1,
+                "hp": 65,
+                "attack": 100,
+                "defense": 155,
+                "speed": 350,
+                "attackSpeed": 1500,
+                "type": "normal",
+                "ability": "splash",
+                "evolves_to": null,
+                "specialAttack": 0,
+                "specialDefense": 0,
+                "team": 1,
+                "maxHp": 65,
+                "startHp": 65,
+                "next_move": 0,
+                "mana": 0,
+                "mana_multiplier": 1,
+                "position": "3,8",
+                "range": 1,
+                "manaCost": 100
+            }
         },
         "hand": {},
         "board": {
