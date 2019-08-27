@@ -42,7 +42,11 @@ export const configureSocket = dispatch => {
   });
 
   socket.on('UPDATED_STATE', state => {
-    dispatch({ type: 'NEW_STATE', newState: state});
+    dispatch({ type: 'UPDATED_STATE', newState: state});
+  });
+
+  socket.on('SET_ONGOING_BATTLE', value => {
+    dispatch({ type: 'SET_ONGOING_BATTLE', value: value});
   });
 
   socket.on('UPDATE_PLAYER', (index, player) => {

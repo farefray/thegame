@@ -71,7 +71,7 @@ State.prototype.setIn = function ([what, where, which], value) {
  *  Win streak / lose streak
  */
 const MAX_ROUND_FOR_INCOME_INC = 5;
-State.prototype.endRound = () => {
+State.prototype.endRound = function () {
   if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
     this.incomeBase = this.incomeBase + 1;
   }
@@ -99,7 +99,7 @@ State.prototype.endRound = () => {
 /**
  * @param {Object} battles Battle results for all the players in state
  */
-State.prototype.damagePlayers = (battles) => {
+State.prototype.damagePlayers = function (battles) {
   for (const uid in this.players) {
     const battleResult = battles[uid];
 

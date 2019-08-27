@@ -182,9 +182,10 @@ function SocketController(socket, io) {
               preBattleState.dropPlayer(socketID);
             } else {
               io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
+              io.to(socketID).emit('SET_ONGOING_BATTLE', false);
             }
 
-            if (preBattleState.get('amountOfPlayers') === 1) {
+            if (preBattleState.get('amountOfPlayers') === 0) {
               // game end
               io.to(socketID).emit('END_GAME', socketID);
             }

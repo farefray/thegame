@@ -142,7 +142,7 @@ export function app(state = {
         music: getBackgroundAudio('mainMenu'),
       }
     }
-    case 'NEW_STATE':
+    case 'UPDATED_STATE':
       // Update state with incoming data from server
       state = {
         ...state,
@@ -353,7 +353,7 @@ export function app(state = {
         isSelectModeShop: true
       }
       break;
-    case 'SET_ONGOING_BATTLE': { // not used, so check
+    case 'SET_ONGOING_BATTLE': {
       state = {
         ...state,
         isActiveBattleGoing: action.value
