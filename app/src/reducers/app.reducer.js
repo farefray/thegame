@@ -132,7 +132,13 @@ export function app(state = {
       soundEnabled: false,
     } // Disallows testing sounds currently
   }
-  switch (action.type) { // Listens to events dispatched from from socket.js    
+  switch (action.type) {
+    case 'INIT': {
+      // Used for cosmos fixtures
+      return {
+        ...state
+      }
+    }
     case 'WAITINGROOM_STATUS': {
       return {
         ...state,
@@ -277,7 +283,9 @@ export function app(state = {
       break;
     case 'BATTLE_TIME':
       console.log("TCL: action", action)
-      const { actionStack, startBoard, winner} = action;
+      const {
+        actionStack, startBoard, winner
+      } = action;
       if (!state.musicEnabled) {
         tempSoundEffects = getNewSoundEffects(state.soundEffects, getSoundEffect('horn'));
         state = {
@@ -311,12 +319,12 @@ export function app(state = {
       } */
       // TODO: BattleStartBoard contain unneccessary amount of information
       break;
-    /*
-    case 'RESET_BATTLEBOARD_ACTIONMESSAGE': {
-      const battleBoard = state.battleStartBoard;
-      if(battleBoard[action.id]) battleBoard[action.id].actionMessage = '';
-      state = {...state, battleStartBoard: battleBoard}
-    }*/
+      /*
+      case 'RESET_BATTLEBOARD_ACTIONMESSAGE': {
+        const battleBoard = state.battleStartBoard;
+        if(battleBoard[action.id]) battleBoard[action.id].actionMessage = '';
+        state = {...state, battleStartBoard: battleBoard}
+      }*/
     case 'SET_STATS':
       const statsMap = state.statsMap;
       statsMap[action.name] = action.stats;

@@ -1,57 +1,42 @@
 import React from 'react';
 import { ReduxMock } from 'react-cosmos-redux';
+import rootReducer from '../reducers';
 import { createStore } from 'redux';
 
 import ActiveGame from './ActiveGame';
-import myMockedReduxState from '../mockedstate.json';
-import rootReducer from '../reducers';
 
-const generateMoves = false; // emulating next actions for actionstack
-if (generateMoves) {
-	const last = myMockedReduxState.app.actionStack.length;
-	let lastMove = myMockedReduxState.app.actionStack[last - 1];
+const GameController = require('/node_modules/backend_symlink/game.js');
+const MOCK_SOCKETID_1 = 'MOCK_SOCKETID_1';
+const MOCK_SOCKETID_2 = 'MOCK_SOCKETID_2';
+const MOCK_SOCKETID_3 = 'MOCK_SOCKETID_3';
 
-	myMockedReduxState.app.actionStack.push({
-		action: 1,
-		from: {
-			x: 2,
-			y: 3
-		},
-		to: null,
-		time: 5500
+const MOCK_CLIENTS = [MOCK_SOCKETID_1, MOCK_SOCKETID_2, MOCK_SOCKETID_3];
+
+const generateGameState = async function() {
+	let gameState = await GameController.initialize(MOCK_CLIENTS);
+	gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
+	const fromPosition = '0';
+	const toPosition = '0,2';
+	const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, fromPosition, toPosition);
+	return result;
+};
+
+// Put this somewhere central (chances are you'll have some utils thingie)
+const MyReduxMock = ({ children, initialState }) => {
+	return (
+		<ReduxMock configureStore={state => createStore(rootReducer, state)} initialState={initialState}>
+			{children}
+		</ReduxMock>
+	);
+};
+
+export default () => {
+	generateGameState().then(result => {
+		console.log(result);
 	});
-
-	for (let index = 0; index < 10; index++) {
-		let randomBoolean = Math.random() >= 0.5;
-		let nextX = randomBoolean ? (Math.random() >= 0.5 ? lastMove.to.x + 1 : lastMove.to.x - 1) : lastMove.to.x;
-		if (nextX <= 0 || nextX > 7) {
-			nextX = lastMove.from.x;
-			randomBoolean = !randomBoolean;
-		}
-
-		let nextY = !randomBoolean ? (Math.random() >= 0.5 ? lastMove.to.y + 1 : lastMove.to.y - 1) : lastMove.to.y;
-		if (nextY <= 0 || nextY > 7) {
-			nextY = lastMove.to.y;
-		}
-
-		lastMove = {
-			action: 1,
-			from: {
-				x: lastMove.to.x,
-				y: lastMove.to.y
-			},
-			to: {
-				x: nextX,
-				y: nextY
-			},
-			time: lastMove.time + 1000
-		};
-		myMockedReduxState.app.actionStack.push(lastMove);
-	}
-}
-
-export default (
-	<ReduxMock configureStore={state => createStore(rootReducer, state)} initialState={myMockedReduxState}>
-		<ActiveGame />
-	</ReduxMock>
-);
+	return (
+		<MyReduxMock initialState={rootReducer({}, { type: 'INIT' })}>
+			<ActiveGame />
+		</MyReduxMock>
+	);
+};
