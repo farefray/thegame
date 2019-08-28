@@ -246,6 +246,10 @@ function boardReducer(board, action) {
 }
 
 function ActiveGame() {
+	useEffect(() => {
+		console.log('ACTIVE GAME MOUNT');
+	}, []);
+
 	const [activeBattle, setActiveBattle] = useState(false);
 	const [units, setUnits] = useState([]);
 	/*
@@ -264,7 +268,7 @@ function ActiveGame() {
 	const [gameBoard, dispatchGameBoard] = useReducer(boardReducer, combinedBoard);
 
 	useEffect(() => {
-		if (!activeBattle && isActiveBattleGoing) {
+		if (!activeBattle && isActiveBattleGoing && actionStack.length) {
 			setActiveBattle(true);
 
 			const startBattleEvent = async actions => {

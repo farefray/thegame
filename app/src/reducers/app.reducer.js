@@ -139,6 +139,13 @@ export function app(state = {
         ...state
       }
     }
+    case 'DEBUG': {
+      // Used for cosmos debugging
+      console.log(action);
+      return {
+        ...action.newState.app
+      }
+    }
     case 'WAITINGROOM_STATUS': {
       return {
         ...state,
