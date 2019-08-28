@@ -21,7 +21,7 @@ export default function Pawn({ cellPosition, name, direction, idle }) {
 		creature = unitJson[name];
 	} catch (e) {}
 
-	let lookType = creature.looktype || 25;
+	let lookType = creature.lookType || 25;
 
 	return (
 		<div

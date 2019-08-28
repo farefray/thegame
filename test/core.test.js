@@ -106,7 +106,7 @@ describe('Core Modules', () => {
       gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[0].should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[0].should.have.property('looktype');
+      gameState.players[MOCK_SOCKETID_1].hand[0].should.have.property('lookType');
     });
 
     it('cannot buy pawn when no gold', async () => {

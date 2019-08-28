@@ -43,6 +43,7 @@ class GameBoard extends React.Component {
 
 	render() {
 		const { board, addToUnitArray, removeFromUnitArray, units, allUnits } = this.props;
+    // todo investigate allUnits, maybe its not updated when we pull mob from hand to board
 		const { gameBoard, isMounted } = this.state;
 
 		return (
