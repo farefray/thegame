@@ -1,5 +1,7 @@
 const fs = require('fs');
 const f = require('./f');
+const monsters = require('./monsters.json');
+
 /**
  * Default stat variables that are used if nothing is found in specific def
  */
@@ -25,8 +27,9 @@ const defaultStat = {
  * ☆ = &#9734;
  * Level is same as cost
  */
+
 async function loadMonstersJSON() {
-  return JSON.parse(fs.readFileSync('monsters.json', 'utf8'));
+  return monsters;
 }
 
 const monstersMap = loadMonstersJSON();

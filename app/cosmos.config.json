@@ -1,6 +1,9 @@
 {
-    "globalImports": ["./src/App.scss"],
+    "globalImports": [
+        "./src/App.scss"
+    ],
     "webpack": {
-        "configPath": "react-scripts/config/webpack.config"
+        "configPath": "react-scripts/config/webpack.config",
+        "overridePath": "./config-overrides.js"
     }
 }
