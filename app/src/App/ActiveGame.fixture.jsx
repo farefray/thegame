@@ -11,38 +11,71 @@ const BoardJS = require('../../../src/game/board.js');
 const Battle = require('../../../src/objects/Battle.js');
 
 // todo make it share functionality with jest and core.test.js
-const generateGameState = async function(boards) {
+const getCircularReplacer = () => {
+	const seen = new WeakSet();
+	return (key, value) => {
+		if (typeof value === 'object' && value !== null) {
+			if (seen.has(value)) {
+				return;
+			}
+			seen.add(value);
+		}
+		return value;
+	};
+};
+
+const defaultBoard = {
+	A: [
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 8
+		},
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 7
+		},
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 6
+		}
+	],
+	B: [
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 1
+		}
+	]
+};
+
+const generateGameState = async function({ boards }) {
 	const npcBoard = await BoardJS.createBoard(boards.A);
 	const playerBoard = await BoardJS.createBoard(boards.B);
 
 	const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
 	const battle = new Battle(combinedBoard);
 	const battleResult = await battle.execute();
-	return battleResult;
+	return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
 };
 
-const MyReduxMock = ({ children, initialState, boards }) => {
+const MyReduxMock = ({ children }) => {
+	const initialState = rootReducer({}, { type: 'INIT' });
+
 	return (
 		<ReduxMock configureStore={state => createStore(rootReducer, state)} initialState={initialState}>
-			<MyReduxContext initialState={initialState} boards={boards}>
-				{children}
-			</MyReduxContext>
+			{children}
 		</ReduxMock>
 	);
 };
 
-const MyReduxContext = ({ children, initialState, boards }) => {
+const MyReduxContext = ({ boards }) => {
 	const dispatch = useDispatch();
 
 	React.useEffect(() => {
 		generateGameState(boards).then(battleRoundResult => {
-			console.log('TCL: MyReduxContext -> battleRoundResult', battleRoundResult);
-			const newState = _.cloneDeep(initialState);
-			dispatch({
-				type: 'DEBUG',
-				newState
-			});
-
 			dispatch({
 				type: 'BATTLE_TIME',
 				actionStack: battleRoundResult.actionStack,
@@ -52,32 +85,15 @@ const MyReduxContext = ({ children, initialState, boards }) => {
 		});
 	}, []);
 
-	return children;
+	return <ActiveGame />;
 };
 
-export default () => {
-	const baseState = rootReducer({}, { type: 'INIT' });
-
-	const [boards, setBoards] = React.useState({
-		A: [
-			{
-				name: 'minotaur',
-				x: 1,
-				y: 8
-			}
-		],
-		B: [
-			{
-				name: 'minotaur',
-				x: 3,
-				y: 4
-			}
-		]
-	});
-
+const Fixture = boards => {
 	return (
-		<MyReduxMock initialState={baseState} boards={boards}>
-			<ActiveGame />
+		<MyReduxMock>
+			<MyReduxContext boards={boards} />
 		</MyReduxMock>
 	);
 };
+
+export default <Fixture boards={defaultBoard} />;

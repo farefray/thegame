@@ -63,7 +63,6 @@ var damageUnit = async (newBoard, target, value, unitPos, direction, actionMessa
 	return newBoard;
 };
 
-
 var renderMove = async (nextMove, board) => {
 	let newBoard = board;
 	// console.log('@Time: ', timeToWait, board);
@@ -196,13 +195,9 @@ const addToUnitArray = unit => {
 };
 
 function isShallowEqual(v, o) {
-	for (let key in v)
-		if (!(key in o) || v[key] !== o[key])
-			return false;
+	for (let key in v) if (!(key in o) || v[key] !== o[key]) return false;
 
-	for (let key in o)
-		if (!(key in v) || v[key] !== o[key])
-			return false;
+	for (let key in o) if (!(key in v) || v[key] !== o[key]) return false;
 
 	return true;
 }
@@ -250,6 +245,7 @@ function ActiveGame() {
 		console.log('ACTIVE GAME MOUNT');
 	}, []);
 
+	console.log('render');
 	const [activeBattle, setActiveBattle] = useState(false);
 	const [units, setUnits] = useState([]);
 	/*
@@ -286,12 +282,12 @@ function ActiveGame() {
 
 					currentTime = time;
 
-          if (actions.length === 0) {
-            console.log('END OF BATTLE: winningTeam');
-            await wait(1500);
-          }
-        }
-      }
+					if (actions.length === 0) {
+						console.log('END OF BATTLE: winningTeam');
+						await wait(1500);
+					}
+				}
+			};
 
 			startBattleEvent(_.clone(actionStack));
 		}
@@ -300,7 +296,10 @@ function ActiveGame() {
 	useEffect(() => {
 		setUnits(
 			Object.keys(combinedBoard).map(key => {
-				return { ...combinedBoard[key], id: key };
+				return {
+					...combinedBoard[key],
+					id: key
+				};
 			})
 		);
 
@@ -312,16 +311,20 @@ function ActiveGame() {
 
 	return (
 		<div className="gameDiv" tabIndex="0">
-			{/* <TopBar {...this.props} /> */}
+			{' '}
+			{/* <TopBar {...this.props} /> */}{' '}
 			<div className="flex wholeBody">
-				{/* <LeftBar {...this.props} /> */}
-				{appState.countdown > 0 && <Timer initialValue={appState.countdown} />}
-				<StateProvider initialState={{ ...appState }}>
-					<GameBoard board={gameBoard} units={units} addToUnitArray={addToUnitArray} removeFromUnitArray={removeFromUnitArray} allUnits={allUnits} />
-				</StateProvider>
-				{/* <GameBoardBottom {...this.props} /> */}
-				<RightPanel {...appState} />
-			</div>
+				{' '}
+				{/* <LeftBar {...this.props} /> */} {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}{' '}
+				<StateProvider
+					initialState={{
+						...appState
+					}}
+				>
+					<GameBoard board={gameBoard} units={units} addToUnitArray={addToUnitArray} removeFromUnitArray={removeFromUnitArray} allUnits={allUnits} />{' '}
+				</StateProvider>{' '}
+				{/* <GameBoardBottom {...this.props} /> */} <RightPanel {...appState} />{' '}
+			</div>{' '}
 		</div>
 	);
 }

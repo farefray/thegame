@@ -524,6 +524,7 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
  * Use together with combine boards
  */
 BoardJS.createBoard = async (inputList) => {
+  console.log("TCL: BoardJS.createBoard -> inputList", inputList)
   const board = {};
   for (let i = 0; i < inputList.length; i++) {
     const el = inputList[i];
