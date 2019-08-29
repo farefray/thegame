@@ -13,7 +13,6 @@ const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
 const Battle = rewire('../src/objects/Battle.js');
 
-const gameConstantsJS = rewire('../src/game_constants.js');
 const {
   TEAM
 } = rewire('../app/src/shared/constants');

@@ -1,57 +1,99 @@
 import React from 'react';
 import { ReduxMock } from 'react-cosmos-redux';
+import rootReducer from '../reducers';
 import { createStore } from 'redux';
+import _ from 'lodash';
+import { useDispatch } from 'react-redux';
 
 import ActiveGame from './ActiveGame';
-import myMockedReduxState from '../mockedstate.json';
-import rootReducer from '../reducers';
 
-const generateMoves = false; // emulating next actions for actionstack
-if (generateMoves) {
-	const last = myMockedReduxState.app.actionStack.length;
-	let lastMove = myMockedReduxState.app.actionStack[last - 1];
+const BoardJS = require('../../../src/game/board.js');
+const Battle = require('../../../src/objects/Battle.js');
 
-	myMockedReduxState.app.actionStack.push({
-		action: 1,
-		from: {
-			x: 2,
-			y: 3
+// todo make it share functionality with jest and core.test.js
+const getCircularReplacer = () => {
+	const seen = new WeakSet();
+	return (key, value) => {
+		if (typeof value === 'object' && value !== null) {
+			if (seen.has(value)) {
+				return;
+			}
+			seen.add(value);
+		}
+		return value;
+	};
+};
+
+const defaultBoard = {
+	A: [
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 8
 		},
-		to: null,
-		time: 5500
-	});
-
-	for (let index = 0; index < 10; index++) {
-		let randomBoolean = Math.random() >= 0.5;
-		let nextX = randomBoolean ? (Math.random() >= 0.5 ? lastMove.to.x + 1 : lastMove.to.x - 1) : lastMove.to.x;
-		if (nextX <= 0 || nextX > 7) {
-			nextX = lastMove.from.x;
-			randomBoolean = !randomBoolean;
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 7
+		},
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 6
 		}
-
-		let nextY = !randomBoolean ? (Math.random() >= 0.5 ? lastMove.to.y + 1 : lastMove.to.y - 1) : lastMove.to.y;
-		if (nextY <= 0 || nextY > 7) {
-			nextY = lastMove.to.y;
+	],
+	B: [
+		{
+			name: 'minotaur',
+			x: 0,
+			y: 1
 		}
+	]
+};
 
-		lastMove = {
-			action: 1,
-			from: {
-				x: lastMove.to.x,
-				y: lastMove.to.y
-			},
-			to: {
-				x: nextX,
-				y: nextY
-			},
-			time: lastMove.time + 1000
-		};
-		myMockedReduxState.app.actionStack.push(lastMove);
-	}
-}
+const generateGameState = async function({ boards }) {
+	const npcBoard = await BoardJS.createBoard(boards.A);
+	const playerBoard = await BoardJS.createBoard(boards.B);
 
-export default (
-	<ReduxMock configureStore={state => createStore(rootReducer, state)} initialState={myMockedReduxState}>
-		<ActiveGame />
-	</ReduxMock>
-);
+	const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+	const battle = new Battle(combinedBoard);
+	const battleResult = await battle.execute();
+	return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
+};
+
+const MyReduxMock = ({ children }) => {
+	const initialState = rootReducer({}, { type: 'INIT' });
+
+	return (
+		<ReduxMock configureStore={state => createStore(rootReducer, state)} initialState={initialState}>
+			{children}
+		</ReduxMock>
+	);
+};
+
+const MyReduxContext = ({ boards }) => {
+	const dispatch = useDispatch();
+
+	React.useEffect(() => {
+		generateGameState(boards).then(battleRoundResult => {
+			dispatch({
+				type: 'BATTLE_TIME',
+				actionStack: battleRoundResult.actionStack,
+				startBoard: battleRoundResult.startBoard,
+				winner: battleRoundResult.winner
+			});
+		});
+	}, []);
+
+	return <ActiveGame />;
+};
+
+const Fixture = boards => {
+	return (
+		<MyReduxMock>
+			<MyReduxContext boards={boards} />
+		</MyReduxMock>
+	);
+};
+
+export default <Fixture boards={defaultBoard} />;
