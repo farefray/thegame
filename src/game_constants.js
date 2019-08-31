@@ -58,26 +58,6 @@ const expRequiredPerLevel = {
 
 exports.getExpRequired = index => expRequiredPerLevel[String(index)];
 
-
-/**
- * Set level setups
- * 1,2,3 Npc levels
- */
-const roundSetConfiguration = {
-  1: async () => BoardJS.createBoard([
-    { name: 'dwarf', x: 0, y: 8 },
-  ]),
-  2: async () => BoardJS.createBoard([
-    { name: 'dwarf', x: 3, y: 6 },
-    { name: 'dwarf', x: 6, y: 8 },
-  ]),
-  3: async () => BoardJS.createBoard([
-    { name: 'dwarf', x: 3, y: 6 },
-    { name: 'dwarf', x: 6, y: 8 },
-    { name: 'dwarf', x: 1, y: 8 },
-  ])
-};
-
 const playerTestingBoards = {
   1: async () => BoardJS.createBoard([
     { name: 'minotaur', x: 3, y: 1 },
@@ -89,10 +69,33 @@ exports.getTestingPlayerBoard = async (boardID) => {
   return board;
 };
 
-exports.getSetRound = async (round) => {
-  const board = await roundSetConfiguration[String(round)]();
-  return board;
+
+const roundSetConfiguration = {
+  1: [
+    { name: 'dwarf', x: 0, y: 8 },
+  ],
+  2: [
+    { name: 'dwarf', x: 3, y: 6 },
+    { name: 'dwarf', x: 6, y: 8 },
+  ],
+  3: [
+    { name: 'dwarf', x: 3, y: 6 },
+    { name: 'dwarf', x: 6, y: 8 },
+    { name: 'dwarf', x: 1, y: 8 },
+  ],
+  4: [
+    { name: 'dwarf', x: 3, y: 6 },
+    { name: 'dwarf', x: 6, y: 8 },
+    { name: 'dwarf', x: 1, y: 8 },
+  ],
+  5: [
+    { name: 'dwarf', x: 3, y: 6 },
+    { name: 'dwarf', x: 6, y: 8 },
+    { name: 'dwarf', x: 1, y: 8 },
+  ]
 };
+
+exports.getSetRound = (round) => BoardJS.createBoard(roundSetConfiguration[round]);
 
 const gymLeader = {
   10: 'Brock'

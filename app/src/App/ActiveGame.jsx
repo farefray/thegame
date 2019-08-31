@@ -203,10 +203,12 @@ function isShallowEqual(v, o) {
 }
 
 const removeFromUnitArray = unitToRemove => {
+	console.log("TCL: unitToRemove", unitToRemove)
 	allUnits = allUnits.filter(unit => {
 		const res = isShallowEqual(unit, unitToRemove); // When we introduce UID for units, it should be compared by it
 		return !res;
 	});
+    console.log("TCL: allUnits", allUnits)
 };
 
 function boardReducer(board, action) {
@@ -220,7 +222,7 @@ function boardReducer(board, action) {
 		action.action // todo make it type
 	) {
 		case 'INIT': {
-			return _.clone(action.board);
+			return _.cloneDeep(action.board);
 		}
 		case ACTION_MOVE:
 			const reducedBoard = _.clone(board);
@@ -245,7 +247,6 @@ function ActiveGame() {
 		console.log('ACTIVE GAME MOUNT');
 	}, []);
 
-	console.log('render');
 	const [activeBattle, setActiveBattle] = useState(false);
 	const [units, setUnits] = useState([]);
 	/*
@@ -294,6 +295,7 @@ function ActiveGame() {
 	}, [activeBattle, isActiveBattleGoing, actionStack]);
 
 	useEffect(() => {
+		console.log('dispatchGameBoard!!')
 		setUnits(
 			Object.keys(combinedBoard).map(key => {
 				return {
@@ -309,13 +311,23 @@ function ActiveGame() {
 		});
 	}, [combinedBoard]);
 
+
+	// TODO move this to timer component
+	const [counter, setCounter] = useState(0);
+	useEffect(() => {
+		setCounter(appState.countdown);
+	}, [appState.countdown])
+
+	const MemoizedTimer = React.useMemo(() => <Timer value={counter} onTick={(val) => {
+		setCounter(val);
+	}}/>, [counter])
 	return (
 		<div className="gameDiv" tabIndex="0">
 			{' '}
 			{/* <TopBar {...this.props} /> */}{' '}
 			<div className="flex wholeBody">
 				{' '}
-				{/* <LeftBar {...this.props} /> */} {appState.countdown > 0 && <Timer initialValue={appState.countdown} />}{' '}
+				{/* <LeftBar {...this.props} /> */} {counter && MemoizedTimer}
 				<StateProvider
 					initialState={{
 						...appState

@@ -28,7 +28,7 @@ async function _calcDamageTaken(boardUnits) {
   // Each surviving piece does damage based on its level: 1+floor(level/3)
   // Level 1-2 units do 1 damage, 3-5 do 2 damage, 6-8 do 3 damage, level 9 do 4 damage
   while (!tempUnit.done) {
-    const stats = await pawns.getStats(boardUnits.get(tempUnit.value).get('name'));
+    const stats = pawns.getMonsterStats(boardUnits.get(tempUnit.value).get('name'));
     const level = +stats.get('cost');
     sum += 1 + Math.floor(level / 3);
     tempUnit = keysIter.next();

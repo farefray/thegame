@@ -17,7 +17,7 @@ const BattleJS = {};
  * Heals unit at unitPos by heal amount, not over max hp
  */
 async function _healUnit(board, unitPos, heal) {
-  const maxHp = (await pawns.getStats(board.get(unitPos).get('name')))['hp'];
+  const maxHp = (pawns.getMonsterStats(board.get(unitPos).get('name')))['hp'];
   const newHp = (board.getIn([unitPos, 'hp']) + heal >= maxHp ? maxHp : board.getIn([unitPos, 'hp']) + heal);
   const hpHealed = newHp - board.getIn([unitPos, 'hp']);
   return {
@@ -161,7 +161,7 @@ async function _useAbility(board, ability, damageParam, unitPos, target) {
  * Convert damage in percentage to value
  */
 async function _dmgPercToHp(board, unitPos, percentDmg) {
-  const maxHp = (await pawns.getStats(board.get(unitPos).get('name')))['hp'];
+  const maxHp = (pawns.getMonsterStats(board.get(unitPos).get('name')))['hp'];
   return Math.round(maxHp * percentDmg);
 }
 
@@ -345,7 +345,7 @@ BattleJS.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
   let cheapestCostIndex = [];
   while (!temp.done) {
     const unitPos = temp.value;
-    const cost = (await pawns.getStats(board.get(unitPos).get('name'))).get('cost');
+    const cost = (pawns.getMonsterStats(board.get(unitPos).get('name'))).get('cost');
     if (cost < cheapestCost) {
       cheapestCost = cost;
       cheapestCostIndex = [unitPos];
@@ -493,6 +493,7 @@ BattleJS.setup = async (state) => {
   }
 
   const round = state.get('round');
+  console.log("TCL: BattleJS.setup -> round", round)
   const npcBoard = await gameConstantsJS.getSetRound(round);
 
 
@@ -563,7 +564,7 @@ BattleJS.removeHpBattle = async (board, unitPos, hpToRemove, percent = false) =>
   // console.log('@removeHpBattle', hpToRemove)
   let newHp = currentHp - hpToRemove;
   if (percent) {
-    const maxHp = (await pawns.getStats(board.get(unitPos).get('name')))['hp'];
+    const maxHp = (pawns.getMonsterStats(board.get(unitPos).get('name')))['hp'];
     newHp = await Math.round(currentHp - (maxHp * hpToRemove)); // HptoRemove is percentage to remove
   }
   if (newHp <= 0) {

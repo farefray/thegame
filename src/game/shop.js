@@ -46,7 +46,7 @@ ShopJS.refillPieces = async (pieces, discardedPieces) => {
   console.log(`@refillPieces Refilling ${discardedPieces.size} units (Pieces size = ${pieces.size})`); // pieceStorage
   for (let i = 0; i < discardedPieces.size; i++) {
     const name = discardedPieces[i];
-    const pokeStats = await pawns.getStats(name);
+    const pokeStats = pawns.getMonsterStats(name);
     const cost = pokeStats.get('cost');
     if (pokeStats.get('evolves_from')) {
       console.log('REFILLING NOT BASE UNIT @refillPieces', name);

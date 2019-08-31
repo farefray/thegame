@@ -1,5 +1,3 @@
-const fs = require('fs');
-const f = require('./f');
 const monsters = require('./monsters.json');
 
 /**
@@ -20,36 +18,13 @@ const defaultStat = {
   next_move: 0, // Next move: time for next move
 };
 
-/**
- * Read from json file
- * Convert to immutable Map structure
- *
- * ☆ = &#9734;
- * Level is same as cost
- */
-
-async function loadMonstersJSON() {
-  return monsters;
-}
-
-const monstersMap = loadMonstersJSON();
-
-// todo perf this, maybe its reading json every function call?
-exports.getStats = async (name) => {
-  const mobsMap = await monstersMap;
-  // console.log('getStats', name);//, pokeMap.get(name.toLowerCase()));
-  if (!name) {
-    console.log('@getStats undefined', name);
-  }
-
-  return mobsMap[name.toLowerCase()];
-};
+const Pawns = {};
+Pawns.getMonsterStats = (name) => monsters[name.toLowerCase()];
 
 const getBaseLocal = async (name) => {
-  const mobsMap = await monstersMap;
-  const unitStats = mobsMap[name.toLowerCase()];
+  const unitStats = monsters[name.toLowerCase()];
   // console.log('@getBaseLocal', unitStats, name, unitStats.get('evolves_from'));
-  if (f.isUndefined(unitStats.evolves_from)) { // Base level
+  if (!unitStats.evolves_from) { // Base level
     // console.log('@getBase This pokemon is a base unit: ', unitStats.get('name'), unitStats.get('evolves_from'), f.isUndefined(unitStats.get('evolves_from')));
     return unitStats.name;
   }
@@ -58,12 +33,11 @@ const getBaseLocal = async (name) => {
   return getBaseLocal(unitStats.evolves_from);
 };
 
-exports.getBaseMonster = name => getBaseLocal(name);
+Pawns.getBaseMonster = name => getBaseLocal(name);
 
 const getUnitTierLocal = async (name, counter = 1) => {
-  const mobsMap = await monstersMap;
-  const unitStats = mobsMap[name.toLowerCase()];
-  if (f.isUndefined(unitStats.evolves_from)) { // Base level
+  const unitStats = monsters[name.toLowerCase()];
+  if (!unitStats.evolves_from) { // Base level
     // console.log('@getBase This pokemon is a base unit: ', unitStats.get('name'), unitStats.get('evolves_from'), f.isUndefined(unitStats.get('evolves_from')));
     return counter;
   }
@@ -72,9 +46,11 @@ const getUnitTierLocal = async (name, counter = 1) => {
   return getUnitTierLocal(unitStats.evolves_from, counter + 1);
 };
 
-exports.getUnitTier = name => getUnitTierLocal(name);
+Pawns.getUnitTier = name => getUnitTierLocal(name);
 
-exports.getMonsterMap = async () => monstersMap;
+Pawns.getMonsterMap = async () => monsters;
 
 
-exports.getStatsDefault = stat => defaultStat[stat];
+Pawns.getStatsDefault = stat => defaultStat[stat];
+
+module.exports = Pawns;

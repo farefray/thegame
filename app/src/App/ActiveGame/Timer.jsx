@@ -1,38 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
-function Timer ({ initialValue }) {
-  const [count, setCount] = useState(initialValue);
-  const [active, setActive] = useState(initialValue > 0);
-
-  const savedCallback = useRef();
-
+function Timer ({ value, onTick }) {
   useEffect(() => {
-    savedCallback.current = () => {
-      setCount(count - 1);
-    };
-  });
-
-  useEffect(() => {
-    function tick () {
-      savedCallback.current();
-    }
-
-    let id;
-    if (active) {
-      id = setInterval(tick, 1000);
-    }
+    let id = setTimeout(() => {
+      onTick(value - 1);
+    }, 1000);
 
     return () => {
-      return id && clearInterval(id)
+      return id && clearTimeout(id)
     };
-  }, [active]);
-
-  if (count <= 0 && active) {
-    setActive(false);
-  }
+  }, [value, onTick]);
 
   return <div className='timerDiv'>
-    <div className='text_shadow timerText'>{count}</div>
+    <div className='text_shadow timerText'>{value}</div>
   </div>;
 }
 

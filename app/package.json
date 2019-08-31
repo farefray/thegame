@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "cross-env BROWSER=none react-app start",
+    "start": "cross-env BROWSER=none react-scripts start",
     "startboth": "concurrently \"react-scripts start\" \"node ../src/index.js\"",
-    "build": "react-app build",
-    "test": "react-app test --env=jsdom",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "lintfix": "eslint --fix .",

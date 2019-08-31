@@ -148,9 +148,14 @@ function SocketController(socket, io) {
       });
 
       // Schedule battle start
-      setTimeout(async () => {
+      const scueduleNextRound = () => setTimeout(async () => {
         // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
         const preBattleSession = sessionsStore.get(sessionID);
+
+        if (!preBattleSession) {
+          // no more session exists, f.e. players has disconnected
+        }
+
         const preBattleState = preBattleSession.get('state');
         const battleRoundResult = await BattleController.setup(preBattleState);
         clients.forEach((socketID) => {
@@ -182,18 +187,23 @@ function SocketController(socket, io) {
               preBattleState.dropPlayer(socketID);
             } else {
               io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
-              io.to(socketID).emit('SET_ONGOING_BATTLE', false);
+              io.to(socketID).emit('SET_ONGOING_BATTLE', false, STARTBATTLE_TIMER);
             }
 
             if (preBattleState.get('amountOfPlayers') === 0) {
               // game end
               io.to(socketID).emit('END_GAME', socketID);
+            } else {
+              sessionsStore.store(preBattleSession);
+              scueduleNextRound();
             }
           });
         }, battleRoundResult.battleTime + EXTRA_TIME);
 
         // round ended, next round must be scheduled?
-      }, STARTBATTLE_TIMER); // TODO better way
+      }, STARTBATTLE_TIMER);
+
+      scueduleNextRound();
     });
   });
 
@@ -303,14 +313,14 @@ function SocketController(socket, io) {
   });
 
   socket.on('GET_STATS', async (name) => {
-    const stats = pawns.getStats(name);
+    const stats = pawns.getMonsterStats(name);
     const ability = await abilitiesJS.getAbility(name);
     let newStats = (await stats).set('abilityType', ability.get('type'));
     if (ability.get('displayName')) {
       newStats = newStats.set('abilityDisplayName', ability.get('displayName'));
     }
     if (typeof newStats.get('evolves_to') === 'string') { // && !Array.isArray(newStats.get('evolves_to').toJS())) { // Test
-      const evolStats = await pawns.getStats(newStats.get('evolves_to'));
+      const evolStats = await pawns.getMonsterStats(newStats.get('evolves_to'));
       newStats = newStats.set('snd_evolves_to', evolStats.get('evolves_to'));
     }
     f.p('Retrieving stats for', name); // , newStats);

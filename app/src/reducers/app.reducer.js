@@ -371,7 +371,8 @@ export function app(state = {
     case 'SET_ONGOING_BATTLE': {
       state = {
         ...state,
-        isActiveBattleGoing: action.value
+        isActiveBattleGoing: action.value,
+        countdown: action.countdown
       }
       break;
     }

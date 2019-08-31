@@ -124,7 +124,7 @@ exports.purchasePawn = async (state, playerIndex, pieceIndex) => {
   * remove gold
   * set player state
   */
-  const boardUnit = await BoardJS.getBoardUnit(unit.name);
+  const boardUnit = BoardJS.getBoardUnit(unit.name);
   await player.addToHand(boardUnit);
   delete player.shop[pieceIndex];
   player.gold -= unit.cost;

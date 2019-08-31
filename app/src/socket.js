@@ -45,8 +45,8 @@ export const configureSocket = dispatch => {
     dispatch({ type: 'UPDATED_STATE', newState: state});
   });
 
-  socket.on('SET_ONGOING_BATTLE', value => {
-    dispatch({ type: 'SET_ONGOING_BATTLE', value: value});
+  socket.on('SET_ONGOING_BATTLE', (value, timer) => {
+    dispatch({ type: 'SET_ONGOING_BATTLE', value: value, countdown: timer / 1000});
   });
 
   socket.on('UPDATE_PLAYER', (index, player) => {

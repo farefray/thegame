@@ -59,7 +59,7 @@ async function _countUniqueOccurences(board, teamParam = '0') {
  */
 async function _checkPieceUpgrade(board, playerIndex, piece, position) {
   const name = piece['name'];
-  const stats = await pawns.getStats(name);
+  const stats = pawns.getMonsterStats(name);
   if (f.isUndefined(stats['evolves_to'])) {
     return {
       board,
@@ -100,9 +100,9 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
       evolvesTo = evolvesUnit[f.getRandomInt(evolvesTo.length)];
     }
     // Check if multiple evolutions exist, random between
-    const newPiece = await BoardJS.getBoardUnit(evolvesTo); // not needed I guess
+    const newPiece = BoardJS.getBoardUnit(evolvesTo); // not needed I guess
     // TODO: List -> handle differently
-    const evolutionDisplayName = (await pawns.getStats(evolvesTo)).get('displayName');
+    const evolutionDisplayName = (pawns.getMonsterStats(evolvesTo)).get('displayName');
     // console.log('evolutionDisplayName', evolutionDisplayName);
     const nextPieceUpgrade = await _checkPieceUpgrade(board, playerIndex, newPiece, position);
     // Get both upgrades
@@ -120,8 +120,8 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
 /**
  * Create unit for board/hand placement from name and spawn position
  */
-BoardJS.getBoardUnit = async (name) => {
-  const unitInfo = await pawns.getStats(name); // this may be a overuse. Maybe units should be always Uni
+BoardJS.getBoardUnit = (name) => {
+  const unitInfo = pawns.getMonsterStats(name); // this may be a overuse. Maybe units should be always Uni
   if (f.isUndefined(unitInfo)) console.log('UNDEFINED:', name);
   // console.log('@getBoardUnit', name, unitInfo)
   return unitInfo;
@@ -280,7 +280,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
  * @TODO maybe we need to use BattleUnit class here instead -.- !!!
  */
 BoardJS.createBattleUnit = async (unit, unitPos, team) => {
-  const unitStats = await pawns.getStats(unit['name']);
+  const unitStats = pawns.getMonsterStats(unit['name']);
   const ability = await abilitiesJS.getAbility(unit['name']);
 
   const battleUnit = _.cloneDeep(unit);
@@ -460,7 +460,7 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
  */
 BoardJS.discardBaseUnits = async (stateParam, playerIndex, name, depth = 1) => {
   let state = stateParam;
-  const unitStats = await pawns.getStats(name);
+  const unitStats = pawns.getMonsterStats(name);
   const evolutionFrom = unitStats.get('evolves_from');
   // console.log('@discardBaseUnits start', name, depth);
   if (f.isUndefined(evolutionFrom)) { // Base level
@@ -500,7 +500,7 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
     pieceTemp = state.getIn(['players', playerIndex, 'board', piecePosition]);
   }
   const piece = pieceTemp;
-  const unitStats = await pawns.getStats(piece.get('name'));
+  const unitStats = pawns.getMonsterStats(piece.get('name'));
   const cost = unitStats.get('cost');
   const gold = state.getIn(['players', playerIndex, 'gold']);
   let newState = state.setIn(['players', playerIndex, 'gold'], +gold + +cost);
@@ -528,7 +528,7 @@ BoardJS.createBoard = async (inputList) => {
   const board = {};
   for (let i = 0; i < inputList.length; i++) {
     const el = inputList[i];
-    const unit = await BoardJS.getBoardUnit(el['name']);
+    const unit = BoardJS.getBoardUnit(el['name']);
     board[f.pos(el.x, el.y)] = unit;
   }
   return board;

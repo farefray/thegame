@@ -29,6 +29,7 @@ export default class Unit extends React.Component {
 	componentWillUnmount() {
 		this.props.removeFromUnitArray(this);
 	}
+
 	onAction(action) {
 		switch (action.action) {
 			case ACTION_MOVE:
