@@ -30,13 +30,23 @@ export default class Unit extends React.Component {
 		this.props.removeFromUnitArray(this);
 	}
 
-	onAction(action) {
+	/**
+	 * 
+	 * @param {Object} action Action happened
+	 * @param {Boolean} isTarget Is current unit being a target for this action?
+	 */
+	onAction(action, isTarget) {
 		switch (action.action) {
 			case ACTION_MOVE:
 				action.to && this.move(action.to.x, action.to.y);
 				break;
 			case ACTION_ATTACK:
-				action.to && this.attack(action.to.x, action.to.y, action.damage);
+				isTarget ? (() => {
+					// displaying hp remove after a delay, for attack to finish. But this has to be done better way, I'll redo
+					setTimeout(() => {
+						this.takeDamage(action.damage)
+					}, 500);
+				})() : (action.to && this.attack(action.to.x, action.to.y, action.damage));
 				break;
 			default:
 				break;
@@ -73,10 +83,6 @@ export default class Unit extends React.Component {
 		return direction;
 	}
 
-	getUnitAtCoordinates(x, y) {
-		return this.props.allUnits.find(unit => unit.state.x === x && unit.state.y === y);
-	}
-
 	move(x, y) {
 		const { top, left } = this.getPositionFromCoordinates(x, y);
 		this.setState({
@@ -90,9 +96,7 @@ export default class Unit extends React.Component {
 		});
 	}
 
-	attack(x, y, damage) {
-		const target = this.getUnitAtCoordinates(x, y);
-
+	attack(x, y) {
 		const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
 		const { top, left } = this.state;
 		const midpointTop = (targetTop + top) / 2;
@@ -102,7 +106,6 @@ export default class Unit extends React.Component {
 			isMoving: false
 		});
 		setTimeout(() => {
-			target.takeDamage(damage);
 			this.setState({
 				top: midpointTop,
 				left: midpointLeft,
@@ -111,7 +114,7 @@ export default class Unit extends React.Component {
 			setTimeout(() => {
 				this.setState({ top, left });
 			}, 100);
-		}, Math.random() * 700);
+		}, 500); // todo better than constant delay
 	}
 
 	takeDamage(damage) {

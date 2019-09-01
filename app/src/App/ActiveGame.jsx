@@ -212,9 +212,12 @@ const removeFromUnitArray = unitToRemove => {
 };
 
 function boardReducer(board, action) {
+	// todo instead of iterating all, maybe better do it indexed(allUnits[action.from/to].onAction())
 	for (const unit of allUnits) {
 		if (action.from && unit.state.x === action.from.x && unit.state.y === action.from.y) {
 			unit.onAction(action);
+		} else if (action.to && unit.state.x === action.to.x && unit.state.y === action.to.y) {
+			unit.onAction(action, true);
 		}
 	}
 
@@ -236,7 +239,9 @@ function boardReducer(board, action) {
 
 			return reducedBoard;
 		case ACTION_ATTACK:
-			return board;
+			console.log("TCL: boardReducer -> action", action)
+
+			return _.clone(board);
 		default:
 			throw new Error();
 	}
@@ -333,7 +338,7 @@ function ActiveGame() {
 						...appState
 					}}
 				>
-					<GameBoard board={gameBoard} units={units} addToUnitArray={addToUnitArray} removeFromUnitArray={removeFromUnitArray} allUnits={allUnits} />{' '}
+					<GameBoard board={gameBoard} units={units} addToUnitArray={addToUnitArray} removeFromUnitArray={removeFromUnitArray} />{' '}
 				</StateProvider>{' '}
 				{/* <GameBoardBottom {...this.props} /> */} <RightPanel {...appState} />{' '}
 			</div>{' '}

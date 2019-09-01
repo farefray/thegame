@@ -42,8 +42,7 @@ class GameBoard extends React.Component {
 	}
 
 	render() {
-		const { board, addToUnitArray, removeFromUnitArray, units, allUnits } = this.props;
-	    // todo investigate allUnits, maybe its not updated when we pull mob from hand to board and between rounds
+		const { board, addToUnitArray, removeFromUnitArray, units } = this.props;
 		const { gameBoard, isMounted } = this.state;
 
 		return (
@@ -59,7 +58,6 @@ class GameBoard extends React.Component {
 								gameBoardHeight={gameBoardHeight}
 								removeFromUnitArray={removeFromUnitArray}
 								addToUnitArray={addToUnitArray}
-								allUnits={allUnits}
 							/>
 						))}
 					<DndProvider backend={HTML5Backend}>
