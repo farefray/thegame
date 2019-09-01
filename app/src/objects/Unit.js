@@ -24,7 +24,10 @@ export default class Unit extends React.Component {
 			health: unit.hp
 		};
 
-		props.onSpawn(this);
+		props.onLifecycle({
+			type: 'SPAWN',
+			unit: this
+		});
 	}
 
 	get id() {
@@ -32,7 +35,10 @@ export default class Unit extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.props.onDestroy(this);
+		this.props.onLifecycle({
+			type: 'DESTROY',
+			unit: this
+		});
 	}
 
 	/**
