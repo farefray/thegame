@@ -1,10 +1,9 @@
-
 const _ = require('lodash');
 
 function BattleUnit(unit, coords) {
   _.assign(this, unit);
-  this.x = +(coords.x);
-  this.y = +(coords.y);
+  this.x = +coords.x;
+  this.y = +coords.y;
 
   // internal
   this._uid = this.getBoardPosition(); // uid = starting position for mob
@@ -12,11 +11,11 @@ function BattleUnit(unit, coords) {
   return this;
 }
 
-BattleUnit.prototype.getUID = function () {
+BattleUnit.prototype.getUID = function() {
   return this._uid;
 };
 
-BattleUnit.prototype.nextAction = function (actionTime) {
+BattleUnit.prototype.nextAction = function(actionTime) {
   if (actionTime) {
     this._next_action = this._next_action + actionTime;
   }
@@ -24,57 +23,56 @@ BattleUnit.prototype.nextAction = function (actionTime) {
   return this._next_action;
 };
 
-BattleUnit.prototype.canCast = function () {
+BattleUnit.prototype.canCast = function() {
   return false;
 };
 
-BattleUnit.prototype.hasTarget = function () {
+BattleUnit.prototype.hasTarget = function() {
   return !!this._target;
 };
 
-BattleUnit.prototype.getTarget = function () {
+BattleUnit.prototype.getTarget = function() {
   return this._target;
 };
 
 /**
  * @param {Target} target {position: {Position}, range: {Int}}
  */
-BattleUnit.prototype.setTarget = function (target) {
+BattleUnit.prototype.setTarget = function(target) {
   this._target = target;
 };
 
-BattleUnit.prototype.oppositeTeam = function () {
+BattleUnit.prototype.oppositeTeam = function() {
   return 1 - this.team;
 };
 
-BattleUnit.prototype.move = function (coords) {
-  this.x = +(coords.x);
-  this.y = +(coords.y);
+BattleUnit.prototype.move = function(coords) {
+  this.x = +coords.x;
+  this.y = +coords.y;
 
   this.nextAction(this.speed);
 };
 
-
-BattleUnit.prototype.getBoardPosition = function () {
+BattleUnit.prototype.getBoardPosition = function() {
   return `${this.x},${this.y}`;
 };
 
-BattleUnit.prototype.getPosition = function () {
+BattleUnit.prototype.getPosition = function() {
   return {
     x: this.x,
     y: this.y
   };
 };
 
-BattleUnit.prototype.isAlive = function () {
+BattleUnit.prototype.isAlive = function() {
   return this.hp > 0;
 };
 
-BattleUnit.prototype.removeHealth = function (amount) {
+BattleUnit.prototype.removeHealth = function(amount) {
   this.hp = this.hp <= amount ? 0 : this.hp - amount;
 };
 
-BattleUnit.prototype.isTargetInRange = function () {
+BattleUnit.prototype.isTargetInRange = function() {
   const target = this.hasTarget() && this.getTarget();
 
   if (target) {
@@ -98,7 +96,7 @@ BattleUnit.prototype.isTargetInRange = function () {
  * @description Mutating both units by attacking
  * @warning Mutating objects
  */
-BattleUnit.prototype.doAttack = function (targetUnit) {
+BattleUnit.prototype.doAttack = function(targetUnit) {
   // TODO better stuff
   const damageRatio = this.attack / targetUnit.defense;
   const factor = 0.125 * this.attack * damageRatio;
