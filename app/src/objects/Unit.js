@@ -36,7 +36,7 @@ export default class Unit extends React.Component {
 				action.to && this.move(action.to.x, action.to.y);
 				break;
 			case ACTION_ATTACK:
-				action.to && this.attack(action.to.x, action.to.y);
+				action.to && this.attack(action.to.x, action.to.y, action.damage);
 				break;
 			default:
 				break;
@@ -90,7 +90,7 @@ export default class Unit extends React.Component {
 		});
 	}
 
-	attack(x, y) {
+	attack(x, y, damage) {
 		const target = this.getUnitAtCoordinates(x, y);
 
 		const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
@@ -102,7 +102,7 @@ export default class Unit extends React.Component {
 			isMoving: false
 		});
 		setTimeout(() => {
-			target.takeDamage(7.5);
+			target.takeDamage(damage);
 			this.setState({
 				top: midpointTop,
 				left: midpointLeft,
