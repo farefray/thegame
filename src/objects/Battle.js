@@ -1,6 +1,5 @@
 import ActionQueue from './ActionQueue';
 
-const EasyStar = require('easystarjs');
 const _ = require('lodash');
 const f = require('../f');
 const { kdTree } = require('../alg/kdTree');
@@ -10,9 +9,6 @@ const Position = require('../../app/src/objects/Position');
 const BattleUnit = require('./BattleUnit');
 
 const { TEAM } = require('../../app/src/shared/constants');
-
-const FREE_TILE = 0;
-const TAKEN_TILE = 1;
 
 const ACTION_MOVE = 1; // todo share with frontend
 const ACTION_ATTACK = 2;
@@ -37,19 +33,6 @@ export default class Battle {
       [TEAM.B]: []
     };
 
-    // used for pathfinding (todo func)
-    const generateGrid = (width, height) => {
-      const grid = [];
-      for (let y = 0; y < height; y++) {
-        grid.push([]);
-        for (let x = 0; x < width; x++) {
-          grid[y][x] = FREE_TILE;
-        }
-      }
-      return grid;
-    };
-    this.pathMap = generateGrid(9, 9);
-
     const units = [];
     this.occupiedTileSet = new Set();
     // internal setup
@@ -63,17 +46,16 @@ export default class Battle {
       };
 
       this.coordsBoardMap[battleUnit.team].push(coordPos);
-      this.pathMap[battleUnit.x][battleUnit.y] = TAKEN_TILE;
       this.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
     }
-    // algs
-    this.pathfinder = new EasyStar.js();
-    this.pathfinder.setGrid(this.pathMap);
-    this.pathfinder.setAcceptableTiles([FREE_TILE]);
 
     this.units = _.shuffle(units);
     this.actionQueue = new ActionQueue(this.units, this.calculateAction.bind(this));
+
+    console.time('test');
     this.actionQueue.execute();
+    console.log(this.actionStack.length);
+    console.timeEnd('test');
   }
 
   calculateAction({ timestamp, unit }) {
@@ -227,10 +209,8 @@ export default class Battle {
       }
     }
 
-    this.pathMap[fromPosition.x][fromPosition.y] = FREE_TILE;
     this.occupiedTileSet.delete(`${fromPosition.x},${fromPosition.y}`);
     if (position) {
-      this.pathMap[battleUnit.x][battleUnit.y] = TAKEN_TILE;
       this.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
     }
 
