@@ -42,7 +42,7 @@ class GameBoard extends React.Component {
 	}
 
 	render() {
-		const { board, addToUnitArray, removeFromUnitArray, units } = this.props;
+		const { board, onSpawn, onDestroy, units } = this.props;
 		const { gameBoard, isMounted } = this.state;
 
 		return (
@@ -56,8 +56,8 @@ class GameBoard extends React.Component {
 								getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
 								gameBoardWidth={gameBoardWidth}
 								gameBoardHeight={gameBoardHeight}
-								removeFromUnitArray={removeFromUnitArray}
-								addToUnitArray={addToUnitArray}
+								onDestroy={onDestroy}
+								onSpawn={onSpawn}
 							/>
 						))}
 					<DndProvider backend={HTML5Backend}>

@@ -8,7 +8,6 @@ const ACTION_ATTACK = 2;
 export default class Unit extends React.Component {
 	constructor(props) {
 		super(props);
-		props.addToUnitArray(this);
 
 		const { unit } = props;
 		const [x, y = 0] = unit.position.split(',');
@@ -24,10 +23,16 @@ export default class Unit extends React.Component {
 			maxHealth: unit.hp,
 			health: unit.hp
 		};
+
+		props.onSpawn(this);
+	}
+
+	get id() {
+		return `${this.state.x},${this.state.y}`;
 	}
 
 	componentWillUnmount() {
-		this.props.removeFromUnitArray(this);
+		this.props.onDestroy(this);
 	}
 
 	/**
