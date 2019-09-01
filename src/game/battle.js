@@ -1,3 +1,5 @@
+import Battle from '../objects/Battle';
+
 const _ = require('lodash');
 const pawns = require('../pawns');
 const f = require('../f');
@@ -9,6 +11,7 @@ const BoardJS = require('./board');
 const UnitJS = require('./unit');
 
 const BattleJS = {};
+
 
 /** Private methods */
 
@@ -381,10 +384,6 @@ BattleJS.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
   }
   return newState.getIn(['players', playerIndex]);
 };
-
-
-const Battle = require('../objects/Battle');
-
 
 async function buildMatchups(players) {
   let matchups = {};
