@@ -4,42 +4,48 @@ import { DIRECTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
 const ACTION_MOVE = 1; // todo share with backend
 const ACTION_ATTACK = 2;
+const ACTION_RESET = 'RESET';
 
 export default class Unit extends React.Component {
-	constructor(props) {
-		super(props);
+  constructor(props) {
+    super(props);
 
     const { unit } = props;
     const [x, y = 0] = unit.position.split(',');
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
-		this.state = {
-			top,
-			left,
-			x: parseInt(x, 10),
-			y: parseInt(y, 10),
-			direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
-			isMoving: false,
-			maxHealth: unit.hp,
-			health: unit.hp
-		};
+    this.state = {
+      top,
+      left,
+      x: parseInt(x, 10),
+      y: parseInt(y, 10),
+      initPosition: {
+        x: parseInt(x, 10),
+        y: parseInt(y, 10)
+      },
+      direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
+      isMoving: false,
+      maxHealth: unit.hp,
+      health: unit.hp
+    };
 
-		props.onLifecycle({
-			type: 'SPAWN',
-			unit: this
-		});
-	}
+    props.onLifecycle({
+      type: 'SPAWN',
+      unit: this
+    });
+  }
 
-	get id() {
-		return `${this.state.x},${this.state.y}`;
-	}
+  get id() {
+    const { initPosition } = this.state;
+    return `${initPosition.x},${initPosition.y}`;
+  }
 
-	componentWillUnmount() {
-		this.props.onLifecycle({
-			type: 'DESTROY',
-			unit: this
-		});
-	}
+  componentWillUnmount() {
+    this.props.onLifecycle({
+      type: 'DESTROY',
+      unit: this
+    });
+  }
 
   /**
    *
@@ -48,10 +54,19 @@ export default class Unit extends React.Component {
    */
   onAction(action, isTarget) {
     switch (action.action) {
-      case ACTION_MOVE:
+      case ACTION_RESET: {
+        const { initPosition } = this.state;
+        this.move(initPosition.x, initPosition.y, {
+          instant: true,
+          direction: DIRECTION.SOUTH,
+        });
+        break;
+      }
+      case ACTION_MOVE: {
         action.to && this.move(action.to.x, action.to.y);
         break;
-      case ACTION_ATTACK:
+      }
+      case ACTION_ATTACK: {
         isTarget
           ? (() => {
               // displaying hp remove after a delay, for attack to finish. But this has to be done better way, I'll redo
@@ -61,8 +76,10 @@ export default class Unit extends React.Component {
             })()
           : action.to && this.attack(action.to.x, action.to.y, action.damage);
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
   }
 
@@ -96,16 +113,28 @@ export default class Unit extends React.Component {
     return direction;
   }
 
-  move(x, y) {
+  /**
+   * @class MoveOptions
+   * @typedef {Object} MoveOptions
+   * @property {Boolean} instant
+   * @property {Direction} direction
+   */
+  /**
+   * @param {Integer} x
+   * @param {Integer} y
+   * @param {MoveOptions} options
+   * @memberof Unit
+   */
+  move(x, y, options = {}) {
     const { top, left } = this.getPositionFromCoordinates(x, y);
     this.setState({
       x,
       y,
       top,
       left,
-      transition: 'transform 0.6s linear',
-      direction: this.getDirectionToTarget(x, y),
-      isMoving: true
+      transition: !options.instant ? 'transform 0.6s linear' : 'auto',
+      direction: options.direction || this.getDirectionToTarget(x, y),
+      isMoving: !options.instant ? true : false
     });
   }
 
