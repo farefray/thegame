@@ -1,4 +1,5 @@
 import ActionQueue from './ActionQueue';
+import Pathfinder from './Pathfinder';
 
 const _ = require('lodash');
 const f = require('../f');
@@ -34,7 +35,7 @@ export default class Battle {
     };
 
     const units = [];
-    this.occupiedTileSet = new Set();
+    this.pathfinder = new Pathfinder({ gridWidth: 8, gridHeight: 8 });
     // internal setup
     for (const boardPos in board) {
       const battleUnit = new BattleUnit(board[boardPos], f.coords(boardPos)); // maybe f.* is overhead
@@ -46,7 +47,7 @@ export default class Battle {
       };
 
       this.coordsBoardMap[battleUnit.team].push(coordPos);
-      this.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
+      this.pathfinder.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
     }
 
     this.units = _.shuffle(units);
@@ -54,8 +55,22 @@ export default class Battle {
 
     console.time('test');
     this.actionQueue.execute();
+    this.setWinner();
     console.log(this.actionStack.length);
     console.timeEnd('test');
+  }
+
+  setWinner() {
+    if (!this.coordsBoardMap[TEAM.A].length && !this.coordsBoardMap[TEAM.B].length) {
+      this.winner = TEAM.NONE;
+    }
+    if (!this.coordsBoardMap[TEAM.A].length) {
+      this.winner = TEAM.B;
+    }
+    if (!this.coordsBoardMap[TEAM.B].length) {
+      this.winner = TEAM.A;
+    }
+    this.playerDamage = 5;
   }
 
   calculateAction({ timestamp, unit }) {
@@ -77,7 +92,7 @@ export default class Battle {
       // update board
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
-        this.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
+        this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
         this.moveUnit(targetUnit, null, timestamp);
         unit.setTarget(null);
       }
@@ -87,81 +102,9 @@ export default class Battle {
       unit.setTarget(closestTarget);
       if (!closestTarget) return;
       // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
-      const { x, y } = this.findPath({ x: unit.x, y: unit.y, targetX: closestTarget.x, targetY: closestTarget.y });
+      const { x, y } = this.pathfinder.findPath({ x: unit.x, y: unit.y, targetX: closestTarget.x, targetY: closestTarget.y });
       this.moveUnit(unit, { x, y }, timestamp);
     }
-  }
-
-  findPath({ x, y, targetX, targetY }) {
-    const normalize = number => {
-      if (number < 0) {
-        return -1;
-      }
-      if (number > 0) {
-        return 1;
-      }
-      return 0;
-    };
-
-    const xDiff = normalize(targetX - x);
-    const yDiff = normalize(targetY - y);
-
-    if (yDiff) {
-      if (!this.occupiedTileSet.has(`${x},${y + yDiff}`)) {
-        return { x, y: y + yDiff };
-      }
-      if (xDiff && !this.occupiedTileSet.has(`${x + xDiff},${y}`)) {
-        return { x: x + xDiff, y };
-      }
-      if (x < 7 && !this.occupiedTileSet.has(`${x + 1},${y}`)) {
-        return { x: x + 1, y };
-      }
-      if (x > 0 && !this.occupiedTileSet.has(`${x - 1},${y}`)) {
-        return { x: x - 1, y };
-      }
-      return { x, y };
-    }
-    if (xDiff) {
-      if (!this.occupiedTileSet.has(`${x + xDiff},${y}`)) {
-        return { x: x + xDiff, y };
-      }
-      if (yDiff && !this.occupiedTileSet.has(`${x},${y + yDiff}`)) {
-        return { x, y: y + yDiff };
-      }
-      if (y < 7 && !this.occupiedTileSet.has(`${x},${y + 1}`)) {
-        return { x, y: y + 1 };
-      }
-      if (y > 0 && !this.occupiedTileSet.has(`${x},${y - 1}`)) {
-        return { x, y: y - 1 };
-      }
-      return { x, y };
-    }
-
-    return { x, y };
-  }
-
-  async execute() {
-    // Not sure, but this way we probably can split battle executing into multiple ticks, to avoid io blocking. Its not a real solution, but at least it will proceed multiple battles at once, just slower than usually :D need to perf test these ways
-
-    if (!this.coordsBoardMap[TEAM.A].length && !this.coordsBoardMap[TEAM.B].length) {
-      this.winner = TEAM.NONE;
-      return this;
-    }
-    if (!this.coordsBoardMap[TEAM.A].length) {
-      this.winner = TEAM.B;
-      return this;
-    }
-    if (!this.coordsBoardMap[TEAM.B].length) {
-      this.winner = TEAM.A;
-      return this;
-    }
-
-    /* while (!this.isOver && this.nextTickSchedule <= BATTLE_TIME_LIMIT) {
-      await this.nextTick();
-    } */
-
-    this.playerDamage = 5; // TODO some dynamic formula
-    return this;
   }
 
   action(actionObject, time) {
@@ -209,9 +152,9 @@ export default class Battle {
       }
     }
 
-    this.occupiedTileSet.delete(`${fromPosition.x},${fromPosition.y}`);
+    this.pathfinder.occupiedTileSet.delete(`${fromPosition.x},${fromPosition.y}`);
     if (position) {
-      this.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
+      this.pathfinder.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
     }
 
     // next action is set inside monster move() [if no position, then monster is removed]

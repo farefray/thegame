@@ -65,7 +65,6 @@ function ActiveGame() {
   let combinedBoard = combineBoard();
 
   const boardReducer = (board, action) => {
-    console.log("TCL: boardReducer -> boardReducer", action)
     if (action.action === 'INIT') {
       return _.cloneDeep(action.board);
     }

@@ -28,8 +28,7 @@ const generateGameState = async function({ boards }) {
   const playerBoard = await BoardJS.createBoard(boards.B);
 
   const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
-  const battle = new Battle(combinedBoard);
-  const battleResult = await battle.execute();
+  const battleResult = new Battle(combinedBoard);
   return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
 };
 
