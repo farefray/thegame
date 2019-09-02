@@ -349,6 +349,16 @@ async function _executeBattle(preBattleBoard) {
 BattleJS.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
   const board = state.getIn(['players', playerIndex, 'board']);
   // Find cheapest unit
+  const takenPositions = Object.keys(board);
+  // for (let index = 0; index < takenPositions.length; index++) {
+  //   const key = takenPositions[index];
+  //   const unit = board[key];
+  //   if (unit['name'] === name) {
+  //     pieceCounter += 1;
+  //     positions.push(unit.position);
+  //   }
+  // }
+
   const iter = board.keys();
   let temp = iter.next();
   let cheapestCost = 100;

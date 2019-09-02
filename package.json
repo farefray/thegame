@@ -11,7 +11,7 @@
     "pretest": "eslint ./src && mocha --exit",
     "posttest": "mocha --exit && eslint ./src",
     "test": "mocha --exit",
-    "mocha": "mocha -w --compilers js:@babel/register",
+    "mocha": "mocha -w --require @babel/register",
     "lint": "eslint ./src",
     "lintfix": "eslint --fix ./src"
   },

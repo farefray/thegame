@@ -68,7 +68,7 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
   }
 
   let pieceCounter = 0;
-  let positions = [];
+  const positions = [];
 
   const takenPositions = Object.keys(board);
   for (let index = 0; index < takenPositions.length; index++) {
@@ -76,7 +76,7 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
     const unit = board[key];
     if (unit['name'] === name) {
       pieceCounter += 1;
-      positions = positions.push(unit[position]);
+      positions.push(unit.position);
     }
   }
 
