@@ -6,29 +6,40 @@ const ACTION_MOVE = 1; // todo share with backend
 const ACTION_ATTACK = 2;
 
 export default class Unit extends React.Component {
-  constructor(props) {
-    super(props);
-    props.addToUnitArray(this);
+	constructor(props) {
+		super(props);
 
     const { unit } = props;
     const [x, y = 0] = unit.position.split(',');
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
-    this.state = {
-      top,
-      left,
-      x: parseInt(x, 10),
-      y: parseInt(y, 10),
-      direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
-      isMoving: false,
-      maxHealth: unit.hp,
-      health: unit.hp
-    };
-  }
+		this.state = {
+			top,
+			left,
+			x: parseInt(x, 10),
+			y: parseInt(y, 10),
+			direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
+			isMoving: false,
+			maxHealth: unit.hp,
+			health: unit.hp
+		};
 
-  componentWillUnmount() {
-    this.props.removeFromUnitArray(this);
-  }
+		props.onLifecycle({
+			type: 'SPAWN',
+			unit: this
+		});
+	}
+
+	get id() {
+		return `${this.state.x},${this.state.y}`;
+	}
+
+	componentWillUnmount() {
+		this.props.onLifecycle({
+			type: 'DESTROY',
+			unit: this
+		});
+	}
 
   /**
    *

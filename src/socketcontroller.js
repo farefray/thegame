@@ -154,6 +154,8 @@ function SocketController(socket, io) {
 
         if (!preBattleSession) {
           // no more session exists, f.e. players has disconnected
+          // todo maybe remove session from store if exist? state? memory leak?
+          return;
         }
 
         const preBattleState = preBattleSession.get('state');
