@@ -1,4 +1,4 @@
-const BoardJS = require('./game/board');
+const BoardJS = require('./controllers/board');
 
 const f = require('./f');
 

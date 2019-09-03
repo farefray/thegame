@@ -6,8 +6,8 @@ const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
 const GameController = require('./game');
-const BattleController = require('./game/battle.js');
-const StateJS = require('./game/state');
+const BattleController = require('./controllers/battle.js.js');
+const StateJS = require('./controllers/state');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');

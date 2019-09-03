@@ -1,4 +1,4 @@
-const BoardJS = require('..//game/board'); // todo get rid of this dependency here
+const BoardJS = require('../controllers/board'); // todo get rid of this dependency here
 
 function Player(id) {
   this.index = id;

@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import ActiveGame from './ActiveGame';
 import Battle from '../../../src/objects/Battle.js';
 
-const BoardJS = require('../../../src/game/board.js');
+const BoardJS = require('../../../src/controllers/board.js.js');
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {

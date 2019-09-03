@@ -2,10 +2,10 @@ const { List, fromJS } = require('immutable');
 
 const pawns = require('./pawns');
 const f = require('./f');
-const shopJS = require('./game/shop');
-const BattleJS = require('./game/battle');
-const StateJS = require('./game/state');
-const BoardJS = require('./game/board');
+const shopJS = require('./controllers/shop');
+const BattleController = require('./controllers/battle');
+const StateJS = require('./controllers/state');
+const BoardJS = require('./controllers/board');
 const SessionJS = require('./session');
 
 const State = require('./objects/State');
@@ -41,7 +41,7 @@ exports.buyExp = (state, playerIndex) => {
 exports.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') =>
   BoardJS.mutateStateByPawnPlacing(state, playerIndex, fromPosition, toPosition, shouldSwap);
 
-exports.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleJS.withdrawPiece(state, playerIndex, piecePosition);
+exports.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleController.withdrawPiece(state, playerIndex, piecePosition);
 
 exports.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardJS.sellPiece(state, playerIndex, piecePosition);
 

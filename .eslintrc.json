@@ -21,6 +21,7 @@
     "guard-for-in": "off",
     "prefer-arrow-callback": "off",
     "space-before-function-paren": "off",
-    "arrow-parens": "off"
+    "arrow-parens": "off",
+    "implicit-arrow-linebreak": "off"
   }
 }

@@ -1,4 +1,6 @@
 /* global describe, it */
+import Battle from '../src/objects/Battle.js';
+
 const should = require('should');
 const rewire = require('rewire');
 
@@ -6,12 +8,11 @@ const ConnectedPlayers = rewire('../src/models/ConnectedPlayers.js');
 const SessionsStore = rewire('../src/models/SessionsStore.js');
 
 const GameController = rewire('../src/game.js');
-const BattleJS = rewire('../src/game/battle.js');
-const BoardJS = rewire('../src/game/board.js');
+const BattleController = rewire('../src/controllers/battle.js');
+const BoardJS = rewire('../src/controllers/board.js');
 
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
-const Battle = rewire('../src/objects/Battle.js');
 
 const { TEAM } = rewire('../app/src/shared/constants');
 
@@ -124,7 +125,7 @@ describe('Core Modules', () => {
     // todo test for mutateStateByFixingUnitLimit
 
     it('can setup whole round', async () => {
-      const battleRoundResult = await BattleJS.setup(gameState);
+      const battleRoundResult = await BattleController.setup(gameState);
       battleRoundResult.should.be.ok();
       battleRoundResult.battles[MOCK_SOCKETID_1].winner.should.be.above(TEAM.NONE);
     });
@@ -132,7 +133,7 @@ describe('Core Modules', () => {
 
   describe('Battle', () => {
     let battle;
-    it('can find target and measure distance', async () => {
+    it('whole battle can be executed', async () => {
       const npcBoard = await BoardJS.createBoard([
         {
           name: 'minotaur',
@@ -150,25 +151,9 @@ describe('Core Modules', () => {
 
       const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
-
-      const units = battle.getNextUnitsToAction();
-      units.should.be.ok();
-      const result = await battle.getClosestTarget(units[0]);
-      result.should.be.ok();
-    });
-
-    it('whole battle can be executed', async () => {
-      const battleResult = await battle.execute();
-      battleResult.should.be.ok();
-      battleResult.isOver.should.be.true();
-      battleResult.actionStack.should.be.an.Array();
-      battleResult.actionStack.length.should.be.above(0);
-
-      let battleTime = 0;
-      if (battleResult.actionStack[battleResult.actionStack.length - 1].time > battleTime) {
-        battleTime = battleResult.actionStack[battleResult.actionStack.length - 1].time;
-      }
-      battleTime.should.be.above(0);
+      battle.should.be.ok();
+      battle.actionStack.should.be.an.Array();
+      battle.actionStack.length.should.be.above(0);
     });
 
     it('can handle battle with no units', async () => {
@@ -183,10 +168,8 @@ describe('Core Modules', () => {
 
       const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
-
-      const battleResult = await battle.execute();
-      battleResult.should.be.ok();
-      battleResult.winner.should.equal(TEAM.A);
+      battle.should.be.ok();
+      battle.winner.should.equal(TEAM.A);
     });
   });
 });
