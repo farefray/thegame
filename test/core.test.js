@@ -122,8 +122,6 @@ describe('Core Modules', () => {
       gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
     });
 
-    // todo test for mutateStateByFixingUnitLimit
-
     it('can setup whole round', async () => {
       const battleRoundResult = await BattleController.setup(gameState);
       battleRoundResult.should.be.ok();

@@ -1,9 +1,8 @@
-const { Map, List } = require('immutable');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
 const pawns = require('../pawns');
 
-const StateJS = {};
+const StateController = {};
 
 /** Private methods */
 
@@ -33,7 +32,7 @@ async function _calcDamageTaken(boardUnits) {
   return sum;
 }
 
-StateJS.increaseExp = (stateParam, playerIndex, amountParam) => {
+StateController.increaseExp = (stateParam, playerIndex, amountParam) => {
   let state = stateParam;
   let player = state.getIn(['players', playerIndex]);
   let level = player.get('level');
@@ -73,4 +72,5 @@ StateJS.increaseExp = (stateParam, playerIndex, amountParam) => {
   return state;
 };
 
-module.exports = StateJS;
+
+module.exports = StateController;

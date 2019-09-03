@@ -340,67 +340,6 @@ async function _executeBattle(preBattleBoard) {
 }
 
 /** Public methods */
-/**
- * Board for player with playerIndex have too many units
- * Try to withdraw the cheapest unit
- * if hand is full, sell cheapest unit
- * Do this until board.size == level
- */
-BattleController.mutateStateByFixingUnitLimit = async (state, playerIndex) => {
-  const board = state.getIn(['players', playerIndex, 'board']);
-  // Find cheapest unit
-  const takenPositions = Object.keys(board);
-  // for (let index = 0; index < takenPositions.length; index++) {
-  //   const key = takenPositions[index];
-  //   const unit = board[key];
-  //   if (unit['name'] === name) {
-  //     pieceCounter += 1;
-  //     positions.push(unit.position);
-  //   }
-  // }
-
-  const iter = board.keys();
-  let temp = iter.next();
-  let cheapestCost = 100;
-  let cheapestCostIndex = [];
-  while (!temp.done) {
-    const unitPos = temp.value;
-    const cost = pawns.getMonsterStats(board.get(unitPos).get('name')).get('cost');
-    if (cost < cheapestCost) {
-      cheapestCost = cost;
-      cheapestCostIndex = [unitPos];
-    } else if (cost === cheapestCost) {
-      cheapestCostIndex = cheapestCostIndex.push(unitPos);
-    }
-    temp = iter.next();
-  }
-  let chosenUnit;
-  if (cheapestCostIndex.size === 1) {
-    chosenUnit = cheapestCostIndex.get(0);
-  } else {
-    // TODO Check the one that provides fewest combos
-    // Temp: Random from cheapest
-    const chosenIndex = Math.random() * cheapestCostIndex.size;
-    chosenUnit = cheapestCostIndex.get(chosenIndex);
-  }
-  // Withdraw if possible unit, otherwise sell
-  // console.log('@FixTooManyUnits Check keys', state.get('players'));
-  let newState;
-  // TODO: Inform Client about update
-  if (state.getIn(['players', playerIndex, 'hand']).size < 8) {
-    console.log('WITHDRAWING PIECE', board.get(chosenUnit).get('name'));
-    newState = await BoardJS.withdrawPiece(state, playerIndex, chosenUnit);
-  } else {
-    console.log('SELLING PIECE', board.get(chosenUnit).get('name'));
-    newState = await BoardJS.sellPiece(state, playerIndex, chosenUnit);
-  }
-  const newBoard = newState.getIn(['players', playerIndex, 'board']);
-  const level = newState.getIn(['players', playerIndex, 'level']);
-  if (newBoard.size > level) {
-    return BattleController.fixTooManyUnits(newState, playerIndex);
-  }
-  return newState.getIn(['players', playerIndex]);
-};
 
 async function buildMatchups(players) {
   let matchups = {};
@@ -491,22 +430,13 @@ BattleController.battleTime = async stateParam => {
   };
 };
 
-const { TEAM } = require('../../app/src/shared/constants');
 
 /**
  * Check not too many units on board
  * Calculate battle for given board, either pvp or npc/gym round
  */
 BattleController.setup = async state => {
-  // move this to boardSize
-  const players = Object.keys(state.get('players')); // maybe this should be moved to some iterable logic
-  for (let i = 0; i < players.length; i++) {
-    const player = state.getIn(['players', players[i]]);
-    if (Object.keys(player.board).length > player.level) {
-      await BattleController.mutateStateByFixingUnitLimit(state, players[i]);
-    }
-  }
-
+  const players = Object.keys(state.get('players'));
   const round = state.get('round');
   console.log('TCL: BattleController.setup -> round', round);
   const npcBoard = await gameConstantsJS.getSetRound(round);

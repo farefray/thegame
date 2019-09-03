@@ -6,8 +6,8 @@ const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
 const GameController = require('./game');
-const BattleController = require('./controllers/battle.js.js');
-const StateJS = require('./controllers/state');
+const BattleController = require('./controllers/battle.js');
+const BoardController = require('./controllers/board');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');
@@ -156,6 +156,7 @@ function SocketController(socket, io) {
           }
 
           const preBattleState = preBattleSession.get('state');
+          await BoardController.preBattleCheck(preBattleState);
           const battleRoundResult = await BattleController.setup(preBattleState);
           clients.forEach(socketID => {
             io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.battles[socketID].actionStack, battleRoundResult.battles[socketID].startBoard, battleRoundResult.battles[socketID].winner);

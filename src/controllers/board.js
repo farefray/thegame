@@ -63,7 +63,7 @@ async function _countUniqueOccurences(board, teamParam = '0') {
 async function _checkPieceUpgrade(board, playerIndex, piece, position) {
   const name = piece['name'];
   const stats = pawns.getMonsterStats(name);
-  if (f.isUndefined(stats['evolves_to'])) {
+  if (!stats['evolves_to']) {
     return {
       board,
       upgradeOccured: false
@@ -100,7 +100,7 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
     // state = state.set('discardedPieces', discPieces);
     const evolvesUnit = stats['evolves_to'];
     let evolvesTo = evolvesUnit;
-    if (!f.isUndefined(evolvesTo.length)) {
+    if (evolvesTo && !f.isUndefined(evolvesTo.length)) {
       // List
       evolvesTo = evolvesUnit[f.getRandomInt(evolvesTo.length)];
     }
@@ -349,16 +349,13 @@ BoardJS.createBattleBoard = async (board1, board2) => {
  */
 BoardJS.getFirstAvailableSpot = async (state, playerIndex) => {
   const hand = state.getIn(['players', playerIndex, 'hand']);
-  // console.log('@getFirst', hand.keys().value)
   for (let i = 0; i < 8; i++) {
-    // Get first available spot on bench
     const pos = f.pos(i);
-    // console.log('inner', hand.get(pos), hand.get(String(pos)))
-    if (f.isUndefined(hand.get(pos)) && f.isUndefined(hand.get(String(pos)))) {
+    if (f.isUndefined(hand[pos]) && f.isUndefined(hand[pos])) {
       return pos;
     }
   }
-  // Returns undefined if hand is full
+
   return undefined;
 };
 
@@ -369,7 +366,8 @@ BoardJS.getFirstAvailableSpot = async (state, playerIndex) => {
 BoardJS.withdrawPiece = async (state, playerIndex, piecePosition) => {
   const benchPosition = await BoardJS.getFirstAvailableSpot(state, playerIndex);
   // TODO: Handle placePiece return upgradeOccured
-  return (await BoardJS.placePiece(state, playerIndex, piecePosition, benchPosition, false)).get('state');
+  await BoardJS.mutateStateByPawnPlacing(state, playerIndex, piecePosition, benchPosition, false);
+  return true;
 };
 
 /**
@@ -496,6 +494,7 @@ BoardJS.discardBaseUnits = async (stateParam, playerIndex, name, depth = 1) => {
  * add piece to discarded pieces
  */
 BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
+  // TODO test this
   let pieceTemp;
   if (f.isPositionBelongsToHand(piecePosition)) {
     pieceTemp = state.getIn(['players', playerIndex, 'hand', piecePosition]);
@@ -535,6 +534,61 @@ BoardJS.createBoard = async inputList => {
     board[f.pos(el.x, el.y)] = unit;
   }
   return board;
+};
+
+
+/**
+ * Board for player with playerIndex have too many units
+ * Try to withdraw the cheapest unit
+ * if hand is full, sell cheapest unit
+ * Do this until board.size == level
+ */
+const _mutateStateByFixingUnitLimit = async function (state, playerIndex) {
+  const board = state.getIn(['players', playerIndex, 'board']);
+  // Find cheapest unit
+  const takenPositions = Object.keys(board);
+  let unitCost = Infinity;
+  let cheapestUnitPosition = null;
+
+  for (let index = 0; index < takenPositions.length; index++) {
+    const pos = takenPositions[index];
+    const unit = board[pos];
+    // Todo check if this will be covered for leveled up units
+    if (unit.cost < unitCost) {
+      cheapestUnitPosition = pos;
+      unitCost = unit.cost;
+    }
+  }
+
+  // Withdraw if possible unit, otherwise sell
+  // TODO: Inform Client about update
+  if (Object.keys(state.getIn(['players', playerIndex, 'hand'])).length < 8) {
+    await BoardJS.withdrawPiece(state, playerIndex, cheapestUnitPosition);
+  } else {
+    await BoardJS.sellPiece(state, playerIndex, cheapestUnitPosition);
+  }
+
+  const newBoard = state.getIn(['players', playerIndex, 'board']);
+  const level = state.getIn(['players', playerIndex, 'level']);
+  if (newBoard.size > level) {
+    await _mutateStateByFixingUnitLimit(state, playerIndex);
+  }
+
+  return true;
+};
+
+BoardJS.preBattleCheck = async function (state) {
+  for (const uid in state.players) {
+    const player = state.players[uid];
+    if (Object.keys(player.board).length > player.level) {
+      console.log('Before awaiting state mutation');
+      await _mutateStateByFixingUnitLimit(state, uid);
+      console.log('After awaiting state mutation');
+    }
+  }
+
+  console.log('Returning state');
+  return state;
 };
 
 module.exports = BoardJS;
