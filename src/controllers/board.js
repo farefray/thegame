@@ -307,7 +307,7 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
   set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'));
   set('mana', unitStats['mana'] || pawns.getStatsDefault('mana'));
   set('ability', unitStats.get('ability'));
-  set('defense', unitStats.get('defense') || pawns.getStatsDefault('defense'));
+  set('armor', unitStats.get('armor') || pawns.getStatsDefault('armor'));
   set('speed', unitStats.get('speed'));
   /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
   set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */

@@ -97,11 +97,10 @@ BattleUnit.prototype.isTargetInRange = function() {
  * @warning Mutating objects
  */
 BattleUnit.prototype.doAttack = function(targetUnit) {
-  // TODO better stuff
-  const damageRatio = this.attack / targetUnit.defense;
-  const factor = 0.125 * this.attack * damageRatio;
-  const damage = Math.round(factor);
-
+  const multiplier = 1 - ((0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor));
+  const maximumRoll = Math.floor(this.attack * 1.1);
+  const minimumRoll = Math.ceil(this.attack * 0.9);
+  const damage = Math.floor(multiplier * Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll);
   targetUnit.removeHealth(damage);
   this.nextAction(this.attackSpeed);
   return {

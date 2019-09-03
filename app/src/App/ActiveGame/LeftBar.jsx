@@ -122,8 +122,8 @@ class LeftBar extends Component {
               {buffs['attack'] ? <span className="infoPanelBuff">{` + ${buffs['attack']}\n`}</span> : '\n'}
             </span>
             <span>
-              <span>{`Defense: ${s.defense}`}</span>
-              {buffs['defense'] ? <span className="infoPanelBuff">{` + ${buffs['defense']}\n`}</span> : '\n'}
+              <span>{`Defense: ${s.armor}`}</span>
+              {buffs['armor'] ? <span className="infoPanelBuff">{` + ${buffs['armor']}\n`}</span> : '\n'}
             </span>
             <span>
               <span>{`Speed: ${s.speed}`}</span>

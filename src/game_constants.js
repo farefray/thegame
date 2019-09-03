@@ -115,12 +115,6 @@ const roundSetConfiguration = {
 
 exports.getSetRound = round => BoardJS.createBoard(roundSetConfiguration[round]);
 
-const gymLeader = {
-  10: 'Brock'
-};
-
-exports.getGymLeader = round => gymLeader[String(round)];
-
 // index - 1, Handles 0-4 indexes, send cost directly
 exports.getRarityAmount = index => rarityAmount[index - 1];
 
