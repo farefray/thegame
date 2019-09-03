@@ -23,6 +23,8 @@ const wait = async ms => {
 
 const ACTION_MOVE = 1; // todo share with backend
 const ACTION_ATTACK = 2;
+const ACTION_RESET = 'RESET';
+const ACTION_INIT = 'INIT';
 
 function unitReducer(unitComponents, action) {
   switch (action.type) {
@@ -65,9 +67,20 @@ function ActiveGame() {
   let combinedBoard = combineBoard();
 
   const boardReducer = (board, action) => {
-    console.log("TCL: boardReducer -> boardReducer", action)
     if (action.action === 'INIT') {
       return _.cloneDeep(action.board);
+    } else if (action.action === ACTION_RESET) {
+      // todo this is being triggered twise, need to fix.
+
+      // As react wont rerender our units, we reset their positions to initial
+      for (let id in unitComponents) {
+        const unit = unitComponents[id];
+        unit.onAction(action);
+      }
+
+      // also board getting resetted to initial state
+      const clonedBoard = _.cloneDeep(combinedBoard); // maybe can be omitted and wont require cloning
+      return clonedBoard;
     }
 
     const fromPos = new Position(action.from.x, action.from.y).toBoardPosition(); // idiotic way for forming ID's for units and other stuff. Make it good please someone
@@ -123,12 +136,17 @@ function ActiveGame() {
             await wait(1500);
 
             // reset board to initial state
-            // TODO fix here rounds ending
+            dispatchGameBoard({
+              action: ACTION_RESET
+            });
           }
         }
       };
 
       startBattleEvent(_.clone(actionStack));
+    } else if (activeBattle && !isActiveBattleGoing) {
+      // backend sent that battle is over (isActiveBattleGoing === false), we update state on frontend
+      setActiveBattle(false);
     }
   }, [combinedBoard, activeBattle, isActiveBattleGoing, actionStack]);
 
@@ -143,7 +161,7 @@ function ActiveGame() {
     setUnits(units);
 
     dispatchGameBoard({
-      action: 'INIT',
+      action: ACTION_INIT,
       board: combinedBoard
     });
   }, [combinedBoard]);
