@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
-export default function PawnStats ({ position, name, direction, classList, newProps, isBoard }) {
-  return <>
-    TODO
-  </>
+export default function PawnStats({ position, name, direction, classList, newProps, isBoard }) {
+  return <>TODO</>;
 }
 
 /*
@@ -23,7 +21,7 @@ if (pokemon) {
   </div>;
   /*<div className={`hpBar  ${(pokemon.team === 0 ? 'friendlyBar' : 'enemyBar')}`} 
       style={{width: (pokemon.hp / Math.max(pokemon.hp, pokemon.maxHp) * 100)+'%'}}>*/
-  /*(pokemon.hp > pokemon.maxHp ? <div className={`boostBar text_shadow ${(this.props.isBoard ? 'boostBar' : '')}`} 
+/*(pokemon.hp > pokemon.maxHp ? <div className={`boostBar text_shadow ${(this.props.isBoard ? 'boostBar' : '')}`} 
     style={{width: (pokemon.hp-pokemon.maxHp / pokemon.hp1 * 100)+'%'}}/> : '')} 
   </div> : '')/
   const manaBar = <div className={`barDiv ${(pokemon.mana === 0 ? 'hidden' : '')}`} style={{ width: sideLength }}>

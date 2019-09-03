@@ -1,5 +1,3 @@
-
-
 // TODO: Learn webpack
 
 // Music
@@ -21,9 +19,7 @@ import horn from './assets/SoundEffects/horn.mp3';
 import heGone from './assets/SoundEffects/heGone.mp3';
 import Tick from './assets/SoundEffects/Tick.mp3';
 
-
-const array = [
-];
+const array = [];
 
 const map = new Map(array);
 
@@ -35,7 +31,7 @@ export function getUnitAudio(name) {
 }
 
 export function getBackgroundAudio(name) {
-  switch(name) {
+  switch (name) {
     case 'mainMenu':
       return goldThemeOriginal;
     case 'battle':
@@ -48,13 +44,13 @@ export function getBackgroundAudio(name) {
       return gymVictoryTheme;
     case 'shop':
     case 'idle':
-    default:  
+    default:
       return pokemonCenter;
   }
 }
 
-export function getSoundEffect(name){
-  switch(name){
+export function getSoundEffect(name) {
+  switch (name) {
     case 'sellUnit':
       return sellSound;
     case 'cheer':

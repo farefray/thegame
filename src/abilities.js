@@ -10,7 +10,7 @@ const abilityDefaults = {
   dotDamage: 1 / 16,
   aoeRange: 1,
   range: 8,
-  multiStrikePercentage: [0.375, 0.375, 0.125, 0.125],
+  multiStrikePercentage: [0.375, 0.375, 0.125, 0.125]
 };
 
 exports.getAbilityDefault = name => abilityDefaults[name];
@@ -33,9 +33,9 @@ const abilitiesMap = loadImmutableAbilitiesJSON();
 
 exports.getDefault = name => abilityDefaults[name];
 
-exports.getAbility = async (name) => {
+exports.getAbility = async name => {
   // console.log('@abilties.getAbility', name);
-  const ability = (pawns.getMonsterStats(name))['ability'];
+  const ability = pawns.getMonsterStats(name)['ability'];
   const returnMe = (await abilitiesMap)[ability];
   if (f.isUndefined(returnMe)) console.log('@getAbility undefined', name);
   return returnMe;

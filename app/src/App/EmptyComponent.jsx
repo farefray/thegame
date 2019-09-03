@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
 class EmptyComponent extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {};
   }
 
-  render () {
-   return '';
+  render() {
+    return '';
   }
 }
 

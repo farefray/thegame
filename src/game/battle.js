@@ -293,7 +293,7 @@ async function _executeBattle(preBattleBoard) {
     if (battleOver) break; // Breaks if battleover (no dot damage if last unit standing)
     // Dot damage
 
-    /*const team = board[nextUnitToMove]['team'];
+    /* const team = board[nextUnitToMove]['team'];
     const dotObj = await _handleDotDamage(board, nextUnitToMove, team);
     if (!f.isUndefined(dotObj['damage'])) {
       console.log('@Dot Damage');
@@ -320,7 +320,7 @@ async function _executeBattle(preBattleBoard) {
       console.log('@dotDamage', dotDamage);
       f.printBoard(board, move);
       actionStack = actionStack.push({ nextMove: move, newBoard: board }).set('time', unit['next_move']);
-    }*/
+    } */
   }
   const newBoard = _.cloneDeep(board); // Maybe not required at all, just adding perf problems
   // Return the winner

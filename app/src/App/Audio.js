@@ -1,6 +1,4 @@
-import React, {
-  Component
-} from 'react';
+import React, { Component } from 'react';
 
 class Audio extends Component {
   constructor(props) {
@@ -9,17 +7,17 @@ class Audio extends Component {
       props: this.props.newProps,
       loop: this.props.loopEnabled || false,
       source: this.props.source,
-      volume: this.props.newProps.volume,
+      volume: this.props.newProps.volume
     };
   }
 
   render() {
     console.log('@Audio', this.state.source);
     const ref = React.createRef();
-    if(this.state.loop){
-      return <audio ref={ref} src={this.state.source} onLoadStart={() => ref.current.volume = this.state.volume} loop autoPlay/>
+    if (this.state.loop) {
+      return <audio ref={ref} src={this.state.source} onLoadStart={() => (ref.current.volume = this.state.volume)} loop autoPlay />;
     } else {
-      return <audio ref={ref} src={this.state.source} onLoadStart={() => ref.current.volume = this.state.volume} autoPlay/>
+      return <audio ref={ref} src={this.state.source} onLoadStart={() => (ref.current.volume = this.state.volume)} autoPlay />;
     }
   }
 }

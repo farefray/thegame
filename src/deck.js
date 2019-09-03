@@ -6,8 +6,8 @@ const Decks = {};
 const _buildDecks = async () => {
   const monsterMap = await pawns.getMonsterMap();
 
-  Object.keys(monsterMap).forEach((monsterName) => {
-    const monster = monsterMap[monsterName]
+  Object.keys(monsterMap).forEach(monsterName => {
+    const monster = monsterMap[monsterName];
     if (!Decks[monster.cost - 1]) {
       Decks[monster.cost - 1] = [];
     }
@@ -24,7 +24,7 @@ exports.getDecks = () => Decks;
  * Builds deck of pokemon loaded from pokemon.js
  * Optional parameter to choose pokemon for deck (mainly for testing)
  */
-exports.buildPieceStorage = async (optList) => {
+exports.buildPieceStorage = async optList => {
   let availablePieces = [[], [], [], [], []];
   const decks = await Decks;
   // console.log('@buildPieceStorage: decks', decks)

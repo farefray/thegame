@@ -21,10 +21,10 @@ ShopJS.getPieceFromRarity = async (random, prob, index, pieceStorage, unitAmount
     } else {
       for (let i = 0; i < keys.length; i++) {
         const tempPiece = pieceStorage[index][i];
-        if (!keys.includes(tempPiece) || (keys.includes(tempPiece) && (((unitAmounts.get(tempPiece) || 0) + (newUnitAmounts.get(tempPiece) || 0)) < 9))) {
-          /*if (unitAmounts.get(tempPiece) === 8) 
-          console.log('@getPieceFromRarity 8 Units, Adding one', (newUnitAmounts.get(tempPiece) || 0), (unitAmounts.get(tempPiece) || 0), tempPiece, 
-          ((unitAmounts.get(tempPiece) || 0) + (newUnitAmounts.get(tempPiece) || 0)), unitAmounts, newUnitAmounts);*/
+        if (!keys.includes(tempPiece) || (keys.includes(tempPiece) && (unitAmounts.get(tempPiece) || 0) + (newUnitAmounts.get(tempPiece) || 0) < 9)) {
+          /* if (unitAmounts.get(tempPiece) === 8)
+          console.log('@getPieceFromRarity 8 Units, Adding one', (newUnitAmounts.get(tempPiece) || 0), (unitAmounts.get(tempPiece) || 0), tempPiece,
+          ((unitAmounts.get(tempPiece) || 0) + (newUnitAmounts.get(tempPiece) || 0)), unitAmounts, newUnitAmounts); */
           piece = tempPiece;
           pieceIndex = i;
           break;
@@ -39,7 +39,7 @@ ShopJS.getPieceFromRarity = async (random, prob, index, pieceStorage, unitAmount
  * Fills pieceStorage with discardedPieces
  */
 ShopJS.refillPieces = async (pieces, discardedPieces) => {
-  let pieceStorage = pieces;
+  const pieceStorage = pieces;
   if (discardedPieces.length === 0) {
     return pieces;
   }
@@ -60,7 +60,7 @@ ShopJS.refillPieces = async (pieces, discardedPieces) => {
           pieceStorage = pieceStorage.set(j, List([]));
         }
       }
-    }*/
+    } */
     if (f.isUndefined(pieceStorage[cost - 1])) {
       console.log('@RefillPieces Undefined', cost - 1, pieceStorage[cost - 1], name);
       pieceStorage[cost - 1] = [];
@@ -78,14 +78,15 @@ ShopJS.refillPieces = async (pieces, discardedPieces) => {
  */
 ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, newUnitAmounts) => {
   const prob = gameConstantsJS.getPieceProbabilityNum(level);
-  let newShop = shop;
+  const newShop = shop;
   let newPieceStorage = pieces;
   let newDiscPieces = discPieces;
   // TODO: Get amount of units of different types
   // Units at 9 => add to not allowed list
-  let unitAmounts = player.get('unitAmounts');
+  const unitAmounts = player.get('unitAmounts');
   // console.log('addPieceToShop LEVEL ', level, prob)
-  for (let i = 0; i < 5; i++) { // Loop over levels
+  for (let i = 0; i < 5; i++) {
+    // Loop over levels
     // If any piece storage goes empty -> put all discarded pieces in pieces
     // console.log('@addPieceToShop', discPieces)
     if (newPieceStorage[i].size === 0) {
@@ -95,7 +96,7 @@ ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, new
     // TODO: In theory, pieces might still be empty here, if not enough pieces were in the deck.
     // Temp: Assumes enough pieces are available
     const random = Math.random();
-    //console.log('Before call:', i, newUnitAmounts)
+    // console.log('Before call:', i, newUnitAmounts)
     const pieceObj = await ShopJS.getPieceFromRarity(random, prob[i], i, newPieceStorage, unitAmounts, newUnitAmounts);
     const piece = pieceObj.piece;
     const pieceIndex = pieceObj.index;
@@ -104,7 +105,7 @@ ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, new
         name: piece.name,
         displayName: piece.displayName,
         cost: piece.cost,
-        type: piece.type,
+        type: piece.type
       };
       if (piece.reqEvolve) {
         newShopUnit = newShopUnit.set('reqEvolve', piece.reqEvolve);
@@ -113,7 +114,7 @@ ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, new
       // Removes first from correct rarity array
       newPieceStorage[i] = newPieceStorage[i].splice(pieceIndex, 1);
       newUnitAmounts[piece.name] = (newUnitAmounts[piece.name] || 0) + 1;
-      //console.log('@newUnitAmounts', piece, newUnitAmounts);
+      // console.log('@newUnitAmounts', piece, newUnitAmounts);
       break;
     }
   }
@@ -138,7 +139,8 @@ ShopJS.refreshShop = async (state, playerIndex) => {
   let pieceStorage = state.get('pieces');
   let discPieces = state.get('discardedPieces');
   let newUnitAmounts = {};
-  for (let i = 0; i < 5; i++) { // Loop over pieces
+  for (let i = 0; i < 5; i++) {
+    // Loop over pieces
     if (!level) console.log('@refreshShop adding piece', level, playerIndex);
     const obj = await ShopJS.addPieceToShop(newShop, f.pos(i), pieceStorage, level, discPieces, state.getIn(['players', playerIndex]), newUnitAmounts);
     newShop = obj.newShop;
@@ -150,7 +152,7 @@ ShopJS.refreshShop = async (state, playerIndex) => {
   if (Object.keys(shop).length) {
     // todo check this
     const shopList = [];
-    Object.keys(shop).forEach((pawn) => {
+    Object.keys(shop).forEach(pawn => {
       shopList.push(pawn.name);
     });
 

@@ -1,8 +1,4 @@
-
-
-const {
-  List, fromJS,
-} = require('immutable');
+const { List, fromJS } = require('immutable');
 
 const pawns = require('./pawns');
 const f = require('./f');
@@ -14,7 +10,6 @@ const SessionJS = require('./session');
 
 const State = require('./objects/State');
 const Player = require('./objects/Player');
-
 
 // Cost of 2 gold(todo check for balance?)
 exports.refreshShopGlobal = async (stateParam, index) => {
@@ -43,9 +38,8 @@ exports.buyExp = (state, playerIndex) => {
   return StateJS.increaseExp(newState, playerIndex, 4);
 };
 
-exports.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') => {
-  return BoardJS.mutateStateByPawnPlacing(state, playerIndex, fromPosition, toPosition, shouldSwap);
-}
+exports.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') =>
+  BoardJS.mutateStateByPawnPlacing(state, playerIndex, fromPosition, toPosition, shouldSwap);
 
 exports.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleJS.withdrawPiece(state, playerIndex, piecePosition);
 
@@ -90,7 +84,6 @@ exports.removeDeadPlayer = async (stateParam, playerIndex) => {
   return newState.set('amountOfPlayers', amountOfPlayers);
 };
 
-
 const deckJS = require('./deck');
 
 const HAND_UNITS_LIMIT = 9;
@@ -112,18 +105,16 @@ exports.purchasePawn = async (state, playerIndex, pieceIndex) => {
    * can afford
    */
   const unit = player.shop[pieceIndex];
-  if (!unit
-    || Object.keys(player.hand) >= HAND_UNITS_LIMIT
-    || player.gold < unit.cost) {
+  if (!unit || Object.keys(player.hand) >= HAND_UNITS_LIMIT || player.gold < unit.cost) {
     return null;
   }
 
   /**
-  * remove unit from shop
-  * add unit to hand
-  * remove gold
-  * set player state
-  */
+   * remove unit from shop
+   * add unit to hand
+   * remove gold
+   * set player state
+   */
   const boardUnit = BoardJS.getBoardUnit(unit.name);
   await player.addToHand(boardUnit);
   delete player.shop[pieceIndex];
@@ -135,9 +126,9 @@ exports.purchasePawn = async (state, playerIndex, pieceIndex) => {
   return state;
 };
 
-exports.initialize = async (clients) => {
+exports.initialize = async clients => {
   const playersArray = [];
-  clients.forEach((client) => {
+  clients.forEach(client => {
     playersArray.push(new Player(client));
   });
 
@@ -151,13 +142,12 @@ exports.initialize = async (clients) => {
   return state;
 };
 
-
 /**
-* winner: Gain 1 gold
-* loser: Lose hp
-*      Calculate amount of hp to lose
-* Parameters: Enemy player index, winningAmount = damage? (units or damage)
-*/
+ * winner: Gain 1 gold
+ * loser: Lose hp
+ *      Calculate amount of hp to lose
+ * Parameters: Enemy player index, winningAmount = damage? (units or damage)
+ */
 
 exports.endBattle = async (stateParam, playerIndex, winner, finishedBoard, roundType, enemyPlayerIndex) => {
   let state = stateParam;
@@ -165,13 +155,14 @@ exports.endBattle = async (stateParam, playerIndex, winner, finishedBoard, round
   if (f.isUndefined(finishedBoard)) console.log(finishedBoard);
   // console.log('@endBattle', state, playerIndex, winner, enemyPlayerIndex);
   const streak = state.getIn(['players', playerIndex, 'streak']) || 0;
-  if (winner) { // Winner
+  if (winner) {
+    // Winner
     // TODO: Npc rewards and gym rewards
     switch (roundType) {
       case 'pvp': {
         const prevGold = state.getIn(['players', playerIndex, 'gold']);
         state = state.setIn(['players', playerIndex, 'gold'], prevGold + 1);
-        const newStreak = (streak < 0 ? 0 : +streak + 1);
+        const newStreak = streak < 0 ? 0 : +streak + 1;
         state = state.setIn(['players', playerIndex, 'streak'], newStreak);
         f.p('@endBattle Won Player', playerIndex, prevGold, state.getIn(['players', playerIndex, 'gold']), newStreak);
         break;
@@ -182,10 +173,11 @@ exports.endBattle = async (stateParam, playerIndex, winner, finishedBoard, round
       case 'shop':
       default:
     }
-  } else { // Loser
+  } else {
+    // Loser
     switch (roundType) {
       case 'pvp': {
-        const newStreak = (streak > 0 ? 0 : +streak - 1);
+        const newStreak = streak > 0 ? 0 : +streak - 1;
         state = state.setIn(['players', playerIndex, 'streak'], newStreak);
         f.p('@Endbattle pvp', newStreak);
       }

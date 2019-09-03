@@ -17,11 +17,11 @@ const BoardJS = {};
 async function _countUniqueOccurences(board, teamParam = '0') {
   const buffMap = {
     0: {},
-    1: {},
+    1: {}
   };
   const unique = {
     0: [],
-    1: [],
+    1: []
   };
 
   const keys = Object.keys(board);
@@ -32,16 +32,19 @@ async function _countUniqueOccurences(board, teamParam = '0') {
     const name = unit['name'];
     const baseMonser = await pawns.getBaseMonster(name);
 
-    if (!unique[String(team)].includes(name)) { // TODO: Check
+    if (!unique[String(team)].includes(name)) {
+      // TODO: Check
       f.p('@CountUniqueOccurences Unique', baseMonser, team, unique);
       const newSet = unique[String(team)].push(baseMonser);
       unique[String(team)] = newSet; // Store unique version, only count each once
       const types = unit['type']; // Value or List
-      if (!f.isUndefined(types.size)) { // List
+      if (!f.isUndefined(types.size)) {
+        // List
         for (let i = 0; i < types.size; i++) {
           buffMap[String(team)][types[i]] = (buffMap[String(team)][types[i]] || 0) + 1;
         }
-      } else { // Value
+      } else {
+        // Value
         buffMap[String(team)][types] = (buffMap[String(team)][types] || 0) + 1;
         console.log('adding type occurence', name, team, buffMap[String(team)][types]);
       }
@@ -63,7 +66,7 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
   if (f.isUndefined(stats['evolves_to'])) {
     return {
       board,
-      upgradeOccured: false,
+      upgradeOccured: false
     };
   }
 
@@ -85,24 +88,26 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
     requiredAmount = piece['reqEvolve'];
     console.log('LESS UNITS REQUIRED FOR UPGRADE', piece['name'], requiredAmount);
   }
-  if (pieceCounter >= requiredAmount) { // Upgrade unit @ position
+  if (pieceCounter >= requiredAmount) {
+    // Upgrade unit @ position
     // console.log('UPGRADING UNIT', name);
-    //let discPieces = state.get('discardedPieces'); // TODO discardedPieces???
+    // let discPieces = state.get('discardedPieces'); // TODO discardedPieces???
     for (let i = 0; i < positions.size; i++) {
       const unit = board[positions[i]];
-      //discPieces = discPieces.push(unit['name']);
+      // discPieces = discPieces.push(unit['name']);
       delete board[positions[i]];
     }
-    //state = state.set('discardedPieces', discPieces);
+    // state = state.set('discardedPieces', discPieces);
     const evolvesUnit = stats['evolves_to'];
     let evolvesTo = evolvesUnit;
-    if (!f.isUndefined(evolvesTo.length)) { // List
+    if (!f.isUndefined(evolvesTo.length)) {
+      // List
       evolvesTo = evolvesUnit[f.getRandomInt(evolvesTo.length)];
     }
     // Check if multiple evolutions exist, random between
     const newPiece = BoardJS.getBoardUnit(evolvesTo); // not needed I guess
     // TODO: List -> handle differently
-    const evolutionDisplayName = (pawns.getMonsterStats(evolvesTo)).get('displayName');
+    const evolutionDisplayName = pawns.getMonsterStats(evolvesTo).get('displayName');
     // console.log('evolutionDisplayName', evolutionDisplayName);
     const nextPieceUpgrade = await _checkPieceUpgrade(board, playerIndex, newPiece, position);
     // Get both upgrades
@@ -120,7 +125,7 @@ async function _checkPieceUpgrade(board, playerIndex, piece, position) {
 /**
  * Create unit for board/hand placement from name and spawn position
  */
-BoardJS.getBoardUnit = (name) => {
+BoardJS.getBoardUnit = name => {
   const unitInfo = pawns.getMonsterStats(name); // this may be a overuse. Maybe units should be always Uni
   if (f.isUndefined(unitInfo)) console.log('UNDEFINED:', name);
   // console.log('@getBoardUnit', name, unitInfo)
@@ -149,7 +154,7 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
   }; // For all enemies debuffs
   // Find if any bonuses need applying
   // TODO
-  /*for (let i = 0; i <= 1; i++) {
+  /* for (let i = 0; i <= 1; i++) {
     const buffsKeysIter = Object.keys();
     let tempBuff = buffsKeysIter.next();
     while (!tempBuff.done) {
@@ -264,14 +269,14 @@ BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
   }
   if (f.isUndefined(newBoard) || Object.keys(newBoard).length === 0) {
     console.log('@markBoardBonuses CHECK ME', newBoard);
-  }*/
+  } */
   // console.log('NEWBOARD: ', newBoard);
   return {
     board,
     buffMap,
     typeBuffMapSolo,
     typeBuffMapAll,
-    typeDebuffMapEnemy,
+    typeDebuffMapEnemy
   };
 };
 
@@ -410,11 +415,9 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
     }
   }
 
-
-
   // TODO
-  //const tempMarkedResults = await BoardJS.markBoardBonuses(board);
-  //const tempBoard = tempMarkedResults.get('newBoard');
+  // const tempMarkedResults = await BoardJS.markBoardBonuses(board);
+  // const tempBoard = tempMarkedResults.get('newBoard');
 
   let upgradeOccured = false;
   if (!f.isPositionBelongsToHand(toPosition)) {
@@ -429,7 +432,7 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
     upgradeOccured = obj['upgradeOccured'] || upgradeOccured;
   }
 
-  /*const markedResults = await BoardJS.markBoardBonuses(board);
+  /* const markedResults = await BoardJS.markBoardBonuses(board);
   const buffMap = markedResults.get('buffMap').get('0');
   const typeBuffMapSolo = markedResults.get('typeBuffMapSolo').get('0');
   const typeBuffMapAll = markedResults.get('typeBuffMapAll').get('0');
@@ -443,8 +446,8 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
     typeDebuffMapEnemy,
   });
   // console.log('@boardBuffs', boardBuffs);
-  state = state.setIn(['players', playerIndex, 'boardBuffs'], boardBuffs);*/
-  //const markedBoard = markedResults.get('newBoard');
+  state = state.setIn(['players', playerIndex, 'boardBuffs'], boardBuffs); */
+  // const markedBoard = markedResults.get('newBoard');
 
   state.setIn(['players', playerIndex, 'hand'], hand);
   state.setIn(['players', playerIndex, 'board'], board);
@@ -452,7 +455,6 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
     upgradeOccured
   };
 };
-
 
 /**
  * When units are sold, when level 1, a level 1 unit should be added to discardedPieces
@@ -463,7 +465,8 @@ BoardJS.discardBaseUnits = async (stateParam, playerIndex, name, depth = 1) => {
   const unitStats = pawns.getMonsterStats(name);
   const evolutionFrom = unitStats.get('evolves_from');
   // console.log('@discardBaseUnits start', name, depth);
-  if (f.isUndefined(evolutionFrom)) { // Base level
+  if (f.isUndefined(evolutionFrom)) {
+    // Base level
     let discPieces = state.get('discardedPieces');
     const amountOfPieces = 3 ** (depth - 1); // Math.pow
     console.log('@discardBaseUnits', amountOfPieces, depth, name);
@@ -479,7 +482,7 @@ BoardJS.discardBaseUnits = async (stateParam, playerIndex, name, depth = 1) => {
         state = state.setIn(['players', playerIndex, 'unitAmounts', name], newValue);
       }
     }
-    return state.set('discardedPieces', (await discPieces));
+    return state.set('discardedPieces', await discPieces);
   }
   const newName = evolutionFrom;
   // console.log('@discardBaseUnits', newName, depth);
@@ -523,8 +526,8 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
  * Help function in creating battle boards
  * Use together with combine boards
  */
-BoardJS.createBoard = async (inputList) => {
-  console.log("TCL: BoardJS.createBoard -> inputList", inputList)
+BoardJS.createBoard = async inputList => {
+  console.log('TCL: BoardJS.createBoard -> inputList', inputList);
   const board = {};
   for (let i = 0; i < inputList.length; i++) {
     const el = inputList[i];

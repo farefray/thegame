@@ -5,8 +5,8 @@ module.exports = (config, { env }) => {
     plugins: [
       ...(config.plugins || []),
       new webpack.ProvidePlugin({
-        'React': 'react'
+        React: 'react'
       })
     ]
-  }
+  };
 };

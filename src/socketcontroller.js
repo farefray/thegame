@@ -1,9 +1,7 @@
 /**
  * Actually it seems like overall game controller already, cuz we handle a lot of logic here, even if trying to move it to different controllers... maybe consider having it renamed :D
  */
-const {
-  fromJS
-} = require('immutable');
+const { fromJS } = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
@@ -40,7 +38,7 @@ function asNetworkMessage(object) {
   }
 }
 
-const sessionExist = (socketId) => {
+const sessionExist = socketId => {
   if (f.isUndefined(connectedPlayers) || f.isUndefined(connectedPlayers.get(socketId))) return false;
   // console.log('If crash: undefined?', connectedPlayers);
   return !f.isUndefined(sessions.get(connectedPlayers.get(socketId).get('sessionId'))); // Crashed here somehow, early
@@ -49,7 +47,6 @@ const sessionExist = (socketId) => {
 const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type = 'chat') => {
   io.to(socketIdParam).emit('NEW_CHAT_MESSAGE', senderName, newMessage, type);
 };
-
 
 /*
   Example io code
@@ -117,7 +114,6 @@ function SocketController(socket, io) {
     waitingRoomUpdateStatus();
   });
 
-
   socket.on('START_GAME', async () => {
     // TODO: check if all customers are ready
     io.in('WAITING_ROOM').clients(async (err, clients) => {
@@ -135,37 +131,38 @@ function SocketController(socket, io) {
       console.log('Starting game!');
       state.prepareForSending();
 
-      clients.forEach((socketID) => {
+      clients.forEach(socketID => {
         connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
         io.to(socketID).emit('ADD_PLAYER', socketID); // ??
 
         // TODO fixme
         socket.join(sessionID, () => {
-          let rooms = Object.keys(socket.rooms);
+          const rooms = Object.keys(socket.rooms);
           console.log(rooms); // [ <socket.id>, 'room 237' ]
           io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
         });
       });
 
       // Schedule battle start
-      const scueduleNextRound = () => setTimeout(async () => {
-        // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
-        const preBattleSession = sessionsStore.get(sessionID);
+      const scueduleNextRound = () =>
+        setTimeout(async () => {
+          // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
+          const preBattleSession = sessionsStore.get(sessionID);
 
-        if (!preBattleSession) {
-          // no more session exists, f.e. players has disconnected
-          // todo maybe remove session from store if exist? state? memory leak?
-          return;
-        }
+          if (!preBattleSession) {
+            // no more session exists, f.e. players has disconnected
+            // todo maybe remove session from store if exist? state? memory leak?
+            return;
+          }
 
-        const preBattleState = preBattleSession.get('state');
-        const battleRoundResult = await BattleController.setup(preBattleState);
-        clients.forEach((socketID) => {
-          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.battles[socketID].actionStack, battleRoundResult.battles[socketID].startBoard, battleRoundResult.battles[socketID].winner);
-        });
+          const preBattleState = preBattleSession.get('state');
+          const battleRoundResult = await BattleController.setup(preBattleState);
+          clients.forEach(socketID => {
+            io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.battles[socketID].actionStack, battleRoundResult.battles[socketID].startBoard, battleRoundResult.battles[socketID].winner);
+          });
 
-        // We can actually count battle finish state here already and only schedule update
-        /*
+          // We can actually count battle finish state here already and only schedule update
+          /*
           Update state with:
           a - round change, gold reward winners,
           b - damage for losers
@@ -173,43 +170,43 @@ function SocketController(socket, io) {
           d - update players
         */
 
-        preBattleState.endRound(); // a
-        preBattleState.damagePlayers(battleRoundResult.battles); // b
+          preBattleState.endRound(); // a
+          preBattleState.damagePlayers(battleRoundResult.battles); // b
 
-        // Schedule all this to happen after last battle finished on FE
-        const EXTRA_TIME = 5000;
-        setTimeout(async () => {
-          // TODO Future: handle player dead time, to properly assign placing if multiple players are dead
-          clients.forEach((socketID) => {
-            const player = preBattleState.getIn(['players', socketID]);
+          // Schedule all this to happen after last battle finished on FE
+          const EXTRA_TIME = 5000;
+          setTimeout(async () => {
+            // TODO Future: handle player dead time, to properly assign placing if multiple players are dead
+            clients.forEach(socketID => {
+              const player = preBattleState.getIn(['players', socketID]);
 
-            if (player.isDead()) {
-              const amountOfPlayers = preBattleState.get('amountOfPlayers');
-              io.to(socketID).emit('DEAD_PLAYER', socketID, amountOfPlayers + 1);
-              preBattleState.dropPlayer(socketID);
-            } else {
-              io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
-              io.to(socketID).emit('SET_ONGOING_BATTLE', false, STARTBATTLE_TIMER);
-            }
+              if (player.isDead()) {
+                const amountOfPlayers = preBattleState.get('amountOfPlayers');
+                io.to(socketID).emit('DEAD_PLAYER', socketID, amountOfPlayers + 1);
+                preBattleState.dropPlayer(socketID);
+              } else {
+                io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
+                io.to(socketID).emit('SET_ONGOING_BATTLE', false, STARTBATTLE_TIMER);
+              }
 
-            if (preBattleState.get('amountOfPlayers') === 0) {
-              // game end
-              io.to(socketID).emit('END_GAME', socketID);
-            } else {
-              sessionsStore.store(preBattleSession);
-              scueduleNextRound();
-            }
-          });
-        }, battleRoundResult.battleTime + EXTRA_TIME);
+              if (preBattleState.get('amountOfPlayers') === 0) {
+                // game end
+                io.to(socketID).emit('END_GAME', socketID);
+              } else {
+                sessionsStore.store(preBattleSession);
+                scueduleNextRound();
+              }
+            });
+          }, battleRoundResult.battleTime + EXTRA_TIME);
 
-        // round ended, next round must be scheduled?
-      }, STARTBATTLE_TIMER);
+          // round ended, next round must be scheduled?
+        }, STARTBATTLE_TIMER);
 
       scueduleNextRound();
     });
   });
 
-  socket.on('BUY_UNIT', async (pieceIndex) => {
+  socket.on('BUY_UNIT', async pieceIndex => {
     // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable)
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
@@ -245,30 +242,30 @@ function SocketController(socket, io) {
     io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
   });
 
-  //////////// OLD STUFF \/
+  // ////////// OLD STUFF \/
 
-  socket.on('TOGGLE_LOCK', async (stateParam) => {
+  socket.on('TOGGLE_LOCK', async stateParam => {
     // const state = await GameController.toggleLock(fromJS(stateParam), index);
-    const prevLock = (fromJS(stateParam)).getIn(['players', socket.id, 'locked']);
+    const prevLock = fromJS(stateParam).getIn(['players', socket.id, 'locked']);
     console.log('Toggling Lock for Shop! prev lock =', prevLock);
     socket.emit('LOCK_TOGGLED', socket.id, !prevLock);
-    const state = await GameController.toggleLock((fromJS(stateParam)), socket.id);
+    const state = await GameController.toggleLock(fromJS(stateParam), socket.id);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, socket.id);
   });
 
-  socket.on('BUY_EXP', async (stateParam) => {
+  socket.on('BUY_EXP', async stateParam => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
     const state = await GameController.buyExp(stateWithPieces, index);
     // Gold, shop, hand
     console.log('Bought exp, Player', index);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+    emitMessage(socket, io, getSessionId(socket.id), socketId => {
       io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
     });
   });
 
-  socket.on('REFRESH_SHOP', async (stateParam) => {
+  socket.on('REFRESH_SHOP', async stateParam => {
     const index = getPlayerIndex(socket.id);
     const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
     const state = await GameController.refreshShopGlobal(stateWithPieces, index);
@@ -277,12 +274,10 @@ function SocketController(socket, io) {
     // socket.emit('UPDATED_PIECES', state);
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
     sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+    emitMessage(socket, io, getSessionId(socket.id), socketId => {
       io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
     });
   });
-
-
 
   socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
     const index = getPlayerIndex(socket.id);
@@ -290,7 +285,7 @@ function SocketController(socket, io) {
     const state = await GameController.withdrawPieceGlobal(stateWithPieces, index, from);
     console.log('Withdraw piece at ', from);
     // Hand and board
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+    emitMessage(socket, io, getSessionId(socket.id), socketId => {
       io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
     });
   });
@@ -303,25 +298,26 @@ function SocketController(socket, io) {
     sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
     sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
     // Hand and board
-    emitMessage(socket, io, getSessionId(socket.id), (socketId) => {
+    emitMessage(socket, io, getSessionId(socket.id), socketId => {
       io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
     });
   });
 
-  socket.on('SEND_MESSAGE', async (message) => {
+  socket.on('SEND_MESSAGE', async message => {
     // TODO: Login: Player name here instead
     const playerName = sessionJS.getPlayerName(socket.id, connectedPlayers, sessions);
     newChatMessage(socket, io, socket.id, `${playerName}: `, message);
   });
 
-  socket.on('GET_STATS', async (name) => {
+  socket.on('GET_STATS', async name => {
     const stats = pawns.getMonsterStats(name);
     const ability = await abilitiesJS.getAbility(name);
     let newStats = (await stats).set('abilityType', ability.get('type'));
     if (ability.get('displayName')) {
       newStats = newStats.set('abilityDisplayName', ability.get('displayName'));
     }
-    if (typeof newStats.get('evolves_to') === 'string') { // && !Array.isArray(newStats.get('evolves_to').toJS())) { // Test
+    if (typeof newStats.get('evolves_to') === 'string') {
+      // && !Array.isArray(newStats.get('evolves_to').toJS())) { // Test
       const evolStats = await pawns.getMonsterStats(newStats.get('evolves_to'));
       newStats = newStats.set('snd_evolves_to', evolStats.get('evolves_to'));
     }

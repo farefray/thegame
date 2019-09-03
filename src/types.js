@@ -1,5 +1,3 @@
-
-
 const { Map, List } = require('immutable');
 
 const f = require('./f');
@@ -13,7 +11,7 @@ const increaseSpecialAttack = (unit, bonus) => unit.set('specialAttack', +unit.g
 const increaseSpecialDefense = (unit, bonus) => unit.set('specialDefense', +unit.get('specialDefense') + +bonus);
 const decreaseDefense = (unit, bonus) => unit.set('defense', Math.max(1, +unit.get('defense') - +bonus));
 const decreaseSpeed = (unit, bonus) => unit.set('speed', Math.min(pawns.getStatsDefault('upperLimitSpeed') + 100, +unit.get('speed') + +bonus)); // Higher speed value = worse
-const decreaseHp = (unit, bonus) => unit.set('hp', Math.max(0, +unit['hp'] - +bonus)); //.set('startHp', Math.max(0, +unit['hp'] - +bonus));
+const decreaseHp = (unit, bonus) => unit.set('hp', Math.max(0, +unit['hp'] - +bonus)); // .set('startHp', Math.max(0, +unit['hp'] - +bonus));
 const decreaseAttack = (unit, bonus) => unit.set('attack', Math.max(0, +unit.get('attack') - +bonus));
 
 const reqForUpgrade = async (unitParam, bonus) => {
@@ -21,7 +19,8 @@ const reqForUpgrade = async (unitParam, bonus) => {
   let unit = unitParam;
   const tier = await pawns.getUnitTier(unit.get('name'));
   // console.log('@reqForUpgrade bugs', tier, bonus)
-  if (tier <= bonus) { // Bonus marks highest allowed tier for unit
+  if (tier <= bonus) {
+    // Bonus marks highest allowed tier for unit
     // console.log('@reqForUpgrade bugs BONUS', unit)
     unit = unit.set('reqEvolve', 2);
   }
@@ -45,36 +44,23 @@ const reqForUpgrade = async (unitParam, bonus) => {
 const typeMap = new Map({
   normal: Map({
     name: 'normal',
-    ineffectiveAgainst: List([
-      'Rock',
-      'Steel',
-    ]),
+    ineffectiveAgainst: List(['Rock', 'Steel']),
     noDamageAgainst: 'Ghost',
     req: List([3, 5, 7]),
     bonusAmount: List([10, 20, 25]),
     bonusType: 'allBonus',
     bonusStatType: 'hp',
-    allBonus: (unit, bonus) => increaseHp(unit, bonus),
+    allBonus: (unit, bonus) => increaseHp(unit, bonus)
   }),
   fire: Map({
     name: 'fire',
-    strongAgainst: List([
-      'Grass',
-      'Ice',
-      'Bug',
-      'Steel',
-    ]),
-    ineffectiveAgainst: List([
-      'Fire',
-      'Water',
-      'Rock',
-      'Dragon',
-    ]),
+    strongAgainst: List(['Grass', 'Ice', 'Bug', 'Steel']),
+    ineffectiveAgainst: List(['Fire', 'Water', 'Rock', 'Dragon']),
     req: List([2, 4, 6]),
     bonusAmount: List([10, 10, 15]),
     bonusType: 'bonus',
     bonusStatType: 'attack',
-    bonus: (unit, bonus) => increaseAttack(unit, bonus),
+    bonus: (unit, bonus) => increaseAttack(unit, bonus)
     /*
     Increase burn chance for abilities? (currently 10%)
     [3, 6] might be better
@@ -82,21 +68,13 @@ const typeMap = new Map({
   }),
   water: Map({
     name: 'water',
-    strongAgainst: List([
-      'Fire',
-      'Ground',
-      'Rock',
-    ]),
-    ineffectiveAgainst: List([
-      'Water',
-      'Grass',
-      'Dragon',
-    ]),
+    strongAgainst: List(['Fire', 'Ground', 'Rock']),
+    ineffectiveAgainst: List(['Water', 'Grass', 'Dragon']),
     req: List([3, 5, 7]),
     bonusAmount: List([15, 15, 20]),
     bonusType: 'allBonus',
     bonusStatType: 'speed',
-    allBonus: (unit, bonus) => increaseSpeed(unit, bonus),
+    allBonus: (unit, bonus) => increaseSpeed(unit, bonus)
     /*
     All bonus defense
     Could be better
@@ -105,177 +83,93 @@ const typeMap = new Map({
   }),
   electric: Map({
     name: 'electric',
-    strongAgainst: List([
-      'Water',
-      'Flying',
-    ]),
-    ineffectiveAgainst: List([
-      'Electric',
-      'Grass',
-      'Dragon',
-    ]),
+    strongAgainst: List(['Water', 'Flying']),
+    ineffectiveAgainst: List(['Electric', 'Grass', 'Dragon']),
     noDamageAgainst: 'Ground',
     req: List([2, 4, 6]),
     bonusAmount: List([10, 15, 15]),
     bonusType: 'enemyDebuff',
     bonusStatType: 'attack',
-    enemyDebuff: (unit, bonus) => decreaseAttack(unit, bonus),
+    enemyDebuff: (unit, bonus) => decreaseAttack(unit, bonus)
   }),
   grass: Map({
     name: 'grass',
-    strongAgainst: List([
-      'Water',
-      'Ground',
-      'Rock',
-    ]),
-    ineffectiveAgainst: List([
-      'Fire',
-      'Grass',
-      'Poison',
-      'Flying',
-      'Bug',
-      'Dragon',
-      'Steel',
-    ]),
+    strongAgainst: List(['Water', 'Ground', 'Rock']),
+    ineffectiveAgainst: List(['Fire', 'Grass', 'Poison', 'Flying', 'Bug', 'Dragon', 'Steel']),
     req: List([2, 4]),
     bonusAmount: List([10, 15]),
     bonusType: 'enemyDebuff',
     bonusStatType: 'hp',
-    enemyDebuff: (unit, bonus) => decreaseHp(unit, bonus),
+    enemyDebuff: (unit, bonus) => decreaseHp(unit, bonus)
   }),
   ice: Map({
     name: 'ice',
-    strongAgainst: List([
-      'Grass',
-      'Ground',
-      'Flying',
-      'Dragon',
-    ]),
-    ineffectiveAgainst: List([
-      'Fire',
-      'Water',
-      'Ice',
-      'Steel',
-    ]),
+    strongAgainst: List(['Grass', 'Ground', 'Flying', 'Dragon']),
+    ineffectiveAgainst: List(['Fire', 'Water', 'Ice', 'Steel']),
     req: List([2, 4]),
     bonusAmount: List([25, 40]),
     bonusType: 'allBonus',
     bonusStatType: 'hp',
-    allBonus: (unit, bonus) => increaseHp(unit, bonus),
+    allBonus: (unit, bonus) => increaseHp(unit, bonus)
   }),
   fighting: Map({
     name: 'fighting',
-    strongAgainst: List([
-      'Normal',
-      'Ice',
-      'Rock',
-      'Dark',
-      'Steel',
-    ]),
-    ineffectiveAgainst: List([
-      'Poison',
-      'Flying',
-      'Psychic',
-      'Bug',
-      'Fairy',
-    ]),
+    strongAgainst: List(['Normal', 'Ice', 'Rock', 'Dark', 'Steel']),
+    ineffectiveAgainst: List(['Poison', 'Flying', 'Psychic', 'Bug', 'Fairy']),
     noDamageAgainst: 'Ghost',
     req: List([2, 3]),
     bonusAmount: List([15, 15]),
     bonusType: 'allBonus',
     bonusStatType: 'attack',
-    allBonus: (unit, bonus) => increaseAttack(unit, bonus),
+    allBonus: (unit, bonus) => increaseAttack(unit, bonus)
   }),
   poison: Map({
     name: 'poison',
-    strongAgainst: List([
-      'Grass',
-      'Fairy',
-    ]),
-    ineffectiveAgainst: List([
-      'Poison',
-      'Ground',
-      'Rock',
-      'Ghost',
-    ]),
+    strongAgainst: List(['Grass', 'Fairy']),
+    ineffectiveAgainst: List(['Poison', 'Ground', 'Rock', 'Ghost']),
     noDamageAgainst: 'Steel',
     req: List([3, 5, 7]),
     bonusAmount: List([20, 25, 30]),
     bonusType: 'enemyDebuff',
     bonusStatType: 'speed',
-    enemyDebuff: (unit, bonus) => decreaseSpeed(unit, bonus),
+    enemyDebuff: (unit, bonus) => decreaseSpeed(unit, bonus)
   }),
   ground: Map({
     name: 'ground',
-    strongAgainst: List([
-      'Fire',
-      'Electric',
-      'Poison',
-      'Rock',
-      'Steel',
-    ]),
-    ineffectiveAgainst: List([
-      'Grass',
-      'Bug',
-    ]),
+    strongAgainst: List(['Fire', 'Electric', 'Poison', 'Rock', 'Steel']),
+    ineffectiveAgainst: List(['Grass', 'Bug']),
     noDamageAgainst: 'Flying',
     req: List([2, 4, 5]),
     bonusAmount: List([15, 15, 10]),
     bonusType: 'enemyDebuff',
     bonusStatType: 'speed',
-    enemyDebuff: (unit, bonus) => decreaseSpeed(unit, bonus),
+    enemyDebuff: (unit, bonus) => decreaseSpeed(unit, bonus)
   }),
   flying: Map({
     name: 'flying',
-    strongAgainst: List([
-      'Grass',
-      'Fighting',
-      'Bug',
-    ]),
-    ineffectiveAgainst: List([
-      'Electric',
-      'Rock',
-      'Steel',
-    ]),
+    strongAgainst: List(['Grass', 'Fighting', 'Bug']),
+    ineffectiveAgainst: List(['Electric', 'Rock', 'Steel']),
     req: List([3, 6, 9]),
     bonusAmount: List([20, 20, 25]),
     bonusType: 'bonus',
     bonusStatType: 'speed',
-    bonus: (unit, bonus) => increaseSpeed(unit, bonus),
+    bonus: (unit, bonus) => increaseSpeed(unit, bonus)
   }),
   psychic: Map({
     name: 'psychic',
-    strongAgainst: List([
-      'Fighting',
-      'Poison',
-    ]),
-    ineffectiveAgainst: List([
-      'Psychic',
-      'Steel',
-    ]),
+    strongAgainst: List(['Fighting', 'Poison']),
+    ineffectiveAgainst: List(['Psychic', 'Steel']),
     noDamageAgainst: 'Dark',
     req: List([2, 4, 5]),
     bonusAmount: List([15, 20, 25]),
     bonusType: 'enemyDebuff',
     bonusStatType: 'defense',
-    enemyDebuff: (unit, bonus) => decreaseDefense(unit, bonus),
+    enemyDebuff: (unit, bonus) => decreaseDefense(unit, bonus)
   }),
   bug: Map({
     name: 'bug',
-    strongAgainst: List([
-      'Grass',
-      'Psychic',
-      'Dark',
-    ]),
-    ineffectiveAgainst: List([
-      'Fire',
-      'Fighting',
-      'Poison',
-      'Flying',
-      'Ghost',
-      'Steel',
-      'Fairy',
-    ]),
+    strongAgainst: List(['Grass', 'Psychic', 'Dark']),
+    ineffectiveAgainst: List(['Fire', 'Fighting', 'Poison', 'Flying', 'Ghost', 'Steel', 'Fairy']),
     /*
     req: List([2, 4]),
     bonusAmount: List([40, 50]),
@@ -288,44 +182,32 @@ const typeMap = new Map({
     bonusAmount: List([1, 2]),
     bonusType: 'bonus',
     bonusStatType: 'unique_2 Unit Upg. Tier: ',
-    bonus: (unit, bonus) => reqForUpgrade(unit, bonus),
+    bonus: (unit, bonus) => reqForUpgrade(unit, bonus)
     /*
     [2, 4] Druid buff
     */
   }),
   rock: Map({
     name: 'rock',
-    strongAgainst: List([
-      'Fire',
-      'Ice',
-      'Flying',
-      'Bug',
-    ]),
-    ineffectiveAgainst: List([
-      'Fighting',
-      'Ground',
-      'Steel',
-    ]),
+    strongAgainst: List(['Fire', 'Ice', 'Flying', 'Bug']),
+    ineffectiveAgainst: List(['Fighting', 'Ground', 'Steel']),
     req: List([2, 4, 6]),
     bonusAmount: List([20, 25, 30]),
     bonusType: 'bonus',
     bonusStatType: 'defense',
-    bonus: (unit, bonus) => increaseDefense(unit, bonus),
+    bonus: (unit, bonus) => increaseDefense(unit, bonus)
     // 5 units
   }),
   ghost: Map({
     name: 'ghost',
-    strongAgainst: List([
-      'Psychic',
-      'Ghost',
-    ]),
+    strongAgainst: List(['Psychic', 'Ghost']),
     ineffectiveAgainst: 'Dark',
     noDamageAgainst: 'Normal',
     req: List([1, 2]),
     bonusAmount: List([20, 25]),
     bonusType: 'bonus',
     bonusStatType: 'attack',
-    bonus: (unit, bonus) => increaseAttack(unit, bonus),
+    bonus: (unit, bonus) => increaseAttack(unit, bonus)
     /*
     TODO: Demon ? Only strong if only ghost on board, +50% dmg
           Evasion ? (Since ghost hard to hit)
@@ -340,7 +222,7 @@ const typeMap = new Map({
     bonusAmount: List([40, 40]),
     bonusType: 'bonus',
     bonusStatType: 'Sp.Attk',
-    bonus: (unit, bonus) => increaseSpecialAttack(unit, bonus),
+    bonus: (unit, bonus) => increaseSpecialAttack(unit, bonus)
     /*
     dratini
     Better spell power
@@ -348,22 +230,13 @@ const typeMap = new Map({
   }),
   steel: Map({
     name: 'steel',
-    strongAgainst: List([
-      'Ice',
-      'Rock',
-      'Fairy',
-    ]),
-    ineffectiveAgainst: List([
-      'Fire',
-      'Water',
-      'Electric',
-      'Steel',
-    ]),
+    strongAgainst: List(['Ice', 'Rock', 'Fairy']),
+    ineffectiveAgainst: List(['Fire', 'Water', 'Electric', 'Steel']),
     req: List([2]),
     bonusAmount: List([25]),
     bonusType: 'bonus',
     bonusStatType: 'hp',
-    bonus: (unit, bonus) => increaseHp(unit, bonus),
+    bonus: (unit, bonus) => increaseHp(unit, bonus)
     /*
     Defense for steel units
     No combo, simple bonus
@@ -371,39 +244,24 @@ const typeMap = new Map({
   }),
   dark: Map({
     name: 'dark',
-    strongAgainst: List([
-      'Psychic',
-      'Ghost',
-    ]),
-    ineffectiveAgainst: List([
-      'Fighting',
-      'Dark',
-      'Fairy',
-    ]),
+    strongAgainst: List(['Psychic', 'Ghost']),
+    ineffectiveAgainst: List(['Fighting', 'Dark', 'Fairy']),
     req: List([1]),
     bonusAmount: List([30]),
     bonusType: 'bonus',
     bonusStatType: 'attack',
-    bonus: (unit, bonus) => increaseAttack(unit, bonus),
+    bonus: (unit, bonus) => increaseAttack(unit, bonus)
   }),
   fairy: Map({
     name: 'fairy',
-    strongAgainst: List([
-      'Fighting',
-      'Dragon',
-      'Dark',
-    ]),
-    ineffectiveAgainst: List([
-      'Fire',
-      'Poison',
-      'Steel',
-    ]),
+    strongAgainst: List(['Fighting', 'Dragon', 'Dark']),
+    ineffectiveAgainst: List(['Fire', 'Poison', 'Steel']),
     req: List([2, 3]),
     bonusAmount: List([10, 20]),
     bonusType: 'allBonus',
     bonusStatType: 'hp',
-    allBonus: (unit, bonus) => increaseHp(unit, bonus),
-  }),
+    allBonus: (unit, bonus) => increaseHp(unit, bonus)
+  })
 });
 
 /**
@@ -414,10 +272,10 @@ const isStrongAgainst = async (attackType, defenseType) => {
   if (!f.isUndefined(strongAgainst)) {
     if (strongAgainst.size > 0) {
       const lowerCase = strongAgainst.map(v => v.toLowerCase());
-      return (lowerCase.includes(defenseType) ? 2.0 : 1.0);
+      return lowerCase.includes(defenseType) ? 2.0 : 1.0;
     }
     const lowerCase = strongAgainst.toLowerCase();
-    return (lowerCase.includes(defenseType) ? 2.0 : 1.0);
+    return lowerCase.includes(defenseType) ? 2.0 : 1.0;
   }
   return 1.0;
 };
@@ -430,10 +288,10 @@ const isIneffectiveAgainst = async (attackType, defenseType) => {
   const ineffectiveAgainst = typeMap.get(attackType).get('ineffectiveAgainst');
   if (ineffectiveAgainst.size > 0) {
     const lowerCase = ineffectiveAgainst.map(v => v.toLowerCase());
-    return (lowerCase.includes(defenseType) ? 0.5 : 1.0);
+    return lowerCase.includes(defenseType) ? 0.5 : 1.0;
   }
   const lowerCase = ineffectiveAgainst.toLowerCase();
-  return (lowerCase.includes(defenseType) ? 0.5 : 1.0);
+  return lowerCase.includes(defenseType) ? 0.5 : 1.0;
 
   // console.log('@inefective', ineffectiveAgainst.includes(defenseType), ineffectiveAgainst);
 };
@@ -445,7 +303,7 @@ const hasNoDamageAgainst = async (attackType, defenseType) => {
   const noDamage = typeMap.get(attackType).get('noDamageAgainst');
   if (!f.isUndefined(noDamage)) {
     const lowerCase = noDamage.toLowerCase();
-    return (lowerCase.includes(defenseType) ? 0.0 : 1.0);
+    return lowerCase.includes(defenseType) ? 0.0 : 1.0;
   }
   return 1.0;
 };
@@ -468,7 +326,8 @@ const calcTypeFactor = async (attackType, defenseType) => {
  */
 exports.getTypeFactor = async (attackType, typesDefender) => {
   // console.log('@getTypeFactor', attackType, typesDefender)
-  if (!f.isUndefined(typesDefender.size)) { // 2 Defending types
+  if (!f.isUndefined(typesDefender.size)) {
+    // 2 Defending types
     let typeList = List([1, 1]);
     for (let i = 0; i < typesDefender.size; i++) {
       typeList = typeList.set(i, await calcTypeFactor(attackType, typesDefender.get(i)));
@@ -478,7 +337,7 @@ exports.getTypeFactor = async (attackType, typesDefender) => {
   return calcTypeFactor(attackType, typesDefender);
 };
 
-const getStringFromList = (list) => {
+const getStringFromList = list => {
   // console.log('@getStringFromList', list)
   if (!list.size) {
     return list;
@@ -492,7 +351,7 @@ const getStringFromList = (list) => {
 
 const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
 
-const getTypeDesc = (name) => {
+const getTypeDesc = name => {
   const type = typeMap.get(name);
   if (f.isUndefined(type.get('req'))) {
     return '';
@@ -500,8 +359,8 @@ const getTypeDesc = (name) => {
   const typeName = type.get('name');
   const req = type.get('req').toJS();
   const bonusType = type.get('bonusType');
-  const inc = (bonusType !== 'enemyDebuff' ? 'Increases' : 'Decreases');
-  const units = (bonusType === 'bonus' ? `all ${typeName} typed units` : (bonusType === 'allBonus' ? 'all units' : 'all enemy units'));
+  const inc = bonusType !== 'enemyDebuff' ? 'Increases' : 'Decreases';
+  const units = bonusType === 'bonus' ? `all ${typeName} typed units` : bonusType === 'allBonus' ? 'all units' : 'all enemy units';
   const bonusAmount = type.get('bonusAmount').toJS();
   const bonusStatType = type.get('bonusStatType');
   let defString = '';
@@ -542,7 +401,11 @@ exports.buildTypeString = () => {
 
 exports.getType = name => typeMap.get(name);
 
-exports.getBonusAmount = (name, level) => typeMap.get(name).get('bonusAmount').get(level - 1);
+exports.getBonusAmount = (name, level) =>
+  typeMap
+    .get(name)
+    .get('bonusAmount')
+    .get(level - 1);
 
 exports.getBonusStatType = name => typeMap.get(name).get('bonusStatType');
 
@@ -559,4 +422,8 @@ exports.getBonusType = name => typeMap.get(name).get('bonusType');
 exports.hasBonus = name => !f.isUndefined(typeMap.get(name).get('req'));
 
 // Given name and level, returns required amount for that level
-exports.getTypeReq = (name, level) => typeMap.get(name).get('req').get(level - 1);
+exports.getTypeReq = (name, level) =>
+  typeMap
+    .get(name)
+    .get('req')
+    .get(level - 1);

@@ -102,7 +102,12 @@ export default class Battle {
       unit.setTarget(closestTarget);
       if (!closestTarget) return;
       // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
-      const { x, y } = this.pathfinder.findPath({ x: unit.x, y: unit.y, targetX: closestTarget.x, targetY: closestTarget.y });
+      const { x, y } = this.pathfinder.findPath({
+        x: unit.x,
+        y: unit.y,
+        targetX: closestTarget.x,
+        targetY: closestTarget.y
+      });
       this.moveUnit(unit, { x, y }, timestamp);
     }
   }

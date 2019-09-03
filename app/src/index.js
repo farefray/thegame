@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 
 // setup socket connection
 export const socket = configureSocket(store.dispatch);
-AjaxGetUnitJson((unitJSON) => {
+AjaxGetUnitJson(unitJSON => {
   localStorage.setItem('unitJSON', JSON.stringify(unitJSON));
 });
 

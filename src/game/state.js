@@ -1,7 +1,4 @@
-const {
-  Map,
-  List,
-} = require('immutable');
+const { Map, List } = require('immutable');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
 const pawns = require('../pawns');
@@ -47,7 +44,8 @@ StateJS.increaseExp = (stateParam, playerIndex, amountParam) => {
   while (amount >= 0) {
     // console.log('increaseExp', level, exp, expToReach)
     // console.log(exp, level, expToReach, amount, expToReach > exp + amount);
-    if (expToReach > exp + amount) { // not enough exp to level up
+    if (expToReach > exp + amount) {
+      // not enough exp to level up
       exp += amount;
       amount = 0;
       player = player.set('level', level);
@@ -55,7 +53,8 @@ StateJS.increaseExp = (stateParam, playerIndex, amountParam) => {
       player = player.set('expToReach', expToReach);
       state = state.setIn(['players', playerIndex], player);
       break;
-    } else { // Leveling up
+    } else {
+      // Leveling up
       level += 1;
       if (level === 10) {
         player = player.set('level', level);

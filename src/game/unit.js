@@ -1,6 +1,5 @@
 const f = require('../f');
 
-
 const UnitJS = {};
 
 /** Private methods */
@@ -27,7 +26,7 @@ function _getHeuristicScore(unitPos, closestEnemyPos) {
   const y = f.y(closestEnemyPos);
   const ux = f.x(unitPos);
   const uy = f.y(unitPos);
-  return Math.floor(((uy - y) ** 2) + ((ux - x) ** 2));
+  return Math.floor((uy - y) ** 2 + (ux - x) ** 2);
 }
 
 function _allowedCoordinate(board, pos) {
@@ -46,40 +45,72 @@ function _getMovePos(board, closestEnemyPos, range, team) {
   const x = f.x(closestEnemyPos);
   const y = f.y(closestEnemyPos);
   for (let i = range; i >= 1; i--) {
-    if (team === 0) { // S team
-      if (_allowedCoordinate(board, f.pos(x, y - i))) { // S
+    if (team === 0) {
+      // S team
+      if (_allowedCoordinate(board, f.pos(x, y - i))) {
+        // S
         return f.pos(x, y - i);
-      } if (_allowedCoordinate(board, f.pos(x - i, y - i))) { // SW
+      }
+      if (_allowedCoordinate(board, f.pos(x - i, y - i))) {
+        // SW
         return f.pos(x - i, y - i);
-      } if (_allowedCoordinate(board, f.pos(x + i, y - i))) { // SE
+      }
+      if (_allowedCoordinate(board, f.pos(x + i, y - i))) {
+        // SE
         return f.pos(x + i, y - i);
-      } if (_allowedCoordinate(board, f.pos(x - i, y))) { // W
+      }
+      if (_allowedCoordinate(board, f.pos(x - i, y))) {
+        // W
         return f.pos(x - i, y);
-      } if (_allowedCoordinate(board, f.pos(x + i, y))) { // E
+      }
+      if (_allowedCoordinate(board, f.pos(x + i, y))) {
+        // E
         return f.pos(x + i, y);
-      } if (_allowedCoordinate(board, f.pos(x, y + i))) { // N
+      }
+      if (_allowedCoordinate(board, f.pos(x, y + i))) {
+        // N
         return f.pos(x, y + i);
-      } if (_allowedCoordinate(board, f.pos(x - i, y + i))) { // NW
+      }
+      if (_allowedCoordinate(board, f.pos(x - i, y + i))) {
+        // NW
         return f.pos(x - i, y + i);
-      } if (_allowedCoordinate(board, f.pos(x + i, y + i))) { // NE
+      }
+      if (_allowedCoordinate(board, f.pos(x + i, y + i))) {
+        // NE
         return f.pos(x + i, y + i);
       }
-    } else { // N team
-      if (_allowedCoordinate(board, f.pos(x, y + i))) { // N
+    } else {
+      // N team
+      if (_allowedCoordinate(board, f.pos(x, y + i))) {
+        // N
         return f.pos(x, y + i);
-      } if (_allowedCoordinate(board, f.pos(x + i, y + i))) { // NE
+      }
+      if (_allowedCoordinate(board, f.pos(x + i, y + i))) {
+        // NE
         return f.pos(x + i, y + i);
-      } if (_allowedCoordinate(board, f.pos(x - i, y + i))) { // NW
+      }
+      if (_allowedCoordinate(board, f.pos(x - i, y + i))) {
+        // NW
         return f.pos(x - i, y + i);
-      } if (_allowedCoordinate(board, f.pos(x + i, y))) { // E
+      }
+      if (_allowedCoordinate(board, f.pos(x + i, y))) {
+        // E
         return f.pos(x + i, y);
-      } if (_allowedCoordinate(board, f.pos(x - i, y))) { // W
+      }
+      if (_allowedCoordinate(board, f.pos(x - i, y))) {
+        // W
         return f.pos(x - i, y);
-      } if (_allowedCoordinate(board, f.pos(x, y - i))) { // S
+      }
+      if (_allowedCoordinate(board, f.pos(x, y - i))) {
+        // S
         return f.pos(x, y - i);
-      } if (_allowedCoordinate(board, f.pos(x + i, y - i))) { // SE
+      }
+      if (_allowedCoordinate(board, f.pos(x + i, y - i))) {
+        // SE
         return f.pos(x + i, y - i);
-      } if (_allowedCoordinate(board, f.pos(x - i, y - i))) { // SW
+      }
+      if (_allowedCoordinate(board, f.pos(x - i, y - i))) {
+        // SW
         return f.pos(x - i, y - i);
       }
     }
@@ -94,8 +125,8 @@ function _getDirection(unitPos, path) {
   const uy = f.y(unitPos);
   const tx = f.x(path);
   const ty = f.y(path);
-  const y = (ty - uy);
-  const x = (tx - ux);
+  const y = ty - uy;
+  const x = tx - ux;
   let sx = '';
   let sy = '';
   if (x !== 0) {
@@ -121,30 +152,36 @@ function _handleNeighbor(pathFindParam, board, current, enemyPos, pos) {
     // console.log('@Path @handleNeighbor Visited', pos)
     return pathFind;
   }
-  if (!_allowedCoordinate(board, pos) && pos !== enemyPos) { // Taken already
+  if (!_allowedCoordinate(board, pos) && pos !== enemyPos) {
+    // Taken already
     // console.log('@Path @handleNeighbor Spot taken', pos, (board[pos] ? board[pos].get('name') : ''));
     return pathFind;
   }
   const distanceTraveled = pathFind.getIn(['fromStartScore', current]) + 1;
   // console.log('@Path @handleNeighbor', pos, pathFind.get('toVisit')) // !pathFind.get('toVisit').has(pos), pathFind.get('toVisit').has(pos),
   // console.log('@Path fromStartScore', distanceTraveled, pathFind.getIn(['fromStartScore', pos]));
-  if (!pathFind.get('toVisit').has(pos)) { // New visited node
+  if (!pathFind.get('toVisit').has(pos)) {
+    // New visited node
     pathFind = pathFind.set('toVisit', pathFind.get('toVisit').add(pos));
-  } else if (distanceTraveled >= (pathFind.getIn(['fromStartScore', pos]) || 0)) { // Not a better option
+  } else if (distanceTraveled >= (pathFind.getIn(['fromStartScore', pos]) || 0)) {
+    // Not a better option
     return pathFind;
   }
   // console.log('@Path Path Recorded')
   // Record path
   const heuristicScore = distanceTraveled + _getHeuristicScore(pos, enemyPos);
-  return pathFind.setIn(['cameFrom', pos], current).setIn(['fromStartScore', pos], distanceTraveled).setIn(['heuristicScore', pos], heuristicScore);
+  return pathFind
+    .setIn(['cameFrom', pos], current)
+    .setIn(['fromStartScore', pos], distanceTraveled)
+    .setIn(['heuristicScore', pos], heuristicScore);
 }
-
 
 UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exceptionsList = []) => {
   const stepsToTake = Math.floor(Math.random() * 2 + 1); // 1 currently //  1 - 2, * 2
   console.log(unitPos, closestEnemyPos);
   const rangeToTarget = _getHeuristicScore(unitPos, closestEnemyPos);
-  if (stepsToTake > rangeToTarget) { // Within range, move to closest available space // && rangeToTarget === 1
+  if (stepsToTake > rangeToTarget) {
+    // Within range, move to closest available space // && rangeToTarget === 1
     const goal = _getMovePos(board, closestEnemyPos, 1, team);
     const direction = _getDirection(unitPos, goal);
     // console.log('Move direction: ', direction);
@@ -160,9 +197,9 @@ UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exc
     heuristicScore, // fScore
     toVisit: [unitPos], // openSet
     visited: [], // closedSet
-    cameFrom: {}, // cameFrom
+    cameFrom: {} // cameFrom
   };
-    // console.log('@Path Start', unitPos, closestEnemyPos);
+  // console.log('@Path Start', unitPos, closestEnemyPos);
   while (pathFind['toVisit'].length > 0) {
     // console.log('@Path ToVisit: ', pathFind.get('toVisit'))
     const current = _getLowestKey(pathFind['toVisit'], pathFind['heuristicScore']);
@@ -220,7 +257,7 @@ UnitJS.getStepMovePos = async (board, unitPos, closestEnemyPos, range, team, exc
  */
 UnitJS.deleteNextMoveResultEntries = async (unitMoveMapParam, targetToRemove) => {
   // console.log('@deleteNextMoveResultEntries', targetToRemove)
-  let unitMoveMap = unitMoveMapParam;
+  const unitMoveMap = unitMoveMapParam;
   for (const key in unitMoveMap) {
     const tempPrevMove = unitMoveMap.get(key);
     const target = tempPrevMove['nextMove']['target'];

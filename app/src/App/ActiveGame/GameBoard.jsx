@@ -11,74 +11,74 @@ const gameBoardWidth = 8;
 const gameBoardHeight = 9;
 
 class GameBoard extends React.Component {
-	constructor(props) {
-		super(props);
+  constructor(props) {
+    super(props);
 
-		this.isInitialLoad = true;
-		this.state = {
-			gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth),
-			isMounted: false
-		};
-	}
+    this.isInitialLoad = true;
+    this.state = {
+      gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth),
+      isMounted: false
+    };
+  }
 
-	componentDidMount() {
-		this.setState({ isMounted: true });
-	}
+  componentDidMount() {
+    this.setState({ isMounted: true });
+  }
 
-	createGameBoard(height, width) {
-		let data = [];
-		for (let i = 0; i < height; i++) {
-			data[i] = [];
-			for (let j = 0; j < width; j++) {
-				data[i][j] = new Position(j, width - i);
-			}
-		}
+  createGameBoard(height, width) {
+    let data = [];
+    for (let i = 0; i < height; i++) {
+      data[i] = [];
+      for (let j = 0; j < width; j++) {
+        data[i][j] = new Position(j, width - i);
+      }
+    }
 
-		return data;
-	}
+    return data;
+  }
 
-	getBoardBoundingClientRect() {
-		return this.boardRef && this.boardRef.getBoundingClientRect();
-	}
+  getBoardBoundingClientRect() {
+    return this.boardRef && this.boardRef.getBoundingClientRect();
+  }
 
-	render() {
-		const { board, onLifecycle, units } = this.props;
-		const { gameBoard, isMounted } = this.state;
+  render() {
+    const { board, onLifecycle, units } = this.props;
+    const { gameBoard, isMounted } = this.state;
 
-		return (
-			<div className="board-container rpgui-container framed">
-				<div className="flex center board" ref={e => (this.boardRef = e)}>
-					{isMounted &&
-						units.map(unit => (
-							<Unit
-								key={unit.id}
-								unit={unit}
-								getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
-								gameBoardWidth={gameBoardWidth}
-								gameBoardHeight={gameBoardHeight}
-								onLifecycle={onLifecycle}
-							/>
-						))}
-					<DndProvider backend={HTML5Backend}>
-						{gameBoard.map((boardColumn, index) => {
-							return (
-								<div className="board-column" key={index}>
-									{boardColumn.map(cellPosition => {
-										const creature = board[cellPosition.toBoardPosition()];
-										return (
-											<BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-												{!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
-											</BoardSquare>
-										);
-									})}
-								</div>
-							);
-						})}
-					</DndProvider>
-				</div>
-			</div>
-		);
-	}
+    return (
+      <div className="board-container rpgui-container framed">
+        <div className="flex center board" ref={e => (this.boardRef = e)}>
+          {isMounted &&
+            units.map(unit => (
+              <Unit
+                key={unit.id}
+                unit={unit}
+                getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
+                gameBoardWidth={gameBoardWidth}
+                gameBoardHeight={gameBoardHeight}
+                onLifecycle={onLifecycle}
+              />
+            ))}
+          <DndProvider backend={HTML5Backend}>
+            {gameBoard.map((boardColumn, index) => {
+              return (
+                <div className="board-column" key={index}>
+                  {boardColumn.map(cellPosition => {
+                    const creature = board[cellPosition.toBoardPosition()];
+                    return (
+                      <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+                        {!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
+                      </BoardSquare>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </DndProvider>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default GameBoard;

@@ -7,30 +7,30 @@ function Session(clients, state) {
   // also there as session.pieces, but i see no point cuz state is here(state.pieces)
 
   this.discardedPieces = [];
-  this.players = {}; //??
+  this.players = {}; // ??
   return this;
 }
 
-Session.prototype.get = function (field) {
+Session.prototype.get = function(field) {
   return this[field] || null;
 };
 
-Session.prototype.set = function (field, value) {
+Session.prototype.set = function(field, value) {
   this[field] = value;
 };
 
-Session.prototype.disconnect = function (socketID) {
+Session.prototype.disconnect = function(socketID) {
   if (this.clients.includes(socketID)) {
     this.clients = this.clients.filter(index => index !== socketID);
   }
 };
 
-Session.prototype.hasClients = function () {
+Session.prototype.hasClients = function() {
   return this.clients.length > 0;
 };
 
-Session.prototype.getPlayerName = function (socketID) {
+Session.prototype.getPlayerName = function(socketID) {
   return `Player ${socketID}`; // TODO
-}
+};
 
 module.exports = Session;

@@ -58,7 +58,7 @@ export default class Unit extends React.Component {
         const { initPosition } = this.state;
         this.move(initPosition.x, initPosition.y, {
           instant: true,
-          direction: DIRECTION.SOUTH,
+          direction: DIRECTION.SOUTH
         });
         break;
       }

@@ -1,5 +1,3 @@
-
-
 // Images
 import lockedLock from './assets/images/newLockedLock.png';
 import openLock from './assets/images/openLock.png';
@@ -49,7 +47,7 @@ import Blaine from './assets/images/gym/Blaine.png';
 import Giovanni from './assets/images/gym/Giovanni.png';
 
 export function getImage(name) {
-  switch(name) {
+  switch (name) {
     case 'lockedLock':
       return lockedLock;
     case 'openLock':
@@ -83,13 +81,13 @@ export function getImage(name) {
       return collapseNotWhite;
     case 'baby':
       return baby;
-    default:  
+    default:
       return info;
   }
 }
 
 export function getTypeImg(type) {
-  switch(type) {
+  switch (type) {
     case 'normal':
       return normal;
     case 'fire':
@@ -126,13 +124,13 @@ export function getTypeImg(type) {
       return steel;
     case 'fairy':
       return fairy;
-    default:  
+    default:
       return normal;
   }
 }
 
 export function getGymImage(name) {
-  switch(name) {
+  switch (name) {
     case 'Brock':
       return Brock;
     case 'Misty':
@@ -149,7 +147,7 @@ export function getGymImage(name) {
       return Blaine;
     case 'Giovanni':
       return Giovanni;
-    default:  
+    default:
       return Brock;
   }
 }

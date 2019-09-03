@@ -15,16 +15,17 @@ const defaultStat = {
   upperLimitSpeed: 250,
   defense: 50,
   range: 1, // Range for unit to reach (diagonals allowed)
-  next_move: 0, // Next move: time for next move
+  next_move: 0 // Next move: time for next move
 };
 
 const Pawns = {};
-Pawns.getMonsterStats = (name) => monsters[name.toLowerCase()];
+Pawns.getMonsterStats = name => monsters[name.toLowerCase()];
 
-const getBaseLocal = async (name) => {
+const getBaseLocal = async name => {
   const unitStats = monsters[name.toLowerCase()];
   // console.log('@getBaseLocal', unitStats, name, unitStats.get('evolves_from'));
-  if (!unitStats.evolves_from) { // Base level
+  if (!unitStats.evolves_from) {
+    // Base level
     // console.log('@getBase This pokemon is a base unit: ', unitStats.get('name'), unitStats.get('evolves_from'), f.isUndefined(unitStats.get('evolves_from')));
     return unitStats.name;
   }
@@ -37,7 +38,8 @@ Pawns.getBaseMonster = name => getBaseLocal(name);
 
 const getUnitTierLocal = async (name, counter = 1) => {
   const unitStats = monsters[name.toLowerCase()];
-  if (!unitStats.evolves_from) { // Base level
+  if (!unitStats.evolves_from) {
+    // Base level
     // console.log('@getBase This pokemon is a base unit: ', unitStats.get('name'), unitStats.get('evolves_from'), f.isUndefined(unitStats.get('evolves_from')));
     return counter;
   }
@@ -49,7 +51,6 @@ const getUnitTierLocal = async (name, counter = 1) => {
 Pawns.getUnitTier = name => getUnitTierLocal(name);
 
 Pawns.getMonsterMap = async () => monsters;
-
 
 Pawns.getStatsDefault = stat => defaultStat[stat];
 

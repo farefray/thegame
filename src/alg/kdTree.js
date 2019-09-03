@@ -9,7 +9,7 @@
  * @license MIT License <http://www.opensource.org/licenses/mit-license.php>
  */
 
-(function (root, factory) {
+(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(['exports'], factory);
   } else if (typeof exports === 'object') {
@@ -17,7 +17,7 @@
   } else {
     factory(root);
   }
-}(this, function (exports) {
+})(this, function(exports) {
   function Node(obj, dimension, parent) {
     this.obj = obj;
     this.left = null;
@@ -27,13 +27,12 @@
   }
 
   function kdTree(points, metric, dimensions) {
-
-    var self = this;
+    const self = this;
 
     function buildTree(points, depth, parent) {
-      var dim = depth % dimensions.length,
-        median,
-        node;
+      const dim = depth % dimensions.length;
+      let median;
+      let node;
 
       if (points.length === 0) {
         return null;
@@ -42,7 +41,7 @@
         return new Node(points[0], dim, parent);
       }
 
-      points.sort(function (a, b) {
+      points.sort(function(a, b) {
         return a[dimensions[dim]] - b[dimensions[dim]];
       });
 
@@ -80,32 +79,30 @@
 
     // Convert to a JSON serializable structure; this just requires removing
     // the `parent` property
-    this.toJSON = function (src) {
+    this.toJSON = function(src) {
       if (!src) src = this.root;
-      var dest = new Node(src.obj, src.dimension, null);
+      const dest = new Node(src.obj, src.dimension, null);
       if (src.left) dest.left = self.toJSON(src.left);
       if (src.right) dest.right = self.toJSON(src.right);
       return dest;
     };
 
-    this.insert = function (point) {
+    this.insert = function(point) {
       function innerSearch(node, parent) {
-
         if (node === null) {
           return parent;
         }
 
-        var dimension = dimensions[node.dimension];
+        const dimension = dimensions[node.dimension];
         if (point[dimension] < node.obj[dimension]) {
           return innerSearch(node.left, node);
-        } else {
-          return innerSearch(node.right, node);
         }
+        return innerSearch(node.right, node);
       }
 
-      var insertPosition = innerSearch(this.root, null),
-        newNode,
-        dimension;
+      const insertPosition = innerSearch(this.root, null);
+      let newNode;
+      let dimension;
 
       if (insertPosition === null) {
         this.root = new Node(point, 0, null);
@@ -122,8 +119,8 @@
       }
     };
 
-    this.remove = function (point) {
-      var node;
+    this.remove = function(point) {
+      let node;
 
       function nodeSearch(node) {
         if (node === null) {
@@ -134,26 +131,25 @@
           return node;
         }
 
-        var dimension = dimensions[node.dimension];
+        const dimension = dimensions[node.dimension];
 
         if (point[dimension] < node.obj[dimension]) {
           return nodeSearch(node.left, node);
-        } else {
-          return nodeSearch(node.right, node);
         }
+        return nodeSearch(node.right, node);
       }
 
       function removeNode(node) {
-        var nextNode,
-          nextObj,
-          pDimension;
+        let nextNode;
+        let nextObj;
+        let pDimension;
 
         function findMin(node, dim) {
-          var dimension,
-            own,
-            left,
-            right,
-            min;
+          let dimension;
+          let own;
+          let left;
+          let right;
+          let min;
 
           if (node === null) {
             return null;
@@ -214,7 +210,6 @@
           node.left = null;
           node.obj = nextObj;
         }
-
       }
 
       node = nodeSearch(self.root);
@@ -226,25 +221,23 @@
       removeNode(node);
     };
 
-    this.nearest = function (point, maxNodes, maxDistance) {
-      var i,
-        result,
-        bestNodes;
+    this.nearest = function(point, maxNodes, maxDistance) {
+      let i;
+      let result;
+      let bestNodes;
 
-      bestNodes = new BinaryHeap(
-        function (e) {
-          return -e[1];
-        }
-      );
+      bestNodes = new BinaryHeap(function(e) {
+        return -e[1];
+      });
 
       function nearestSearch(node) {
-        var bestChild,
-          dimension = dimensions[node.dimension],
-          ownDistance = metric(point, node.obj),
-          linearPoint = {},
-          linearDistance,
-          otherChild,
-          i;
+        let bestChild;
+        const dimension = dimensions[node.dimension];
+        const ownDistance = metric(point, node.obj);
+        const linearPoint = {};
+        let linearDistance;
+        let otherChild;
+        let i;
 
         function saveNode(node, distance) {
           bestNodes.push([node, distance]);
@@ -274,12 +267,10 @@
           bestChild = node.left;
         } else if (node.left === null) {
           bestChild = node.right;
+        } else if (point[dimension] < node.obj[dimension]) {
+          bestChild = node.left;
         } else {
-          if (point[dimension] < node.obj[dimension]) {
-            bestChild = node.left;
-          } else {
-            bestChild = node.right;
-          }
+          bestChild = node.right;
         }
 
         nearestSearch(bestChild);
@@ -306,8 +297,7 @@
         }
       }
 
-      if (self.root)
-        nearestSearch(self.root);
+      if (self.root) nearestSearch(self.root);
 
       result = [];
 
@@ -319,7 +309,7 @@
       return result;
     };
 
-    this.balanceFactor = function () {
+    this.balanceFactor = function() {
       function height(node) {
         if (node === null) {
           return 0;
@@ -347,18 +337,18 @@
   }
 
   BinaryHeap.prototype = {
-    push: function (element) {
+    push(element) {
       // Add the new element to the end of the array.
       this.content.push(element);
       // Allow it to bubble up.
       this.bubbleUp(this.content.length - 1);
     },
 
-    pop: function () {
+    pop() {
       // Store the first element so we can return it later.
-      var result = this.content[0];
+      const result = this.content[0];
       // Get the element at the end of the array.
-      var end = this.content.pop();
+      const end = this.content.pop();
       // If there are any elements left, put the end element at the
       // start, and let it sink down.
       if (this.content.length > 0) {
@@ -368,44 +358,42 @@
       return result;
     },
 
-    peek: function () {
+    peek() {
       return this.content[0];
     },
 
-    remove: function (node) {
-      var len = this.content.length;
+    remove(node) {
+      const len = this.content.length;
       // To remove a value, we must search through the array to find
       // it.
-      for (var i = 0; i < len; i++) {
+      for (let i = 0; i < len; i++) {
         if (this.content[i] == node) {
           // When it is found, the process seen in 'pop' is repeated
           // to fill up the hole.
-          var end = this.content.pop();
+          const end = this.content.pop();
           if (i != len - 1) {
             this.content[i] = end;
-            if (this.scoreFunction(end) < this.scoreFunction(node))
-              this.bubbleUp(i);
-            else
-              this.sinkDown(i);
+            if (this.scoreFunction(end) < this.scoreFunction(node)) this.bubbleUp(i);
+            else this.sinkDown(i);
           }
           return;
         }
       }
-      throw new Error("Node not found.");
+      throw new Error('Node not found.');
     },
 
-    size: function () {
+    size() {
       return this.content.length;
     },
 
-    bubbleUp: function (n) {
+    bubbleUp(n) {
       // Fetch the element that has to be moved.
-      var element = this.content[n];
+      const element = this.content[n];
       // When at 0, an element can not go up any further.
       while (n > 0) {
         // Compute the parent element's index, and fetch it.
-        var parentN = Math.floor((n + 1) / 2) - 1,
-          parent = this.content[parentN];
+        const parentN = Math.floor((n + 1) / 2) - 1;
+        const parent = this.content[parentN];
         // Swap the elements if the parent is greater.
         if (this.scoreFunction(element) < this.scoreFunction(parent)) {
           this.content[parentN] = element;
@@ -420,32 +408,31 @@
       }
     },
 
-    sinkDown: function (n) {
+    sinkDown(n) {
       // Look up the target element and its score.
-      var length = this.content.length,
-        element = this.content[n],
-        elemScore = this.scoreFunction(element);
+      const length = this.content.length;
+      const element = this.content[n];
+      const elemScore = this.scoreFunction(element);
 
       while (true) {
         // Compute the indices of the child elements.
-        var child2N = (n + 1) * 2,
-          child1N = child2N - 1;
+        const child2N = (n + 1) * 2;
+        const child1N = child2N - 1;
         // This is used to store the new position of the element,
         // if any.
-        var swap = null;
+        let swap = null;
         // If the first child exists (is inside the array)...
         if (child1N < length) {
           // Look it up and compute its score.
-          var child1 = this.content[child1N],
-            child1Score = this.scoreFunction(child1);
+          const child1 = this.content[child1N];
+          var child1Score = this.scoreFunction(child1);
           // If the score is less than our element's, we need to swap.
-          if (child1Score < elemScore)
-            swap = child1N;
+          if (child1Score < elemScore) swap = child1N;
         }
         // Do the same checks for the other child.
         if (child2N < length) {
-          var child2 = this.content[child2N],
-            child2Score = this.scoreFunction(child2);
+          const child2 = this.content[child2N];
+          const child2Score = this.scoreFunction(child2);
           if (child2Score < (swap == null ? elemScore : child1Score)) {
             swap = child2N;
           }
@@ -467,4 +454,4 @@
 
   exports.kdTree = kdTree;
   exports.BinaryHeap = BinaryHeap;
-}));
+});
