@@ -15,16 +15,13 @@ import RightPanel from './ActiveGame/RightPanel.jsx';
 
 import { isUndefined } from '../f';
 
+const { ACTION } = require('../shared/constants');
+
 const wait = async ms => {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
 };
-
-const ACTION_MOVE = 1; // todo share with backend
-const ACTION_ATTACK = 2;
-const ACTION_RESET = 'RESET';
-const ACTION_INIT = 'INIT';
 
 function unitReducer(unitComponents, action) {
   switch (action.type) {
@@ -67,9 +64,10 @@ function ActiveGame() {
   let combinedBoard = combineBoard();
 
   const boardReducer = (board, action) => {
-    if (action.action === 'INIT') {
+    console.log("TCL: boardReducer -> action", action)
+    if (action.type === ACTION.INIT) {
       return _.cloneDeep(action.board);
-    } else if (action.action === ACTION_RESET) {
+    } else if (action.type === ACTION.RESET) {
       // todo this is being triggered twise, need to fix.
 
       // As react wont rerender our units, we reset their positions to initial
@@ -87,11 +85,14 @@ function ActiveGame() {
     const toPos = action.to && new Position(action.to.x, action.to.y).toBoardPosition();
 
     switch (
-      action.action // todo make it type
+      action.type
     ) {
-      case ACTION_MOVE:
+      case ACTION.MOVE:
         const reducedBoard = _.clone(board); // maybe can be omitted
+        console.log("TCL: boardReducer -> board", board)
+        console.log("TCL: boardReducer -> fromPos", fromPos)
         const creature = _.clone(board[fromPos]);
+        console.log("TCL: boardReducer -> creature", creature)
         delete reducedBoard[fromPos];
 
         if (toPos) {
@@ -100,7 +101,7 @@ function ActiveGame() {
         }
 
         return reducedBoard;
-      case ACTION_ATTACK:
+      case ACTION.ATTACK:
         // todo plzmake this more understandable
         unitComponents[board[fromPos].position].onAction(action);
         unitComponents[board[toPos].position].onAction(action, true);
@@ -111,6 +112,23 @@ function ActiveGame() {
   };
 
   const [gameBoard, dispatchGameBoard] = useReducer(boardReducer, combinedBoard);
+  
+  useEffect(() => {
+    const units = Object.keys(combinedBoard).map(key => {
+      return {
+        ...combinedBoard[key],
+        id: key
+      };
+    });
+
+    setUnits(units);
+
+    console.log('DISPATCHING GAME BOARD CUZ COMBINEDBOARD CHANGED')
+    dispatchGameBoard({
+      type: ACTION.INIT,
+      board: combinedBoard
+    });
+  }, [combinedBoard]);
 
   useEffect(() => {
     if (!activeBattle && isActiveBattleGoing && actionStack.length) {
@@ -123,8 +141,10 @@ function ActiveGame() {
         // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
         while (actions.length > 0) {
           const boardAction = actions.shift(); // actionStack is mutable
+          console.log("TCL: ActiveGame -> boardAction", boardAction)
           const time = boardAction.time;
           const nextRenderTime = time - currentTime; // magic time factor, fixme
+          console.log("TCL: ActiveGame -> nextRenderTime", nextRenderTime)
 
           await wait(nextRenderTime);
           dispatchGameBoard(boardAction);
@@ -137,7 +157,7 @@ function ActiveGame() {
 
             // reset board to initial state
             dispatchGameBoard({
-              action: ACTION_RESET
+              type: ACTION.RESET
             });
           }
         }
@@ -148,23 +168,9 @@ function ActiveGame() {
       // backend sent that battle is over (isActiveBattleGoing === false), we update state on frontend
       setActiveBattle(false);
     }
+    console.table([Object.keys(combinedBoard).join(','), activeBattle, isActiveBattleGoing, actionStack.length]);
   }, [combinedBoard, activeBattle, isActiveBattleGoing, actionStack]);
 
-  useEffect(() => {
-    const units = Object.keys(combinedBoard).map(key => {
-      return {
-        ...combinedBoard[key],
-        id: key
-      };
-    });
-
-    setUnits(units);
-
-    dispatchGameBoard({
-      action: ACTION_INIT,
-      board: combinedBoard
-    });
-  }, [combinedBoard]);
 
   // TODO move this to timer component
   const [counter, setCounter] = useState(0);

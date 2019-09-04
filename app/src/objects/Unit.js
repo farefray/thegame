@@ -1,10 +1,7 @@
 import React from 'react';
 import getPawnImageSrc from '../App/ActiveGame/GameBoard/Pawn/pawnImage.helper';
-import { DIRECTION } from '../shared/constants';
+import { DIRECTION, ACTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
-const ACTION_MOVE = 1; // todo share with backend
-const ACTION_ATTACK = 2;
-const ACTION_RESET = 'RESET';
 
 export default class Unit extends React.Component {
   constructor(props) {
@@ -53,8 +50,8 @@ export default class Unit extends React.Component {
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
   onAction(action, isTarget) {
-    switch (action.action) {
-      case ACTION_RESET: {
+    switch (action.type) {
+      case ACTION.RESET: {
         const { initPosition } = this.state;
         this.move(initPosition.x, initPosition.y, {
           instant: true,
@@ -62,11 +59,11 @@ export default class Unit extends React.Component {
         });
         break;
       }
-      case ACTION_MOVE: {
+      case ACTION.MOVE: {
         action.to && this.move(action.to.x, action.to.y);
         break;
       }
-      case ACTION_ATTACK: {
+      case ACTION.ATTACK: {
         isTarget
           ? (() => {
               // displaying hp remove after a delay, for attack to finish. But this has to be done better way, I'll redo
@@ -160,7 +157,10 @@ export default class Unit extends React.Component {
   }
 
   takeDamage(damage) {
+    console.log("TCL: takeDamage -> this.state.health", this.state.health)
     const health = Math.max(0, this.state.health - damage);
+    console.log("TCL: takeDamage -> health", health)
+    console.log("TCL: takeDamage -> health === 0", health === 0)
     this.setState({
       health,
       isDead: health === 0
