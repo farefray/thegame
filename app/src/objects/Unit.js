@@ -57,6 +57,12 @@ export default class Unit extends React.Component {
           instant: true,
           direction: DIRECTION.SOUTH
         });
+
+        this.setState({
+          health: this.state.maxHealth,
+          isDead: false
+        });
+
         break;
       }
       case ACTION.MOVE: {

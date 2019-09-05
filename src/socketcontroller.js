@@ -175,7 +175,7 @@ function SocketController(socket, io) {
           preBattleState.damagePlayers(battleRoundResult.battles); // b
 
           // Schedule all this to happen after last battle finished on FE
-          const EXTRA_TIME = 5000;
+          const EXTRA_TIME = 25000;
           setTimeout(async () => {
             // TODO Future: handle player dead time, to properly assign placing if multiple players are dead
             clients.forEach(socketID => {
@@ -198,7 +198,7 @@ function SocketController(socket, io) {
                 scueduleNextRound();
               }
             });
-          }, battleRoundResult.battleTime + EXTRA_TIME);
+          }, battleRoundResult.battleTime + EXTRA_TIME); // fixme somehow it ends quite faster than game ends on FE. Maybe battleTime is wrong?
 
           // round ended, next round must be scheduled?
         }, STARTBATTLE_TIMER);

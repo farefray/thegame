@@ -58,7 +58,6 @@ function ActiveGame() {
   let combinedBoard = combineBoard();
 
   const boardReducer = (board, action) => {
-    console.log("TCL: boardReducer -> action", action)
     if (action.type === ACTION.INIT) {
       return _.cloneDeep(action.board);
     } else if (action.type === ACTION.RESET) {
@@ -83,19 +82,14 @@ function ActiveGame() {
     ) {
       case ACTION.MOVE:
         const reducedBoard = _.cloneDeep(board); // maybe can be omitted
-        console.log("TCL: boardReducer -> board", board)
-        console.log("TCL: boardReducer -> fromPos", fromPos)
         const creature = _.clone(board[fromPos]);
-        console.log("TCL: boardReducer -> creature", creature)
         delete reducedBoard[fromPos];
-        console.log("TCL: boardReducer -> toPos", toPos)
 
         if (toPos) {
           unitComponents[creature.position].onAction(action);
           reducedBoard[toPos] = creature;
         }
 
-        console.log("TCL: boardReducer -> reducedBoard", reducedBoard)
         return reducedBoard;
       case ACTION.ATTACK:
         // todo plzmake this more understandable
@@ -128,12 +122,9 @@ function ActiveGame() {
   const [currentActionIndex, setCurrentActionIndex] = useState(-1);
   const [prevActionIndex, setPrevActionIndex] = useState(-1);
   useEffect(() => {
-    console.log('EFFECT');
     if (!activeBattle && isActiveBattleGoing && actionStack.length) {
       setActiveBattle(true);
 
-      console.log('Starting Battle with', actionStack.length, 'moves');
-      console.log("TCL: ActiveGame -> actionStack", actionStack)
       setCurrentActionIndex(0);
     } else if (activeBattle && !isActiveBattleGoing) {
       // backend sent that battle is over (isActiveBattleGoing === false), we update state on frontend
