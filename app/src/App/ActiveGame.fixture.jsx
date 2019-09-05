@@ -29,16 +29,6 @@ const defaultBoard = {
       name: 'minotaur',
       x: 0,
       y: 8
-    },
-    {
-      name: 'minotaur',
-      x: 0,
-      y: 7
-    },
-    {
-      name: 'minotaur',
-      x: 0,
-      y: 6
     }
   ],
   B: [
@@ -55,6 +45,7 @@ const generateGameState = async function({ boards }) {
   const playerBoard = await BoardJS.createBoard(boards.B);
 
   const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+  console.log("TCL: combinedBoard", combinedBoard)
   const battleResult = new Battle(combinedBoard);
   return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
 };

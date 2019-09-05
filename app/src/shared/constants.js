@@ -9,5 +9,11 @@ module.exports = {
     NONE: -1,
     A: 0,
     B: 1
+  },
+  ACTION: {
+    RESET: -1,
+    INIT: 0,
+    MOVE: 1,
+    ATTACK: 2
   }
 };
