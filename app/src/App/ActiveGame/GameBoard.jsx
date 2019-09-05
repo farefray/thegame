@@ -67,6 +67,7 @@ class GameBoard extends React.Component {
                     const creature = board[cellPosition.toBoardPosition()];
                     return (
                       <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+                        {cellPosition.toBoardPosition()}
                         {!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
                       </BoardSquare>
                     );

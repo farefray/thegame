@@ -90,7 +90,7 @@ export default class Battle {
       const attackResult = unit.doAttack(targetUnit);
       this.action(
         {
-          type: ACTION.MOVE,
+          type: ACTION.ATTACK,
           from: unit.getPosition(),
           to: targetUnit.getPosition(),
           damage: attackResult.damage

@@ -17,12 +17,6 @@ import { isUndefined } from '../f';
 
 const { ACTION } = require('../shared/constants');
 
-const wait = async ms => {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-};
-
 function unitReducer(unitComponents, action) {
   switch (action.type) {
     case 'SPAWN': {
@@ -88,18 +82,20 @@ function ActiveGame() {
       action.type
     ) {
       case ACTION.MOVE:
-        const reducedBoard = _.clone(board); // maybe can be omitted
+        const reducedBoard = _.cloneDeep(board); // maybe can be omitted
         console.log("TCL: boardReducer -> board", board)
         console.log("TCL: boardReducer -> fromPos", fromPos)
         const creature = _.clone(board[fromPos]);
         console.log("TCL: boardReducer -> creature", creature)
         delete reducedBoard[fromPos];
+        console.log("TCL: boardReducer -> toPos", toPos)
 
         if (toPos) {
           unitComponents[creature.position].onAction(action);
           reducedBoard[toPos] = creature;
         }
 
+        console.log("TCL: boardReducer -> reducedBoard", reducedBoard)
         return reducedBoard;
       case ACTION.ATTACK:
         // todo plzmake this more understandable
@@ -123,53 +119,54 @@ function ActiveGame() {
 
     setUnits(units);
 
-    console.log('DISPATCHING GAME BOARD CUZ COMBINEDBOARD CHANGED')
     dispatchGameBoard({
       type: ACTION.INIT,
       board: combinedBoard
     });
   }, [combinedBoard]);
 
+  const [currentActionIndex, setCurrentActionIndex] = useState(-1);
+  const [prevActionIndex, setPrevActionIndex] = useState(-1);
   useEffect(() => {
+    console.log('EFFECT');
     if (!activeBattle && isActiveBattleGoing && actionStack.length) {
       setActiveBattle(true);
 
-      const startBattleEvent = async actions => {
-        let currentTime = 0;
-
-        console.log('Starting Battle with', actions.length, 'moves');
-        // Add some kind of timer here for battle countdowns (setTimeout here made dispatch not update correct state)
-        while (actions.length > 0) {
-          const boardAction = actions.shift(); // actionStack is mutable
-          console.log("TCL: ActiveGame -> boardAction", boardAction)
-          const time = boardAction.time;
-          const nextRenderTime = time - currentTime; // magic time factor, fixme
-          console.log("TCL: ActiveGame -> nextRenderTime", nextRenderTime)
-
-          await wait(nextRenderTime);
-          dispatchGameBoard(boardAction);
-
-          currentTime = time;
-
-          if (actions.length === 0) {
-            console.log('END OF BATTLE: winningTeam');
-            await wait(1500);
-
-            // reset board to initial state
-            dispatchGameBoard({
-              type: ACTION.RESET
-            });
-          }
-        }
-      };
-
-      startBattleEvent(_.clone(actionStack));
+      console.log('Starting Battle with', actionStack.length, 'moves');
+      console.log("TCL: ActiveGame -> actionStack", actionStack)
+      setCurrentActionIndex(0);
     } else if (activeBattle && !isActiveBattleGoing) {
       // backend sent that battle is over (isActiveBattleGoing === false), we update state on frontend
       setActiveBattle(false);
+    } else if (activeBattle && 
+      isActiveBattleGoing && 
+      actionStack.length > 0 && 
+      currentActionIndex > -1 && 
+      currentActionIndex !== prevActionIndex) {
+      // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
+      console.log('ACTION MUST BE EXECUTED, currentActionIndex:', currentActionIndex);
+      setPrevActionIndex(currentActionIndex);
+
+      if (actionStack.length === currentActionIndex) {
+        // Battle finished
+        console.log('END OF BATTLE: winningTeam');
+
+        // reset board to initial state
+        dispatchGameBoard({
+          type: ACTION.RESET
+        });
+      } else {
+        const boardAction = actionStack[currentActionIndex];
+        const time = boardAction.time;
+        const nextRenderTime = time/* - currentTime*/;
+        dispatchGameBoard(boardAction);
+  
+        setTimeout(() => {
+          setCurrentActionIndex(currentActionIndex + 1);
+        }, nextRenderTime)
+      }
     }
-    console.table([Object.keys(combinedBoard).join(','), activeBattle, isActiveBattleGoing, actionStack.length]);
-  }, [combinedBoard, activeBattle, isActiveBattleGoing, actionStack]);
+  }, [ gameBoard, currentActionIndex ]); // eslint-disable-line
 
 
   // TODO move this to timer component

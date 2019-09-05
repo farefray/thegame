@@ -35,7 +35,7 @@ const defaultBoard = {
     {
       name: 'minotaur',
       x: 0,
-      y: 7
+      y: 1
     }
   ]
 };
