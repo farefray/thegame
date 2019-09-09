@@ -3,9 +3,6 @@ import Pathfinder from './Pathfinder';
 
 const _ = require('lodash');
 const f = require('../f');
-const { kdTree } = require('../alg/kdTree');
-
-const Position = require('../../app/src/objects/Position');
 
 const BattleUnit = require('./BattleUnit');
 
@@ -62,11 +59,11 @@ export default class Battle {
     this.units = _.shuffle(units);
     this.actionQueue = new ActionQueue(this.units, this.calculateAction.bind(this));
 
-    console.time('test');
+    // console.time('test');
     this.actionQueue.execute();
     this.setWinner();
     console.log(this.actionStack);
-    console.timeEnd('test');
+    // console.timeEnd('test');
   }
 
   setWinner() {
@@ -107,7 +104,7 @@ export default class Battle {
       }
     } else {
       // get target (todo use previous target if exist)
-      const closestTarget = this.getClosestTarget(unit);
+      const closestTarget = Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam()) });
       unit.setTarget(closestTarget);
       if (!closestTarget) return;
       // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
@@ -179,40 +176,5 @@ export default class Battle {
       this.isOver = true;
       this.winner = battleUnit.oppositeTeam();
     }
-  }
-
-  /**
-   * @todo perf this against old method after finishding direction(for_perf_kdtree.js)
-   * @param {BattleUnit} battleUnit
-   * @returns {BattleUnit}
-   */
-  getClosestTarget(battleUnit) {
-    const enemiesCoords = this.coordsBoardMap[battleUnit.oppositeTeam()];
-    // eslint-disable-next-line
-    const tree = new kdTree(
-      enemiesCoords,
-      function(a, b) {
-        return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
-      },
-      ['x', 'y']
-    );
-    const AMOUNT = 1;
-    const closestEnemy = tree.nearest(
-      {
-        x: battleUnit.x,
-        y: battleUnit.y
-      },
-      AMOUNT
-    );
-    if (closestEnemy.length) {
-      const targetPosition = new Position(+closestEnemy[0][0].x, +closestEnemy[0][0].y);
-      const targetUnit = this.battleBoard[targetPosition.toBoardPosition()];
-
-      if (targetUnit) {
-        return targetUnit;
-      }
-    }
-
-    return null;
   }
 }

@@ -288,7 +288,7 @@ export function app(
       };
       break;
     case 'BATTLE_TIME':
-      console.log('TCL: action', action);
+      //console.log('TCL: action', action);
       const { actionStack, startBoard, winner } = action;
       if (!state.musicEnabled) {
         tempSoundEffects = getNewSoundEffects(state.soundEffects, getSoundEffect('horn'));
@@ -304,7 +304,7 @@ export function app(
         battleStartBoard: startBoard,
         winners: winner
       };
-      console.log('TCL: state', state);
+      //console.log('TCL: state', state);
 
       // visiting will be kicked from game
       /* if (state.visiting !== state.index && action.battleStartBoards[state.visiting]) {

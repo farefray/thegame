@@ -38,7 +38,7 @@ function unitReducer(unitComponents, action) {
 
 function ActiveGame() {
   useEffect(() => {
-    console.log('ACTIVE GAME MOUNT');
+    //console.log('ACTIVE GAME MOUNT');
   }, []);
 
   const [activeBattle, setActiveBattle] = useState(false);
@@ -77,9 +77,7 @@ function ActiveGame() {
     const fromPos = new Position(action.from.x, action.from.y).toBoardPosition(); // idiotic way for forming ID's for units and other stuff. Make it good please someone
     const toPos = action.to && new Position(action.to.x, action.to.y).toBoardPosition();
 
-    switch (
-      action.type
-    ) {
+    switch (action.type) {
       case ACTION.MOVE:
         const reducedBoard = _.cloneDeep(board); // maybe can be omitted
         const creature = _.clone(board[fromPos]);
@@ -102,7 +100,7 @@ function ActiveGame() {
   };
 
   const [gameBoard, dispatchGameBoard] = useReducer(boardReducer, combinedBoard);
-  
+
   useEffect(() => {
     const units = Object.keys(combinedBoard).map(key => {
       return {
@@ -129,18 +127,14 @@ function ActiveGame() {
     } else if (activeBattle && !isActiveBattleGoing) {
       // backend sent that battle is over (isActiveBattleGoing === false), we update state on frontend
       setActiveBattle(false);
-    } else if (activeBattle && 
-      isActiveBattleGoing && 
-      actionStack.length > 0 && 
-      currentActionIndex > -1 && 
-      currentActionIndex !== prevActionIndex) {
+    } else if (activeBattle && isActiveBattleGoing && actionStack.length > 0 && currentActionIndex > -1 && currentActionIndex !== prevActionIndex) {
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
-      console.log('ACTION MUST BE EXECUTED, currentActionIndex:', currentActionIndex);
+      //console.log('ACTION MUST BE EXECUTED, currentActionIndex:', currentActionIndex);
       setPrevActionIndex(currentActionIndex);
 
       if (actionStack.length === currentActionIndex) {
         // Battle finished
-        console.log('END OF BATTLE: winningTeam');
+        //console.log('END OF BATTLE: winningTeam');
 
         // reset board to initial state
         dispatchGameBoard({
@@ -149,16 +143,15 @@ function ActiveGame() {
       } else {
         const boardAction = actionStack[currentActionIndex];
         const time = boardAction.time;
-        const nextRenderTime = time/* - currentTime*/;
+        const nextRenderTime = time; /* - currentTime*/
         dispatchGameBoard(boardAction);
-  
+
         setTimeout(() => {
           setCurrentActionIndex(currentActionIndex + 1);
-        }, nextRenderTime)
+        }, nextRenderTime);
       }
     }
-  }, [ gameBoard, currentActionIndex ]); // eslint-disable-line
-
+  }, [gameBoard, currentActionIndex]); // eslint-disable-line
 
   // TODO move this to timer component
   const [counter, setCounter] = useState(0);

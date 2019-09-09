@@ -56,4 +56,19 @@ export default class Pathfinder {
 
     return { x, y };
   }
+
+  static getClosestTarget({ x, y, targets }) {
+    let closestTarget = null;
+    let closestTargetDistance = Infinity;
+    for (const target of targets) {
+      const { x: targetX, y: targetY } = target;
+      const distance = Math.max(0, Math.abs(targetX - x) - 1) + Math.max(0, Math.abs(targetY - y) - 1);
+      if (distance < closestTargetDistance) {
+        closestTarget = target;
+        closestTargetDistance = distance;
+      }
+      if (!distance) break;
+    }
+    return closestTarget;
+  }
 }

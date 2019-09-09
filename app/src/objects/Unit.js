@@ -163,10 +163,10 @@ export default class Unit extends React.Component {
   }
 
   takeDamage(damage) {
-    console.log("TCL: takeDamage -> this.state.health", this.state.health)
+    //console.log("TCL: takeDamage -> this.state.health", this.state.health)
     const health = Math.max(0, this.state.health - damage);
-    console.log("TCL: takeDamage -> health", health)
-    console.log("TCL: takeDamage -> health === 0", health === 0)
+    //console.log("TCL: takeDamage -> health", health)
+    //console.log("TCL: takeDamage -> health === 0", health === 0)
     this.setState({
       health,
       isDead: health === 0

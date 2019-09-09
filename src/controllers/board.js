@@ -526,7 +526,7 @@ BoardJS.sellPiece = async (state, playerIndex, piecePosition) => {
  * Use together with combine boards
  */
 BoardJS.createBoard = async inputList => {
-  console.log('TCL: BoardJS.createBoard -> inputList', inputList);
+  //console.log('TCL: BoardJS.createBoard -> inputList', inputList);
   const board = {};
   for (let i = 0; i < inputList.length; i++) {
     const el = inputList[i];
@@ -536,14 +536,13 @@ BoardJS.createBoard = async inputList => {
   return board;
 };
 
-
 /**
  * Board for player with playerIndex have too many units
  * Try to withdraw the cheapest unit
  * if hand is full, sell cheapest unit
  * Do this until board.size == level
  */
-const _mutateStateByFixingUnitLimit = async function (state, playerIndex) {
+const _mutateStateByFixingUnitLimit = async function(state, playerIndex) {
   const board = state.getIn(['players', playerIndex, 'board']);
   // Find cheapest unit
   const takenPositions = Object.keys(board);
@@ -577,7 +576,7 @@ const _mutateStateByFixingUnitLimit = async function (state, playerIndex) {
   return true;
 };
 
-BoardJS.preBattleCheck = async function (state) {
+BoardJS.preBattleCheck = async function(state) {
   for (const uid in state.players) {
     const player = state.players[uid];
     if (Object.keys(player.board).length > player.level) {
