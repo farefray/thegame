@@ -130,12 +130,14 @@ export default class Unit extends React.Component {
    */
   move(x, y, options = {}) {
     const { top, left } = this.getPositionFromCoordinates(x, y);
+    const { unit } = this.props;
+
     this.setState({
       x,
       y,
       top,
       left,
-      transition: !options.instant ? 'transform 0.6s linear' : 'auto',
+      transition: !options.instant ? `transform ${unit.speed / 1000}s linear` : 'auto',
       direction: options.direction || this.getDirectionToTarget(x, y),
       isMoving: !options.instant ? true : false
     });
