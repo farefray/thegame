@@ -56,7 +56,7 @@ export default class Battle {
     const targetUnit = unit.getTarget();
     if (unit.canCast()) {
       // tODO
-    } else if (targetUnit && targetUnit.isAlive() && unit.isTargetInRange()) {
+    } else if (targetUnit && targetUnit.isAlive() && !Pathfinder.getDistanceBetweenUnits(unit, targetUnit)) {
       const attackResult = unit.doAttack(targetUnit);
       this.action(
         {
@@ -68,7 +68,6 @@ export default class Battle {
         timestamp
       );
 
-      // update board
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
@@ -76,11 +75,9 @@ export default class Battle {
         unit.setTarget(null);
       }
     } else {
-      // get target (todo use previous target if exist)
-      const closestTarget = Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam()) });
+      const closestTarget = Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
       unit.setTarget(closestTarget);
       if (!closestTarget) return;
-      // get path to target [todo first move can be done just by direction if possible. Use pathfinder only when needed]
       const { x, y } = this.pathfinder.findPath({
         x: unit.x,
         y: unit.y,

@@ -62,7 +62,7 @@ export default class Pathfinder {
     let closestTargetDistance = Infinity;
     for (const target of targets) {
       const { x: targetX, y: targetY } = target;
-      const distance = Math.max(0, Math.abs(targetX - x) - 1) + Math.max(0, Math.abs(targetY - y) - 1);
+      const distance = this.getDistanceBetweenCoordinates({ x, y, targetX, targetY });
       if (distance < closestTargetDistance) {
         closestTarget = target;
         closestTargetDistance = distance;
@@ -70,5 +70,18 @@ export default class Pathfinder {
       if (!distance) break;
     }
     return closestTarget;
+  }
+
+  static getDistanceBetweenCoordinates({ x, y, targetX, targetY }) {
+    return Math.max(0, Math.abs(targetX - x) - 1) + Math.max(0, Math.abs(targetY - y) - 1);
+  }
+
+  static getDistanceBetweenUnits(unit1, unit2) {
+    return this.getDistanceBetweenCoordinates({
+      x: unit1.x,
+      y: unit1.y,
+      targetX: unit2.x,
+      targetY: unit2.y
+    });
   }
 }

@@ -129,9 +129,7 @@ function ActiveGame() {
       setActiveBattle(false);
     } else if (activeBattle && isActiveBattleGoing && actionStack.length > 0 && currentActionIndex > -1 && currentActionIndex !== prevActionIndex) {
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
-      //console.log('ACTION MUST BE EXECUTED, currentActionIndex:', currentActionIndex);
       setPrevActionIndex(currentActionIndex);
-      console.log(currentActionIndex, actionStack.length);
 
       const actionTime = actionStack[currentActionIndex].time;
       const boardActions = actionStack.filter(action => action.time === actionTime);
