@@ -7,7 +7,7 @@
     "hp": 375,
     "attack": 50,
     "armor": 5,
-    "speed": 600,
+    "speed": 1000,
     "attackSpeed": 1000,
     "type": "normal",
     "ability": "splash",
@@ -23,12 +23,28 @@
     "hp": 300,
     "attack": 60,
     "armor": 7,
-    "speed": 350,
+    "speed": 1000,
     "attackSpeed": 1500,
     "type": "normal",
     "ability": "splash",
     "evolves_to": null,
     "specialAttack": 0,
     "specialDefense": 0
+  },
+  "bigboy": {
+    "name": "bigboy",
+    "displayName": "Big Boy",
+    "lookType": 25,
+    "cost": 1,
+    "hp": 5000,
+    "attack": 150,
+    "armor": 5,
+    "speed": 1000,
+    "attackSpeed": 1000,
+    "type": "normal",
+    "ability": "splash",
+    "evolves_to": null,
+    "specialAttack": 15,
+    "specialDefense": 20
   }
 }
