@@ -2,7 +2,6 @@ import React from 'react';
 import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../reducers';
 import { createStore } from 'redux';
-import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import Battle from '../../../src/objects/Battle.js';
 import ActiveGame from './ActiveGame';
@@ -45,7 +44,7 @@ const generateGameState = async function({ boards }) {
   const playerBoard = await BoardJS.createBoard(boards.B);
 
   const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
-  console.log("TCL: combinedBoard", combinedBoard)
+  console.log('TCL: combinedBoard', combinedBoard);
   const battleResult = new Battle(combinedBoard);
   return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
 };

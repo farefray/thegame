@@ -3,17 +3,11 @@ import { useSelector, shallowEqual } from 'react-redux';
 import _ from 'lodash';
 
 import Position from '../objects/Position';
-import TopBar from './ActiveGame/TopBar.jsx';
-import LeftBar from './ActiveGame/LeftBar.jsx';
 import Timer from './ActiveGame/Timer.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
 import { StateProvider } from './ActiveGame/GameBoard.context.js';
 
-import GameBoardBottom from './ActiveGame/GameBoardBottom.jsx';
-
 import RightPanel from './ActiveGame/RightPanel.jsx';
-
-import { isUndefined } from '../f';
 
 const { ACTION } = require('../shared/constants');
 

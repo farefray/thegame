@@ -51,7 +51,7 @@ const clearSoundEffect = (soundEffects, soundEffect) => {
   return newSoundEffects;
 };
 
-const sumObj = obj => {
+/*const sumObj = obj => {
   let sum = 0;
   for (let el in obj) {
     if (obj.hasOwnProperty(el)) {
@@ -59,7 +59,7 @@ const sumObj = obj => {
     }
   }
   return sum;
-};
+};*/
 
 export function app(
   state = {

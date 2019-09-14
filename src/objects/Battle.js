@@ -31,7 +31,7 @@ export default class Battle {
     // console.time('test');
     this.actionQueue.execute();
     this.setWinner();
-    console.log(this.actionStack);
+    //console.log(this.actionStack);
     // console.timeEnd('test');
   }
 
@@ -78,12 +78,7 @@ export default class Battle {
       const closestTarget = this.getUnitClosestTarget(unit);
       unit.setTarget(closestTarget);
       if (!closestTarget) return;
-      const { x, y } = this.pathfinder.findPath({
-        x: unit.x,
-        y: unit.y,
-        targetX: closestTarget.x,
-        targetY: closestTarget.y
-      });
+      const { x, y } = this.pathfinder.findStepToTarget(unit, closestTarget);
       this.moveUnit(unit, { x, y }, timestamp);
     }
   }

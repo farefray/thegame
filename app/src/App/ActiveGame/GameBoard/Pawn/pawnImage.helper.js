@@ -1,7 +1,7 @@
 const DIRECTION_NORTH = 3;
-const DIRECTION_SOUTH = 1;
-const DIRECTION_WEST = 2;
-const DIRECTION_EAST = 4;
+//const DIRECTION_SOUTH = 1;
+//const DIRECTION_WEST = 2;
+//const DIRECTION_EAST = 4;
 
 function encodeData(data) {
   return Object.keys(data)

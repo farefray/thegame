@@ -7,20 +7,11 @@ function BattleUnit(unit, coords) {
 
   // internal
   this._uid = this.getBoardPosition(); // uid = starting position for mob
-  this._next_action = this.speed;
   return this;
 }
 
 BattleUnit.prototype.getUID = function() {
   return this._uid;
-};
-
-BattleUnit.prototype.nextAction = function(actionTime) {
-  if (actionTime) {
-    this._next_action = this._next_action + actionTime;
-  }
-
-  return this._next_action;
 };
 
 BattleUnit.prototype.canCast = function() {
@@ -49,8 +40,6 @@ BattleUnit.prototype.oppositeTeam = function() {
 BattleUnit.prototype.move = function(coords) {
   this.x = +coords.x;
   this.y = +coords.y;
-
-  this.nextAction(this.speed);
 };
 
 BattleUnit.prototype.getBoardPosition = function() {
@@ -97,12 +86,11 @@ BattleUnit.prototype.isTargetInRange = function() {
  * @warning Mutating objects
  */
 BattleUnit.prototype.doAttack = function(targetUnit) {
-  const multiplier = 1 - ((0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor));
+  const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
   const maximumRoll = Math.floor(this.attack * 1.1);
   const minimumRoll = Math.ceil(this.attack * 0.9);
   const damage = Math.floor(multiplier * Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll);
   targetUnit.removeHealth(damage);
-  this.nextAction(this.attackSpeed);
   return {
     damage
   };

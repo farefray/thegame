@@ -1,3 +1,30 @@
+class Step {
+  constructor({ x, y, resistance }) {
+    this.x = x;
+    this.y = y;
+    this.resistance = resistance || 0;
+  }
+
+  applyModifiers(modifiers) {
+    for (const modifier of modifiers) {
+      const isMatchingX = modifier.x === undefined || modifier.x === this.x;
+      const isMatchingY = modifier.y === undefined || modifier.y === this.y;
+      if (!isMatchingX || !isMatchingY) continue;
+      this.resistance += modifier.resistance;
+    }
+  }
+}
+
+const normalize = number => {
+  if (number < 0) {
+    return -1;
+  }
+  if (number > 0) {
+    return 1;
+  }
+  return 0;
+};
+
 export default class Pathfinder {
   constructor({ gridWidth, gridHeight }) {
     this._occupiedTileSet = new Set();
@@ -9,52 +36,41 @@ export default class Pathfinder {
     return this._occupiedTileSet;
   }
 
-  findPath({ x, y, targetX, targetY }) {
-    const normalize = number => {
-      if (number < 0) {
-        return -1;
-      }
-      if (number > 0) {
-        return 1;
-      }
-      return 0;
+  findStepToTarget(unit, targetUnit) {
+    const possibleSteps = this.getUnitPossibleSteps(unit);
+    if (!possibleSteps.length) return { x: unit.x, y: unit.y };
+
+    const distance = {
+      x: Math.abs(targetUnit.x - unit.x),
+      y: Math.abs(targetUnit.y - unit.y)
     };
+    const normalizedDistance = {
+      x: normalize(targetUnit.x - unit.x),
+      y: normalize(targetUnit.y - unit.y)
+    };
+    const preferredAxis = distance.x > distance.y ? 'x' : 'y';
+    const secondaryAxis = preferredAxis === 'x' ? 'y' : 'x';
 
-    const xDiff = normalize(targetX - x);
-    const yDiff = normalize(targetY - y);
+    const modifiers = [
+      { [preferredAxis]: normalizedDistance[preferredAxis], resistance: -20 },
+      { [preferredAxis]: normalizedDistance[preferredAxis] * -1, resistance: 20 },
+      { [secondaryAxis]: normalizedDistance[secondaryAxis], resistance: -10 },
+      { [secondaryAxis]: normalizedDistance[secondaryAxis] * -1, resistance: 10 }
+    ];
+    possibleSteps.forEach(step => step.applyModifiers(modifiers));
 
-    if (yDiff) {
-      if (!this.occupiedTileSet.has(`${x},${y + yDiff}`)) {
-        return { x, y: y + yDiff };
-      }
-      if (xDiff && !this.occupiedTileSet.has(`${x + xDiff},${y}`)) {
-        return { x: x + xDiff, y };
-      }
-      if (x < this.gridWidth - 1 && !this.occupiedTileSet.has(`${x + 1},${y}`)) {
-        return { x: x + 1, y };
-      }
-      if (x > 0 && !this.occupiedTileSet.has(`${x - 1},${y}`)) {
-        return { x: x - 1, y };
-      }
-      return { x, y };
-    }
-    if (xDiff) {
-      if (!this.occupiedTileSet.has(`${x + xDiff},${y}`)) {
-        return { x: x + xDiff, y };
-      }
-      if (yDiff && !this.occupiedTileSet.has(`${x},${y + yDiff}`)) {
-        return { x, y: y + yDiff };
-      }
-      if (y < this.gridHeight - 1 && !this.occupiedTileSet.has(`${x},${y + 1}`)) {
-        return { x, y: y + 1 };
-      }
-      if (y > 0 && !this.occupiedTileSet.has(`${x},${y - 1}`)) {
-        return { x, y: y - 1 };
-      }
-      return { x, y };
-    }
+    const optimalStep = possibleSteps.reduce((previous, current) => (previous.resistance > current.resistance ? current : previous));
+    return { x: unit.x + optimalStep.x, y: unit.y + optimalStep.y };
+  }
 
-    return { x, y };
+  getUnitPossibleSteps(unit) {
+    return [new Step({ x: 0, y: -1 }), new Step({ x: 0, y: 1 }), new Step({ x: -1, y: 0 }), new Step({ x: 1, y: 0 })].filter(step => {
+      const isOutOfBounds = unit.x + step.x < 0 || unit.x + step.x >= this.gridWidth || unit.y + step.y < 0 || unit.y + step.y >= this.gridHeight;
+      if (isOutOfBounds) return false;
+      const isOccupied = this.occupiedTileSet.has(`${unit.x + step.x},${unit.y + step.y}`);
+      if (isOccupied) return false;
+      return true;
+    });
   }
 
   static getClosestTarget({ x, y, targets }) {
