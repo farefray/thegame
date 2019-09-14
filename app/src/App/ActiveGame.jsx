@@ -132,7 +132,7 @@ function ActiveGame() {
       //console.log('ACTION MUST BE EXECUTED, currentActionIndex:', currentActionIndex);
       setPrevActionIndex(currentActionIndex);
 
-      if (actionStack.length === currentActionIndex) {
+      if (currentActionIndex > actionStack.length) {
         // Battle finished
         //console.log('END OF BATTLE: winningTeam');
 
@@ -141,14 +141,16 @@ function ActiveGame() {
           type: ACTION.RESET
         });
       } else {
-        const boardAction = actionStack[currentActionIndex];
-        const time = boardAction.time;
-        const nextRenderTime = time; /* - currentTime*/
-        dispatchGameBoard(boardAction);
+        const actionTime = actionStack[currentActionIndex].time;
+        const boardActions = actionStack.filter(action => action.time === actionTime);
+        for (const action of boardActions) {
+          dispatchGameBoard(action);
+        }
+        const timeoutLength = actionStack[currentActionIndex + boardActions.length].time - actionTime;
 
         setTimeout(() => {
-          setCurrentActionIndex(currentActionIndex + 1);
-        }, nextRenderTime);
+          setCurrentActionIndex(currentActionIndex + boardActions.length);
+        }, timeoutLength);
       }
     }
   }, [gameBoard, currentActionIndex]); // eslint-disable-line
