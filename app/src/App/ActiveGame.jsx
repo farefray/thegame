@@ -131,21 +131,22 @@ function ActiveGame() {
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
       //console.log('ACTION MUST BE EXECUTED, currentActionIndex:', currentActionIndex);
       setPrevActionIndex(currentActionIndex);
+      console.log(currentActionIndex, actionStack.length);
 
-      if (currentActionIndex > actionStack.length) {
-        // Battle finished
-        //console.log('END OF BATTLE: winningTeam');
-
-        // reset board to initial state
-        dispatchGameBoard({
-          type: ACTION.RESET
-        });
+      const actionTime = actionStack[currentActionIndex].time;
+      const boardActions = actionStack.filter(action => action.time === actionTime);
+      for (const action of boardActions) {
+        dispatchGameBoard(action);
+      }
+      if (currentActionIndex + boardActions.length >= actionStack.length) {
+        setTimeout(
+          () =>
+            dispatchGameBoard({
+              type: ACTION.RESET
+            }),
+          1000
+        );
       } else {
-        const actionTime = actionStack[currentActionIndex].time;
-        const boardActions = actionStack.filter(action => action.time === actionTime);
-        for (const action of boardActions) {
-          dispatchGameBoard(action);
-        }
         const timeoutLength = actionStack[currentActionIndex + boardActions.length].time - actionTime;
 
         setTimeout(() => {
