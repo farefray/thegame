@@ -58,7 +58,7 @@ export default class Battle {
       // tODO
     } else if (targetUnit && targetUnit.isAlive() && !Pathfinder.getDistanceBetweenUnits(unit, targetUnit)) {
       const attackResult = unit.doAttack(targetUnit);
-      this.action(
+      this.addActionToStack(
         {
           type: ACTION.ATTACK,
           from: unit.getPosition(),
@@ -72,10 +72,10 @@ export default class Battle {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
         this.moveUnit(targetUnit, null, timestamp);
-        unit.setTarget(null);
+        unit.setTarget(this.getUnitClosestTarget(unit));
       }
     } else {
-      const closestTarget = Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
+      const closestTarget = this.getUnitClosestTarget(unit);
       unit.setTarget(closestTarget);
       if (!closestTarget) return;
       const { x, y } = this.pathfinder.findPath({
@@ -88,7 +88,11 @@ export default class Battle {
     }
   }
 
-  action(actionObject, time) {
+  getUnitClosestTarget(unit) {
+    return Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
+  }
+
+  addActionToStack(actionObject, time) {
     this.actionStack.push({
       ...actionObject,
       time
@@ -106,7 +110,7 @@ export default class Battle {
       y: battleUnit.y
     };
 
-    this.action(
+    this.addActionToStack(
       {
         type: ACTION.MOVE,
         from: fromPosition,
