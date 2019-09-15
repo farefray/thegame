@@ -1,7 +1,7 @@
 class Step {
-  constructor({ x, y, resistance }) {
-    this.x = x;
-    this.y = y;
+  constructor({ x, y, resistance } = {}) {
+    this.x = x || 0;
+    this.y = y || 0;
     this.resistance = resistance || 0;
   }
 
@@ -12,6 +12,10 @@ class Step {
       if (!isMatchingX || !isMatchingY) continue;
       this.resistance += modifier.resistance;
     }
+  }
+
+  isSameDirection(step) {
+    return this.x === step.x && this.y === step.y;
   }
 }
 
@@ -38,7 +42,7 @@ export default class Pathfinder {
 
   findStepToTarget(unit, targetUnit) {
     const possibleSteps = this.getUnitPossibleSteps(unit);
-    if (!possibleSteps.length) return { x: unit.x, y: unit.y };
+    if (!possibleSteps.length) return new Step();
 
     const distance = {
       x: Math.abs(targetUnit.x - unit.x),
@@ -57,10 +61,26 @@ export default class Pathfinder {
       { [secondaryAxis]: normalizedDistance[secondaryAxis], resistance: -10 },
       { [secondaryAxis]: normalizedDistance[secondaryAxis] * -1, resistance: 10 }
     ];
+    const { previousStep } = unit;
+    if (previousStep) {
+      modifiers.push({
+        x: previousStep.x,
+        y: previousStep.y,
+        resistance: -5
+      });
+    }
     possibleSteps.forEach(step => step.applyModifiers(modifiers));
 
+    const lowestResistance = Math.min(possibleSteps.map(step => step.resistance));
+    const optimalSteps = possibleSteps.filter(step => step.resistance === lowestResistance);
+
+    if (optimalSteps.length === 1) {
+      return new Step({ x: optimalSteps[0].x, y: optimalSteps[0].y });
+    }
+
     const optimalStep = possibleSteps.reduce((previous, current) => (previous.resistance > current.resistance ? current : previous));
-    return { x: unit.x + optimalStep.x, y: unit.y + optimalStep.y };
+
+    return { x: optimalStep.x, y: optimalStep.y };
   }
 
   getUnitPossibleSteps(unit) {

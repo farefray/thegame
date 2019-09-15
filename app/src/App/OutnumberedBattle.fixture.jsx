@@ -32,7 +32,7 @@ const generateGameState = async function({ boards }) {
 };
 
 const generateBoard = () => {
-  const unitCount = 7;
+  const unitCount = 12;
   const board = [];
   while (board.length < unitCount) {
     const x = Math.floor(Math.random() * 8);

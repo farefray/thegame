@@ -1,10 +1,9 @@
 import ActionQueue from './ActionQueue';
 import Pathfinder from './Pathfinder';
+import BattleUnit from './BattleUnit';
 
 const _ = require('lodash');
 const f = require('../f');
-
-const BattleUnit = require('./BattleUnit');
 
 const { TEAM, ACTION } = require('../../app/src/shared/constants');
 
@@ -78,8 +77,8 @@ export default class Battle {
       const closestTarget = this.getUnitClosestTarget(unit);
       unit.setTarget(closestTarget);
       if (!closestTarget) return;
-      const { x, y } = this.pathfinder.findStepToTarget(unit, closestTarget);
-      this.moveUnit(unit, { x, y }, timestamp);
+      const step = this.pathfinder.findStepToTarget(unit, closestTarget);
+      this.moveUnit(unit, step, timestamp);
     }
   }
 
@@ -99,10 +98,15 @@ export default class Battle {
    * @param {BattleUnit} battleUnit
    * @param {Object/null} position if null, then removing from board
    */
-  moveUnit(battleUnit, position, timestamp) {
+  moveUnit(battleUnit, step, timestamp) {
     const fromPosition = {
       x: battleUnit.x,
       y: battleUnit.y
+    };
+
+    const position = step && {
+      x: battleUnit.x + step.x,
+      y: battleUnit.y + step.y
     };
 
     this.addActionToStack(
@@ -115,6 +119,7 @@ export default class Battle {
     );
 
     if (position) {
+      battleUnit.previousStep = step;
       battleUnit.move(position);
     }
 
