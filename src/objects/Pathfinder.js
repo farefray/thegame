@@ -70,14 +70,11 @@ export default class Pathfinder {
       });
     }
     possibleSteps.forEach(step => step.applyModifiers(modifiers));
-
-    const lowestResistance = Math.min(possibleSteps.map(step => step.resistance));
+    const lowestResistance = Math.min(...possibleSteps.map(step => step.resistance));
     const optimalSteps = possibleSteps.filter(step => step.resistance === lowestResistance);
-
     if (optimalSteps.length === 1) {
       return new Step({ x: optimalSteps[0].x, y: optimalSteps[0].y });
     }
-
     const optimalStep = possibleSteps.reduce((previous, current) => (previous.resistance > current.resistance ? current : previous));
 
     return { x: optimalStep.x, y: optimalStep.y };
