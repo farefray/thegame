@@ -52,10 +52,13 @@ export default class Battle {
   }
 
   calculateAction({ timestamp, unit }) {
-    const targetUnit = unit.getTarget();
-    if (unit.canCast()) {
-      // tODO
-    } else if (targetUnit && targetUnit.isAlive() && !Pathfinder.getDistanceBetweenUnits(unit, targetUnit)) {
+    let targetUnit = unit.getTarget();
+    if (!targetUnit || !targetUnit.isAlive()) {
+      unit.setTarget(this.getUnitClosestTarget(unit));
+      targetUnit = unit.getTarget();
+    }
+    if (!targetUnit) return;
+    if (!Pathfinder.getDistanceBetweenUnits(unit, targetUnit)) {
       const attackResult = unit.doAttack(targetUnit);
       this.addActionToStack(
         {
@@ -71,13 +74,9 @@ export default class Battle {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
         this.moveUnit(targetUnit, null, timestamp);
-        unit.setTarget(this.getUnitClosestTarget(unit));
       }
     } else {
-      const closestTarget = this.getUnitClosestTarget(unit);
-      unit.setTarget(closestTarget);
-      if (!closestTarget) return;
-      const step = this.pathfinder.findStepToTarget(unit, closestTarget);
+      const step = this.pathfinder.findStepToTarget(unit, targetUnit);
       this.moveUnit(unit, step, timestamp);
     }
   }
