@@ -138,7 +138,7 @@ class LeftBar extends Component {
               {buffs['specialDefense'] ? <span className="infoPanelBuff">{` + ${buffs['specialDefense']}\n`}</span> : '\n'}
             </span>
             <span>{`Level: ${s.cost}\n`}</span>
-            <span>{`Range: ${s.range || 1}\n`}</span>
+            <span>{`Range: ${s.attackRange || 1}\n`}</span>
             <span className={`type ${s.abilityType}`}>{`Ability: ${s.abilityDisplayName}\n`}</span>
           </div>
           <div>

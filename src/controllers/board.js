@@ -315,7 +315,7 @@ BoardJS.createBattleUnit = async (unit, unitPos, team) => {
   set('specialAttack', unitStats.get('specialAttack'));
   set('specialDefense', unitStats.get('specialDefense'));
   set('position', unitPos); // its not being updated on move, imho need BattleUnit usage here
-  set('range', unitStats.get('range') || pawns.getStatsDefault('range'));
+  set('attackRange', unitStats.get('attackRange') || pawns.getStatsDefault('attackRange'));
   set('manaCost', (ability && ability['mana']) || abilitiesJS.getDefault('mana'));
 
   return battleUnit;

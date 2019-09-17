@@ -1,39 +1,9 @@
+const _ = require('lodash');
 const pawns = require('../pawns');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
 
 const ShopJS = {};
-
-/**
- * Finds correct rarity for piece (random value)
- * Returns the piece taken from pieceStorage from correct rarity list
- * i is used to know which rarity it is checking (from 1 to 5)
- * Made sure after method that rarity contain pieces
- */
-ShopJS.getPieceFromRarity = async (random, prob, index, pieceStorage, unitAmounts, newUnitAmounts) => {
-  let piece;
-  let pieceIndex;
-  if (prob > random) {
-    const keys = Object.keys(newUnitAmounts);
-    if (!keys.length) {
-      piece = pieceStorage[index][0];
-      pieceIndex = 0;
-    } else {
-      for (let i = 0; i < keys.length; i++) {
-        const tempPiece = pieceStorage[index][i];
-        if (!keys.includes(tempPiece) || (keys.includes(tempPiece) && (unitAmounts.get(tempPiece) || 0) + (newUnitAmounts.get(tempPiece) || 0) < 9)) {
-          /* if (unitAmounts.get(tempPiece) === 8)
-          console.log('@getPieceFromRarity 8 Units, Adding one', (newUnitAmounts.get(tempPiece) || 0), (unitAmounts.get(tempPiece) || 0), tempPiece,
-          ((unitAmounts.get(tempPiece) || 0) + (newUnitAmounts.get(tempPiece) || 0)), unitAmounts, newUnitAmounts); */
-          piece = tempPiece;
-          pieceIndex = i;
-          break;
-        }
-      }
-    }
-  }
-  return { piece, index: pieceIndex };
-};
 
 /**
  * Fills pieceStorage with discardedPieces
@@ -72,56 +42,29 @@ ShopJS.refillPieces = async (pieces, discardedPieces) => {
   return pieceStorage;
 };
 
-/**
- * Updates shop with a new piece from getPieceFromRarity
- * Removes the piece from correct place in pieceStorage
- */
 ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, newUnitAmounts) => {
-  const prob = gameConstantsJS.getPieceProbabilityNum(level);
-  const newShop = shop;
+  const newShop = _.clone(shop);
   let newPieceStorage = pieces;
-  let newDiscPieces = discPieces;
-  // TODO: Get amount of units of different types
-  // Units at 9 => add to not allowed list
-  const unitAmounts = player.get('unitAmounts');
-  // console.log('addPieceToShop LEVEL ', level, prob)
   for (let i = 0; i < 5; i++) {
-    // Loop over levels
-    // If any piece storage goes empty -> put all discarded pieces in pieces
-    // console.log('@addPieceToShop', discPieces)
-    if (newPieceStorage[i].size === 0) {
+    if (newPieceStorage[i].length === 0) {
       newPieceStorage = await ShopJS.refillPieces(newPieceStorage, discPieces);
-      newDiscPieces = [];
     }
-    // TODO: In theory, pieces might still be empty here, if not enough pieces were in the deck.
-    // Temp: Assumes enough pieces are available
-    const random = Math.random();
-    // console.log('Before call:', i, newUnitAmounts)
-    const pieceObj = await ShopJS.getPieceFromRarity(random, prob[i], i, newPieceStorage, unitAmounts, newUnitAmounts);
-    const piece = pieceObj.piece;
-    const pieceIndex = pieceObj.index;
-    if (!f.isUndefined(piece)) {
-      let newShopUnit = {
-        name: piece.name,
-        displayName: piece.displayName,
-        cost: piece.cost,
-        type: piece.type
-      };
-      if (piece.reqEvolve) {
-        newShopUnit = newShopUnit.set('reqEvolve', piece.reqEvolve);
-      }
-      newShop[pos] = newShopUnit;
-      // Removes first from correct rarity array
-      newPieceStorage[i] = newPieceStorage[i].splice(pieceIndex, 1);
-      newUnitAmounts[piece.name] = (newUnitAmounts[piece.name] || 0) + 1;
-      // console.log('@newUnitAmounts', piece, newUnitAmounts);
-      break;
+    const piece = _.cloneDeep(pieces[0][Math.floor(Math.random() * pieces[0].length)]);
+    let newShopUnit = {
+      name: piece.name,
+      displayName: piece.displayName,
+      cost: piece.cost,
+      type: piece.type
+    };
+    if (piece.reqEvolve) {
+      newShopUnit = newShopUnit.set('reqEvolve', piece.reqEvolve);
     }
+    newShop[pos] = newShopUnit;
+    break;
   }
   return {
     newShop,
     pieceStorage: newPieceStorage,
-    discPieces: newDiscPieces,
     newUnitAmounts
   };
 };

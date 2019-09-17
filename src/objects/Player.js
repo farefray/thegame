@@ -1,9 +1,10 @@
 const BoardJS = require('../controllers/board'); // todo get rid of this dependency here
+const DEBUG = true; // SORRY
 
 function Player(id) {
   this.index = id;
   this.hp = 100;
-  this.level = 1;
+  this.level = DEBUG ? 5 : 1;
   this.exp = 0;
   this.expToReach = 1; // ?
   this.gold = 1;

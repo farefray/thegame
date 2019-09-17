@@ -109,6 +109,11 @@ export default class Pathfinder {
     return Math.max(0, Math.abs(targetX - x) - 1) + Math.max(0, Math.abs(targetY - y) - 1);
   }
 
+  /**
+   * @param {BattleUnit} unit1
+   * @param {BattleUnit} unit2
+   * @returns {Integer}
+   */
   static getDistanceBetweenUnits(unit1, unit2) {
     return this.getDistanceBetweenCoordinates({
       x: unit1.x,
