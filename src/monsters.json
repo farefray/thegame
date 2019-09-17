@@ -1,4 +1,21 @@
 {
+  "elf": {
+    "name": "elf",
+    "displayName": "Elf",
+    "lookType": 63,
+    "cost": 1,
+    "hp": 150,
+    "attack": 45,
+    "attackRange": 3,
+    "armor": 2,
+    "speed": 1200,
+    "attackSpeed": 1000,
+    "type": "normal",
+    "ability": "",
+    "evolves_to": null,
+    "specialAttack": 15,
+    "specialDefense": 20
+  },
   "minotaur": {
     "name": "minotaur",
     "displayName": "Minotaur★",

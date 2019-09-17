@@ -83,7 +83,7 @@ export default class BattleUnit {
         return 1.426776695 * Math.min(0.7071067812 * (Math.abs(x) + Math.abs(y)), Math.max(Math.abs(x), Math.abs(y)));
       };
 
-      const range = this.range + 1; // +1 for diagonal math tiles
+      const range = this.attackRange + 1; // +1 for diagonal math tiles
       return distanceApprox(target.getPosition(), this.getPosition()) < range;
     }
 
