@@ -120,12 +120,6 @@ exports.getRarityAmount = index => rarityAmount[index - 1];
 
 exports.getLevelPieceProbability = index => levelPieceProbability[String(index)];
 
-exports.getPieceProbabilityNum = index => {
-  const probs = levelPieceProbability[String(index)];
-  if (f.isUndefined(probs)) console.log('getPieceProbability', index);
-  return [probs['1'], probs['1'] + probs['2'], probs['1'] + probs['2'] + probs['3'], probs['1'] + probs['2'] + probs['3'] + probs['4'], probs['1'] + probs['2'] + probs['3'] + probs['4'] + probs['5']];
-};
-
 exports.getTypeEffectString = typeFactor => {
   if (typeFactor <= 0.0) {
     return 'No effect';

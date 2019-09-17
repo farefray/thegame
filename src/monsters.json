@@ -2,7 +2,7 @@
   "elf": {
     "name": "elf",
     "displayName": "Elf",
-    "lookType": 63,
+    "lookType": 62,
     "cost": 1,
     "hp": 150,
     "attack": 45,

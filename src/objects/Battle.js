@@ -58,7 +58,9 @@ export default class Battle {
       targetUnit = unit.getTarget();
     }
     if (!targetUnit) return;
-    if (!Pathfinder.getDistanceBetweenUnits(unit, targetUnit)) {
+
+    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
+    if (distanceToTarget <= unit.attackRange) {
       const attackResult = unit.doAttack(targetUnit);
       this.addActionToStack(
         {

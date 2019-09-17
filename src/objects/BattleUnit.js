@@ -70,26 +70,6 @@ export default class BattleUnit {
     this.hp = this.hp <= amount ? 0 : this.hp - amount;
   }
 
-  isTargetInRange() {
-    const target = this.hasTarget() && this.getTarget();
-
-    if (target) {
-      const distanceApprox = (p1, p2) => {
-        // Approximation by using octagons approach
-        const x = p2.x - p1.x;
-        const y = p2.y - p1.y;
-
-        // Magic distance formula. ~1 for 1 tile distance, ~1.4 for diagonal
-        return 1.426776695 * Math.min(0.7071067812 * (Math.abs(x) + Math.abs(y)), Math.max(Math.abs(x), Math.abs(y)));
-      };
-
-      const range = this.attackRange + 1; // +1 for diagonal math tiles
-      return distanceApprox(target.getPosition(), this.getPosition()) < range;
-    }
-
-    return false;
-  }
-
   /**
    * @description Mutating both units by attacking
    * @warning Mutating objects
