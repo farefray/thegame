@@ -27,7 +27,7 @@
     "speed": 1000,
     "attackSpeed": 1000,
     "type": "normal",
-    "ability": "splash",
+    "ability": "",
     "evolves_to": null,
     "specialAttack": 15,
     "specialDefense": 20
@@ -43,7 +43,7 @@
     "speed": 1000,
     "attackSpeed": 1500,
     "type": "normal",
-    "ability": "splash",
+    "ability": "",
     "evolves_to": null,
     "specialAttack": 0,
     "specialDefense": 0
@@ -59,7 +59,7 @@
     "speed": 1000,
     "attackSpeed": 1000,
     "type": "normal",
-    "ability": "splash",
+    "ability": "",
     "evolves_to": null,
     "specialAttack": 15,
     "specialDefense": 20

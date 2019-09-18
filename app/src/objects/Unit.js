@@ -2,6 +2,7 @@ import React from 'react';
 import getPawnImageSrc from '../App/ActiveGame/GameBoard/Pawn/pawnImage.helper';
 import { DIRECTION, ACTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
+import Particle from './Unit/Particle';
 
 export default class Unit extends React.Component {
   constructor(props) {
@@ -23,7 +24,9 @@ export default class Unit extends React.Component {
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
       maxHealth: unit.hp,
-      health: unit.hp
+      health: unit.hp,
+      attackRange: unit.attackRange, // maybe consider using 'stats': unit
+      particles: []
     };
 
     props.onLifecycle({
@@ -152,15 +155,29 @@ export default class Unit extends React.Component {
       direction: this.getDirectionToTarget(x, y),
       isMoving: false
     });
+
     setTimeout(() => {
-      this.setState({
-        top: midpointTop,
-        left: midpointLeft,
-        transition: 'transform 0.1s ease'
-      });
-      setTimeout(() => {
-        this.setState({ top, left });
-      }, 100);
+      if (this.isMelee()) {
+        this.setState({
+          top: midpointTop,
+          left: midpointLeft,
+          transition: 'transform 0.1s ease'
+        });
+        setTimeout(() => {
+          this.setState({ top, left });
+        }, 100);
+      } else {
+        // TODO somehow particles... But this has to be reusable for different effects and shit :(
+        this.setState({
+          particles: [ ...this.state.particles, {
+            id: 1,
+            time: 100,
+            to: {
+              x, y
+            } // ?
+          }]
+        })
+      }
     }, 500); // todo better than constant delay
   }
 
@@ -175,8 +192,12 @@ export default class Unit extends React.Component {
     });
   }
 
+  isMelee() {
+    return this.attackRange === 1;
+  }
+
   render() {
-    const { top, left, transition, health, maxHealth, isDead } = this.state;
+    const { top, left, transition, health, maxHealth, isDead, particles } = this.state;
     if (isDead) return null;
     return (
       <div
@@ -215,6 +236,9 @@ export default class Unit extends React.Component {
               right: `${21 - 20 * (health / maxHealth)}px`
             }}
           />
+          {particles.map(particle => (
+            <Particle particle={particle}/>
+          ))}
         </div>
       </div>
     );
