@@ -25,7 +25,7 @@ const getCircularReplacer = () => {
 const defaultBoard = {
   A: [
     {
-      name: 'minotaur',
+      name: 'elf',
       x: 0,
       y: 8
     }

@@ -173,8 +173,9 @@ export default class Unit extends React.Component {
             id: 1,
             time: 100,
             to: {
-              x, y
-            } // ?
+              x: targetTop,
+              y: targetLeft
+            } // todo more
           }]
         })
       }
@@ -193,7 +194,7 @@ export default class Unit extends React.Component {
   }
 
   isMelee() {
-    return this.attackRange === 1;
+    return this.state.attackRange === 1;
   }
 
   render() {
@@ -214,6 +215,9 @@ export default class Unit extends React.Component {
         }}
       >
         <img src={this.getSprite()} alt="Pawn" style={{ position: 'absolute', bottom: 0, right: 0 }} />
+        {particles.map(particle => (
+            <Particle particle={particle}/>
+          ))}
         <div
           className="healthbar"
           style={{
@@ -236,9 +240,6 @@ export default class Unit extends React.Component {
               right: `${21 - 20 * (health / maxHealth)}px`
             }}
           />
-          {particles.map(particle => (
-            <Particle particle={particle}/>
-          ))}
         </div>
       </div>
     );
