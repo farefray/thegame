@@ -26,14 +26,14 @@ const defaultBoard = {
   A: [
     {
       name: 'elf',
-      x: 0,
+      x: 4,
       y: 8
     }
   ],
   B: [
     {
-      name: 'minotaur',
-      x: 0,
+      name: 'elf',
+      x: 7,
       y: 1
     }
   ]

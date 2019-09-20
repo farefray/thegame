@@ -170,14 +170,14 @@ export default class Unit extends React.Component {
           this.setState({ top, left });
         }, 100);
       } else {
-        particleUID =+ 1;
+        particleUID += 1;
         this.setState({
           particles: [ ...this.state.particles, {
             id: particleUID,
-            time: 100,
+            duration: 250,
             to: {
-              x: targetTop,
-              y: targetLeft
+              top: top - midpointTop,
+              left: left - midpointLeft
             },
             onDone: (unitsParticles) => {
               this.setState({
@@ -214,7 +214,7 @@ export default class Unit extends React.Component {
 
       return (
         <Particle
-          key={1}
+          key={particle.id}
           className={'particle'}
           particle={particle}
         />
