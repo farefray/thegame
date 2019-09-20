@@ -8,6 +8,7 @@ import GameBoard from './ActiveGame/GameBoard.jsx';
 import { StateProvider } from './ActiveGame/GameBoard.context.js';
 
 import RightPanel from './ActiveGame/RightPanel.jsx';
+import { create } from 'domain';
 
 const { ACTION } = require('../shared/constants');
 
@@ -75,6 +76,10 @@ function ActiveGame() {
       case ACTION.MOVE:
         const reducedBoard = _.cloneDeep(board); // maybe can be omitted
         const creature = _.clone(board[fromPos]);
+        if (!creature) {
+          return reducedBoard;
+        }
+
         delete reducedBoard[fromPos];
 
         if (toPos) {
@@ -85,6 +90,10 @@ function ActiveGame() {
         return reducedBoard;
       case ACTION.ATTACK:
         // todo plzmake this more understandable
+        if (!board[fromPos] || !board[toPos]) {
+          return board;
+        }
+
         unitComponents[board[fromPos].position].onAction(action);
         unitComponents[board[toPos].position].onAction(action, true);
         return _.clone(board);

@@ -1,9 +1,11 @@
 import React from 'react';
+
 import getPawnImageSrc from '../App/ActiveGame/GameBoard/Pawn/pawnImage.helper';
 import { DIRECTION, ACTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
 import Particle from './Unit/Particle';
 
+let particleUID = 0; // maybe stupied way, please review @Jacek
 export default class Unit extends React.Component {
   constructor(props) {
     super(props);
@@ -91,9 +93,10 @@ export default class Unit extends React.Component {
 
   getPositionFromCoordinates(x, y) {
     const { getBoardBoundingClientRect, gameBoardWidth, gameBoardHeight } = this.props;
+    const boundingClientRec = getBoardBoundingClientRect();
     return {
-      top: ((gameBoardHeight - y - 1) * getBoardBoundingClientRect().height) / gameBoardHeight,
-      left: (x * getBoardBoundingClientRect().width) / gameBoardWidth
+      top: ((gameBoardHeight - y - 1) * boundingClientRec.height) / gameBoardHeight,
+      left: (x * boundingClientRec.width) / gameBoardWidth
     };
   }
 
@@ -167,15 +170,20 @@ export default class Unit extends React.Component {
           this.setState({ top, left });
         }, 100);
       } else {
-        // TODO somehow particles... But this has to be reusable for different effects and shit :(
+        particleUID =+ 1;
         this.setState({
           particles: [ ...this.state.particles, {
-            id: 1,
+            id: particleUID,
             time: 100,
             to: {
               x: targetTop,
               y: targetLeft
-            } // todo more
+            },
+            onDone: (unitsParticles) => {
+              this.setState({
+                particles: [ ...this.state.particles].filter(particle => particle.id !== unitsParticles)
+              })
+            }
           }]
         })
       }
@@ -197,8 +205,25 @@ export default class Unit extends React.Component {
     return this.state.attackRange === 1;
   }
 
+  renderParticles() {
+    return this.state.particles.map( particle => {
+      // const classes = classNames({
+      //   square: true,
+      //   red: square.red,
+      // });
+
+      return (
+        <Particle
+          key={1}
+          className={'particle'}
+          particle={particle}
+        />
+      );
+    });
+  }
+
   render() {
-    const { top, left, transition, health, maxHealth, isDead, particles } = this.state;
+    const { top, left, transition, health, maxHealth, isDead } = this.state;
     if (isDead) return null;
     return (
       <div
@@ -215,9 +240,7 @@ export default class Unit extends React.Component {
         }}
       >
         <img src={this.getSprite()} alt="Pawn" style={{ position: 'absolute', bottom: 0, right: 0 }} />
-        {particles.map(particle => (
-            <Particle particle={particle}/>
-          ))}
+        { this.renderParticles() }
         <div
           className="healthbar"
           style={{
