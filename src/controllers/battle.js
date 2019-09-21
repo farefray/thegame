@@ -379,4 +379,4 @@ BattleController.removeHpBattle = async (board, unitPos, hpToRemove, percent = f
   };
 };
 
-module.exports = BattleController;
+export default BattleController;

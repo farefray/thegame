@@ -3,8 +3,8 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import ActiveGame from './ActiveGame';
 import Battle from '../../../src/objects/Battle.js';
+import ActiveGame from './ActiveGame';
 
 const BoardJS = require('../../../src/controllers/board.js');
 
@@ -22,6 +22,23 @@ const getCircularReplacer = () => {
   };
 };
 
+const defaultBoard = {
+  A: [
+    {
+      name: 'dwarf',
+      x: 1,
+      y: 6
+    }
+  ],
+  B: [
+    {
+      name: 'elf',
+      x: 7,
+      y: 1
+    }
+  ]
+};
+
 const generateGameState = async function({ boards }) {
   const npcBoard = await BoardJS.createBoard(boards.A);
   const playerBoard = await BoardJS.createBoard(boards.B);
@@ -29,36 +46,6 @@ const generateGameState = async function({ boards }) {
   const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
   const battleResult = new Battle(combinedBoard);
   return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
-};
-
-const generateBoard = () => {
-  const unitCount = 7;
-  const board = [];
-  while (board.length < unitCount) {
-    const x = Math.floor(Math.random() * 8);
-    const y = Math.floor(Math.random() * 4) + 1;
-    if (board.find(unit => unit.x === x && unit.y === y)) continue;
-    board.push({
-      name: 'elf',
-      x,
-      y
-    });
-  }
-  return board;
-};
-
-const flipBoard = board => {
-  for (const unit of board) {
-    unit.y = 9 - unit.y;
-    unit.x = 7 - unit.x;
-    unit.name = 'dwarf';
-  }
-  return board;
-};
-
-const combinedBoard = {
-  A: generateBoard(),
-  B: flipBoard(generateBoard())
 };
 
 const MyReduxMock = ({ children }) => {
@@ -96,4 +83,4 @@ const Fixture = boards => {
   );
 };
 
-export default <Fixture boards={combinedBoard} />;
+export default <Fixture boards={defaultBoard} />;

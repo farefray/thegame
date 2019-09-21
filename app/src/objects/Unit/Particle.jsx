@@ -1,16 +1,19 @@
 import React from 'react';
 
+import particleImg from '../../assets/particles/1.gif';
+
 export default function Particle({ particle }) {
+  console.log("TCL: Particle -> particle", particle)
   const ref = React.useRef(null);
 
   React.useEffect(() => {
     const duration = particle.duration;
     const id = particle.id;
     const top = particle.to.top;
-    const left = particle.to.left + 32;
+    const left = particle.to.left;
 
     ref.current.animate({
-      transform: [`translate(0px, 0px)`, `translate(${top}px, ${left}px)`],
+      transform: [`translate(0px, 0px)`, `translate(${left}px, ${top}px)`],
     }, {
       id: id,
       direction: 'normal',
@@ -31,7 +34,7 @@ export default function Particle({ particle }) {
         left: '32px'
       }}
       className={`particle`}
-      src="https://vignette.wikia.nocookie.net/tibia/images/6/63/Earth_Missile.gif/revision/latest?cb=20181005132408&path-prefix=en"
+      src={particleImg}
       alt="particle"
     />
   );
