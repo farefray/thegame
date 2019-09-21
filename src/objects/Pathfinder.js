@@ -179,7 +179,7 @@ export default class Pathfinder {
     this.initializeGrid();
     const openSet = [this.grid[unit.x][unit.y]];
     let counter = 0;
-    while (openSet.length && counter < 200) {
+    while (openSet.length && counter < 200) { // @Jacek, what is 200? Please, move to constant variable
       counter++;
       const currentNode = openSet.shift();
       if (this.constructor.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) {
