@@ -1,14 +1,17 @@
 import React from 'react';
 
-import particleImg from '../../assets/particles/1.gif';
+// TODO some better way
+const particlesMap = {
+  1: require('../../assets/particles/1.gif')
+}
 
 export default function Particle({ particle }) {
   const ref = React.useRef(null);
 
   React.useEffect(() => {
-    let top = particle.to.top;
+    let top = particle.to.top; // >0 = moving down
     top = top > 0 ? top + 32 : top - 32; // magic to make it hit into sprite [fixme]
-    let left = particle.to.left;
+    let left = particle.to.left; // >0 = moving right
     left = left > 0 ? left + 32 : left - 32; // magic to make it hit into sprite [fixme]
     ref.current.animate({
       transform: [`translate(0px, 0px)`, `translate(${left}px, ${top}px)`],
@@ -22,16 +25,19 @@ export default function Particle({ particle }) {
   }, [particle]);
 
 
+  const rotation = (particle.to.top > 0 ? -1 : 1) // by default particle is turned up
+    * (particle.to.left > 0 ? 90 : 180); // calculate rotation
   return (
     <img
       ref={ref}
       style={{
         position: 'absolute',
         top: '32px',
-        left: '32px'
+        left: '32px',
+        transform: `rotate(${rotation}deg)`
       }}
       className={`particle`}
-      src={particleImg}
+      src={particlesMap[particle.lookType]}
       alt="particle"
     />
   );
