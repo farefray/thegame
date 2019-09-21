@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDrag, DragPreviewImage } from 'react-dnd';
 
-import ItemTypes from './ItemTypes';
-import getPawnImageSrc from "../../../helpers/pawnImage.helper";
+import ItemTypes from '../../App/ActiveGame/GameBoard/ItemTypes';
+import getPawnImageSrc from "../../helpers/pawnImage.helper";
 
-export default function DraggableUnit({ cellPosition, children }) {
+export default function IsDraggable({ cellPosition, children }) {
   const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.PAWN,

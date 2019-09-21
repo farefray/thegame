@@ -64,11 +64,10 @@ class GameBoard extends React.Component {
                 return (
                   <div className="board-column" key={index}>
                     {boardColumn.map(cellPosition => {
-                      return (<>
+                      return (
                         <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
                           {cellPosition.toBoardPosition()}
                         </BoardSquare>
-                        </>
                       );
                     })}
                   </div>

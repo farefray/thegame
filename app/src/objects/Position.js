@@ -1,12 +1,17 @@
 /**
  * @constructor
  * @description Position object with helpfull methods
- * @param {Integer} x
+ * @param {Integer|Object} x
  * @param {Integer} y
  */
 function Position(x, y) {
-  this.x = x;
-  this.y = y;
+  if (typeof x === 'object' && typeof x.x === 'number') {
+    this.x = x.x;
+    this.y = x.y;
+  } else {
+    this.x = x;
+    this.y = y;
+  }
 }
 
 Position.prototype.name = 'Position';

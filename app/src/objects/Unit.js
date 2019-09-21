@@ -2,9 +2,10 @@ import React from 'react';
 
 import { DIRECTION, ACTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
-
+import Position from './Position';
 import UnitImage from './Unit/UnitImage';
 import Particle from './Unit/Particle';
+import IsDraggable from './Unit/IsDraggable';
 
 let particleUID = 0; // maybe stupied way, please review @Jacek
 export default class Unit extends React.Component {
@@ -219,10 +220,11 @@ export default class Unit extends React.Component {
   render() {
     const { top, left, transition, health, maxHealth, isDead, direction, isMoving } = this.state;
     if (isDead) return null;
+
+    const { unit } = this.props;
     return (
       <div
         style={{
-          pointerEvents: 'none',
           height: '64px',
           width: '64px',
           position: 'absolute',
@@ -233,7 +235,9 @@ export default class Unit extends React.Component {
           zIndex: 9999
         }}
       >
-        <UnitImage lookType={this.props.unit.lookType} direction={direction} isMoving={isMoving} />
+        <IsDraggable cellPosition={new Position(this.state.initPosition)}>
+          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
+        </IsDraggable>
         { this.renderParticles() }
         <div
           className="healthbar"

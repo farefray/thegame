@@ -8,9 +8,11 @@ export default function UnitImage({ lookType, direction, isMoving }) {
 
   const [sprite, setSprite] = React.useState(getPawnImageSrc(lookType, direction, !isMoving));
 
+  console.log(sprite);
   React.useEffect(() => {
     ref.current.onerror = () => {
       setSprite(fallbackImage);
+      console.log("TCL: ref.current.onerror -> fallbackImage", fallbackImage)
     }
   }, [ref]);
 
