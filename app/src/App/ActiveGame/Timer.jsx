@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-function Timer({ value, onTick }) {
+function InternalTimer({ value, onTick }) {
   useEffect(() => {
     let id = setTimeout(() => {
       onTick(value - 1);
@@ -16,6 +16,27 @@ function Timer({ value, onTick }) {
       <div className="text_shadow timerText">{value}</div>
     </div>
   );
+}
+
+function Timer({ value }) {
+  const [counter, setCounter] = React.useState(value);
+  useEffect(() => {
+    setCounter(value);
+  }, [value]);
+
+  const MemoizedTimer = React.useMemo(
+    () => (
+      <InternalTimer
+        value={counter}
+        onTick={val => {
+          setCounter(val);
+        }}
+      />
+    ),
+    [counter]
+  );
+
+  return (counter ? MemoizedTimer : '');
 }
 
 export default Timer;

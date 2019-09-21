@@ -224,7 +224,7 @@ export default class Unit extends React.Component {
     const { unit } = this.props;
     return (
       <div
-        style={{
+        style={{ // TODO pointerEvent:none when in battle
           height: '64px',
           width: '64px',
           position: 'absolute',

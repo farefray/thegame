@@ -156,30 +156,13 @@ function ActiveGame() {
     }
   }, [gameBoard, currentActionIndex]); // eslint-disable-line
 
-  // TODO move this to timer component
-  const [counter, setCounter] = useState(0);
-  useEffect(() => {
-    setCounter(appState.countdown);
-  }, [appState.countdown]);
-
-  const MemoizedTimer = React.useMemo(
-    () => (
-      <Timer
-        value={counter}
-        onTick={val => {
-          setCounter(val);
-        }}
-      />
-    ),
-    [counter]
-  );
   return (
     <div className="gameDiv" tabIndex="0">
       {' '}
       {/* <TopBar {...this.props} /> */}{' '}
       <div className="flex wholeBody">
         {' '}
-        {/* <LeftBar {...this.props} /> */} {counter && MemoizedTimer}
+        {/* <LeftBar {...this.props} /> */} <Timer value={appState.countdown}/>
         <StateProvider
           initialState={{
             ...appState
