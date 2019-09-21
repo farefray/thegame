@@ -1,10 +1,10 @@
 {
-  "name": "pkmn_auto_chess",
+  "name": "the_game",
   "version": "1.0.0",
-  "description": "Pokemon Auto Chess",
+  "description": "Pixel Champions",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "babel-node src/index.js",
     "dev": "nodemon --exec babel-node src/index.js",
     "debug": "babel-node --inspect src/index.js",
     "complete": "eslint ./src && mocha --exit && node src/index.js",
@@ -17,14 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lolispo/pkmn_auto_chess.git"
+    "url": "git+https://github.com/farefray/thegame.git"
   },
-  "author": "Petter Andersson",
+  "author": "Maksym Fedan&&Jacek Kizinsky",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Lolispo/pkmn_auto_chess/issues"
-  },
-  "homepage": "https://github.com/Lolispo/pkmn_auto_chess#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "easystarjs": "^0.4.3",
