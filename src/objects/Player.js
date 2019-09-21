@@ -23,7 +23,7 @@ Player.prototype.get = function(field) {
       const hand = this.get('hand');
       for (let i = 0; i < 8; i++) {
         if (hand[i] === undefined) {
-          return String(i);
+          return `${String(i)},-1`;
         }
       }
 

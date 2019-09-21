@@ -44,7 +44,7 @@ class GameBoard extends React.Component {
   getHandRow() {
     const handRow = [];
     for (let x = 0; x < gameBoardWidth; x++) {
-      handRow.push(new Position(x));
+      handRow.push(new Position(x, -1));
     }
 
     return (
@@ -78,7 +78,7 @@ class GameBoard extends React.Component {
                 onLifecycle={onLifecycle}
               />
             ))}
-            <div className="main-board-container" ref={e => (this.boardRef = e)}>
+            <div className="main-board-container"  ref={e => (this.boardRef = e)}>
               {gameBoard.map((boardRow, index) => {
                 return (
                   <div className="board-row" key={index}>

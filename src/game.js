@@ -112,7 +112,6 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
   if (!unit || Object.keys(player.hand) >= HAND_UNITS_LIMIT || player.gold < unit.cost) {
     return null;
   }
-
   /**
    * remove unit from shop
    * add unit to hand
