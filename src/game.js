@@ -1,4 +1,7 @@
-const { List, fromJS } = require('immutable');
+const {
+  List,
+  fromJS
+} = require('immutable');
 
 const pawns = require('./pawns');
 const f = require('./f');
@@ -11,8 +14,9 @@ const SessionJS = require('./session');
 const State = require('./objects/State');
 const Player = require('./objects/Player');
 
+const GameController = {};
 // Cost of 2 gold(todo check for balance?)
-exports.refreshShopGlobal = async (stateParam, index) => {
+GameController.refreshShopGlobal = async (stateParam, index) => {
   const state = stateParam.setIn(['players', index, 'gold'], stateParam.getIn(['players', index, 'gold']) - 2);
   return shopJS.refreshShop(state, index);
 };
@@ -20,7 +24,7 @@ exports.refreshShopGlobal = async (stateParam, index) => {
 /**
  * toggleLock for player (setIn)
  */
-exports.toggleLock = async (state, playerIndex) => {
+GameController.toggleLock = async (state, playerIndex) => {
   const locked = state.getIn(['players', playerIndex, 'locked']);
   if (!locked) {
     return state.setIn(['players', playerIndex, 'locked'], true);
@@ -31,21 +35,21 @@ exports.toggleLock = async (state, playerIndex) => {
 /**
  * Buy exp for player (setIn)
  */
-exports.buyExp = (state, playerIndex) => {
+GameController.buyExp = (state, playerIndex) => {
   // TODO
   const gold = state.getIn(['players', playerIndex, 'gold']);
   const newState = state.setIn(['players', playerIndex, 'gold'], gold - 5);
   return StateJS.increaseExp(newState, playerIndex, 4);
 };
 
-exports.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') =>
+GameController.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') =>
   BoardJS.mutateStateByPawnPlacing(state, playerIndex, fromPosition, toPosition, shouldSwap);
 
-exports.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleController.withdrawPiece(state, playerIndex, piecePosition);
+GameController.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleController.withdrawPiece(state, playerIndex, piecePosition);
 
-exports.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardJS.sellPiece(state, playerIndex, piecePosition);
+GameController.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardJS.sellPiece(state, playerIndex, piecePosition);
 
-exports.removeDeadPlayer = async (stateParam, playerIndex) => {
+GameController.removeDeadPlayer = async (stateParam, playerIndex) => {
   // console.log('@removeDeadPlayer')
   let state = stateParam;
   const filteredShop = state.getIn(['players', playerIndex, 'shop']).filter(piece => !f.isUndefined(piece));
@@ -96,7 +100,7 @@ const HAND_UNITS_LIMIT = 9;
  * @param {*} pieceIndex
  * @returns {null||Object}
  */
-exports.purchasePawn = async (state, playerIndex, pieceIndex) => {
+GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
   const player = state.getIn(['players', playerIndex]);
   /**
    * Checks to be done:
@@ -126,7 +130,7 @@ exports.purchasePawn = async (state, playerIndex, pieceIndex) => {
   return state;
 };
 
-exports.initialize = async clients => {
+GameController.initialize = async clients => {
   const playersArray = [];
   clients.forEach(client => {
     playersArray.push(new Player(client));
@@ -149,7 +153,7 @@ exports.initialize = async clients => {
  * Parameters: Enemy player index, winningAmount = damage? (units or damage)
  */
 
-exports.endBattle = async (stateParam, playerIndex, winner, finishedBoard, roundType, enemyPlayerIndex) => {
+GameController.endBattle = async (stateParam, playerIndex, winner, finishedBoard, roundType, enemyPlayerIndex) => {
   let state = stateParam;
   // console.log('@Endbattle :', playerIndex, winner);
   if (f.isUndefined(finishedBoard)) console.log(finishedBoard);
@@ -169,7 +173,7 @@ exports.endBattle = async (stateParam, playerIndex, winner, finishedBoard, round
       }
       case 'npc':
       case 'gym':
-      /* TODO: Add item drops / special money drop */
+        /* TODO: Add item drops / special money drop */
       case 'shop':
       default:
     }
@@ -201,3 +205,5 @@ exports.endBattle = async (stateParam, playerIndex, winner, finishedBoard, round
   const potentialEndTurnObj = await _prepEndTurn(state, playerIndex);
   return potentialEndTurnObj;
 };
+
+module.exports = GameController;

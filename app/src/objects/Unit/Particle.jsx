@@ -3,11 +3,12 @@ import React from 'react';
 export default function Particle({ particle }) {
   const ref = React.useRef(null);
 
-  const duration = particle.duration;
-  const id = particle.id;
-  const top = particle.to.top;
-  const left = particle.to.left + 32;
   React.useEffect(() => {
+    const duration = particle.duration;
+    const id = particle.id;
+    const top = particle.to.top;
+    const left = particle.to.left + 32;
+
     ref.current.animate({
       transform: [`translate(0px, 0px)`, `translate(${top}px, ${left}px)`],
     }, {
@@ -18,7 +19,7 @@ export default function Particle({ particle }) {
     }).onfinish = () => {
       particle.onDone(id)
     };
-  }, [id, duration, top, left]);
+  }, [particle]);
 
 
   return (

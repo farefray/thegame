@@ -24,7 +24,7 @@ const sessionsStore = new SessionsStore();
 const STARTBATTLE_TIMER = 15000;
 /**
  * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
- * @todo better way for this or at least test this performance
+ * @todo better way for this or at least test this performance. Imho there shouldnt be any circular references at all.
  * @param {Object} object
  * @returns {Object}
  */

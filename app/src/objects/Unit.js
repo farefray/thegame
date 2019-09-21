@@ -1,8 +1,9 @@
 import React from 'react';
 
-import getPawnImageSrc from '../App/ActiveGame/GameBoard/Pawn/pawnImage.helper';
 import { DIRECTION, ACTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
+
+import UnitImage from './Unit/UnitImage';
 import Particle from './Unit/Particle';
 
 let particleUID = 0; // maybe stupied way, please review @Jacek
@@ -98,13 +99,6 @@ export default class Unit extends React.Component {
       top: ((gameBoardHeight - y - 1) * boundingClientRec.height) / gameBoardHeight,
       left: (x * boundingClientRec.width) / gameBoardWidth
     };
-  }
-
-  getSprite() {
-    const { direction, isMoving } = this.state;
-    const { unit } = this.props;
-    const lookType = unit.lookType || 25;
-    return getPawnImageSrc(lookType, direction, !isMoving);
   }
 
   getDirectionToTarget(x, y) {
@@ -223,7 +217,7 @@ export default class Unit extends React.Component {
   }
 
   render() {
-    const { top, left, transition, health, maxHealth, isDead } = this.state;
+    const { top, left, transition, health, maxHealth, isDead, direction, isMoving } = this.state;
     if (isDead) return null;
     return (
       <div
@@ -239,7 +233,7 @@ export default class Unit extends React.Component {
           zIndex: 9999
         }}
       >
-        <img src={this.getSprite()} alt="Pawn" style={{ position: 'absolute', bottom: 0, right: 0 }} />
+        <UnitImage lookType={this.props.unit.lookType} direction={direction} isMoving={isMoving} />
         { this.renderParticles() }
         <div
           className="healthbar"

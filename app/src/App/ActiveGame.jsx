@@ -8,7 +8,6 @@ import GameBoard from './ActiveGame/GameBoard.jsx';
 import { StateProvider } from './ActiveGame/GameBoard.context.js';
 
 import RightPanel from './ActiveGame/RightPanel.jsx';
-import { create } from 'domain';
 
 const { ACTION } = require('../shared/constants');
 

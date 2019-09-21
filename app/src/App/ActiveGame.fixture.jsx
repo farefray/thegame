@@ -3,10 +3,9 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import Battle from '../../../src/objects/Battle.js';
 import ActiveGame from './ActiveGame';
+import * as GameController from '../../../src/game.js';
 
-const BoardJS = require('../../../src/controllers/board.js');
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
@@ -22,31 +21,28 @@ const getCircularReplacer = () => {
   };
 };
 
-const defaultBoard = {
-  A: [
-    {
-      name: 'elf',
-      x: 4,
-      y: 8
-    }
-  ],
-  B: [
-    {
-      name: 'elf',
-      x: 7,
-      y: 1
-    }
-  ]
+const PLAYER_INDEX = -1;
+
+const generateGameState = async function() {
+  let state = await GameController.initialize([PLAYER_INDEX]);
+  state = await GameController.purchasePawn(state, PLAYER_INDEX, 0);
+  return JSON.parse(JSON.stringify(state, getCircularReplacer()));
 };
 
-const generateGameState = async function({ boards }) {
-  const npcBoard = await BoardJS.createBoard(boards.A);
-  const playerBoard = await BoardJS.createBoard(boards.B);
+const MyReduxContext = () => {
+  const dispatch = useDispatch();
 
-  const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
-  console.log('TCL: combinedBoard', combinedBoard);
-  const battleResult = new Battle(combinedBoard);
-  return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
+  React.useEffect(() => {
+    generateGameState().then(newState => {
+      dispatch({
+        type: 'UPDATE_PLAYER',
+        index: PLAYER_INDEX,
+        player: newState.players[PLAYER_INDEX]
+      });
+    });
+  }, [dispatch]);
+
+  return <ActiveGame />;
 };
 
 const MyReduxMock = ({ children }) => {
@@ -59,29 +55,12 @@ const MyReduxMock = ({ children }) => {
   );
 };
 
-const MyReduxContext = ({ boards }) => {
-  const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    generateGameState(boards).then(battleRoundResult => {
-      dispatch({
-        type: 'BATTLE_TIME',
-        actionStack: battleRoundResult.actionStack,
-        startBoard: battleRoundResult.startBoard,
-        winner: battleRoundResult.winner
-      });
-    });
-  }, []);
-
-  return <ActiveGame />;
-};
-
-const Fixture = boards => {
+const Fixture = () => {
   return (
     <MyReduxMock>
-      <MyReduxContext boards={boards} />
+      <MyReduxContext />
     </MyReduxMock>
   );
 };
 
-export default <Fixture boards={defaultBoard} />;
+export default <Fixture />;

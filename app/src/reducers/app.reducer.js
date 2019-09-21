@@ -133,6 +133,7 @@ export function app(
   switch (action.type) {
     case 'INIT': {
       // Used for cosmos fixtures
+      state.isDead = false;
       return {
         ...state
       };

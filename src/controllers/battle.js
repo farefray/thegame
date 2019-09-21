@@ -1,14 +1,11 @@
-import Battle from '../objects/Battle';
-
 const _ = require('lodash');
 const pawns = require('../pawns');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
-const typesJS = require('../types');
 const abilitiesJS = require('../abilities');
 
+const Battle = require('../objects/Battle');
 const BoardJS = require('./board');
-const UnitJS = require('./unit');
 
 const BattleController = {};
 
