@@ -169,7 +169,7 @@ export default class Unit extends React.Component {
         this.setState({
           particles: [ ...this.state.particles, {
             id: particleUID,
-            duration: 250,
+            duration: 100,
             to: {
               top: midpointTop - top,
               left: midpointLeft - left

@@ -3,24 +3,21 @@ import React from 'react';
 import particleImg from '../../assets/particles/1.gif';
 
 export default function Particle({ particle }) {
-  console.log("TCL: Particle -> particle", particle)
   const ref = React.useRef(null);
 
   React.useEffect(() => {
-    const duration = particle.duration;
-    const id = particle.id;
-    const top = particle.to.top;
-    const left = particle.to.left;
-
+    let top = particle.to.top;
+    top = top > 0 ? top + 32 : top - 32; // magic to make it hit into sprite [fixme]
+    let left = particle.to.left;
+    left = left > 0 ? left + 32 : left - 32; // magic to make it hit into sprite [fixme]
     ref.current.animate({
       transform: [`translate(0px, 0px)`, `translate(${left}px, ${top}px)`],
     }, {
-      id: id,
       direction: 'normal',
-      duration: duration,
+      duration: particle.duration,
       iterations: 1,
     }).onfinish = () => {
-      particle.onDone(id)
+      particle.onDone(particle.id)
     };
   }, [particle]);
 
