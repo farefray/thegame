@@ -10,7 +10,6 @@ export default function UnitImage({ lookType, direction, isMoving }) {
 
   React.useEffect(() => {
     ref.current.onerror = () => {
-      console.log('error');
       setSprite(fallbackImage);
     }
   }, [ref]);

@@ -1,10 +1,11 @@
+import Battle from '../objects/Battle';
+
 const _ = require('lodash');
 const pawns = require('../pawns');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
 const abilitiesJS = require('../abilities');
 
-const Battle = require('../objects/Battle');
 const BoardJS = require('./board');
 
 const BattleController = {};
@@ -15,7 +16,7 @@ const BattleController = {};
  * Heals unit at unitPos by heal amount, not over max hp
  */
 async function _healUnit(board, unitPos, heal) {
-  const maxHp = pawns.getMonsterStats(board.get(unitPos).get('name'))['hp'];
+  const maxHp = pawns.getMonsterStats(board.get(unitPos).get('name'))['hp'];307
   const newHp = board.getIn([unitPos, 'hp']) + heal >= maxHp ? maxHp : board.getIn([unitPos, 'hp']) + heal;
   const hpHealed = newHp - board.getIn([unitPos, 'hp']);
   return {

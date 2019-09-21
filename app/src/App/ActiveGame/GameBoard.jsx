@@ -4,7 +4,6 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import Position from '../../objects/Position';
-import Pawn from './GameBoard/Pawn';
 import Unit from '../../objects/Unit';
 
 const gameBoardWidth = 8;
@@ -42,12 +41,13 @@ class GameBoard extends React.Component {
   }
 
   render() {
-    const { board, onLifecycle, units } = this.props;
+    const { onLifecycle, units } = this.props;
     const { gameBoard, isMounted } = this.state;
 
     return (
       <div className="board-container rpgui-container framed">
         <div className="flex center board" ref={e => (this.boardRef = e)}>
+          <DndProvider backend={HTML5Backend}>
           {isMounted &&
             units.map(unit => (
               <Unit
@@ -59,22 +59,21 @@ class GameBoard extends React.Component {
                 onLifecycle={onLifecycle}
               />
             ))}
-          <DndProvider backend={HTML5Backend}>
-            {gameBoard.map((boardColumn, index) => {
-              return (
-                <div className="board-column" key={index}>
-                  {boardColumn.map(cellPosition => {
-                    const creature = board[cellPosition.toBoardPosition()];
-                    return (
-                      <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                        {cellPosition.toBoardPosition()}
-                        {!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
-                      </BoardSquare>
-                    );
-                  })}
-                </div>
-              );
-            })}
+            {isMounted &&
+              gameBoard.map((boardColumn, index) => {
+                return (
+                  <div className="board-column" key={index}>
+                    {boardColumn.map(cellPosition => {
+                      return (<>
+                        <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+                          {cellPosition.toBoardPosition()}
+                        </BoardSquare>
+                        </>
+                      );
+                    })}
+                  </div>
+                );
+              })}
           </DndProvider>
         </div>
       </div>
