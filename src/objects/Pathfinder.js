@@ -34,13 +34,38 @@ export default class Pathfinder {
     this._occupiedTileSet = new Set();
     this.gridWidth = gridWidth;
     this.gridHeight = gridHeight;
+    this.initializeGrid();
   }
 
   get occupiedTileSet() {
     return this._occupiedTileSet;
   }
 
+  initializeGrid() {
+    const grid = [];
+    for (let x = 0; x < this.gridWidth; x++) {
+      grid.push([]);
+      for (let y = 0; y < this.gridHeight; y++) {
+        grid[x].push({
+          x,
+          y,
+          f: 0,
+          g: 0,
+          h: 0,
+          parent: null,
+          visited: false,
+          score: 0
+        });
+      }
+    }
+    this.grid = grid;
+  }
+
   findStepToTarget(unit, targetUnit) {
+    const aStarStep = this.getFirstStepInValidPath(unit, targetUnit);
+    if (aStarStep) {
+      return { x: aStarStep.x, y: aStarStep.y };
+    }
     const possibleSteps = this.getUnitPossibleSteps(unit);
     if (!possibleSteps.length) return new Step();
 
@@ -75,6 +100,7 @@ export default class Pathfinder {
     if (optimalSteps.length === 1) {
       return new Step({ x: optimalSteps[0].x, y: optimalSteps[0].y });
     }
+
     const optimalStep = possibleSteps.reduce((previous, current) => (previous.resistance > current.resistance ? current : previous));
 
     return { x: optimalStep.x, y: optimalStep.y };
@@ -88,6 +114,18 @@ export default class Pathfinder {
       if (isOccupied) return false;
       return true;
     });
+  }
+
+  getGridNeighbours({ x, y }) {
+    return [{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -0, y: 1 }]
+      .filter(step => {
+        const isOutOfBounds = x + step.x < 0 || x + step.x >= this.gridWidth || y + step.y < 0 || y + step.y >= this.gridHeight;
+        if (isOutOfBounds) return false;
+        const isOccupied = this.occupiedTileSet.has(`${x + step.x},${y + step.y}`);
+        if (isOccupied) return false;
+        return true;
+      })
+      .map(step => this.grid[x + step.x][y + step.y]);
   }
 
   static getClosestTarget({ x, y, targets }) {
@@ -121,5 +159,65 @@ export default class Pathfinder {
       targetX: unit2.x,
       targetY: unit2.y
     });
+  }
+
+  static findInsertionIndex(stepArray, step) {
+    let min = 0;
+    let max = stepArray.length;
+    while (min < max) {
+      const mid = (min + max) >>> 1;
+      if (stepArray[mid].f < step.f) {
+        min = mid + 1;
+      } else {
+        max = mid;
+      }
+    }
+    return min;
+  }
+
+  getFirstStepInValidPath(unit, target) {
+    this.initializeGrid();
+    const openSet = [this.grid[unit.x][unit.y]];
+    let counter = 0;
+    while (openSet.length && counter < 200) {
+      counter++;
+      const currentNode = openSet.shift();
+      if (this.constructor.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) {
+        let node = currentNode;
+        const stepArray = [];
+        while (node.parent) {
+          stepArray.push(node);
+          node = node.parent;
+        }
+        const step = stepArray[stepArray.length - 1];
+        return new Step({ x: step.x - unit.x, y: step.y - unit.y });
+      }
+
+      currentNode.closed = true;
+      for (const possibleStep of this.getGridNeighbours({ x: currentNode.x, y: currentNode.y })) {
+        if (possibleStep.closed) continue;
+
+        const gScore = possibleStep.score + 1;
+        const { visited } = possibleStep;
+        if (!visited || gScore < possibleStep.g) {
+          // Found an optimal (so far) path to this node.  Take score for node to see how good it is.
+          possibleStep.visited = true;
+          possibleStep.parent = currentNode;
+          possibleStep.h = possibleStep.h || this.constructor.getDistanceBetweenUnits(possibleStep, target);
+          possibleStep.g = gScore;
+          possibleStep.f = possibleStep.g + possibleStep.h;
+          if (!visited) {
+            // Pushing to heap will put it in proper place based on the 'f' value.
+            openSet.splice(this.constructor.findInsertionIndex(openSet, possibleStep), 0, possibleStep);
+          } else {
+            const index = openSet.indexOf(possibleStep);
+            const stepToReevaluate = openSet[index];
+            openSet.splice(index, 1);
+            openSet.splice(this.constructor.findInsertionIndex(openSet, stepToReevaluate), 0, stepToReevaluate);
+          }
+        }
+      }
+    }
+    return null;
   }
 }

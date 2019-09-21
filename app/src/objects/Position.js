@@ -16,7 +16,7 @@ Position.prototype.toString = function() {
 };
 
 Position.prototype.toBoardPosition = function() {
-  if (this.y && this.y !== 0) {
+  if (!isNaN(this.y)) {
     return `${this.x},${this.y}`;
   }
 
@@ -24,11 +24,11 @@ Position.prototype.toBoardPosition = function() {
 };
 
 Position.prototype.isMyHandPosition = function() {
-  return this.y === 0;
+  return this.y === undefined;
 };
 
 Position.prototype.isBoard = function() {
-  return this.y !== 0;
+  return !isNaN(this.y);
 };
 
 /**

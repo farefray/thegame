@@ -30,7 +30,7 @@ export default class Battle {
     // console.time('test');
     this.actionQueue.execute();
     this.setWinner();
-    //console.log(this.actionStack);
+    // console.log(this.actionStack);
     // console.timeEnd('test');
   }
 

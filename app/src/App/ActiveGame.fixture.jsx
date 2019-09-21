@@ -27,14 +27,14 @@ const defaultBoard = {
     {
       name: 'elf',
       x: 0,
-      y: 8
+      y: 7
     }
   ],
   B: [
     {
       name: 'minotaur',
       x: 0,
-      y: 1
+      y: 0
     }
   ]
 };

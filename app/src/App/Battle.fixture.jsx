@@ -36,7 +36,7 @@ const generateBoard = () => {
   const board = [];
   while (board.length < unitCount) {
     const x = Math.floor(Math.random() * 8);
-    const y = Math.floor(Math.random() * 4) + 1;
+    const y = Math.floor(Math.random() * 4);
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
     board.push({
       name: 'minotaur',
@@ -49,7 +49,7 @@ const generateBoard = () => {
 
 const flipBoard = board => {
   for (const unit of board) {
-    unit.y = 9 - unit.y;
+    unit.y = 7 - unit.y;
     unit.x = 7 - unit.x;
     unit.name = 'dwarf';
   }

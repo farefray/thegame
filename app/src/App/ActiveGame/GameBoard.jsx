@@ -8,7 +8,7 @@ import Pawn from './GameBoard/Pawn';
 import Unit from '../../objects/Unit';
 
 const gameBoardWidth = 8;
-const gameBoardHeight = 9;
+const gameBoardHeight = 8;
 
 class GameBoard extends React.Component {
   constructor(props) {
@@ -25,13 +25,14 @@ class GameBoard extends React.Component {
     this.setState({ isMounted: true });
   }
 
-  createGameBoard(height, width) {
+  createGameBoard(width, height) {
     let data = [];
-    for (let i = 0; i < height; i++) {
-      data[i] = [];
-      for (let j = 0; j < width; j++) {
-        data[i][j] = new Position(j, width - i);
+    for (let y = height - 1; y >= 0; y--) {
+      const rowData = [];
+      for (let x = 0; x < width; x++) {
+        rowData.push(new Position(x, y));
       }
+      data.push(rowData);
     }
 
     return data;
@@ -41,13 +42,32 @@ class GameBoard extends React.Component {
     return this.boardRef && this.boardRef.getBoundingClientRect();
   }
 
+  getHandRow(board) {
+    const handRow = [];
+    for (let x = 0; x < gameBoardWidth; x++) {
+      handRow.push(new Position(x));
+    }
+    return (
+      <div className="board-row">
+        {handRow.map(cellPosition => {
+          const creature = board[cellPosition.toBoardPosition()];
+          return (
+            <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+              {cellPosition.toBoardPosition()}
+              {!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
+            </BoardSquare>
+          );
+        })}
+      </div>
+    );
+  }
+
   render() {
     const { board, onLifecycle, units } = this.props;
     const { gameBoard, isMounted } = this.state;
-
     return (
       <div className="board-container rpgui-container framed">
-        <div className="flex center board" ref={e => (this.boardRef = e)}>
+        <div className="flex center board">
           {isMounted &&
             units.map(unit => (
               <Unit
@@ -60,21 +80,24 @@ class GameBoard extends React.Component {
               />
             ))}
           <DndProvider backend={HTML5Backend}>
-            {gameBoard.map((boardColumn, index) => {
-              return (
-                <div className="board-column" key={index}>
-                  {boardColumn.map(cellPosition => {
-                    const creature = board[cellPosition.toBoardPosition()];
-                    return (
-                      <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                        {cellPosition.toBoardPosition()}
-                        {!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
-                      </BoardSquare>
-                    );
-                  })}
-                </div>
-              );
-            })}
+            <div className="main-board-container" ref={e => (this.boardRef = e)}>
+              {gameBoard.map((boardRow, index) => {
+                return (
+                  <div className="board-row" key={index}>
+                    {boardRow.map(cellPosition => {
+                      const creature = board[cellPosition.toBoardPosition()];
+                      return (
+                        <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+                          {cellPosition.toBoardPosition()}
+                          {!!creature && <Pawn cellPosition={cellPosition} idle={true} name={creature.name} direction={creature.team === 1 ? 3 : 1} />}
+                        </BoardSquare>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+            {this.getHandRow(board)}
           </DndProvider>
         </div>
       </div>
