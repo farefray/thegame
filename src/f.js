@@ -9,19 +9,15 @@ exports.isUndefined = obj => isUndefined(obj);
 exports.getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
 
 const x = position => {
-  if (!isUndefined(position)) {
-    const splitted = position.split(',');
-    const curr = splitted[0];
-    return isUndefined(curr) ? curr : parseInt(curr, 10);
-  }
-  console.log('pos is undefined WE ARE FUCKED');
-  return 0;
+  const splitted = position.split(',');
+  const curr = splitted[0];
+  return parseInt(curr, 10);
 };
 
 const y = position => {
   const splitted = position.split(',');
   const curr = splitted[1];
-  return isUndefined(curr) ? curr : parseInt(curr, 10);
+  return parseInt(curr, 10);
 };
 
 exports.pos = (px, py) => new Position(px, py).toBoardPosition();
@@ -38,7 +34,7 @@ exports.y = position => y(position);
  * @param {BoardPosition}
  * @returns {Boolean}
  */
-exports.isPositionBelongsToHand = position => isUndefined(y(position));
+exports.isPositionBelongsToHand = position => (y(position) === -1);
 
 /**
  * Reverses position, your units position on enemy boards

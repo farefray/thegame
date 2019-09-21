@@ -1,12 +1,14 @@
 /**
  * Actually it seems like overall game controller already, cuz we handle a lot of logic here, even if trying to move it to different controllers... maybe consider having it renamed :D
  */
+import BattleController from './controllers/battle';
+
 const { fromJS } = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
+
 const GameController = require('./game');
-const BattleController = require('./controllers/battle.js');
 const BoardController = require('./controllers/board');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
