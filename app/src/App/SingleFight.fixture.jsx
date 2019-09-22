@@ -25,16 +25,16 @@ const getCircularReplacer = () => {
 const defaultBoard = {
   A: [
     {
-      name: 'dwarf',
-      x: 1,
+      name: 'elf',
+      x: 6,
       y: 6
     }
   ],
   B: [
     {
       name: 'elf',
-      x: 7,
-      y: 1
+      x: 2,
+      y: 0
     }
   ]
 };
