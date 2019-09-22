@@ -4,7 +4,7 @@
   "description": "Pokemon Auto Chess",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "babel-node src/index.js",
     "dev": "nodemon --exec babel-node src/index.js",
     "debug": "babel-node --inspect src/index.js",
     "complete": "eslint ./src && mocha --exit && node src/index.js",
@@ -28,7 +28,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "easystarjs": "^0.4.3",
-    "eslint": "^5.16.0",
+    "eslint": "6.1.0",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
     "global": "^4.4.0",
