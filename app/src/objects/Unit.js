@@ -1,9 +1,13 @@
 import React from 'react';
-import getPawnImageSrc from '../App/ActiveGame/GameBoard/Pawn/pawnImage.helper';
+
 import { DIRECTION, ACTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
+import Position from './Position';
+import UnitImage from './Unit/UnitImage';
 import Particle from './Unit/Particle';
+import IsDraggable from './Unit/IsDraggable';
 
+let particleUID = 0; // maybe stupied way, please review @Jacek
 export default class Unit extends React.Component {
   constructor(props) {
     super(props);
@@ -91,17 +95,11 @@ export default class Unit extends React.Component {
 
   getPositionFromCoordinates(x, y) {
     const { getBoardBoundingClientRect, gameBoardWidth, gameBoardHeight } = this.props;
+    const boundingClientRec = getBoardBoundingClientRect();
     return {
-      top: ((gameBoardHeight - y - 1) * getBoardBoundingClientRect().height) / gameBoardHeight,
-      left: (x * getBoardBoundingClientRect().width) / gameBoardWidth
+      top: ((gameBoardHeight - y - 1) * boundingClientRec.height) / gameBoardHeight,
+      left: (x * boundingClientRec.width) / gameBoardWidth
     };
-  }
-
-  getSprite() {
-    const { direction, isMoving } = this.state;
-    const { unit } = this.props;
-    const lookType = unit.lookType || 25;
-    return getPawnImageSrc(lookType, direction, !isMoving);
   }
 
   getDirectionToTarget(x, y) {
@@ -167,15 +165,21 @@ export default class Unit extends React.Component {
           this.setState({ top, left });
         }, 100);
       } else {
-        // TODO somehow particles... But this has to be reusable for different effects and shit :(
+        particleUID += 1;
         this.setState({
           particles: [ ...this.state.particles, {
-            id: 1,
-            time: 100,
+            id: particleUID,
+            lookType: this.props.unit.particle,
+            duration: 100,
             to: {
-              x: targetTop,
-              y: targetLeft
-            } // todo more
+              top: midpointTop - top,
+              left: midpointLeft - left
+            },
+            onDone: (unitsParticles) => {
+              this.setState({
+                particles: [ ...this.state.particles].filter(particle => particle.id !== unitsParticles)
+              })
+            }
           }]
         })
       }
@@ -197,13 +201,31 @@ export default class Unit extends React.Component {
     return this.state.attackRange === 1;
   }
 
+  renderParticles() {
+    return this.state.particles.map( particle => {
+      // const classes = classNames({
+      //   square: true,
+      //   red: square.red,
+      // });
+
+      return (
+        <Particle
+          key={particle.id}
+          className={'particle'}
+          particle={particle}
+        />
+      );
+    });
+  }
+
   render() {
-    const { top, left, transition, health, maxHealth, isDead, particles } = this.state;
+    const { top, left, transition, health, maxHealth, isDead, direction, isMoving } = this.state;
     if (isDead) return null;
+
+    const { unit } = this.props;
     return (
       <div
-        style={{
-          pointerEvents: 'none',
+        style={{ // TODO pointerEvent:none when in battle
           height: '64px',
           width: '64px',
           position: 'absolute',
@@ -214,10 +236,10 @@ export default class Unit extends React.Component {
           zIndex: 9999
         }}
       >
-        <img src={this.getSprite()} alt="Pawn" style={{ position: 'absolute', bottom: 0, right: 0 }} />
-        {particles.map(particle => (
-            <Particle particle={particle}/>
-          ))}
+        <IsDraggable cellPosition={new Position(this.state.initPosition)}>
+          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
+        </IsDraggable>
+        { this.renderParticles() }
         <div
           className="healthbar"
           style={{

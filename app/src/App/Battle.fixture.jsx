@@ -35,8 +35,8 @@ const generateBoard = () => {
   const unitCount = 7;
   const board = [];
   while (board.length < unitCount) {
-    const x = Math.floor(Math.random() * 8);
-    const y = Math.floor(Math.random() * 4);
+    const x = Math.floor(Math.random() * 7);
+    const y = Math.floor(Math.random() * 4) + 1;
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
     board.push({
       name: 'minotaur',

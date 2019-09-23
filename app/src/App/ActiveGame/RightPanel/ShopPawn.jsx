@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { buyUnitEvent, getStatsEvent } from '../../../events';
 import { isUndefined } from '../../../f';
 import { getImage } from '../../../images.js';
-import PawnImage from '../..//PawnImage.jsx';
+import UnitImage from '../../../objects/Unit/UnitImage';
 
 class ShopPawn extends Component {
   handleInfoPress = event => {
@@ -37,7 +37,7 @@ class ShopPawn extends Component {
             ) : (
               ''
             )}
-            <PawnImage direction="3" idle="true" name={this.props.ShopPawn.name} renderBase={costColorClass} />
+            <UnitImage direction="3" isMoving="false" lookType={this.props.ShopPawn.lookType} />
           </div>
           <div className="pokemonShopText">
             <span className={costColorTextClass}>{this.props.ShopPawn.displayName + '\n'}</span>

@@ -1,3 +1,5 @@
+import './lib/web-animations.min'; // Web Animations API polyfill - https://github.com/web-animations/web-animations-js
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';

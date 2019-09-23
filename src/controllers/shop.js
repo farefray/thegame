@@ -85,7 +85,7 @@ ShopJS.refreshShop = async (state, playerIndex) => {
   for (let i = 0; i < 5; i++) {
     // Loop over pieces
     if (!level) console.log('@refreshShop adding piece', level, playerIndex);
-    const obj = await ShopJS.addPieceToShop(newShop, f.pos(i), pieceStorage, level, discPieces, state.getIn(['players', playerIndex]), newUnitAmounts);
+    const obj = await ShopJS.addPieceToShop(newShop, String(i), pieceStorage, level, discPieces, state.getIn(['players', playerIndex]), newUnitAmounts);
     newShop = obj.newShop;
     pieceStorage = obj.pieceStorage;
     discPieces = obj.discPieces;

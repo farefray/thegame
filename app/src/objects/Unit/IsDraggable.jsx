@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDrag, DragPreviewImage } from 'react-dnd';
 
-import ItemTypes from './ItemTypes';
+import ItemTypes from '../../App/ActiveGame/GameBoard/ItemTypes';
+import getPawnImageSrc from "../../helpers/pawnImage.helper";
 
-import getPawnImageSrc from './Pawn/pawnImage.helper';
-export default function Pawn({ cellPosition, name, direction, idle }) {
+export default function IsDraggable({ cellPosition, children }) {
   const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.PAWN,
@@ -15,18 +15,10 @@ export default function Pawn({ cellPosition, name, direction, idle }) {
     })
   });
 
-  let creature = {};
-  try {
-    const unitJson = JSON.parse(localStorage.getItem('unitJSON'));
-    creature = unitJson[name];
-  } catch (e) {}
-
-  let lookType = creature.lookType || 25;
-
   return (
     <div
       ref={drag}
-      className="pawn"
+      className="draggablePawn"
       style={{
         height: '64px',
         width: '64px',
@@ -35,7 +27,8 @@ export default function Pawn({ cellPosition, name, direction, idle }) {
         cursor: 'move'
       }}
     >
-      <DragPreviewImage connect={preview} src={getPawnImageSrc(lookType, 3, true)} />
+      {children}
+      <DragPreviewImage connect={preview} src={getPawnImageSrc(1, 3, true)} />
     </div>
   );
 }

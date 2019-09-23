@@ -75,6 +75,10 @@ function ActiveGame() {
       case ACTION.MOVE:
         const reducedBoard = _.cloneDeep(board); // maybe can be omitted
         const creature = _.clone(board[fromPos]);
+        if (!creature) {
+          return reducedBoard;
+        }
+
         delete reducedBoard[fromPos];
 
         if (toPos) {
@@ -85,6 +89,10 @@ function ActiveGame() {
         return reducedBoard;
       case ACTION.ATTACK:
         // todo plzmake this more understandable
+        if (!board[fromPos] || !board[toPos]) {
+          return board;
+        }
+
         unitComponents[board[fromPos].position].onAction(action);
         unitComponents[board[toPos].position].onAction(action, true);
         return _.clone(board);
@@ -148,30 +156,13 @@ function ActiveGame() {
     }
   }, [gameBoard, currentActionIndex]); // eslint-disable-line
 
-  // TODO move this to timer component
-  const [counter, setCounter] = useState(0);
-  useEffect(() => {
-    setCounter(appState.countdown);
-  }, [appState.countdown]);
-
-  const MemoizedTimer = React.useMemo(
-    () => (
-      <Timer
-        value={counter}
-        onTick={val => {
-          setCounter(val);
-        }}
-      />
-    ),
-    [counter]
-  );
   return (
     <div className="gameDiv" tabIndex="0">
       {' '}
       {/* <TopBar {...this.props} /> */}{' '}
       <div className="flex wholeBody">
         {' '}
-        {/* <LeftBar {...this.props} /> */} {counter && MemoizedTimer}
+        {/* <LeftBar {...this.props} /> */} <Timer value={appState.countdown}/>
         <StateProvider
           initialState={{
             ...appState
