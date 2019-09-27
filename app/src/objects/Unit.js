@@ -29,6 +29,8 @@ export default class Unit extends React.Component {
       isMoving: false,
       maxHealth: unit.hp,
       health: unit.hp,
+      maxMana: 100,
+      mana: 0,
       attackRange: unit.attackRange, // maybe consider using 'stats': unit
       particles: []
     };
@@ -85,6 +87,10 @@ export default class Unit extends React.Component {
               }, 500);
             })()
           : action.to && this.attack(action.to.x, action.to.y, action.damage);
+        break;
+      }
+      case ACTION.CAST: {
+        this.cast();
         break;
       }
       default: {
@@ -149,9 +155,11 @@ export default class Unit extends React.Component {
     const { top, left } = this.state;
     const midpointTop = (targetTop + top) / 2;
     const midpointLeft = (targetLeft + left) / 2;
+    const mana = Math.max(0, Math.min(100, this.state.mana + 5));
     this.setState({
       direction: this.getDirectionToTarget(x, y),
-      isMoving: false
+      isMoving: false,
+      mana
     });
 
     setTimeout(() => {
@@ -167,32 +175,41 @@ export default class Unit extends React.Component {
       } else {
         particleUID += 1;
         this.setState({
-          particles: [ ...this.state.particles, {
-            id: particleUID,
-            lookType: this.props.unit.particle,
-            duration: 100,
-            to: {
-              top: midpointTop - top,
-              left: midpointLeft - left
-            },
-            onDone: (unitsParticles) => {
-              this.setState({
-                particles: [ ...this.state.particles].filter(particle => particle.id !== unitsParticles)
-              })
+          particles: [
+            ...this.state.particles,
+            {
+              id: particleUID,
+              lookType: this.props.unit.particle,
+              duration: 100,
+              to: {
+                top: midpointTop - top,
+                left: midpointLeft - left
+              },
+              onDone: unitsParticles => {
+                this.setState({
+                  particles: [...this.state.particles].filter(particle => particle.id !== unitsParticles)
+                });
+              }
             }
-          }]
-        })
+          ]
+        });
       }
     }, 500); // todo better than constant delay
+  }
+
+  cast() {
+    this.setState({ mana: 0 });
   }
 
   takeDamage(damage) {
     //console.log("TCL: takeDamage -> this.state.health", this.state.health)
     const health = Math.max(0, this.state.health - damage);
+    const mana = Math.max(0, Math.min(100, this.state.mana + 2));
     //console.log("TCL: takeDamage -> health", health)
     //console.log("TCL: takeDamage -> health === 0", health === 0)
     this.setState({
       health,
+      mana,
       isDead: health === 0
     });
   }
@@ -202,30 +219,25 @@ export default class Unit extends React.Component {
   }
 
   renderParticles() {
-    return this.state.particles.map( particle => {
+    return this.state.particles.map(particle => {
       // const classes = classNames({
       //   square: true,
       //   red: square.red,
       // });
 
-      return (
-        <Particle
-          key={particle.id}
-          className={'particle'}
-          particle={particle}
-        />
-      );
+      return <Particle key={particle.id} className={'particle'} particle={particle} />;
     });
   }
 
   render() {
-    const { top, left, transition, health, maxHealth, isDead, direction, isMoving } = this.state;
+    const { top, left, transition, health, maxHealth, mana, maxMana, isDead, direction, isMoving } = this.state;
     if (isDead) return null;
 
     const { unit } = this.props;
     return (
       <div
-        style={{ // TODO pointerEvent:none when in battle
+        style={{
+          // TODO pointerEvent:none when in battle
           height: '64px',
           width: '64px',
           position: 'absolute',
@@ -239,7 +251,7 @@ export default class Unit extends React.Component {
         <IsDraggable cellPosition={new Position(this.state.initPosition)}>
           <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
         </IsDraggable>
-        { this.renderParticles() }
+        {this.renderParticles()}
         <div
           className="healthbar"
           style={{
@@ -247,7 +259,7 @@ export default class Unit extends React.Component {
             backgroundColor: '#000000',
             height: '4px',
             width: '22px',
-            bottom: '32px',
+            bottom: '35px',
             right: '5px'
           }}
         >
@@ -260,6 +272,29 @@ export default class Unit extends React.Component {
               top: '1px',
               left: '1px',
               right: `${21 - 20 * (health / maxHealth)}px`
+            }}
+          />
+        </div>
+        <div
+          className="manabar"
+          style={{
+            position: 'absolute',
+            backgroundColor: '#000000',
+            height: '4px',
+            width: '22px',
+            bottom: '32px',
+            right: '5px'
+          }}
+        >
+          <div
+            className="manabar-fill"
+            style={{
+              position: 'absolute',
+              backgroundColor: '#1b30cf',
+              height: '2px',
+              top: '1px',
+              left: '1px',
+              right: `${21 - 20 * (mana / maxMana)}px`
             }}
           />
         </div>

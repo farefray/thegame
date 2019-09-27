@@ -96,6 +96,9 @@ function ActiveGame() {
         unitComponents[board[fromPos].position].onAction(action);
         unitComponents[board[toPos].position].onAction(action, true);
         return _.clone(board);
+      case ACTION.CAST:
+        unitComponents[board[fromPos].position].onAction(action);
+        return _.clone(board);
       default:
         throw new Error();
     }
@@ -162,7 +165,7 @@ function ActiveGame() {
       {/* <TopBar {...this.props} /> */}{' '}
       <div className="flex wholeBody">
         {' '}
-        {/* <LeftBar {...this.props} /> */} <Timer value={appState.countdown}/>
+        {/* <LeftBar {...this.props} /> */} <Timer value={appState.countdown} />
         <StateProvider
           initialState={{
             ...appState

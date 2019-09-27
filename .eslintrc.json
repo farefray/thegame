@@ -22,6 +22,7 @@
     "prefer-arrow-callback": "off",
     "space-before-function-paren": "off",
     "arrow-parens": "off",
-    "implicit-arrow-linebreak": "off"
+    "implicit-arrow-linebreak": "off",
+    "no-param-reassign": "off"
   }
 }

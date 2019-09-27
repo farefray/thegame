@@ -1,4 +1,6 @@
-const _ = require('lodash');
+import _ from 'lodash';
+
+const MAX_MANA = 100;
 
 export default class BattleUnit {
   constructor(unit, coords) {
@@ -9,6 +11,7 @@ export default class BattleUnit {
     // internal
     this._uid = this.getBoardPosition(); // uid = starting position for mob
     this._previousStep = null;
+    this._mana = 0;
   }
 
   get previousStep() {
@@ -19,12 +22,20 @@ export default class BattleUnit {
     this._previousStep = value;
   }
 
+  get mana() {
+    return this._mana;
+  }
+
+  set mana(value) {
+    this._mana = Math.max(0, Math.min(100, value));
+  }
+
   getUID() {
     return this._uid;
   }
 
   canCast() {
-    return false;
+    return this.mana === MAX_MANA;
   }
 
   hasTarget() {

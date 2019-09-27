@@ -58,20 +58,13 @@ export default class Battle {
       targetUnit = unit.getTarget();
     }
     if (!targetUnit) return;
-
+    if (unit.canCast()) {
+      this.cast(unit, timestamp);
+      return;
+    }
     const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
     if (distanceToTarget < unit.attackRange) {
-      const attackResult = unit.doAttack(targetUnit);
-      this.addActionToStack(
-        {
-          type: ACTION.ATTACK,
-          from: unit.getPosition(),
-          to: targetUnit.getPosition(),
-          damage: attackResult.damage
-        },
-        timestamp
-      );
-
+      this.attackUnit(unit, targetUnit, timestamp);
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
@@ -95,19 +88,45 @@ export default class Battle {
     return this;
   }
 
+  cast(unit, timestamp) {
+    unit.mana = 0;
+    this.addActionToStack(
+      {
+        type: ACTION.CAST,
+        from: unit.getPosition()
+      },
+      timestamp
+    );
+  }
+
+  attackUnit(unit, targetUnit, timestamp) {
+    const attackResult = unit.doAttack(targetUnit);
+    unit.mana += 5;
+    targetUnit.mana += 2;
+    this.addActionToStack(
+      {
+        type: ACTION.ATTACK,
+        from: unit.getPosition(),
+        to: targetUnit.getPosition(),
+        damage: attackResult.damage
+      },
+      timestamp
+    );
+  }
+
   /**
-   * @param {BattleUnit} battleUnit
+   * @param {BattleUnit} unit
    * @param {Object/null} position if null, then removing from board
    */
-  moveUnit(battleUnit, step, timestamp) {
+  moveUnit(unit, step, timestamp) {
     const fromPosition = {
-      x: battleUnit.x,
-      y: battleUnit.y
+      x: unit.x,
+      y: unit.y
     };
 
     const position = step && {
-      x: battleUnit.x + step.x,
-      y: battleUnit.y + step.y
+      x: unit.x + step.x,
+      y: unit.y + step.y
     };
 
     this.addActionToStack(
@@ -120,13 +139,13 @@ export default class Battle {
     );
 
     if (position) {
-      battleUnit.previousStep = step;
-      battleUnit.move(position);
+      unit.previousStep = step;
+      unit.move(position);
     }
 
     this.pathfinder.occupiedTileSet.delete(`${fromPosition.x},${fromPosition.y}`);
     if (position) {
-      this.pathfinder.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
+      this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`);
     }
   }
 }
