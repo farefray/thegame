@@ -61,11 +61,12 @@ class GameBoard extends React.Component {
   }
 
   render() {
-    const { onLifecycle, units } = this.props;
+    const { onLifecycle, units, children } = this.props;
     const { gameBoard, isMounted } = this.state;
     return (
       <div className="board-container rpgui-container framed">
         <div className="flex center board">
+          {children}
           <DndProvider backend={HTML5Backend}>
           {isMounted &&
             units.map(unit => (

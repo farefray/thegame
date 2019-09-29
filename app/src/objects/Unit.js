@@ -76,6 +76,7 @@ export default class Unit extends React.Component {
         action.to && this.move(action.to.x, action.to.y);
         break;
       }
+      case ACTION.CAST:
       case ACTION.ATTACK: {
         isTarget
           ? (() => {

@@ -14,6 +14,7 @@ module.exports = {
     RESET: -1,
     INIT: 0,
     MOVE: 1,
-    ATTACK: 2
+    ATTACK: 2,
+    CAST: 3
   }
 };

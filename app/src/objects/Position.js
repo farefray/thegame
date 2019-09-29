@@ -47,4 +47,15 @@ Position.prototype.isMyPosition = function () {
   return this.y >= -1 && this.y < 4 && this.x >= 0 && this.x < 8;
 };
 
+
+const tileSize = 64;
+const boardSize = tileSize * 8;
+Position.prototype.vectorX = function () {
+  return this.x * tileSize;
+};
+
+Position.prototype.vectorY = function () {
+  return boardSize - this.y * tileSize;
+};
+
 module.exports = Position;

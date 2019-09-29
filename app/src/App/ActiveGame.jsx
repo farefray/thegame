@@ -7,6 +7,10 @@ import Timer from './ActiveGame/Timer.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
 import { StateProvider } from './ActiveGame/GameBoard.context.js';
 
+import { ParticleSystemComponent } from '../lib/advancedParticles/ParticleSystemComponent.js';
+import { Vector2f } from '../lib/advancedParticles/Vector2f';
+import { FlameThrower } from '../lib/advancedParticles/Custom/FlameThrower';
+
 import RightPanel from './ActiveGame/RightPanel.jsx';
 
 const { ACTION } = require('../shared/constants');
@@ -29,6 +33,12 @@ function unitReducer(unitComponents, action) {
     }
   }
 }
+
+var castSpell = function(fromPosition, toPosition) {
+  const unitV = new Vector2f(fromPosition.vectorX(), fromPosition.vectorY());
+  const targetV = new Vector2f(toPosition.vectorX(), toPosition.vectorY());
+  new FlameThrower(unitV, targetV);
+};
 
 function ActiveGame() {
   useEffect(() => {
@@ -68,8 +78,8 @@ function ActiveGame() {
       return clonedBoard;
     }
 
-    const fromPos = new Position(action.from.x, action.from.y).toBoardPosition(); // idiotic way for forming ID's for units and other stuff. Make it good please someone
-    const toPos = action.to && new Position(action.to.x, action.to.y).toBoardPosition();
+    const fromPos = new Position(action.from.x, action.from.y).toString(); // idiotic way for forming ID's for units and other stuff. Make it good please someone
+    const toPos = action.to && new Position(action.to.x, action.to.y).toString();
 
     switch (action.type) {
       case ACTION.MOVE:
@@ -88,21 +98,27 @@ function ActiveGame() {
 
         return reducedBoard;
       case ACTION.ATTACK:
-        // todo plzmake this more understandable
-        if (!board[fromPos] || !board[toPos]) {
-          return board;
+        if (!board[fromPos]) {
+          throw new Error('Attempting to attack after death')
         }
 
         unitComponents[board[fromPos].position].onAction(action);
-        unitComponents[board[toPos].position].onAction(action, true);
+
+        if (toPos && board[toPos]) {
+          unitComponents[board[toPos].position].onAction(action, true);
+        }
         return _.clone(board);
+      case ACTION.CAST: {
+        castSpell(new Position(fromPos), new Position(toPos));
+        return;
+      }
       default:
-        throw new Error();
+        console.log(action);
+        throw new Error('Unknown action in battle!');
     }
   };
 
   const [gameBoard, dispatchGameBoard] = useReducer(boardReducer, combinedBoard);
-
   useEffect(() => {
     const units = Object.keys(combinedBoard).map(key => {
       return {
@@ -162,13 +178,15 @@ function ActiveGame() {
       {/* <TopBar {...this.props} /> */}{' '}
       <div className="flex wholeBody">
         {' '}
-        {/* <LeftBar {...this.props} /> */} <Timer value={appState.countdown}/>
+        {/* <LeftBar {...this.props} /> */} <Timer value={appState.countdown} />{' '}
         <StateProvider
           initialState={{
             ...appState
           }}
         >
-          <GameBoard board={gameBoard} units={units} onLifecycle={dispatchUnitLifecycle} />{' '}
+          <GameBoard board={gameBoard} units={units} onLifecycle={dispatchUnitLifecycle} >
+            <ParticleSystemComponent />
+          </GameBoard> 
         </StateProvider>{' '}
         {/* <GameBoardBottom {...this.props} /> */} <RightPanel {...appState} />{' '}
       </div>{' '}
