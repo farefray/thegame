@@ -26,9 +26,6 @@ const PLAYER_INDEX = -1;
 const generateGameState = async function() {
   let state = await GameController.initialize([PLAYER_INDEX]);
   state = await GameController.purchasePawn(state, PLAYER_INDEX, 0);
-  //const fromPosition = '0';
-  //const toPosition = '0,2';
-  //await GameController.mutateStateByPawnPlacing(state, PLAYER_INDEX, fromPosition, toPosition);
   return JSON.parse(JSON.stringify(state, getCircularReplacer()));
 };
 

@@ -49,16 +49,7 @@ ShopJS.addPieceToShop = async (shop, pos, pieces, level, discPieces, player, new
     if (newPieceStorage[i].length === 0) {
       newPieceStorage = await ShopJS.refillPieces(newPieceStorage, discPieces);
     }
-    const piece = _.cloneDeep(pieces[0][Math.floor(Math.random() * pieces[0].length)]);
-    let newShopUnit = {
-      name: piece.name,
-      displayName: piece.displayName,
-      cost: piece.cost,
-      type: piece.type
-    };
-    if (piece.reqEvolve) {
-      newShopUnit = newShopUnit.set('reqEvolve', piece.reqEvolve);
-    }
+    const newShopUnit = _.cloneDeep(pieces[0][Math.floor(Math.random() * pieces[0].length)]);
     newShop[pos] = newShopUnit;
     break;
   }
