@@ -134,6 +134,7 @@ export function app(
     case 'INIT': {
       // Used for cosmos fixtures
       state.isDead = false;
+      state.countdown = 15;
       return {
         ...state
       };
