@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { startGame, ready, unready } from '../socket';
+import { Box, Heading } from 'rebass';
 import ProgressBar from '../components/ProgressBar.jsx';
-import SoundButton from './StartScreen/SoundButton.jsx';
 
 class StartScreen extends Component {
   constructor(props) {
@@ -86,22 +86,22 @@ class StartScreen extends Component {
               )}
             </div>
           ) : (
-            <ProgressBar progress={loadingProgress} loadingCounter={this.state.loadingCounter} dispatch={this.props.dispatch} />
+            <ProgressBar percent={loadingProgress} />
           )}
         </div>
-
-        <SoundButton soundEnabled={this.state.soundEnabled} musicEnabled={this.state.musicEnabled} dispatch={this.props.dispatch} />
       </div>
     );
 
     return (
-      <div id="startscreen" className="section group">
-        <div className="col span_1_of_10"></div>
-        <div className="col span_8_of_10 rpgui-content rpgui-cursor-default">
-          <div className="startscreen-inner inner rpgui-container framed">{mainMenu}</div>
-        </div>
-        <div className="col span_1_of_10"></div>
-      </div>
+      <Box
+        flex="1"
+        sx={{
+          backgroundImage: 'url(https://source.unsplash.com/random/1024x768?sky)',
+          backgroundSize: 'cover'
+        }}
+      >
+        {mainMenu}
+      </Box>
     );
   }
 }

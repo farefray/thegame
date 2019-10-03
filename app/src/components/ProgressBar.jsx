@@ -1,52 +1,58 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+// @flow
+import * as React from 'react';
+import classNames from 'classnames';
 
-class ProgressBar extends Component {
-  _isMounted = false;
-  constructor(props) {
-    super(props);
-    this.state = {
-      loadingCounter: 1
-    };
-  }
+import { prefix, defaultProps, getUnhandledProps } from '../utils';
 
-  updateUI() {
-    if (!this._isMounted) {
-      return false;
-    }
+type Props = {
+  className?: string,
+  classPrefix?: string,
+  percent: number,
+  strokeColor?: string,
+  strokeWidth?: number,
+  trailColor?: string,
+  trailWidth?: number,
+  showInfo?: boolean,
+  status?: 'success' | 'fail' | 'active'
+};
 
-    RPGUI.update(ReactDOM.findDOMNode(this)); // eslint-disable-line
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-    this.updateUI();
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
+class ProgressLine extends React.Component<Props> {
+  static defaultProps = {
+    showInfo: true,
+    percent: 0
+  };
 
   render() {
-    let loadingCounter = this.state.loadingCounter || 1;
-    if (this.props.progress < 100) {
-      loadingCounter = loadingCounter === 3 ? 1 : loadingCounter + 1;
+    const { className, percent, strokeColor, strokeWidth, status, showInfo, classPrefix, ...rest } = this.props;
 
-      setTimeout(() => {
-        if (this._isMounted) {
-          this.setState({ ...this.state, loadingCounter: loadingCounter });
-          this.props.dispatch({ type: 'LOADING_STRING', loadingCounter });
-          this.updateUI();
-        }
-      }, 1000);
-    }
+    const addPrefix = prefix(classPrefix);
+    const unhandled = getUnhandledProps(ProgressLine, rest);
+    const percentStyle = {
+      width: `${percent}%`,
+      height: strokeWidth,
+      backgroundColor: strokeColor
+    };
 
-    // TODO make it universal and pass text from parent
-    const loadingString = this.props.progress > 0 ? 'Loading' + '.'.repeat(loadingCounter) : 'Connecting' + '.'.repeat(loadingCounter); // TODO
+    const classes = classNames(classPrefix, addPrefix('line'), className, {
+      [addPrefix(`line-${status || ''}`)]: !!status
+    });
 
-    const value = (this.props.progress || 0) / 100;
-    return <div data-value={value} className="rpgui-progress green" data-rpguitype="progress" data-text={loadingString}></div>;
+    const showIcon = status && status !== 'active';
+    const info = showIcon ? <span className={addPrefix(`icon-${status || ''}`)} /> : <span className={addPrefix('info-status')}>{percent}%</span>;
+
+    return (
+      <div className={classes} {...unhandled}>
+        <div className={addPrefix('line-outer')}>
+          <div className={addPrefix('line-inner')}>
+            <div className={addPrefix('line-bg')} style={percentStyle} />
+          </div>
+        </div>
+        {showInfo ? <div className={addPrefix('info')}>{info}</div> : null}
+      </div>
+    );
   }
 }
 
-export default ProgressBar;
+export default defaultProps({
+  classPrefix: 'progress'
+})(ProgressLine);
