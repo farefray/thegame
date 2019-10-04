@@ -4,7 +4,8 @@ import { isUndefined } from '../../f';
 import { getImage, getTypeImg } from '../../images.js';
 import { sellPieceEvent } from '../../events';
 import { getUnitAudio, getSoundEffect } from '../../audio.js';
-import { capitalize } from '../../util';
+
+const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1)
 
 class LeftBar extends Component {
   constructor(props) {

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { startGame, ready, unready } from '../socket';
-import { Box, Heading } from 'rebass';
-import ProgressBar from '../components/ProgressBar.jsx';
 
 class StartScreen extends Component {
   constructor(props) {
@@ -41,67 +39,50 @@ class StartScreen extends Component {
 
   // TODO wait for unitJSON appear in localstorage before rendeing
   render() {
-    const loadingProgress = this.props.connected ? 100 : 0; // todo proper loading
-
-    const isLoaded = loadingProgress >= 100;
-
-    const mainMenu = (
-      <div>
-        <div className="startButtons">
-          {isLoaded ? (
-            <div>
-              {this.props.playerName !== '' ? (
-                <div>
-                  Player: {this.props.playerName} <br />
-                  <button className={`rpgui-button startButton ${!this.props.ready ? 'growAnimation' : ''}`} onClick={this.toggleReady}>
-                    <p>{this.props.ready ? 'Unready' : 'Ready'}</p>
-                  </button>
-                  <button
-                    style={{ marginLeft: '5px' }}
-                    className={`rpgui-button ${this.props.playersReady === this.props.connectedPlayers ? 'growAnimation' : ''}`}
-                    onClick={() => this.startGameEvent()}
-                  >
-                    <p>{`Start Game (${this.props.playersReady}/${this.props.connectedPlayers})`}</p>
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <form>
-                    <label className="text_shadow">Name:</label>
-                    <label>
-                      <input
-                        maxLength="20"
-                        placeholder="Enter your nickname"
-                        className="textInputSmaller"
-                        type="text"
-                        value={this.state.nameChangeInput}
-                        onChange={event => this.setState({ ...this.state, nameChangeInput: event.target.value })}
-                      />
-                    </label>
-                    <button className="rpgui-button golden" type="button" onClick={this.handleNameChange}>
-                      <p>Submit</p>
-                    </button>
-                  </form>
-                </div>
-              )}
-            </div>
-          ) : (
-            <ProgressBar percent={loadingProgress} />
-          )}
-        </div>
-      </div>
-    );
+    const { connected:isConnected } = this.props;
 
     return (
-      <Box
-        flex="1"
-        sx={{
-          backgroundImage: 'url(https://source.unsplash.com/random/1024x768?sky)',
-          backgroundSize: 'cover'
-        }}
-      >
-        {mainMenu}
-      </Box>
+      <div id="startscreen">
+        {isConnected ? (
+          <div>
+            {this.props.playerName !== '' ? (
+              <div>
+                Player: {this.props.playerName} <br />
+                <button className={`rpgui-button startButton ${!this.props.ready ? 'growAnimation' : ''}`} onClick={this.toggleReady}>
+                  <p>{this.props.ready ? 'Unready' : 'Ready'}</p>
+                </button>
+                <button
+                  style={{ marginLeft: '5px' }}
+                  className={`rpgui-button ${this.props.playersReady === this.props.connectedPlayers ? 'growAnimation' : ''}`}
+                  onClick={() => this.startGameEvent()}
+                >
+                  <p>{`Start Game (${this.props.playersReady}/${this.props.connectedPlayers})`}</p>
+                </button>
+              </div>
+            ) : (
+              <div>
+                <form>
+                  <label className="text_shadow">Name:</label>
+                  <label>
+                    <input
+                      maxLength="20"
+                      placeholder="Enter your nickname"
+                      className="textInputSmaller"
+                      type="text"
+                      value={this.state.nameChangeInput}
+                      onChange={event => this.setState({ ...this.state, nameChangeInput: event.target.value })}
+                    />
+                  </label>
+                  <button className="rpgui-button golden" type="button" onClick={this.handleNameChange}>
+                    <p>Submit</p>
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        ) : <div className="startscreen-loading">isLoading</div>
+        }
+      </div>
     );
   }
 }
