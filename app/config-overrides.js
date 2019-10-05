@@ -12,6 +12,8 @@ const rewiredMap = () => config => {
 const config = override(
   removeModuleScopePlugin(),
   addLessLoader({
+    modifyVars: { 
+    },
     javascriptEnabled: true // required for rsuite
   }),
   rewiredMap()

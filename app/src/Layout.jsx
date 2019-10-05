@@ -23,7 +23,7 @@ function Layout({ children }) {
         <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
       </Helmet>
       <main>
-{children}
+        {children}
       </main>
     </React.Fragment>
   );

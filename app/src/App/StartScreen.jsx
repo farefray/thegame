@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { startGame, ready, unready } from '../socket';
+import { Container, Header, Content, Footer, Loader, Navbar, FlexboxGrid, Panel, Form, Button, FormGroup, ControlLabel, ButtonToolbar, FormControl } from 'rsuite';
 
 class StartScreen extends Component {
   constructor(props) {
@@ -39,10 +40,8 @@ class StartScreen extends Component {
 
   // TODO wait for unitJSON appear in localstorage before rendeing
   render() {
-    const { connected:isConnected } = this.props;
-
-    return (
-      <div id="startscreen">
+    const { connected: isConnected } = this.props;
+    const test = <div id="startscreen">
         {isConnected ? (
           <div>
             {this.props.playerName !== '' ? (
@@ -80,9 +79,48 @@ class StartScreen extends Component {
               </div>
             )}
           </div>
-        ) : <div className="startscreen-loading">isLoading</div>
-        }
-      </div>
+        ) : (
+          <div className="startscreen-loading">
+            <Loader center speed="slow" size="lg" content="..." />
+          </div>
+        )}
+      </div>;
+
+    return (
+      <Container style={{minHeight: '100vh'}}>
+        <Header>
+          <Navbar appearance="inverse">
+            <Navbar.Header>
+              <a className="navbar-brand logo">GameLogo</a>
+            </Navbar.Header>
+          </Navbar>
+        </Header>
+        <Content className="startscreen">
+          <FlexboxGrid align="middle" justify="center" className="startscreen-loginform">
+            <FlexboxGrid.Item colspan={12}>
+              <Panel header={<h3>Login</h3>} bordered>
+                <Form fluid>
+                  <FormGroup>
+                    <ControlLabel>Email</ControlLabel>
+                    <FormControl name="name" />
+                  </FormGroup>
+                  <FormGroup>
+                    <ControlLabel>Password</ControlLabel>
+                    <FormControl name="password" type="password" />
+                  </FormGroup>
+                  <FormGroup>
+                    <ButtonToolbar>
+                      <Button appearance="primary">Sign in</Button>
+                      <Button appearance="link">Forgot password?</Button>
+                    </ButtonToolbar>
+                  </FormGroup>
+                </Form>
+              </Panel>
+            </FlexboxGrid.Item>
+          </FlexboxGrid>
+        </Content>
+        <Footer style={{alignSelf:'flex-end'}}>Copyrights (c) 2019</Footer>
+      </Container>
     );
   }
 }

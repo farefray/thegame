@@ -1,7 +1,13 @@
 // Not using whole rsuite, as components will be hightly customized and most of default ones are barely used
-@import '~rsuite/lib/styles/themes/dark/core.less';
+// Every component must  import these styles, it is support basic styles for rsuite.
+// Include custom variables for our app instead of basic
+@import '~rsuite/lib/styles/themes/dark/core';
+
+// Custom core styles which we can replace
 @import './custom-core.less';
 
+
+// Including components from rsuite which we are using AND customization files for those
 @import '~rsuite/lib/Header/styles/themes/dark';
 @import '~rsuite/lib/Footer/styles/themes/dark';
 @import '~rsuite/lib/Container/styles/themes/dark';
@@ -13,12 +19,16 @@
 @import 'Panel.less';
 @import '~rsuite/lib/Form/styles/themes/dark';
 @import '~rsuite/lib/Button/styles/themes/dark';
+@import 'Button.less';
 @import '~rsuite/lib/FormGroup/styles/themes/dark';
 @import '~rsuite/lib/ControlLabel/styles/themes/dark';
 @import '~rsuite/lib/ButtonToolbar/styles/themes/dark';
 @import '~rsuite/lib/FormControl/styles/themes/dark';
 @import '~rsuite/lib/Loader/styles/themes/dark';
-@import 'loader.less';
+@import 'Loader.less';
 
-@import 'custom-constants.less';
-@import 'custom-variables.less';
+@import 'theme.less';
+
+// Include per page styles
+@import './pages/startscreen.less';
+
