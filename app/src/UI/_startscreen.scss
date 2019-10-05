@@ -1,9 +1,0 @@
-#startscreen {
-  @extend %bg;
-  
-  .startscreen {
-    &-loading {
-      @extend %centered;
-    }
-  }
-}
