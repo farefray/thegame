@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import './UI/App.scss';
+// import 'rsuite/lib/styles/themes/dark/index.less'; //The default style file.
+import './UI/App.less';
 
 import Layout from './Layout';
 
@@ -13,9 +14,7 @@ const App = () => {
   const activeApp = !gameIsLive ? <StartScreen /> : <ActiveGame />;
   return (
     <Layout>
-      <Block display="flex" justifyContent="center">
         {activeApp}
-      </Block>
     </Layout>
   );
 };
