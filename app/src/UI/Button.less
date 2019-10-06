@@ -1,6 +1,7 @@
 .rs-btn {
   padding: 20px 22px 24px 22px;
-  background-color: transparent;
+  background-color: transparent !important;
+  color: @B000;
 
   &-primary, &-primary:active {
     background: url('./res/button/common_btn_color_green.png') no-repeat center center;
@@ -11,26 +12,13 @@
   &:not(.rs-btn-disabled):hover {
     background-color: inherit;
     transform: scale(1.05);
-  }
-
-  &::before {
-    content: "";
-    display: none;
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    background-color: rgba(216, 166, 1, 0.466);
+    color: @B050;
+    font-size: @font-size-base;
   }
 
   &:active {
     background-color: inherit;
     transform: scale(1);
-
-    &::before {
-      display: block;
-    }
   }
 
   &-link {

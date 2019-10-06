@@ -1,3 +1,20 @@
+// Base variables
 @base-color: #a1725c;
 @font-family-base: 'Changa-Bold', 'Avenir Next', 'Helvetica Neue', sans-serif;
 @font-size-base: 14px;
+
+//** Gray levels. (Isnt really supposed to be gray in our theme, so we set it to our color schema)
+@B000: lighten(@base-color, 40%);
+@B050: lighten(@base-color, 35%);
+@B100: lighten(@base-color, 30%);
+@B200: lighten(@base-color, 20%);
+@B300: lighten(@base-color, 10%);
+@B400: @base-color;
+@B500: darken(@base-color, 10%);
+@B600: darken(@base-color, 20%);
+@B700: darken(@base-color, 30%);
+@B800: darken(@base-color, 40%);
+@B900: darken(@base-color, 50%);
+
+// Configs
+@button-ripple: false; // turning off button ripples, because they fits bad with background images(cannot solve sizing)

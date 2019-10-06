@@ -2,7 +2,7 @@ import React from 'react';
 import { connect, useSelector } from 'react-redux';
 
 // import 'rsuite/lib/styles/themes/dark/index.less'; //The default style file.
-import './UI/App.less';
+import './UI/ui.less';
 
 import Layout from './Layout';
 
