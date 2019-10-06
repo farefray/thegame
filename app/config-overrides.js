@@ -12,11 +12,10 @@ const rewiredMap = () => config => {
 const config = override(
   removeModuleScopePlugin(),
   addLessLoader({
-    modifyVars: require('./src/UI/ui-overrides.js'),
-    dumpLineNumbers: "comments",
-    async: false,
+    modifyVars: require('./src/UI/ui-overryides.js'),
+    async: true,
     env: "development",
-    useFileCache: false,
+    useFileCache: true,
     sourceMap: {},
     javascriptEnabled: true // required for rsuite
   }),
