@@ -22,12 +22,6 @@ export function startscreen(
         ...state,
         ready: !state.ready
       };
-    case 'UPDATE_PRIVATE_NAME': {
-      return {
-        ...state,
-        playerName: action.name
-      };
-    }
     case 'LOAD_UNIT_JSON': {
       return {
         ...state,

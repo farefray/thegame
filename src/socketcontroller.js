@@ -89,6 +89,8 @@ function SocketController(socket, io) {
     if (customer) {
       // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
       connectedPlayers.disconnect(socket.id);
+    } else {
+      /// Important TODO, make handle for case when no customer(Cannot read properpty 'get' of null)
     }
 
     // update rooms

@@ -108,6 +108,26 @@ export const configureSocket = dispatch => {
   return socket;
 };
 
+/** Socket controller for frontend
+ * Handles connection to backend and sends events born in browser to backend.
+ * Only sends customer events to backend and then application receives app state with redux update!
+ */
+const SocketController = {};
+
+SocketController.login = (customerData) => new Promise((resolve) => {
+  console.log("TCL: SocketController.login -> customerData", customerData)
+  // TODO some firebase auth or smt
+  setTimeout(() => {
+    if (customerData.email === 'test@gmail.com') {
+      resolve(true);
+    } else {
+      resolve(false);
+    }
+  }, 1500);
+});
+
+export { SocketController };
+
 // the following are functions that our client side uses
 // to emit actions to everyone connected to our web socket
 export const ready = () => socket.emit('READY');
@@ -129,8 +149,6 @@ export const placePiece = (fromBoardPosition, toBoardPosition) => socket.emit('P
 export const withdrawPiece = (state, from) => socket.emit('WITHDRAW_PIECE', state, from);
 
 export const sellPiece = (state, from) => socket.emit('SELL_PIECE', state, from);
-
-// I think its unsafe to start round with frontend. Need to handle this timer on socket instead
 
 export const getStats = name => socket.emit('GET_STATS', name);
 
