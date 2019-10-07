@@ -6,20 +6,18 @@ import LoginForm from './StartScreen/LoginForm';
 import Lobby from './StartScreen/Lobby';
 
 class StartScreen extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   // TODO wait for unitJSON appear in localstorage before rendeing
   render() {
-    const { isConnected, isLoggedIn } = this.props;
+    const { isConnected, customer } = this.props;
 
     return (
       <Container style={{ minHeight: '100vh' }}>
         <Header>
           <Navbar appearance="inverse">
             <Navbar.Header style={{ position: 'absolute' }}>
-              <a className="navbar-brand logo">GameLogo</a>
+              <a className="navbar-brand logo" href="#?logo">
+                GameLogo
+              </a>
             </Navbar.Header>
             <Navbar.Body>
               <FlexboxGrid align="middle" justify="center">
@@ -32,15 +30,9 @@ class StartScreen extends Component {
         </Header>
         <Content className="startscreen">
           <FlexboxGrid align="middle" justify="center" className="startscreen-flexbox">
-            <FlexboxGrid.Item colspan={12}>
-              <Panel header={<h3>Login</h3>} bordered>
-                {!isConnected ? (
-                  <Connecting className="startscreen-loading"></Connecting>
-                ) : (
-                  isLoggedIn
-                  && <Lobby /> 
-                  || <LoginForm />
-                )}
+            <FlexboxGrid.Item colspan={customer.isLoggedIn ? 18 : 12}>
+              <Panel header={<h3>{customer.isLoggedIn ? 'Lobby' : 'Login'}</h3>} bordered>
+                {!isConnected ? <Connecting className="startscreen-loading"></Connecting> : (customer.isLoggedIn && <Lobby customer={customer} />) || <LoginForm />}
               </Panel>
             </FlexboxGrid.Item>
           </FlexboxGrid>
@@ -53,10 +45,9 @@ class StartScreen extends Component {
 
 function mapStateToProps(state) {
   const { isConnected } = state.startscreen;
-  const { isLoggedIn } = state.customer;
   return {
     isConnected,
-    isLoggedIn
+    customer: state.customer
   };
 }
 
