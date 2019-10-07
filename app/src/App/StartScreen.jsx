@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Container, Header, Content, Footer, Navbar, FlexboxGrid, Panel } from 'rsuite';
 import Connecting from './StartScreen/Connecting';
 import LoginForm from './StartScreen/LoginForm';
+import Lobby from './StartScreen/Lobby';
 
 class StartScreen extends Component {
   constructor(props) {
@@ -11,7 +12,7 @@ class StartScreen extends Component {
 
   // TODO wait for unitJSON appear in localstorage before rendeing
   render() {
-    const { connected: isConnected } = this.props;
+    const { isConnected, isLoggedIn } = this.props;
 
     return (
       <Container style={{ minHeight: '100vh' }}>
@@ -36,7 +37,9 @@ class StartScreen extends Component {
                 {!isConnected ? (
                   <Connecting className="startscreen-loading"></Connecting>
                 ) : (
-                  <LoginForm />
+                  isLoggedIn
+                  && <Lobby /> 
+                  || <LoginForm />
                 )}
               </Panel>
             </FlexboxGrid.Item>
@@ -49,17 +52,11 @@ class StartScreen extends Component {
 }
 
 function mapStateToProps(state) {
-  const { ready, playersReady, connectedPlayers, connected, loadedUnitJson, playerName } = state.startscreen;
-
-  const { allReady } = state.app;
+  const { isConnected } = state.startscreen;
+  const { isLoggedIn } = state.customer;
   return {
-    ready,
-    allReady,
-    playersReady,
-    connected,
-    connectedPlayers,
-    loadedUnitJson,
-    playerName
+    isConnected,
+    isLoggedIn
   };
 }
 

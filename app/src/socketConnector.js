@@ -1,4 +1,4 @@
-// src/socket.js
+// src/socketConnector.js
 import io from 'socket.io-client';
 
 const url = window.location.href;
@@ -26,19 +26,29 @@ export async function AjaxGetUnitJson(cb) {
     });
 }
 
-// Receiving information
-export const configureSocket = dispatch => {
+/** Socket connector for frontend
+ * Handles connection to backend and sends events born in browser to backend.
+ * Only sends customer events to backend and then application receives app state with redux update!
+ */
+const SocketConnector = {};
+
+// Initialization and setting up socket events
+SocketConnector.init = function (dispatch) {
   // make sure our socket is connected to the port
   socket.on('connect', () => {
     console.log('Socket connected');
-    dispatch({ type: 'SET_CONNECTED', connected: true });
+    dispatch({ type: 'SET_CONNECTED', isConnected: true });
     socket.emit('ON_CONNECTION');
   });
 
   socket.on('disconnect', () => {
-    dispatch({ type: 'SET_CONNECTED', connected: false });
+    dispatch({ type: 'SET_CONNECTED', isConnected: false });
     window.location.reload();
     console.log('disconnected');
+  });
+
+  socket.on('CUSTOMER_LOGIN_SUCCESS', customer => {
+    dispatch({ type: 'CUSTOMER_LOGIN_SUCCESS', customer });
   });
 
   socket.on('UPDATED_STATE', state => {
@@ -60,10 +70,6 @@ export const configureSocket = dispatch => {
 
   socket.on('ADD_PLAYER', index => {
     dispatch({ type: 'ADD_PLAYER', index: index });
-  });
-
-  socket.on('WAITINGROOM_STATUS', ({ readyCustomers, totalCustomers, allReady }) => {
-    dispatch({ type: 'WAITINGROOM_STATUS', playersReady: readyCustomers, connectedPlayers: totalCustomers, allReady: allReady });
   });
 
   socket.on('BATTLE_TIME', (actionStack, startBoard, winner) => {
@@ -108,25 +114,13 @@ export const configureSocket = dispatch => {
   return socket;
 };
 
-/** Socket controller for frontend
- * Handles connection to backend and sends events born in browser to backend.
- * Only sends customer events to backend and then application receives app state with redux update!
- */
-const SocketController = {};
-
-SocketController.login = (customerData) => new Promise((resolve) => {
-  console.log("TCL: SocketController.login -> customerData", customerData)
-  // TODO some firebase auth or smt
-  setTimeout(() => {
-    if (customerData.email === 'test@gmail.com') {
-      resolve(true);
-    } else {
-      resolve(false);
-    }
-  }, 1500);
+SocketConnector.login = (customerData) => new Promise((resolve) => {
+  socket.emit('CUSTOMER_LOGIN_TRY', customerData, (response) => {
+    resolve(response);
+  });
 });
 
-export { SocketController };
+export { SocketConnector };
 
 // the following are functions that our client side uses
 // to emit actions to everyone connected to our web socket
@@ -155,5 +149,3 @@ export const getStats = name => socket.emit('GET_STATS', name);
 export const sendMessage = message => socket.emit('SEND_MESSAGE', message);
 
 export const getSprites = () => socket.emit('GET_SPRITES');
-
-export default configureSocket;

@@ -4,19 +4,12 @@ export function startscreen(
     playersReady: -1,
     playerName: '',
     loadedUnitJson: false,
-    connected: false,
+    isConnected: false,
     connectedPlayers: 0
   },
   action
 ) {
   switch (action.type) {
-    case 'WAITINGROOM_STATUS': {
-      return {
-        ...state,
-        playersReady: action.playersReady,
-        connectedPlayers: action.connectedPlayers
-      };
-    }
     case 'TOGGLE_READY':
       return {
         ...state,
@@ -32,7 +25,7 @@ export function startscreen(
     case 'SET_CONNECTED': {
       return {
         ...state,
-        connected: action.connected
+        isConnected: action.isConnected
       };
     }
     default:

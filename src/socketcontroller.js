@@ -13,7 +13,6 @@ const BoardController = require('./controllers/board');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');
-const gameConstantsJS = require('./game_constants');
 const f = require('./f');
 
 const ConnectedPlayers = require('./models/ConnectedPlayers');
@@ -69,18 +68,10 @@ function SocketController(socket, io) {
     socket.join('WAITING_ROOM'); // place new customers to waiting room
   };
 
-  const waitingRoomUpdateStatus = () => {
-    const status = connectedPlayers.getWaitingRoomStatus();
-    io.to('WAITING_ROOM').emit('WAITINGROOM_STATUS', status);
-  };
-
   socket.on('ON_CONNECTION', async () => {
     console.log('@ON_CONNECTION', socket.id);
     connectedPlayers.set(socket.id, new Customer(socket.id));
-
     // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
-    // New customer was added, so game is not ready, need to update ready status
-    waitingRoomUpdateStatus();
   });
 
   socket.on('disconnect', () => {
@@ -105,17 +96,30 @@ function SocketController(socket, io) {
       return sessionsStore.destroy(sessionID);
     }
 
-    return waitingRoomUpdateStatus();
+    return;
+  });
+
+  socket.on('CUSTOMER_LOGIN_TRY', async (customerData, callback) => {
+    const { email, password } = customerData;
+    // TODO auth, check email/pasw for current user, load him from database.
+    if (email && password && email !== 'false@gmail.com') {
+      connectedPlayers.setIn(socket.id, ['isLoggedIn', true]);
+      io.to(socket.id).emit('CUSTOMER_LOGIN_SUCCESS', {
+        email
+      });
+
+      return callback(true);
+    }
+
+    return callback(false);
   });
 
   socket.on('READY', () => {
     connectedPlayers.setIn(socket.id, ['isReady', true]);
-    waitingRoomUpdateStatus();
   });
 
   socket.on('UNREADY', () => {
     connectedPlayers.setIn(socket.id, ['isReady', false]);
-    waitingRoomUpdateStatus();
   });
 
   socket.on('START_GAME', async () => {

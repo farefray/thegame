@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Schema, Form, Button, FormGroup, ControlLabel, ButtonToolbar, FormControl } from 'rsuite';
-import { SocketController } from '../../socket';
+import { SocketConnector } from '../../socketConnector';
 
 const { StringType } = Schema.Types;
 
@@ -35,7 +35,7 @@ class LoginForm extends Component {
     // TODO: some loader for form
     const isFormValid = this.form.check();
     if (isFormValid) {
-      SocketController.login(customerData).then((result) => {
+      SocketConnector.login(customerData).then((result) => {
         console.log("TCL: LoginForm -> handleSignIn -> result", result)
         if (!result) {
           this.setState({

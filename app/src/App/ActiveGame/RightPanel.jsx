@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ShopPawn from './RightPanel/ShopPawn';
 import { refreshShopEvent, buyExpEvent, toggleLockEvent } from '../../events';
-import { sendMessage } from '../../socket';
+import { sendMessage } from '../../socketConnector';
 import { getImage } from '../../images.js';
 import { isUndefined } from '../../f';
 

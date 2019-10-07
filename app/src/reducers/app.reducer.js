@@ -118,15 +118,6 @@ export function app(
         ...action.newState.app
       };
     }
-    case 'WAITINGROOM_STATUS': {
-      return {
-        ...state,
-        connectedPlayers: action.connectedPlayers,
-        allReady: action.allReady,
-        gameIsLive: false,
-        music: getBackgroundAudio('mainMenu')
-      };
-    }
     case 'UPDATED_STATE':
       // Update state with incoming data from server
       state = {

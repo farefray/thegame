@@ -12,7 +12,7 @@ const rewiredMap = () => config => {
 const config = override(
   removeModuleScopePlugin(),
   addLessLoader({
-    modifyVars: require('./src/UI/ui-overryides.js'),
+    modifyVars: require('./src/UI/ui-overrides.js'),
     async: true,
     env: "development",
     useFileCache: true,

@@ -1,5 +1,7 @@
 function Customer(socketID) {
   this.socketID = socketID;
+  this.isLoggedIn = false;
+
   this.isReady = false; // start screen ready
   this.sessionID = null; // session after game start
 }

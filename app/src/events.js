@@ -1,4 +1,4 @@
-import { toggleLock, buyUnit, refreshShop, buyExp, placePiece, withdrawPiece, sellPiece, getStats } from './socket';
+import { toggleLock, buyUnit, refreshShop, buyExp, placePiece, withdrawPiece, sellPiece, getStats } from './socketConnector';
 import { updateMessage } from './f';
 import { getSoundEffect } from './audio.js';
 

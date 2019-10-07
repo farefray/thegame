@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
 
-import { placePiece } from '../../../socket';
+import { placePiece } from '../../../socketConnector';
 
 import ItemTypes from './ItemTypes';
 

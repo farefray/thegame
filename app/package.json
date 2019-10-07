@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "cross-env BROWSER=none react-app-rewired start",
-    "startboth": "concurrently \"react-app-rewired start\" \"node ../src/index.js\"",
+    "dev": "cross-env BROWSER=none react-app-rewired start",
+    "startboth": "concurrently \"react-app-rewired start\" \"babel-node ../src/index.js\"",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
