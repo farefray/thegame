@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Divider, FlexboxGrid, Button, ButtonToolbar } from 'rsuite';
-import FlexboxGridItem from 'rsuite/lib/FlexboxGrid/FlexboxGridItem';
+import { SocketConnector } from '../../socketConnector';
 
 class Lobby extends Component {
   constructor(props) {
@@ -9,7 +9,9 @@ class Lobby extends Component {
     this.state = {};
   }
 
-  handlePlayVsAI() {}
+  handlePlayVsAI() {
+    SocketConnector.startRoundVsAI();
+  }
 
   handlePlayVsHuman() {}
   

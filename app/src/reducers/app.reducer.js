@@ -150,7 +150,6 @@ export function app(
         visiting: action.index,
         gameIsLive: true,
         connectedPlayers: -1,
-        allReady: false,
         message: 'default',
         messageMode: '',
         help: true,

@@ -120,14 +120,14 @@ SocketConnector.login = (customerData) => new Promise((resolve) => {
   });
 });
 
+SocketConnector.startRoundVsAI = () => {
+  socket.emit('START_AI');
+}
+
 export { SocketConnector };
 
 // the following are functions that our client side uses
 // to emit actions to everyone connected to our web socket
-export const ready = () => socket.emit('READY');
-
-export const unready = () => socket.emit('UNREADY');
-
 export const startGame = () => socket.emit('START_GAME');
 
 export const toggleLock = state => socket.emit('TOGGLE_LOCK', state);
