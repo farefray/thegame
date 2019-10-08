@@ -1,61 +1,36 @@
 /** Those styles supposed to be reworked when it comes to stylying for ActiveGame component **/
-.gameDiv {
-  margin: 20px;
-}
-.flex {
-  display: flex;
-}
-.wholeBody {
-  margin-top: 10px;
-}
-
-.board-container {
-  position: relative;
-
-  &.rpgui-container.framed {
-    border-image-width: 10px;
-    border-width: 10px;
-    padding: 0;
-    height: 100%;
-  }
-
-  .board {
-    position: relative;
+.activegame {
+  &-header {
+    min-height: 4em;
+    display: flex;
     flex-direction: column;
-    .board-row {
-      height: 64px;
-      flex-direction: row;
-      display: flex;
+
+    .timer {
+      align-self: center;
+      background: #21180e;
+      border-radius: 1em;
+      width: 10em;
+      text-align: center;
+      margin: 1em auto;
+      min-height: 3em;
+
+      &-value {
+        font-size: 2em;
+        text-shadow: black 3px 3px;
+      }
+
+      &-active {
+        background: url('../res/misc/sandglass.png');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
     }
   }
 }
 
-.cell {
-  border-right: 1px solid #00000030;
-  border-bottom: 1px solid #00000030;
-  background-color: rgba(0, 0, 0, 0);
-  width: 64px;
-  height: 64px;
-  position: relative;
-  background: url(../res/terrain/grass.gif) repeat;
+@import './gameboard.less';
 
-  &.isHand {
-    background: url(../res/terrain/hand.png) repeat;
-    background-repeat: no-repeat;
-    background-position: 100% 100%;
-  }
-
-  &.highlighted {
-    background: rgba(0, 255, 21, 0.562);
-    &__red {
-      background: rgba(255, 0, 0, 0.473);
-    }
-  }
-}
-
-.cell .markedUnit {
-  z-index: 30;
-}
 
 .PawnImageDiv {
   height: 90px;
@@ -80,7 +55,7 @@
   z-index: 2;
 }
 
-.infoImg:hover + .infoImgBg {
+.infoImg:hover+.infoImgBg {
   background: rgb(38, 207, 38);
 }
 

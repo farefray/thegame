@@ -11,11 +11,7 @@ function InternalTimer({ value, onTick }) {
     };
   }, [value, onTick]);
 
-  return (
-    <div className="timerDiv">
-      <div className="text_shadow timerText">{value}</div>
-    </div>
-  );
+  return <div className="timer-value">{value}</div>;
 }
 
 function Timer({ value }) {
@@ -36,7 +32,7 @@ function Timer({ value }) {
     [counter]
   );
 
-  return (counter ? MemoizedTimer : '');
+  return <div className="timer">{(counter && MemoizedTimer) || <div class="timer-active"></div>}</div>;
 }
 
 export default Timer;

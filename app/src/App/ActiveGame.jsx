@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useReducer } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import _ from 'lodash';
+import { Container, Header, Content, Footer, Sidebar } from 'rsuite';
 
 import Position from '../objects/Position';
 import Timer from './ActiveGame/Timer.jsx';
@@ -30,6 +31,7 @@ function unitReducer(unitComponents, action) {
   }
 }
 
+// TODO: this one requires some refactoring
 function ActiveGame() {
   useEffect(() => {
     //console.log('ACTIVE GAME MOUNT');
@@ -160,22 +162,26 @@ function ActiveGame() {
   }, [gameBoard, currentActionIndex]); // eslint-disable-line
 
   return (
-    <div className="gameDiv" tabIndex="0">
-      {' '}
-      {/* <TopBar {...this.props} /> */}{' '}
-      <div className="flex wholeBody">
-        {' '}
-        {/* <LeftBar {...this.props} /> */} <Timer value={appState.countdown} />
-        <StateProvider
-          initialState={{
-            ...appState
-          }}
-        >
-          <GameBoard board={gameBoard} units={units} onLifecycle={dispatchUnitLifecycle} />{' '}
-        </StateProvider>{' '}
-        {/* <GameBoardBottom {...this.props} /> */} <RightPanel {...appState} />{' '}
-      </div>{' '}
-    </div>
+    <Container className="activegame">
+      <Header className="activegame-header">
+        <Timer value={appState.countdown} />
+      </Header>
+      <Container>
+        <Content className="gameboard">
+          <StateProvider
+            initialState={{
+              ...appState
+            }}
+          >
+            <GameBoard board={gameBoard} units={units} onLifecycle={dispatchUnitLifecycle} />{' '}
+          </StateProvider>
+        </Content>
+        <Sidebar>
+          <RightPanel {...appState} />
+        </Sidebar>
+      </Container>
+      <Footer></Footer>
+    </Container>
   );
 }
 

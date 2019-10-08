@@ -1,0 +1,49 @@
+.board-container {
+    position: relative;
+
+    &.rpgui-container.framed {
+        border-image-width: 10px;
+        border-width: 10px;
+        padding: 0;
+        height: 100%;
+    }
+
+    .board {
+        position: relative;
+        flex-direction: column;
+
+        .board-row {
+            height: 64px;
+            flex-direction: row;
+            display: flex;
+        }
+    }
+}
+
+.cell {
+    border-right: 1px solid #00000030;
+    border-bottom: 1px solid #00000030;
+    background-color: rgba(0, 0, 0, 0);
+    width: 64px;
+    height: 64px;
+    position: relative;
+    background: url(../res/terrain/grass.gif) repeat;
+
+    &.isHand {
+        background: url(../res/terrain/hand.png) repeat;
+        background-repeat: no-repeat;
+        background-position: 100% 100%;
+    }
+
+    &.highlighted {
+        background: rgba(0, 255, 21, 0.562);
+
+        &__red {
+            background: rgba(255, 0, 0, 0.473);
+        }
+    }
+}
+
+.cell .markedUnit {
+    z-index: 30;
+}
