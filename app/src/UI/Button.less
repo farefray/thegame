@@ -1,0 +1,34 @@
+.rs-btn {
+  padding: 20px 22px 24px 22px;
+  background-color: transparent !important;
+  color: @B000;
+
+  &-primary, &-primary:active {
+    background: url('./res/button/common_btn_color_green.png') no-repeat center center;
+    background-size: 100% 70%;
+    transition: all .5s;
+  }
+
+  &-default, &-default:active {
+    background: url('./res/button/common_btn_color_brown.png') no-repeat center center;
+    background-size: 100% 70%;
+    transition: all .5s;
+  }
+
+  &:not(.rs-btn-disabled):hover {
+    background-color: inherit;
+    transform: scale(1.05);
+    color: @B050;
+    font-size: @font-size-base;
+  }
+
+  &:active {
+    background-color: inherit;
+    transform: scale(1);
+  }
+
+  &-link {
+    padding: 8px 14px;
+  }
+
+}

@@ -51,11 +51,6 @@ class ShopPawn extends Component {
             )}
             {
               <span className={this.props.newProps.gold < this.props.ShopPawn.cost ? 'redFont' : ''}>
-                {
-                  <span>
-                    <img className="goldImageShop" style={{ paddingLeft: '0px', marginLeft: '0px' }} src={getImage('goldCoin')} alt="goldCoin" />
-                  </span>
-                }
                 <span className="shopCostText">{/*'$' + */ this.props.ShopPawn.cost}</span>
               </span>
             }

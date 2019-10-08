@@ -3,7 +3,9 @@
  */
 import BattleController from './controllers/battle';
 
-const { fromJS } = require('immutable');
+const {
+  fromJS
+} = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
@@ -13,7 +15,6 @@ const BoardController = require('./controllers/board');
 const sessionJS = require('./session');
 const pawns = require('./pawns');
 const abilitiesJS = require('./abilities');
-const gameConstantsJS = require('./game_constants');
 const f = require('./f');
 
 const ConnectedPlayers = require('./models/ConnectedPlayers');
@@ -69,18 +70,10 @@ function SocketController(socket, io) {
     socket.join('WAITING_ROOM'); // place new customers to waiting room
   };
 
-  const waitingRoomUpdateStatus = () => {
-    const status = connectedPlayers.getWaitingRoomStatus();
-    io.to('WAITING_ROOM').emit('WAITINGROOM_STATUS', status);
-  };
-
   socket.on('ON_CONNECTION', async () => {
     console.log('@ON_CONNECTION', socket.id);
     connectedPlayers.set(socket.id, new Customer(socket.id));
-
     // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
-    // New customer was added, so game is not ready, need to update ready status
-    waitingRoomUpdateStatus();
   });
 
   socket.on('disconnect', () => {
@@ -89,6 +82,8 @@ function SocketController(socket, io) {
     if (customer) {
       // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
       connectedPlayers.disconnect(socket.id);
+    } else {
+      /// Important TODO, make handle for case when no customer(Cannot read properpty 'get' of null)
     }
 
     // update rooms
@@ -103,69 +98,68 @@ function SocketController(socket, io) {
       return sessionsStore.destroy(sessionID);
     }
 
-    return waitingRoomUpdateStatus();
+    return;
   });
 
-  socket.on('READY', () => {
-    connectedPlayers.setIn(socket.id, ['isReady', true]);
-    waitingRoomUpdateStatus();
-  });
-
-  socket.on('UNREADY', () => {
-    connectedPlayers.setIn(socket.id, ['isReady', false]);
-    waitingRoomUpdateStatus();
-  });
-
-  socket.on('START_GAME', async () => {
-    // TODO: check if all customers are ready
-    io.in('WAITING_ROOM').clients(async (err, clients) => {
-      console.log('setting session for waiting room', clients);
-
-      if (err) {
-        throw new Error(err);
-      }
-
-      const state = await GameController.initialize(clients); // deep TODO, mostly for shop and so on
-      const session = new Session(clients, state);
-      const sessionID = session.get('ID');
-      sessionsStore.store(session);
-
-      console.log('Starting game!');
-      state.prepareForSending();
-
-      clients.forEach(socketID => {
-        connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
-        io.to(socketID).emit('ADD_PLAYER', socketID); // ??
-
-        // TODO fixme
-        socket.join(sessionID, () => {
-          const rooms = Object.keys(socket.rooms);
-          console.log(rooms); // [ <socket.id>, 'room 237' ]
-          io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
-        });
+  socket.on('CUSTOMER_LOGIN_TRY', async (customerData, callback) => {
+    const {
+      email,
+      password
+    } = customerData;
+    // TODO auth, check email/pasw for current user, load him from database.
+    // false@gmail.com is used to test failed login
+    if (email && password && email !== 'false@gmail.com') {
+      connectedPlayers.setIn(socket.id, ['isLoggedIn', true]);
+      io.to(socket.id).emit('CUSTOMER_LOGIN_SUCCESS', {
+        email
       });
 
-      // Schedule battle start
-      const scueduleNextRound = () =>
-        setTimeout(async () => {
-          // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
-          const preBattleSession = sessionsStore.get(sessionID);
+      return callback(true);
+    }
 
-          if (!preBattleSession) {
-            // no more session exists, f.e. players has disconnected
-            // todo maybe remove session from store if exist? state? memory leak?
-            return;
-          }
+    return callback(false);
+  });
 
-          const preBattleState = preBattleSession.get('state');
-          await BoardController.preBattleCheck(preBattleState);
-          const battleRoundResult = await BattleController.setup(preBattleState);
-          clients.forEach(socketID => {
-            io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.battles[socketID].actionStack, battleRoundResult.battles[socketID].startBoard, battleRoundResult.battles[socketID].winner);
-          });
+  const initializeGameSessions = async (clients) => {
+    const state = await GameController.initialize(clients); // deep TODO, mostly for shop and so on
+    const session = new Session(clients, state);
+    const sessionID = session.get('ID');
+    sessionsStore.store(session);
+    state.prepareForSending();
 
-          // We can actually count battle finish state here already and only schedule update
-          /*
+    clients.forEach(socketID => {
+      connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
+      io.to(socketID).emit('ADD_PLAYER', socketID); // ??
+
+      // TODO fixme
+      socket.join(sessionID, () => {
+        const rooms = Object.keys(socket.rooms);
+        console.log(rooms); // [ <socket.id>, 'room 237' ]
+        io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
+      });
+    });
+
+    // Schedule battle start
+    const scheduleNextRound = () =>
+      setTimeout(async () => {
+        // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
+        const preBattleSession = sessionsStore.get(sessionID);
+
+        if (!preBattleSession) {
+          // no more session exists, f.e. players has disconnected
+          // todo maybe remove session from store if exist? state? memory leak?
+          return;
+        }
+
+        const preBattleState = preBattleSession.get('state');
+        await BoardController.preBattleCheck(preBattleState);
+        const battleRoundResult = await BattleController.setup(preBattleState);
+        clients.forEach(socketID => {
+          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.battles[socketID].actionStack, battleRoundResult.battles[socketID].startBoard, battleRoundResult.battles[socketID].winner);
+        });
+
+        // We can actually count battle finish state here already and only schedule update
+        /*
           Update state with:
           a - round change, gold reward winners,
           b - damage for losers
@@ -173,39 +167,56 @@ function SocketController(socket, io) {
           d - update players
         */
 
-          preBattleState.endRound(); // a
-          preBattleState.damagePlayers(battleRoundResult.battles); // b
+        preBattleState.endRound(); // a
+        preBattleState.damagePlayers(battleRoundResult.battles); // b
 
-          // Schedule all this to happen after last battle finished on FE
-          const EXTRA_TIME = 25000;
-          setTimeout(async () => {
-            // TODO Future: handle player dead time, to properly assign placing if multiple players are dead
-            clients.forEach(socketID => {
-              const player = preBattleState.getIn(['players', socketID]);
+        // Schedule all this to happen after last battle finished on FE
+        const EXTRA_TIME = 25000;
+        setTimeout(async () => {
+          // TODO Future: handle player dead time, to properly assign placing if multiple players are dead
+          clients.forEach(socketID => {
+            const player = preBattleState.getIn(['players', socketID]);
 
-              if (player.isDead()) {
-                const amountOfPlayers = preBattleState.get('amountOfPlayers');
-                io.to(socketID).emit('DEAD_PLAYER', socketID, amountOfPlayers + 1);
-                preBattleState.dropPlayer(socketID);
-              } else {
-                io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
-                io.to(socketID).emit('SET_ONGOING_BATTLE', false, STARTBATTLE_TIMER);
-              }
+            if (player.isDead()) {
+              const amountOfPlayers = preBattleState.get('amountOfPlayers');
+              io.to(socketID).emit('DEAD_PLAYER', socketID, amountOfPlayers + 1);
+              preBattleState.dropPlayer(socketID);
+            } else {
+              io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
+              io.to(socketID).emit('SET_ONGOING_BATTLE', false, STARTBATTLE_TIMER);
+            }
 
-              if (preBattleState.get('amountOfPlayers') === 0) {
-                // game end
-                io.to(socketID).emit('END_GAME', socketID);
-              } else {
-                sessionsStore.store(preBattleSession);
-                scueduleNextRound();
-              }
-            });
-          }, battleRoundResult.battleTime + EXTRA_TIME); // fixme somehow it ends quite faster than game ends on FE. Maybe battleTime is wrong?
+            if (preBattleState.get('amountOfPlayers') === 0) {
+              // game end
+              io.to(socketID).emit('END_GAME', socketID);
+            } else {
+              sessionsStore.store(preBattleSession);
+              scheduleNextRound();
+            }
+          });
+        }, battleRoundResult.battleTime + EXTRA_TIME); // fixme somehow it ends quite faster than game ends on FE. Maybe battleTime is wrong?
 
-          // round ended, next round must be scheduled?
-        }, STARTBATTLE_TIMER);
+        // round ended, next round must be scheduled?
+      }, STARTBATTLE_TIMER);
 
-      scueduleNextRound();
+    scheduleNextRound();
+  }
+
+  socket.on('START_AI', async () => {
+    const clients = [socket.id];
+    await initializeGameSessions(clients);
+  });
+
+  socket.on('START_GAME', async () => {
+    // TODO multiplayer
+    io.in('WAITING_ROOM').clients(async (err, clients) => {
+      console.log('setting session for waiting room', clients);
+
+      if (err) {
+        throw new Error(err);
+      }
+
+      await initializeGameSessions(clients);
     });
   });
 

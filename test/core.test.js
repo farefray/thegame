@@ -46,19 +46,6 @@ describe('Core Modules', () => {
       savedCustomer.socketID.should.equal(MOCK_SOCKETID_3);
     });
 
-    it('Can update ready status', () => {
-      const status = connectedPlayers.getWaitingRoomStatus();
-      status.allReady.should.equal(false);
-      status.totalCustomers.should.equal(MOCK_CLIENTS.length);
-    });
-
-    it('Customer 1 can toggle ready', () => {
-      connectedPlayers.setIn(MOCK_SOCKETID_1, ['isReady', true]);
-      const status = connectedPlayers.getWaitingRoomStatus();
-      status.allReady.should.equal(false);
-      status.totalCustomers.should.equal(MOCK_CLIENTS.length);
-    });
-
     it('Can retrieve customer 1 sessionID', () => {
       const sessionID = connectedPlayers.getSessionID(MOCK_SOCKETID_1);
       should(sessionID).null();
@@ -89,14 +76,6 @@ describe('Core Modules', () => {
       savedSession.ID.should.equal(sessID);
     });
 
-    it('Customer 2 can disconnect', () => {
-      connectedPlayers.disconnect(MOCK_SOCKETID_3);
-      session.disconnect(MOCK_SOCKETID_3);
-      const status = connectedPlayers.getWaitingRoomStatus();
-      status.allReady.should.equal(false);
-      status.totalCustomers.should.equal(MOCK_CLIENTS.length - 1);
-      session.clients.length.should.be.equal(MOCK_CLIENTS.length - 1);
-    });
   });
 
   describe('Game Mechanics', () => {

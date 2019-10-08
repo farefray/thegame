@@ -1,0 +1,41 @@
+// Not using whole rsuite, as components will be hightly customized and most of default ones are barely used
+// Every component must  import these styles, it is support basic styles for rsuite.
+// Include custom variables for our app instead of basic
+
+@import '~rsuite/lib/styles/themes/dark/core';
+
+// Custom core styles which we can replace
+@import './custom-core.less';
+
+// Including components from rsuite which we are using AND customization files for those
+@import '~rsuite/lib/Button/styles/themes/dark';
+@import 'Button.less';
+@import '~rsuite/lib/ButtonToolbar/styles/themes/dark';
+@import '~rsuite/lib/Container/styles/themes/dark';
+@import '~rsuite/lib/Content/styles/themes/dark';
+@import '~rsuite/lib/ControlLabel/styles/themes/dark';
+@import '~rsuite/lib/Divider/styles/themes/dark';
+@import '~rsuite/lib/Footer/styles/themes/dark';
+@import '~rsuite/lib/FlexboxGrid/styles/themes/dark';
+@import 'FlexboxGrid.less';
+@import '~rsuite/lib/Form/styles/themes/dark';
+@import '~rsuite/lib/FormGroup/styles/themes/dark';
+@import '~rsuite/lib/FormControl/styles/themes/dark';
+@import '~rsuite/lib/Header/styles/themes/dark';
+@import '~rsuite/lib/Input/styles/themes/dark';
+@import 'Input.less';
+@import '~rsuite/lib/InputGroup/styles/themes/dark';
+@import '~rsuite/lib/InputNumber/styles/themes/dark';
+@import '~rsuite/lib/Navbar/styles/themes/dark';
+@import '~rsuite/lib/Panel/styles/themes/dark';
+@import 'Panel.less';
+@import '~rsuite/lib/Loader/styles/themes/dark';
+
+// Theme with final variables values
+@import 'theme.less';
+
+// Include per page styles
+@import './pages/startscreen.less';
+@import './pages/lobby.less';
+
+@import './pages/activegame.less';

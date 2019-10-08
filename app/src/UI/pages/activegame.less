@@ -1,0 +1,117 @@
+/** Those styles supposed to be reworked when it comes to stylying for ActiveGame component **/
+.gameDiv {
+  margin: 20px;
+}
+.flex {
+  display: flex;
+}
+.wholeBody {
+  margin-top: 10px;
+}
+
+.board-container {
+  position: relative;
+
+  &.rpgui-container.framed {
+    border-image-width: 10px;
+    border-width: 10px;
+    padding: 0;
+    height: 100%;
+  }
+
+  .board {
+    position: relative;
+    flex-direction: column;
+    .board-row {
+      height: 64px;
+      flex-direction: row;
+      display: flex;
+    }
+  }
+}
+
+.cell {
+  border-right: 1px solid #00000030;
+  border-bottom: 1px solid #00000030;
+  background-color: rgba(0, 0, 0, 0);
+  width: 64px;
+  height: 64px;
+  position: relative;
+  background: url(../res/terrain/grass.gif) repeat;
+
+  &.isHand {
+    background: url(../res/terrain/hand.png) repeat;
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+  }
+
+  &.highlighted {
+    background: rgba(0, 255, 21, 0.562);
+    &__red {
+      background: rgba(255, 0, 0, 0.473);
+    }
+  }
+}
+
+.cell .markedUnit {
+  z-index: 30;
+}
+
+.PawnImageDiv {
+  height: 90px;
+  /*
+  border-radius: 50px;
+  border: 1px black solid; 
+  */
+}
+
+.pawnInfo {
+  position: absolute;
+  margin-top: 10px;
+  margin-left: 15px;
+}
+
+.infoImg {
+  margin-top: 1px;
+  margin-left: 1px;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  z-index: 2;
+}
+
+.infoImg:hover + .infoImgBg {
+  background: rgb(38, 207, 38);
+}
+
+.infoImgBg {
+  margin: auto;
+  margin-top: 2px;
+  margin-left: 2px;
+  width: 23px;
+  height: 23px;
+  background: white;
+  position: absolute;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.pawnImg {
+  display: block;
+  /*
+  margin-top: 0px;
+  margin-left: 0px;
+  */
+  margin: auto;
+  position: absolute;
+  z-index: 99;
+}
+
+.shop-entity {
+  margin: 6px;
+  padding-bottom: 5px;
+  width: 128px;
+  height: 128px;
+  z-index: 1;
+  position: relative;
+}

@@ -1,8 +1,25 @@
-// const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 /**
  * Used for react cosmos, in order to include backend files from directories of backend
+ * Also used for frontend to customize webpack config and use 'rsuite'
  */
-module.exports = function override(config, env) {
-  config.resolve.plugins = config.resolve.plugins.filter(plugin => (plugin.constructor.name !== 'ModuleScopePlugin'));
+const { override, addLessLoader, removeModuleScopePlugin } = require('customize-cra');
+
+const rewiredMap = () => config => {
+  config.devtool = config.mode === 'development' ? 'cheap-module-source-map' : false;
   return config;
 };
+
+const config = override(
+  removeModuleScopePlugin(),
+  addLessLoader({
+    modifyVars: require('./src/UI/ui-overrides.js'),
+    async: true,
+    env: "development",
+    useFileCache: true,
+    sourceMap: {},
+    javascriptEnabled: true // required for rsuite
+  }),
+  rewiredMap()
+);
+
+module.exports = config;

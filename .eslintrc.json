@@ -5,6 +5,7 @@
     "no-plusplus": "off",
     "camelcase": "off",
     "no-unused-vars": "warn",
+    "no-unused-concat": "off",
     "no-use-before-define": "warn",
     "no-nested-ternary": "off",
     "prefer-destructuring": "off",

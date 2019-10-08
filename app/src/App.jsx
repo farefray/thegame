@@ -1,24 +1,22 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import './css/grid.css';
-import './App.scss';
-import './animations.css';
+// import 'rsuite/lib/styles/themes/dark/index.less'; //The default style file.
+import './UI/ui.less';
+
+import Layout from './Layout';
 
 import StartScreen from './App/StartScreen.jsx';
 import ActiveGame from './App/ActiveGame.jsx';
 
 const App = () => {
-  useEffect(() => {
-    document.title = `Pixel Auto Chess`;
-  });
-
   const gameIsLive = useSelector(state => state.app.gameIsLive);
-  if (!gameIsLive) {
-    return <StartScreen />;
-  }
-
-  return <ActiveGame />;
+  const activeApp = !gameIsLive ? <StartScreen /> : <ActiveGame />;
+  return (
+    <Layout>
+        {activeApp}
+    </Layout>
+  );
 };
 
 export default connect()(App);

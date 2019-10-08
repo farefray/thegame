@@ -28,26 +28,6 @@ ConnectedPlayers.prototype.set = function(socketID, customer) {
   return this.storage[socketID];
 };
 
-// TODO: this can be executed only for waiting room customers!
-ConnectedPlayers.prototype.getWaitingRoomStatus = function() {
-  let readyCustomers = 0;
-  let notReadyCustomers = 0;
-  Object.keys(this.storage).forEach(socketID => {
-    const customer = this.get(socketID);
-    if (customer.isReady === true) {
-      readyCustomers++;
-    } else if (customer.isReady === false) {
-      notReadyCustomers++;
-    }
-  });
-
-  return {
-    allReady: notReadyCustomers === 0 && readyCustomers > 0,
-    readyCustomers,
-    totalCustomers: readyCustomers + notReadyCustomers
-  };
-};
-
 ConnectedPlayers.prototype.disconnect = function(socketID) {
   if (this.get(socketID)) {
     delete this.storage[socketID];

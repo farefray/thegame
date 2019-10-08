@@ -20,23 +20,6 @@ const getNewSoundEffects = (soundEffects, newSoundEffect) => {
       return updateSoundArray(soundEffects, i, newSoundEffect);
     }
   }
-  /*
-  // New - all playing at the same time - implementation
-  for(let i = counter; i < soundEffects.length; i++){
-    if(soundEffects[i] !== newSoundEffect){
-      console.log('@NewSoundEffect', i, newSoundEffect, 'x', soundEffects[i]);
-      increaseCounter(soundEffects);
-      return updateSoundArray(soundEffects, i, newSoundEffect);
-    }
-  }
-  console.log('@sound over 0')
-  for(let i = 0; i < counter; i++){
-    if(soundEffects[i] !== newSoundEffect){
-      console.log('@NewSoundEffect', i, newSoundEffect, 'x', soundEffects[i]);
-      increaseCounter(soundEffects);
-      return updateSoundArray(soundEffects, i, newSoundEffect);
-    }
-  }*/
   return soundEffects;
 };
 
@@ -50,16 +33,6 @@ const clearSoundEffect = (soundEffects, soundEffect) => {
   }
   return newSoundEffects;
 };
-
-/*const sumObj = obj => {
-  let sum = 0;
-  for (let el in obj) {
-    if (obj.hasOwnProperty(el)) {
-      sum += parseInt(obj[el], 10);
-    }
-  }
-  return sum;
-};*/
 
 export function app(
   state = {
@@ -117,8 +90,7 @@ export function app(
     dmgBoardTotalDmg: -1,
     markedBuff: '',
     displayMarkedBuff: false,
-    prevDmgBoard: {},
-    loadingCounter: 1
+    prevDmgBoard: {}
   },
   action
 ) {
@@ -144,15 +116,6 @@ export function app(
       console.log(action);
       return {
         ...action.newState.app
-      };
-    }
-    case 'WAITINGROOM_STATUS': {
-      return {
-        ...state,
-        connectedPlayers: action.connectedPlayers,
-        allReady: action.allReady,
-        gameIsLive: false,
-        music: getBackgroundAudio('mainMenu')
       };
     }
     case 'UPDATED_STATE':
@@ -187,7 +150,6 @@ export function app(
         visiting: action.index,
         gameIsLive: true,
         connectedPlayers: -1,
-        allReady: false,
         message: 'default',
         messageMode: '',
         help: true,
@@ -569,15 +531,6 @@ export function app(
         ...state,
         displayMarkedBuff: !state.displayMarkedBuff
       };
-      break;
-    }
-    case 'LOADING_STRING': {
-      if (!state.startscreen || !state.startscreen.connected) {
-        state = {
-          ...state,
-          loadingCounter: action.loadingCounter
-        };
-      }
       break;
     }
     default:
