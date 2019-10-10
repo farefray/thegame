@@ -1,4 +1,3 @@
-/** Those styles supposed to be reworked when it comes to stylying for ActiveGame component **/
 .activegame {
   &-header {
     min-height: 4em;
@@ -30,63 +29,4 @@
 }
 
 @import './gameboard.less';
-
-
-.PawnImageDiv {
-  height: 90px;
-  /*
-  border-radius: 50px;
-  border: 1px black solid; 
-  */
-}
-
-.pawnInfo {
-  position: absolute;
-  margin-top: 10px;
-  margin-left: 15px;
-}
-
-.infoImg {
-  margin-top: 1px;
-  margin-left: 1px;
-  width: 25px;
-  height: 25px;
-  position: absolute;
-  z-index: 2;
-}
-
-.infoImg:hover+.infoImgBg {
-  background: rgb(38, 207, 38);
-}
-
-.infoImgBg {
-  margin: auto;
-  margin-top: 2px;
-  margin-left: 2px;
-  width: 23px;
-  height: 23px;
-  background: white;
-  position: absolute;
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.pawnImg {
-  display: block;
-  /*
-  margin-top: 0px;
-  margin-left: 0px;
-  */
-  margin: auto;
-  position: absolute;
-  z-index: 99;
-}
-
-.shop-entity {
-  margin: 6px;
-  padding-bottom: 5px;
-  width: 128px;
-  height: 128px;
-  z-index: 1;
-  position: relative;
-}
+@import './rightsidebar.less';

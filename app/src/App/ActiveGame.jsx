@@ -8,7 +8,8 @@ import Timer from './ActiveGame/Timer.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
 import { StateProvider } from './ActiveGame/GameBoard.context.js';
 
-import RightPanel from './ActiveGame/RightPanel.jsx';
+import RightSidebar from './ActiveGame/RightSidebar.jsx';
+import LeftSidebar from './ActiveGame/LeftSidebar.jsx';
 
 const { ACTION } = require('../shared/constants');
 
@@ -167,6 +168,9 @@ function ActiveGame() {
         <Timer value={appState.countdown} />
       </Header>
       <Container>
+        <Sidebar>
+          <LeftSidebar />
+        </Sidebar>
         <Content className="gameboard">
           <StateProvider
             initialState={{
@@ -176,8 +180,8 @@ function ActiveGame() {
             <GameBoard board={gameBoard} units={units} onLifecycle={dispatchUnitLifecycle} />{' '}
           </StateProvider>
         </Content>
-        <Sidebar>
-          <RightPanel {...appState} />
+        <Sidebar width={520}>
+          <RightSidebar {...appState} />
         </Sidebar>
       </Container>
       <Footer></Footer>
