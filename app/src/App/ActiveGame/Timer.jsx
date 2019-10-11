@@ -32,7 +32,7 @@ function Timer({ value }) {
     [counter]
   );
 
-  return <div className="timer">{(counter && MemoizedTimer) || <div class="timer-active"></div>}</div>;
+  return <div className="timer">{(counter && MemoizedTimer) || <div className="timer-active"></div>}</div>;
 }
 
 export default Timer;

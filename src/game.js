@@ -52,7 +52,7 @@ GameController.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardJS.
 GameController.removeDeadPlayer = async (stateParam, playerIndex) => {
   // console.log('@removeDeadPlayer')
   let state = stateParam;
-  const filteredShop = state.getIn(['players', playerIndex, 'shop']).filter(piece => !f.isUndefined(piece));
+  const filteredShop = state.getIn(['players', playerIndex, 'shopUnits']).filter(piece => !f.isUndefined(piece));
   const shopUnits = fromJS(Array.from(filteredShop.map((value, key) => value.get('name')).values()));
   const board = state.getIn(['players', playerIndex, 'board']);
   let boardList = List([]);
@@ -108,7 +108,7 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
    * hand is not full
    * can afford
    */
-  const unit = player.shop[pieceIndex];
+  const unit = player.shopUnits[pieceIndex];
   if (!unit || Object.keys(player.hand) >= HAND_UNITS_LIMIT || player.gold < unit.cost) {
     return null;
   }
@@ -120,7 +120,7 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
    */
   const boardUnit = BoardJS.getBoardUnit(unit.name);
   await player.addToHand(boardUnit);
-  delete player.shop[pieceIndex];
+  delete player.shopUnits[pieceIndex];
   player.gold -= unit.cost;
 
   // ????

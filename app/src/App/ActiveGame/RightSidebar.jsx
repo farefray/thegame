@@ -9,7 +9,10 @@ import { isUndefined } from '../../f';
 class RightSidebar extends Component {
   constructor(props) {
     super(props);
-    this.state = { chatMessageInput: '' };
+
+    this.state = { 
+      shopUnits: props.shopUnits
+    };
   }
 
   createScoreboardPlayerEntry = (player, isDead) => {
@@ -226,11 +229,12 @@ class RightSidebar extends Component {
   }
 
   render() {
-    const pawns = this.props.myShop;
+    const { shopUnits:pawns } = this.state;
     return (
       <FlexboxGrid align="middle" justify="center" className="rightsidebar-flexbox">
-        <FlexboxGrid.Item>
-          {pawns && pawns.length && pawns.map((unit, index) => {
+        <FlexboxGrid.Item colspan={12}>
+          {Object.keys(pawns).map((index) => {
+            const unit = pawns[index];
             return <ShopPawn key={index} unit={unit} index={index} onPurchase={this.onPurchase} />;
           })}
         </FlexboxGrid.Item>

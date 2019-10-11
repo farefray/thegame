@@ -41,9 +41,7 @@ function ActiveGame() {
   const [activeBattle, setActiveBattle] = useState(false);
   const [units, setUnits] = useState([]);
   const [unitComponents, dispatchUnitLifecycle] = useReducer(unitReducer, {});
-  /*
-	index, players, player, myHand, myShop, myBoard, isActiveBattleGoing, isBattle, enemyIndex, roundType, actionStack, battleStartBoard, winner, dmgBoard, isDead, boardBuffs, unitJson, visiting, gold 
-*/
+
   const appState = useSelector(state => state.app, shallowEqual);
   const { isActiveBattleGoing, actionStack } = appState;
 

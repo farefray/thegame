@@ -47,7 +47,7 @@ export function app(
     players: {},
     myHand: {},
     myBoard: {},
-    myShop: {},
+    shopUnits: {},
     lock: false,
     level: -1,
     exp: -1,
@@ -133,7 +133,7 @@ export function app(
           ...state,
           myHand: action.newState.players[state.index].hand,
           myBoard: action.newState.players[state.index].board,
-          myShop: action.newState.players[state.index].shop,
+          shopUnits: action.newState.players[state.index].shopUnits,
           boardBuffs: action.newState.players[state.index].boardBuffs,
           level: action.newState.players[state.index].level,
           exp: action.newState.players[state.index].exp,
@@ -181,7 +181,7 @@ export function app(
         // TODO: Model upgrades on myBoard here
         state = {
           ...state,
-          myShop: action.player.shop,
+          shopUnits: action.player.shopUnits,
           level: action.player.level,
           exp: action.player.exp,
           expToReach: action.player.expToReach,
@@ -193,7 +193,7 @@ export function app(
           // Sync everything when dead
           state = {
             ...state,
-            myShop: action.player.shop,
+            shopUnits: action.player.shopUnits,
             level: action.player.level,
             exp: action.player.exp,
             expToReach: action.player.expToReach,

@@ -8,7 +8,7 @@ function Player(id) {
   this.exp = 0;
   this.expToReach = 1; // ?
   this.gold = 1;
-  this.shop = {};
+  this.shopUnits = {};
   this.hand = {};
   this.board = {};
   this.rivals = {}; // ?

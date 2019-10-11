@@ -82,7 +82,7 @@ ShopJS.refreshShop = async (state, playerIndex) => {
     discPieces = obj.discPieces;
     newUnitAmounts = obj.newUnitAmounts;
   }
-  const shop = state.getIn(['players', playerIndex, 'shop']);
+  const shop = state.getIn(['players', playerIndex, 'shopUnits']);
   if (Object.keys(shop).length) {
     // todo check this
     const shopList = [];
@@ -95,7 +95,7 @@ ShopJS.refreshShop = async (state, playerIndex) => {
     console.log('@refreshShop:', shopToList, '(', pieceStorage, '/', discPieces, ')');
     state.set('discardedPieces', discPieces.concat(shopToList));
   }
-  state.setIn(['players', playerIndex, 'shop'], newShop);
+  state.setIn(['players', playerIndex, 'shopUnits'], newShop);
   state.set('pieces', pieceStorage);
   return state;
 };

@@ -4,8 +4,8 @@ import Frame from '../../../Components/Frame';
 
 function ShopPawn({ unit, index, onPurchase }) {
   return (
-    <Frame header={unit.name} onClick={() => onPurchase(index)} bordered>
-      <UnitImage direction="3" isMoving="false" lookType={unit.lookType} />
+    <Frame header={unit.name} onClick={() => onPurchase(index)} type="default">
+      <UnitImage direction="3" isMoving="false" lookType={unit.lookType} extraClass="shop"/>
     </Frame>
   );
 }

@@ -1,8 +1,9 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import fallbackImage from '../../assets/monsters/default.png';
 
-export default function UnitImage({ lookType, direction, isMoving }) {
+export default function UnitImage({ lookType, direction, isMoving, extraClass = '' }) {
   // Load all images which will be required for this unit
   const look = isMoving ? 'animated' : 'idle';
   const [sprites, loadSprites] = React.useState({
@@ -41,7 +42,11 @@ export default function UnitImage({ lookType, direction, isMoving }) {
     setSprite(sprites[isMoving ? 'animated' : 'idle'][direction]);
   }, [direction, isMoving]);
 
+  const classes = classNames({
+    'unit-image': true
+  }, extraClass);
+
   return (
-    <img src={sprite} onError={() => setSprite(fallbackImage)} alt="Unit" style={{ position: 'absolute', bottom: 0, right: 0 }} />
+    <img src={sprite} onError={() => setSprite(fallbackImage)} alt="Unit" className={classes} style={{ bottom: 0, right: 0 }} />
   );
 }

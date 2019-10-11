@@ -3,15 +3,20 @@ import classNames from 'classnames';
 import _ from 'lodash';
 
 import prefix from '../UI/utils/prefix';
-import getUnhandledProps from '../UI/utils/getUnhandledProps';
-import defaultProps from '../UI/utils/defaultProps';
 
 class Frame extends React.Component {
+  static defaultProps = {
+    classPrefix: 'rs-frame',
+    type: 'default', // default || complete || lock
+    header: '',
+    className: ''
+  };
+
   constructor(props) {
     super(props);
   }
 
-  handleSelect = (event) => {
+  handleSelect = event => {
     event.persist();
     event.selected = true;
     const { onSelect } = this.props;
@@ -24,18 +29,16 @@ class Frame extends React.Component {
     }
   };
 
-  addPrefix = (name) => prefix(this.props.classPrefix)(name);
+  addPrefix = name => prefix(this.props.classPrefix)(name);
 
   renderBody() {
-    const { children, bodyFill } = this.props;
-    const classes = classNames(this.addPrefix('body'), {
-      [this.addPrefix('body-fill')]: bodyFill
-    });
+    const { children } = this.props;
+    const classes = classNames(this.addPrefix('body'));
 
-    return <div className={classes}>{children}</div>;
+    return <div className={classes}> {children} </div>;
   }
 
-  renderHeading(headerRole) {
+  renderHeading() {
     let { header } = this.props;
 
     if (!header) {
@@ -46,16 +49,13 @@ class Frame extends React.Component {
       header = header;
     } else {
       const className = classNames(this.addPrefix('title'), header.props.className);
-      header = React.cloneElement(header, { className });
+      header = React.cloneElement(header, {
+        className
+      });
     }
     return (
-      <div
-        role="rowheader"
-        className={this.addPrefix('heading')}
-        onClick={this.handleSelect}
-        tabIndex={-1}
-      >
-        {header}
+      <div role="rowheader" className={this.addPrefix('heading')} onClick={this.handleSelect} tabIndex={-1}>
+        {header}{' '}
       </div>
     );
   }
@@ -63,64 +63,34 @@ class Frame extends React.Component {
   /**
    *
    * @param {React.Node} header
-   * @param {string} [headerRole]
    * @returns
    * @memberof Frame
    */
-  renderAnchor(header, headerRole) {
-    const { id } = this.props;
-
-    return (
-      <a
-        href={`#${id || ''}`}
-        role={headerRole}
-      >
-        {header}
-      </a>
-    );
+  renderAnchor(header) {
+    return <a href={`#`}>{header} </a>;
   }
 
   render() {
-    const {
-      headerRole,
-      className,
-      bordered,
-      classPrefix,
-      id,
-      ...props
-    } = this.props;
-
-    const classes = classNames(classPrefix, this.addPrefix('default'), className, {
-      [this.addPrefix('bordered')]: bordered
-    });
-
-    const unhandled = getUnhandledProps(Frame, props);
+    const { className, type, classPrefix } = this.props;
+    const classes = classNames(classPrefix, this.addPrefix('default'), className, this.addPrefix(type));
 
     return (
-      <div {...unhandled} className={classes} onSelect={null} id={id}>
-        {this.renderHeading(headerRole)}
-        {this.renderBody()}
-    </div>
+      <div className={classes} onSelect={null}>
+        {' '}
+        {this.renderHeading()} {this.renderBody()}{' '}
+      </div>
     );
   }
 }
 
-export default defaultProps({
-  classPrefix: 'frame',
-  bordered: false,
-  bodyFill: true,
-  header: '',
-  id: null,
-  headerRole: '',
-  classPrefix: '',
-  children: null,
-
+/* Possible event
   onSelect: () => {},
   onEnter: () => {},
   onEntering: () => {},
   onEntered: () => {},
   onExit: () => {},
   onExiting: () => {},
-  onExited: () => {},
-  className: ''
-})(Frame);
+  onExited: () => {}
+*/
+
+export default Frame;
