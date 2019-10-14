@@ -94,7 +94,7 @@ const HAND_UNITS_LIMIT = 9;
 
 /**
  *
- *
+ * @todo errors handling
  * @param {*} state
  * @param {*} playerIndex
  * @param {*} pieceIndex
@@ -102,6 +102,14 @@ const HAND_UNITS_LIMIT = 9;
  */
 GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
   const player = state.getIn(['players', playerIndex]);
+  if (player.isDead()) {
+    return null;
+  }
+
+  console.log("TCL: GameController.purchasePawn -> state", state)
+  if (!state.isActiveBattleGoing && state.isBattle) {
+    return null;
+  }
   /**
    * Checks to be done:
    * unit exist in shop
@@ -112,6 +120,7 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
   if (!unit || Object.keys(player.hand) >= HAND_UNITS_LIMIT || player.gold < unit.cost) {
     return null;
   }
+
   /**
    * remove unit from shop
    * add unit to hand

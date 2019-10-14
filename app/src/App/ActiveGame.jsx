@@ -160,7 +160,6 @@ function ActiveGame() {
     }
   }, [gameBoard, currentActionIndex]); // eslint-disable-line
 
-  console.log("TCL: ActiveGame -> appState", appState)
   return (
     <Container className="activegame">
       <Header className="activegame-header">

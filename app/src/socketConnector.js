@@ -124,6 +124,11 @@ SocketConnector.startRoundVsAI = () => {
   socket.emit('START_AI');
 }
 
+SocketConnector.purchaseUnit = (unitIndex) => {
+  socket.emit('PURCHASE_UNIT', unitIndex);
+}
+
+
 export { SocketConnector };
 
 // the following are functions that our client side uses
@@ -132,7 +137,6 @@ export const startGame = () => socket.emit('START_GAME');
 
 export const toggleLock = state => socket.emit('TOGGLE_LOCK', state);
 
-export const buyUnit = pieceIndex => socket.emit('BUY_UNIT', pieceIndex);
 
 export const buyExp = state => socket.emit('BUY_EXP', state);
 

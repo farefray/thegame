@@ -5,6 +5,7 @@
   &-shop {
     flex-direction: row;
     display: flex;
+    flex-wrap: wrap;
 
     .shopunit {
       width: 128px;
@@ -15,7 +16,7 @@
       &:hover {
         border-image: url('../res/frames/stage_frame_complete.png') 80 110 110 80 stretch stretch;
 
-        .rs-frame-inner {
+        .rs-frame-inner, .rs-frame-body {
           background: #503e34;
         }
       }

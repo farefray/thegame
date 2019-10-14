@@ -220,8 +220,8 @@ function SocketController(socket, io) {
     });
   });
 
-  socket.on('BUY_UNIT', async pieceIndex => {
-    // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable)
+  socket.on('PURCHASE_UNIT', async pieceIndex => {
+    // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable?)
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const state = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);

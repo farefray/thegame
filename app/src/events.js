@@ -10,37 +10,6 @@ export function getStatsEvent(props, name) {
     getStats(name);
   }
 }
-
-// You have enough money to buy this unit
-// Unit != null
-// Hand is not full
-// console.log('@buyUnitEvent', this.props.ShopPawn.cost, this.props.newProps.gold)
-export function buyUnitEvent(props, index) {
-  if (props.newProps.isDead) {
-    updateMessage(props.newProps, 'You are dead! No buying when dead', 'error');
-    props.newProps.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
-    return;
-  }
-  if (!props.isActiveBattleGoing && props.isBattle) {
-    updateMessage(props.newProps, 'Waiting ...', 'error');
-    return;
-  }
-  if (props.ShopPawn) {
-    if (props.newProps.gold >= props.ShopPawn.cost) {
-      const size = Object.keys(props.newProps.myHand).length;
-      if (size < 8) {
-        buyUnit(index); // todo rework all the other stuff related to buy. We just need to send piece index, nothing more
-      } else {
-        updateMessage(props.newProps, 'Hand is full!', 'error');
-        props.newProps.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
-      }
-    } else {
-      updateMessage(props.newProps, 'Not enough gold!', 'error');
-      props.newProps.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
-    }
-  }
-}
-
 export function refreshShopEvent(props) {
   // You have enough money to refresh
   if (props.isDead) {
