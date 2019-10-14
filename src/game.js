@@ -106,7 +106,6 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
     return null;
   }
 
-  console.log("TCL: GameController.purchasePawn -> state", state)
   if (!state.isActiveBattleGoing && state.isBattle) {
     return null;
   }

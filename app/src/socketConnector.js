@@ -85,9 +85,6 @@ SocketConnector.init = function (dispatch) {
       dispatch({ type: 'END_BATTLE', upcomingRoundType });
     }
     setTimeout(() => {
-      dispatch({ type: 'CLEAR_TICKS' });
-    }, 5000);
-    setTimeout(() => {
       dispatch({ type: 'TOGGLE_SHOW_DMGBOARD' });
     }, 10000);
   });

@@ -3,7 +3,6 @@ import UnitImage from '../../../objects/Unit/UnitImage';
 import Frame from '../../../Components/Frame';
 
 function ShopPawn({ unit, index, onPurchase }) {
-  console.log("TCL: ShopPawn -> unit", unit)
   return (
     <Frame className="shopunit" header={unit.name} onClick={() => onPurchase(index)} type="default">
       <div className="shopunit-stats__wrapper">

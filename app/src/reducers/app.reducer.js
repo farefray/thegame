@@ -1,39 +1,3 @@
-import { getBackgroundAudio, getSoundEffect } from '../audio';
-
-const devMode = true;
-
-const updateSoundArray = (array, pos, newSound) => {
-  return array.map((item, index) => {
-    if (index !== pos) {
-      // This isn't the item we care about - keep it as-is
-      return item;
-    }
-    // Otherwise, this is the one we want - return an updated value
-    return newSound;
-  });
-};
-
-const getNewSoundEffects = (soundEffects, newSoundEffect) => {
-  for (let i = 0; i < soundEffects.length; i++) {
-    if (soundEffects[i] !== newSoundEffect) {
-      // Overwrites prev sound
-      return updateSoundArray(soundEffects, i, newSoundEffect);
-    }
-  }
-  return soundEffects;
-};
-
-const clearSoundEffect = (soundEffects, soundEffect) => {
-  let newSoundEffects = soundEffects;
-  for (let i = 0; i < soundEffects.length; i++) {
-    if (soundEffects[i] === soundEffect) {
-      // console.log('@NewSoundEffect', i, newSoundEffect)
-      newSoundEffects[i] = '';
-    }
-  }
-  return newSoundEffects;
-};
-
 export function app(
   state = {
     gameIsLive: false,
@@ -68,13 +32,6 @@ export function app(
     typeStatsString: '',
     typeBonusString: '',
     round: 1,
-    musicEnabled: true,
-    soundEnabled: true,
-    chatSoundEnabled: true,
-    selectedSound: '',
-    soundEffects: ['', '', '', '', '', '', '', '', '', ''],
-    music: getBackgroundAudio('mainMenu'),
-    volume: 0.05,
     isDead: true,
     selectedShopUnit: '',
     isSelectModeShop: false,
@@ -94,14 +51,6 @@ export function app(
   },
   action
 ) {
-  let tempSoundEffects;
-  if (devMode) {
-    state = {
-      ...state,
-      musicEnabled: false,
-      soundEnabled: false
-    }; // Disallows testing sounds currently
-  }
   switch (action.type) {
     case 'INIT': {
       // Used for cosmos fixtures
@@ -164,8 +113,6 @@ export function app(
         winner: false,
         dmgBoard: {},
         selectedUnit: -1,
-        soundEffects: ['', '', '', '', '', '', '', '', '', ''],
-        music: getBackgroundAudio('idle'),
         isDead: false,
         boardBuffs: {},
         deadPlayers: []
@@ -254,13 +201,6 @@ export function app(
     case 'BATTLE_TIME':
       //console.log('TCL: action', action);
       const { actionStack, startBoard, winner } = action;
-      if (!state.musicEnabled) {
-        tempSoundEffects = getNewSoundEffects(state.soundEffects, getSoundEffect('horn'));
-        state = {
-          ...state,
-          soundEffects: tempSoundEffects
-        };
-      }
       state = {
         ...state,
         isActiveBattleGoing: true,
@@ -349,19 +289,10 @@ export function app(
         ...state,
         isActiveBattleGoing: false,
         round: state.round + 1,
-        music: getBackgroundAudio('idle'),
         showDmgBoard: true,
         roundType: action.upcomingRoundType,
         enemyIndex: action.upcomingGymLeader || '',
         isBattle: false
-      };
-      break;
-    }
-    case 'CLEAR_TICKS': {
-      const tempSoundEffects = clearSoundEffect(state.soundEffects, getSoundEffect('Tick'));
-      state = {
-        ...state,
-        soundEffects: tempSoundEffects
       };
       break;
     }
@@ -372,48 +303,7 @@ export function app(
       };
       break;
     }
-    case 'TOGGLE_MUSIC':
-      state = {
-        ...state,
-        musicEnabled: !state.musicEnabled
-      };
-      break;
-    case 'TOGGLE_SOUND':
-      state = {
-        ...state,
-        soundEnabled: !state.soundEnabled
-      };
-      break;
-    case 'TOGGLE_CHAT_SOUND':
-      state = {
-        ...state,
-        chatSoundEnabled: !state.chatSoundEnabled
-      };
-      break;
-    case 'CHANGE_VOLUME':
-      state = {
-        ...state,
-        volume: action.newVolume
-      }; //, music: state.music}
-      break;
-    case 'NEW_UNIT_SOUND':
-      state = {
-        ...state,
-        selectedSound: action.newAudio
-      };
-      break;
-    case 'NEW_SOUND_EFFECT':
-      tempSoundEffects = getNewSoundEffects(state.soundEffects, action.newSoundEffect);
-      state = {
-        ...state,
-        soundEffects: tempSoundEffects
-      };
-      break;
     case 'END_GAME': {
-      let newMusic = state.music;
-      if (state.index === action.winningPlayer) {
-        newMusic = getBackgroundAudio('wonGame');
-      }
       console.log('Remaining keys in players ...', Object.keys(state.players));
       Object.keys(state.players).forEach(key => {
         if (key !== action.winningPlayer) {
@@ -427,7 +317,6 @@ export function app(
         message: state.players[action.winningPlayer].name + ' won the game',
         messageMode: 'big',
         gameEnded: action.winningPlayer,
-        music: newMusic,
         senderMessages: senderMessages.concat(state.players[action.winningPlayer].name + ' won the game'),
         chatMessages: chatMessages.concat('')
       };
@@ -474,24 +363,6 @@ export function app(
         ...state,
         senderMessages: senderMessages.concat(action.senderMessage),
         chatMessages: chatMessages.concat(action.newMessage)
-      };
-      let soundEffect;
-      switch (action.chatType) {
-        case 'pieceUpgrade':
-          soundEffect = getSoundEffect('lvlup');
-          break;
-        case 'playerEliminated':
-        case 'disconnect':
-          soundEffect = getSoundEffect('disconnect');
-          break;
-        case 'chat':
-        default:
-          soundEffect = getSoundEffect('pling');
-      }
-      tempSoundEffects = getNewSoundEffects(state.soundEffects, soundEffect);
-      state = {
-        ...state,
-        soundEffects: tempSoundEffects
       };
       break;
     case 'SPEC_PLAYER': {

@@ -1,6 +1,5 @@
 import { toggleLock, buyUnit, refreshShop, buyExp, placePiece, withdrawPiece, sellPiece, getStats } from './socketConnector';
 import { updateMessage } from './f';
-import { getSoundEffect } from './audio.js';
 
 export function getStatsEvent(props, name) {
   if (props.statsMap[name]) {
@@ -14,7 +13,6 @@ export function refreshShopEvent(props) {
   // You have enough money to refresh
   if (props.isDead) {
     updateMessage(props, 'You are dead! No shop interaction when dead', 'error');
-    props.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   }
   if (!props.isActiveBattleGoing && props.isBattle) {
@@ -25,14 +23,12 @@ export function refreshShopEvent(props) {
     refreshShop(props.storedState);
   } else {
     updateMessage(props, 'Not enough gold!', 'error');
-    props.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
   }
 }
 
 export function toggleLockEvent(props) {
   if (props.isDead) {
     updateMessage(props, 'You are dead! No shop interaction when dead', 'error');
-    props.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   }
   if (!props.isActiveBattleGoing && props.isBattle) {
@@ -46,7 +42,6 @@ export function buyExpEvent(props) {
   // You have enough money to buy exp
   if (props.isDead) {
     updateMessage(props, 'You are dead! No exp buying when dead', 'error');
-    props.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   }
   if (!props.isActiveBattleGoing && props.isBattle) {
@@ -58,11 +53,9 @@ export function buyExpEvent(props) {
       buyExp(props.storedState);
     } else {
       updateMessage(props, 'Already at max level!', 'error');
-      props.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     }
   } else {
     updateMessage(props, 'Not enough gold!', 'error');
-    props.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
   }
 }
 
@@ -104,11 +97,9 @@ export function placePieceEvent(prop, fromParam, to) {
   const from = String(fromParam);
   if (prop.isDead) {
     updateMessage(prop, 'You are dead!', 'error');
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   } else if (prop.visiting !== prop.index) {
     updateMessage(prop, 'Visiting!', 'error');
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   }
   if (!prop.isActiveBattleGoing && prop.isBattle) {
@@ -133,7 +124,6 @@ export function placePieceEvent(prop, fromParam, to) {
         prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: { pos: '' } });
       } else {
         updateMessage(prop, 'Invalid target placing!', 'error');
-        prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
       }
     }
   }
@@ -143,11 +133,9 @@ export function withdrawPieceEvent(prop, from) {
   // Hand is not full
   if (prop.isDead) {
     updateMessage(prop, 'You are dead!', 'error');
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   } else if (prop.visiting !== prop.index) {
     updateMessage(prop, 'Visiting!', 'error');
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   }
   if (!prop.isActiveBattleGoing && prop.isBattle) {
@@ -162,7 +150,6 @@ export function withdrawPieceEvent(prop, from) {
       prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: { pos: '' } });
     } else {
       updateMessage(prop, 'Hand is full!', 'error');
-      prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     }
   }
 }
@@ -170,11 +157,9 @@ export function withdrawPieceEvent(prop, from) {
 export function sellPieceEvent(prop, from) {
   if (prop.isDead) {
     updateMessage(prop, 'You are dead!', 'error');
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   } else if (prop.visiting !== prop.index) {
     updateMessage(prop, 'Visiting!', 'error');
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
     return;
   }
   if (!prop.isActiveBattleGoing && prop.isBattle) {
@@ -189,9 +174,7 @@ export function sellPieceEvent(prop, from) {
     // false &&
     sellPiece(prop.storedState, String(from));
     prop.dispatch({ type: 'SELECT_UNIT', selectedUnit: { pos: '' } });
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('sellUnit') });
   } else {
     updateMessage(prop, 'Invalid target to sell! ' + from, 'error');
-    prop.dispatch({ type: 'NEW_SOUND_EFFECT', newSoundEffect: getSoundEffect('invalid') });
   }
 }
