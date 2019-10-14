@@ -48,21 +48,5 @@
     "evolves_to": null,
     "specialAttack": 0,
     "specialDefense": 0
-  },
-  "bigboy": {
-    "name": "bigboy",
-    "displayName": "Big Boy",
-    "lookType": 25,
-    "cost": 1,
-    "hp": 5000,
-    "attack": 150,
-    "armor": 5,
-    "speed": 1000,
-    "attackSpeed": 1000,
-    "type": "normal",
-    "ability": "",
-    "evolves_to": null,
-    "specialAttack": 15,
-    "specialDefense": 20
   }
 }

@@ -160,6 +160,7 @@ function ActiveGame() {
     }
   }, [gameBoard, currentActionIndex]); // eslint-disable-line
 
+  console.log("TCL: ActiveGame -> appState", appState)
   return (
     <Container className="activegame">
       <Header className="activegame-header">
@@ -179,7 +180,7 @@ function ActiveGame() {
           </StateProvider>
         </Content>
         <Sidebar width={520}>
-          <RightSidebar {...appState} />
+          <RightSidebar shopUnits={appState.shopUnits}/>
         </Sidebar>
       </Container>
       <Footer></Footer>

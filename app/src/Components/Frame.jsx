@@ -16,16 +16,11 @@ class Frame extends React.Component {
     super(props);
   }
 
-  handleSelect = event => {
+  handleClick = event => {
     event.persist();
-    event.selected = true;
-    const { onSelect } = this.props;
-    if (onSelect) {
-      onSelect(event);
-    }
-
-    if (event.selected) {
-      this.handleToggle();
+    const { onClick } = this.props;
+    if (onClick) {
+      onClick(event);
     }
   };
 
@@ -54,7 +49,7 @@ class Frame extends React.Component {
       });
     }
     return (
-      <div role="rowheader" className={this.addPrefix('heading')} onClick={this.handleSelect} tabIndex={-1}>
+      <div role="rowheader" className={this.addPrefix('heading')} tabIndex={-1}>
         {header}{' '}
       </div>
     );
@@ -75,9 +70,11 @@ class Frame extends React.Component {
     const classes = classNames(classPrefix, this.addPrefix('default'), className, this.addPrefix(type));
 
     return (
-      <div className={classes} onSelect={null}>
-        {' '}
-        {this.renderHeading()} {this.renderBody()}{' '}
+      <div className={classes} onSelect={null} onClick={this.handleClick}>
+        {this.renderHeading()}
+        <div className={this.addPrefix('inner')}>
+        {this.renderBody()}
+        </div>
       </div>
     );
   }

@@ -2,31 +2,24 @@
 .rs-frame {
   background: transparent;
   border-color: #413b2d;
-  border-image: url('./res/frames/stage_frame_default.png'); 
-  border-radius: @border-radius-base;
-  border-image-slice: 95 110 110 95;
-  border-image-repeat: stretch stretch;
+  border-image: url('./res/frames/stage_frame_default.png') 80 110 110 80 stretch stretch; 
   border-style: inset;
-  border-width: 60px;
-  overflow: hidden;
+  border-width: 26px;
 
   &-lock {
-    border-image: url('./res/frames/stage_frame_lock.png');
+    border-image: url('./res/frames/stage_frame_lock.png') 80 110 110 80 stretch stretch;
   }
 
   &-complete {
-    border-image: url('./res/frames/stage_frame_complete.png');
-  }
-
-  &-heading,
-  &-body {
-    padding: @panel-padding;
+    border-image: url('./res/frames/stage_frame_complete.png') 80 110 110 80 stretch stretch;
   }
 
   &-heading {
     color: @panel-heading-color;
     font-size: @panel-heading-font-size;
     line-height: unit(@line-height-computed / @panel-heading-font-size);
+    position: absolute;
+    top: 0;
   }
 
   &-title {
@@ -43,9 +36,20 @@
     }
   }
 
-  // Adjust the padding value when the head and body are combined.
-  &-heading + &-body {
-    padding-top: 10px;
-    padding-bottom: 30px;
+  &-inner {
+    background: #413b2d;
+    /**
+      Dirty hack to cover inner space with background
+    **/
+    height: 77px;
+    left: -1px;
+    position: absolute;
+    top: -1px;
+    width: 77px;
+
+    &-body {
+      height: 100%;
+      display: flex;
+    }
   }
 }
