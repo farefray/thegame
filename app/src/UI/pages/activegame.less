@@ -9,14 +9,14 @@
       background: #21180e;
       border-radius: 1em;
       display: grid;
-      margin: 1em auto;
       min-height: 3em;
       text-align: center;
       width: 10em;
 
       &-value {
-        font-size: 2em;
+        font-size: 17px;
         text-shadow: black 3px 3px;
+        line-height: 2.4;
       }
 
       &-active {
@@ -24,6 +24,48 @@
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
+      }
+    }
+
+    .player-resources {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      min-height: 3em;
+      text-align: center;
+      width: 45em;
+      margin: 15px 15px 15px 260px;
+
+      &-block {
+        background: #21180e;
+        border-radius: 1em;
+        margin-right:  20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      &-hp-img {
+        height: 42px;
+        background: url('../res/misc/status_icon_soul_gem.png');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      &-coin-img {
+        height: 42px;
+        background: url('../res/misc/status_icon_coin.png');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      &-mana-img {
+        height: 42px;
+        background: url('../res/misc/status_icon_gem.png');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      &-number {
+        line-height: 2.4;
+        font-size: 17px;
       }
     }
   }
