@@ -12,7 +12,6 @@ export default function BoardSquare({ cellPosition, children }) {
 
   // TODO the same check must be added to backend[without repeating the code!]
   const canMovePawn = (fromPosition, toPosition) => {
-    // todo spectating [prop.visiting !== prop.index]
     if (isDead || (!isActiveBattleGoing && isBattle)) {
       return false;
     }
