@@ -14,11 +14,11 @@ function InternalTimer({ value, onTick }) {
   return <div className="timer-value">{value}</div>;
 }
 
-function Timer({ value }) {
-  const [counter, setCounter] = React.useState(value);
+function Timer({ initialTimerValue }) {
+  const [counter, setCounter] = React.useState(initialTimerValue);
   useEffect(() => {
-    setCounter(value);
-  }, [value]);
+    setCounter(initialTimerValue);
+  }, [initialTimerValue]);
 
   const MemoizedTimer = React.useMemo(
     () => (

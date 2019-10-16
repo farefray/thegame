@@ -5,6 +5,7 @@ import { Container, Header, Content, Footer, Sidebar } from 'rsuite';
 
 import Position from '../objects/Position';
 import Timer from './ActiveGame/Timer.jsx';
+import PlayerStats from './ActiveGame/PlayerStats.jsx';
 import GameBoard from './ActiveGame/GameBoard.jsx';
 import { StateProvider } from './ActiveGame/GameBoard.context.js';
 
@@ -162,8 +163,9 @@ function ActiveGame() {
 
   return (
     <Container className="activegame">
-      <Header className="activegame-header">
-        <Timer value={appState.countdown} />
+      <Header className="gameheader">
+        <PlayerStats playerInfo={{ health: appState.hp, mana: appState.mana, gold: appState.gold }} />
+        <Timer  initialTimerValue={appState.countdown} />
       </Header>
       <Container>
         <Sidebar>
