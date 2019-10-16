@@ -1,10 +1,9 @@
 import Battle from '../objects/Battle';
+import createBattleBoard from '../utils/createBattleBoard';
+import gameConstantsJS from '../game_constants';
 
 const pawns = require('../pawns');
 const f = require('../f');
-const gameConstantsJS = require('../game_constants');
-
-const BoardJS = require('./board');
 
 const BattleController = {};
 
@@ -189,7 +188,6 @@ BattleController.battleTime = async stateParam => {
 BattleController.setup = async state => {
   const players = Object.keys(state.get('players'));
   const round = state.get('round');
-  console.log('TCL: BattleController.setup -> round', round);
   const npcBoard = await gameConstantsJS.getSetRound(round);
 
   // TODO: Future: All battles calculate concurrently, structurize this object maybe
@@ -203,7 +201,7 @@ BattleController.setup = async state => {
     const playerBoard = state.getIn(['players', players[i], 'board']);
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
-    const board = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+    const board = createBattleBoard(playerBoard, npcBoard);
 
     // Both players have units, battle required
     const battleResult = new Battle(board);

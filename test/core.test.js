@@ -1,15 +1,15 @@
 /* global describe, it */
-import Battle from '../src/objects/Battle.js';
+import Battle from '../src/objects/Battle';
+import createBattleBoard from '../src/utils/createBattleBoard';
+import createBoard from '../src/utils/createBoard';
+import GameController from '../src/game';
+import BattleController from '../src/controllers/battle';
 
 const should = require('should');
 const rewire = require('rewire');
 
 const ConnectedPlayers = rewire('../src/models/ConnectedPlayers.js');
 const SessionsStore = rewire('../src/models/SessionsStore.js');
-
-const GameController = rewire('../src/game.js');
-const BattleController = rewire('../src/controllers/battle.js');
-const BoardJS = rewire('../src/controllers/board.js');
 
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
@@ -111,14 +111,14 @@ describe('Core Modules', () => {
   describe('Battle', () => {
     let battle;
     it('whole battle can be executed', async () => {
-      const npcBoard = await BoardJS.createBoard([
+      const npcBoard = createBoard([
         {
           name: 'dwarf',
           x: 0,
           y: 7
         }
       ]);
-      const playerBoard = await BoardJS.createBoard([
+      const playerBoard = createBoard([
         {
           name: 'minotaur',
           x: 0,
@@ -126,7 +126,7 @@ describe('Core Modules', () => {
         }
       ]);
 
-      const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+      const combinedBoard = createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
       battle.should.be.ok();
       battle.actionStack.should.be.an.Array();
@@ -134,16 +134,16 @@ describe('Core Modules', () => {
     });
 
     it('can handle battle with no units', async () => {
-      const playerBoard = await BoardJS.createBoard([
+      const playerBoard = createBoard([
         {
           name: 'minotaur',
           x: 0,
           y: 7
         }
       ]);
-      const npcBoard = await BoardJS.createBoard([]);
+      const npcBoard = createBoard([]);
 
-      const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+      const combinedBoard = createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
       battle.should.be.ok();
       should.exist(battle.winner);

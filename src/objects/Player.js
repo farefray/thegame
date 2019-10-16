@@ -1,5 +1,5 @@
 import Position from '../../app/src/objects/Position';
-import BattleUnit from '../objects/BattleUnit';
+import BattleUnit from './BattleUnit';
 
 const DEBUG = true; // SORRY
 
@@ -63,4 +63,4 @@ Player.prototype.isDead = function() {
   return this.hp <= 0;
 };
 
-module.exports = Player;
+export default Player;

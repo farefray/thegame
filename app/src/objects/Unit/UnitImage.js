@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import fallbackImage from '../../assets/monsters/default.png';
 
-export default function UnitImage({ lookType, direction, isMoving, extraClass = '' }) {
+export default function UnitImage({ lookType = 1, direction, isMoving, extraClass = '' }) {
   // Load all images which will be required for this unit
   const look = isMoving ? 'animated' : 'idle';
   const [sprites, loadSprites] = React.useState({

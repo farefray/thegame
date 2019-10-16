@@ -54,7 +54,6 @@ SocketConnector.init = function (dispatch) {
   });
 
   socket.on('BATTLE_TIME', (actionStack, startBoard, winner) => {
-    console.log(actionStack, startBoard, winner);
     dispatch({ type: 'BATTLE_TIME', actionStack, startBoard, winner });
   });
 

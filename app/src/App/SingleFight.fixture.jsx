@@ -5,8 +5,8 @@ import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import Battle from '../../../src/objects/Battle.js';
 import ActiveGame from './ActiveGame';
-
-const BoardJS = require('../../../src/controllers/board.js');
+import createBattleBoard from '../../../src/utils/createBattleBoard';
+import createBoard from '../../../src/utils/createBattleBoard';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
@@ -40,10 +40,10 @@ const defaultBoard = {
 };
 
 const generateGameState = async function({ boards }) {
-  const npcBoard = await BoardJS.createBoard(boards.A);
-  const playerBoard = await BoardJS.createBoard(boards.B);
+  const npcBoard = createBoard(boards.A);
+  const playerBoard = createBoard(boards.B);
 
-  const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
+  const combinedBoard = createBattleBoard(playerBoard, npcBoard);
   const battleResult = new Battle(combinedBoard);
   return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
 };

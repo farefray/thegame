@@ -15,6 +15,7 @@ import LeftSidebar from './ActiveGame/LeftSidebar.jsx';
 const { ACTION } = require('../shared/constants');
 
 function unitReducer(unitComponents, action) {
+  console.log("TCL: unitReducer -> unitComponents", unitComponents)
   switch (action.type) {
     case 'SPAWN': {
       const { unit } = action;
@@ -84,7 +85,7 @@ function ActiveGame() {
         delete reducedBoard[fromPos];
 
         if (toPos) {
-          unitComponents[creature.position].onAction(action);
+          unitComponents[creature.id].onAction(action);
           reducedBoard[toPos] = creature;
         }
 

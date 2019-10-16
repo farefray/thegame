@@ -13,7 +13,6 @@ export default class Unit extends React.Component {
     super(props);
 
     const { unit } = props;
-    console.log("TCL: Unit -> constructor -> props", props)
     const { x, y } = unit;
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 

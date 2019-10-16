@@ -1,6 +1,5 @@
 import ActionQueue from './ActionQueue';
 import Pathfinder from './Pathfinder';
-import BattleUnit from './BattleUnit';
 
 const _ = require('lodash');
 
