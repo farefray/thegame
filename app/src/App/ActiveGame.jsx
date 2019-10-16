@@ -171,7 +171,7 @@ function ActiveGame() {
         <Sidebar>
           <LeftSidebar />
         </Sidebar>
-        <Content className="gameboard">
+        <Content>
           <StateProvider
             initialState={{
               ...appState

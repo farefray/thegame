@@ -12,10 +12,6 @@ class Frame extends React.Component {
     className: ''
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   handleClick = event => {
     event.persist();
     const { onClick } = this.props;

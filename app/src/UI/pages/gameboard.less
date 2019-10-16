@@ -1,26 +1,25 @@
 .gameboard {
+    position: relative;
+    display: flex;
     flex-wrap: nowrap;
     flex-shrink: 1;
     flex-grow: 0;
-}
 
-// TODO this
-.board-container {
-    position: relative;
-
-    &.rpgui-container.framed {
-        border-image-width: 10px;
-        border-width: 10px;
-        padding: 0;
-        height: 100%;
+    &-wrapper {
+        background: url('../res/battleground.png');
+        border: 3px solid #21180f;
+        border-style: inset;
+        background-size: 592px 640px;
+        background-position: -36px -39px;
     }
 
-    .board {
+    &-board {
         position: relative;
         flex-direction: column;
 
-        .board-row {
+        &-row {
             height: 64px;
+            width: 512px;
             flex-direction: row;
             display: flex;
         }
@@ -28,25 +27,18 @@
 }
 
 .cell {
-    border-right: 1px solid #00000030;
-    border-bottom: 1px solid #00000030;
+    border-right: 1px dashed #00000030;
+    border-bottom: 1px dashed #00000030;
     background-color: rgba(0, 0, 0, 0);
     width: 64px;
     height: 64px;
     position: relative;
-    background: url(../res/terrain/grass.gif) repeat;
 
-    &.isHand {
-        background: url(../res/terrain/hand.png) repeat;
-        background-repeat: no-repeat;
-        background-position: 100% 100%;
+    &__green {
+        background: rgba(0, 255, 21, 0.562);
     }
 
-    &.highlighted {
-        background: rgba(0, 255, 21, 0.562);
-
-        &__red {
-            background: rgba(255, 0, 0, 0.473);
-        }
+    &__red {
+        background: rgba(255, 0, 0, 0.473);
     }
 }

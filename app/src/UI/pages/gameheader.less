@@ -1,11 +1,18 @@
-.gameheader {  
+
+.background-icon(@src) {
+    background: @src;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.gameheader {
     display: flex;
     margin : 2em;
+
     .timer {
-        align-self: center;
         background: #21180e;
         border-radius: 1em;
-        min-height: 3em;
         text-align: center;
         width: 10em;
 
@@ -16,20 +23,14 @@
         }
 
         &-active {
-            background: url('../res/misc/sandglass.png');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
+            .background-icon(url('../res/misc/sandglass.png'));
             min-height: 3em;
         }
     }
 
     .player {
         display: flex;
-        flex-wrap: wrap;
         justify-content: flex-end;
-        min-height: 3em;
-        text-align: center;
         width: 52em;
 
         &-data {
@@ -38,30 +39,20 @@
             display: flex;
             flex-wrap: wrap;
             width: 10em;
-            margin-right: 2em;
-            padding-left: 1em;
+            margin: 0 2em 0 1em;
 
             &__hp {
-                background: url('../res/misc/status_icon_soul_gem.png');
-                background-size: contain;
-                background-position: center;
-                background-repeat: no-repeat;
+                .background-icon(url('../res/misc/status_icon_soul_gem.png'));
                 min-width: 3em;
             }
 
             &__coin {
-                background: url('../res/misc/status_icon_coin.png');
-                background-size: contain;
-                background-position: center;
-                background-repeat: no-repeat;
+                .background-icon(url('../res/misc/status_icon_coin.png'));
                 min-width: 3em;
             }
 
             &__mana {
-                background: url('../res/misc/status_icon_gem.png');
-                background-size: contain;
-                background-position: center;
-                background-repeat: no-repeat;
+                .background-icon(url('../res/misc/status_icon_gem.png'));
                 min-width: 3em;
             }
 

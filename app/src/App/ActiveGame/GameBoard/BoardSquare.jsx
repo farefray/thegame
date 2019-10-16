@@ -1,5 +1,7 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
+import classNames from 'classnames';
+import prefix from '../../../UI/utils/prefix';
 
 import { placePiece } from '../../../socketConnector';
 
@@ -52,16 +54,15 @@ export default function BoardSquare({ cellPosition, children }) {
 
   const isBoard = cellPosition.isBoard();
 
-  let extraClasses = isOver && canDrop ? 'highlighted' : isOver && !canDrop ? 'highlighted__red' : '';
-
-  if (!isBoard) {
-    extraClasses += ' isHand';
-  }
-
-  extraClasses += ' cell';
+  const baseClass = 'cell';
+  const classes = classNames(baseClass, {
+    [prefix(baseClass)('hand')]: !isBoard,
+    [prefix(baseClass)('red', true)]: isOver && !canDrop,
+    [prefix(baseClass)('green', true)]: isOver && canDrop
+  });
 
   return (
-    <div ref={drop} className={extraClasses}>
+    <div ref={drop} className={classes}>
       {children}
     </div>
   );

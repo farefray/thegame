@@ -48,11 +48,10 @@ class GameBoard extends React.Component {
     }
 
     return (
-      <div className="board-row">
+      <div className="gameboard-board-row">
         {handRow.map(cellPosition => {
           return (
             <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-              {cellPosition.toBoardPosition()}
             </BoardSquare>
           );
         })}
@@ -64,37 +63,38 @@ class GameBoard extends React.Component {
     const { onLifecycle, units } = this.props;
     const { gameBoard, isMounted } = this.state;
     return (
-      <div className="board-container rpgui-container framed">
-        <div className="flex center board">
-          <DndProvider backend={HTML5Backend}>
-          {isMounted &&
-            units.map(unit => (
-              <Unit
-                key={unit.id}
-                unit={unit}
-                getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
-                gameBoardWidth={gameBoardWidth}
-                gameBoardHeight={gameBoardHeight}
-                onLifecycle={onLifecycle}
-              />
-            ))}
-            <div className="main-board-container"  ref={e => (this.boardRef = e)}>
-              {gameBoard.map((boardRow, index) => {
-                return (
-                  <div className="board-row" key={index}>
-                    {boardRow.map(cellPosition => {
-                      return (
-                        <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                          {cellPosition.toBoardPosition()}
-                        </BoardSquare>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-            {this.getHandRow()}
-          </DndProvider>
+      <div className="gameboard">
+        <div className="gameboard-wrapper">
+          <div className="gameboard-board">
+            <DndProvider backend={HTML5Backend}>
+            {isMounted &&
+              units.map(unit => (
+                <Unit
+                  key={unit.id}
+                  unit={unit}
+                  getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
+                  gameBoardWidth={gameBoardWidth}
+                  gameBoardHeight={gameBoardHeight}
+                  onLifecycle={onLifecycle}
+                />
+              ))}
+              <div ref={e => (this.boardRef = e)}>
+                {gameBoard.map((boardRow, index) => {
+                  return (
+                    <div className="gameboard-board-row" key={index}>
+                      {boardRow.map(cellPosition => {
+                        return (
+                          <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+                          </BoardSquare>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+              {this.getHandRow()}
+            </DndProvider>
+          </div>
         </div>
       </div>
     );
