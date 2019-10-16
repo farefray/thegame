@@ -63,7 +63,6 @@ State.prototype.setIn = function([what, where, which], value) {
  * @function
  * @description Ending round. Time based event for all players after battle is over
  * Increase players exp by 1
- * Refresh shop as long as player is not locked
  * Gold:
  *  Interest for 10 gold
  *  Increasing throughout the game basic income
@@ -79,10 +78,8 @@ State.prototype.endRound = function() {
 
   for (const uid in this.players) {
     const player = this.players[uid];
-    if (!player.get('locked')) {
-      // TODO update shop
-      // state = await ShopJS.refreshShop(state, index);
-    }
+    // TODO update shop
+    // state = await ShopJS.refreshShop(state, index);
 
     const gold = player.get('gold');
     const bonusGold = Math.min(Math.floor(gold / 10), 5);

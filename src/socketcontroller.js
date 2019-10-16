@@ -41,15 +41,6 @@ function asNetworkMessage(object) {
   }
 }
 
-const sessionExist = socketId => {
-  if (f.isUndefined(connectedPlayers) || f.isUndefined(connectedPlayers.get(socketId))) return false;
-  // console.log('If crash: undefined?', connectedPlayers);
-  return !f.isUndefined(sessions.get(connectedPlayers.get(socketId).get('sessionId'))); // Crashed here somehow, early
-};
-
-const newChatMessage = (socket, io, socketIdParam, senderName, newMessage, type = 'chat') => {
-  io.to(socketIdParam).emit('NEW_CHAT_MESSAGE', senderName, newMessage, type);
-};
 
 /*
   Example io code
@@ -92,7 +83,7 @@ function SocketController(socket, io) {
       const session = sessionsStore.get(sessionID);
       session.disconnect(socket.id);
       if (session.hasClients()) {
-        return newChatMessage(socket, io, socket.id, 'Player disconnected - ', `${session.clients.length} still connected`, 'disconnect');
+        return; // notify about disconnect todo
       }
 
       return sessionsStore.destroy(sessionID);
@@ -244,8 +235,8 @@ function SocketController(socket, io) {
     //  console.log('@PlacePieceSocket', evolutionDisplayName);
     if (evolutionDisplayName) {
       for (let i = 0; i < evolutionDisplayName.size; i++) {
-        const playerName = session.getPlayerName(socket.id);
-        newChatMessage(socket, io, socket.id, `${playerName} -> `, evolutionDisplayName.get(i), 'pieceUpgrade');
+        // const playerName = session.getPlayerName(socket.id);
+        // newChatMessage(socket, io, socket.id, `${playerName} -> `, evolutionDisplayName.get(i), 'pieceUpgrade');
       }
     }
     console.log('Place piece from', fromPosition, 'at', toPosition, '(evolution =', `${evolutionDisplayName})`);
@@ -258,14 +249,6 @@ function SocketController(socket, io) {
 
   // ////////// OLD STUFF \/
 
-  socket.on('TOGGLE_LOCK', async stateParam => {
-    // const state = await GameController.toggleLock(fromJS(stateParam), index);
-    const prevLock = fromJS(stateParam).getIn(['players', socket.id, 'locked']);
-    console.log('Toggling Lock for Shop! prev lock =', prevLock);
-    socket.emit('LOCK_TOGGLED', socket.id, !prevLock);
-    const state = await GameController.toggleLock(fromJS(stateParam), socket.id);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, socket.id);
-  });
 
   socket.on('BUY_EXP', async stateParam => {
     const index = getPlayerIndex(socket.id);
@@ -315,28 +298,6 @@ function SocketController(socket, io) {
     emitMessage(socket, io, getSessionId(socket.id), socketId => {
       io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
     });
-  });
-
-  socket.on('SEND_MESSAGE', async message => {
-    // TODO: Login: Player name here instead
-    const playerName = sessionJS.getPlayerName(socket.id, connectedPlayers, sessions);
-    newChatMessage(socket, io, socket.id, `${playerName}: `, message);
-  });
-
-  socket.on('GET_STATS', async name => {
-    const stats = pawns.getMonsterStats(name);
-    const ability = await abilitiesJS.getAbility(name);
-    let newStats = (await stats).set('abilityType', ability.get('type'));
-    if (ability.get('displayName')) {
-      newStats = newStats.set('abilityDisplayName', ability.get('displayName'));
-    }
-    if (typeof newStats.get('evolves_to') === 'string') {
-      // && !Array.isArray(newStats.get('evolves_to').toJS())) { // Test
-      const evolStats = await pawns.getMonsterStats(newStats.get('evolves_to'));
-      newStats = newStats.set('snd_evolves_to', evolStats.get('evolves_to'));
-    }
-    f.p('Retrieving stats for', name); // , newStats);
-    socket.emit('SET_STATS', name, newStats);
   });
 
   return this;

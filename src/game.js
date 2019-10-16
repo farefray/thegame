@@ -22,17 +22,6 @@ GameController.refreshShopGlobal = async (stateParam, index) => {
 };
 
 /**
- * toggleLock for player (setIn)
- */
-GameController.toggleLock = async (state, playerIndex) => {
-  const locked = state.getIn(['players', playerIndex, 'locked']);
-  if (!locked) {
-    return state.setIn(['players', playerIndex, 'locked'], true);
-  }
-  return state.setIn(['players', playerIndex, 'locked'], false);
-};
-
-/**
  * Buy exp for player (setIn)
  */
 GameController.buyExp = (state, playerIndex) => {

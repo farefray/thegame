@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { SocketConnector, AjaxGetUnitJson } from './socketConnector';
+import { SocketConnector } from './socketConnector';
 import store from './store';
 import { Provider } from 'react-redux';
 
@@ -12,9 +12,6 @@ import { Provider } from 'react-redux';
 
 // setup socket connection
 SocketConnector.init(store.dispatch);
-AjaxGetUnitJson(unitJSON => {
-  localStorage.setItem('unitJSON', JSON.stringify(unitJSON));
-});
 
 ReactDOM.render(
   <Provider store={store}>

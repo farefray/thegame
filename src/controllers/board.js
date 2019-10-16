@@ -2,7 +2,6 @@ const _ = require('lodash');
 const f = require('../f');
 const pawns = require('../pawns');
 const abilitiesJS = require('../abilities');
-const typesJS = require('../types');
 
 const BoardJS = {};
 

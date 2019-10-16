@@ -7,25 +7,6 @@ const ipAdress = 'http://' + ip + ':8000';
 console.log('Connecting to ' + ipAdress + ' ...');
 const socket = io(ipAdress);
 
-export async function AjaxGetUnitJson(cb) {
-  console.log('Fetching json from ' + ipAdress + '/unitJson');
-  fetch(ipAdress + '/unitJson', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'text/plain'
-    }
-  })
-    .then(async response => {
-      // console.log(response);
-      const result = await response.json();
-      // console.log(result);
-      cb(result.mosntersJSON);
-    })
-    .catch(err => {
-      console.log('Failed to fetch', err);
-    });
-}
-
 /** Socket connector for frontend
  * Handles connection to backend and sends events born in browser to backend.
  * Only sends customer events to backend and then application receives app state with redux update!
@@ -132,9 +113,6 @@ export { SocketConnector };
 // to emit actions to everyone connected to our web socket
 export const startGame = () => socket.emit('START_GAME');
 
-export const toggleLock = state => socket.emit('TOGGLE_LOCK', state);
-
-
 export const buyExp = state => socket.emit('BUY_EXP', state);
 
 export const refreshShop = state => socket.emit('REFRESH_SHOP', state);
@@ -145,8 +123,4 @@ export const withdrawPiece = (state, from) => socket.emit('WITHDRAW_PIECE', stat
 
 export const sellPiece = (state, from) => socket.emit('SELL_PIECE', state, from);
 
-export const getStats = name => socket.emit('GET_STATS', name);
 
-export const sendMessage = message => socket.emit('SEND_MESSAGE', message);
-
-export const getSprites = () => socket.emit('GET_SPRITES');
