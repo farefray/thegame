@@ -95,9 +95,6 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
     return null;
   }
 
-  if (!state.isActiveBattleGoing && state.isBattle) {
-    return null;
-  }
   /**
    * Checks to be done:
    * unit exist in shop

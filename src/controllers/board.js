@@ -8,53 +8,6 @@ const BoardJS = {};
 /** Private methods */
 
 /**
- * Counts unique occurences of piece on board connected to each team
- * Puts them in a map and returns it
- * Map({0: Map({grass: 3, fire: 2}), 1: Map({normal: 5})})
- * Set(['pikachu']) (no more pikachus or raichus)
- */
-async function _countUniqueOccurences(board, teamParam = '0') {
-  const buffMap = {
-    0: {},
-    1: {}
-  };
-  const unique = {
-    0: [],
-    1: []
-  };
-
-  const keys = Object.keys(board);
-  for (let index = 0; index < keys.length; index++) {
-    const unitPos = keys[index];
-    const unit = board[unitPos];
-    const team = unit['team'] || teamParam;
-    const name = unit['name'];
-    const baseMonser = await pawns.getBaseMonster(name);
-
-    if (!unique[String(team)].includes(name)) {
-      // TODO: Check
-      f.p('@CountUniqueOccurences Unique', baseMonser, team, unique);
-      const newSet = unique[String(team)].push(baseMonser);
-      unique[String(team)] = newSet; // Store unique version, only count each once
-      const types = unit['type']; // Value or List
-      if (!f.isUndefined(types.size)) {
-        // List
-        for (let i = 0; i < types.size; i++) {
-          buffMap[String(team)][types[i]] = (buffMap[String(team)][types[i]] || 0) + 1;
-        }
-      } else {
-        // Value
-        buffMap[String(team)][types] = (buffMap[String(team)][types] || 0) + 1;
-        console.log('adding type occurence', name, team, buffMap[String(team)][types]);
-      }
-    }
-  }
-
-  f.p('@CountUniqueOccurences', unique);
-  return buffMap;
-}
-
-/**
  * Checks all units on board for player of that piece type
  * if 3 units are found, remove those 3 units and replace @ position with evolution
  * No units are added to discardedPieces
@@ -129,154 +82,6 @@ BoardJS.getBoardUnit = name => {
   if (f.isUndefined(unitInfo)) console.log('UNDEFINED:', name);
   // console.log('@getBoardUnit', name, unitInfo)
   return unitInfo;
-};
-
-/**
- * Give bonuses from types
- * Type bonus is either only for those of that type or all units
- */
-BoardJS.markBoardBonuses = async (board, teamParam = '0') => {
-  const buffMap = await _countUniqueOccurences(board);
-
-  // Map({0: Map({grass: 40})})
-  const typeBuffMapSolo = {
-    0: {},
-    1: {}
-  }; // Solo buffs, only for that type
-  const typeBuffMapAll = {
-    0: {},
-    1: {}
-  }; // For all buff
-  const typeDebuffMapEnemy = {
-    0: {},
-    1: {}
-  }; // For all enemies debuffs
-  // Find if any bonuses need applying
-  // TODO
-  /* for (let i = 0; i <= 1; i++) {
-    const buffsKeysIter = Object.keys();
-    let tempBuff = buffsKeysIter.next();
-    while (!tempBuff.done) {
-      const buff = tempBuff.value;
-      const amountBuff = buffMap.get(String(i)).get(buff);
-      for (let j = 1; j <= 3; j++) {
-        if (typesJS.hasBonus(buff) && amountBuff >= typesJS.getTypeReq(buff, j)) {
-          // console.log('@markBoardBonuses', amountBuff, typesJS.getTypeReq(buff, i))
-          switch (typesJS.getBonusType(buff)) {
-            case 'bonus':
-              typeBuffMapSolo = typeBuffMapSolo
-                .setIn([String(i), buff, 'value'], (typeBuffMapSolo.get(String(i)).get(buff) ? typeBuffMapSolo.get(String(i)).get(buff)['value'] : 0) + typesJS.getBonusAmount(buff, j))
-                .setIn([String(i), buff, 'typeBuff'], typesJS.getBonusStatType(buff))
-                .setIn([String(i), buff, 'tier'], j);
-              break;
-            case 'allBonus':
-              typeBuffMapAll = typeBuffMapAll
-                .setIn([String(i), buff, 'value'], (typeBuffMapAll.get(String(i)).get(buff) ? typeBuffMapAll.get(String(i)).get(buff)['value'] : 0) + typesJS.getBonusAmount(buff, j))
-                .setIn([String(i), buff, 'typeBuff'], typesJS.getBonusStatType(buff))
-                .setIn([String(i), buff, 'tier'], j);
-              break;
-            case 'enemyDebuff':
-              typeDebuffMapEnemy = typeDebuffMapEnemy
-                .setIn([String(i), buff, 'value'], (typeDebuffMapEnemy.get(String(i)).get(buff) ? typeDebuffMapEnemy.get(String(i)).get(buff)['value'] : 0) + typesJS.getBonusAmount(buff, j))
-                .setIn([String(i), buff, 'typeBuff'], typesJS.getBonusStatType(buff))
-                .setIn([String(i), buff, 'tier'], j);
-              break;
-            case 'noBattleBonus':
-              // No impact in battle
-              break;
-            default:
-              console.log(`Ability bonus type error ... Error found for ${typesJS.getBonusType(buff)}`);
-              process.exit();
-          }
-        } else {
-          break;
-        }
-      }
-      tempBuff = buffsKeysIter.next();
-    }
-  }
-
-  // Apply buff
-  const boardKeysIter = board.keys();
-  let tempUnit = boardKeysIter.next();
-  let newBoard = board;
-  while (!tempUnit.done) {
-    const unitPos = tempUnit.value;
-    const unit = board.get(unitPos);
-    newBoard = newBoard.setIn([unitPos, 'buff'], List([]));
-    const team = unit.get('team') || teamParam;
-    // Solo buffs
-    const types = board.get(unitPos).get('type'); // Value or List
-    if (!f.isUndefined(types.size)) { // List
-      let newUnit = unit;
-      for (let i = 0; i < types.size; i++) {
-        if (!f.isUndefined(typeBuffMapSolo.get(String(team)).get(types.get(i)))) {
-          // console.log('@markBoardBonuses Marking unit', newUnit.get('name'));
-          const buff = typesJS.getType(types.get(i));
-          const buffName = buff.get('name');
-          const bonusValue = typeBuffMapSolo.get(String(team)).get(types.get(i))['value'];
-          const bonusType = buff.get('bonusStatType');
-          const buffTextContent = (bonusType.includes('unique') ? bonusType.split('_')[1] + bonusValue : `${bonusType} +${bonusValue}`);
-          const buffText = `${buffName}: ${buffTextContent}`;
-          newUnit = (await typesJS.getBuffFuncSolo(types.get(i))(newUnit, bonusValue))
-            .set('buff', (newBoard.get(unitPos).get('buff') || List([])).push(buffText)); // Add buff to unit
-          newBoard = await newBoard.set(unitPos, newUnit);
-        }
-      }
-    } else if (!f.isUndefined(typeBuffMapSolo.get(String(team)).get(types))) {
-      // console.log('@markBoardBonuses Marking unit', unit.get('name'));
-      const buff = typesJS.getType(types);
-      const buffName = buff.get('name');
-      const bonusValue = typeBuffMapSolo.get(String(team)).get(types)['value'];
-      const bonusType = buff.get('bonusStatType');
-      const buffTextContent = (bonusType.includes('unique') ? bonusType.split('_')[1] + bonusValue : `${bonusType} +${bonusValue}`);
-      const buffText = `${buffName}: ${buffTextContent}`;
-      const newUnit = (await typesJS.getBuffFuncSolo(types)(unit, bonusValue))
-        .set('buff', (newBoard.get(unitPos).get('buff') || List([])).push(buffText)); // Add buff to unit
-      newBoard = await newBoard.set(unitPos, newUnit);
-    }
-
-    // All buffs
-    const allBuffIter = typeBuffMapAll.get(String(team)).keys();
-    let tempBuffAll = allBuffIter.next();
-    while (!tempBuffAll.done) {
-      const buff = tempBuffAll.value;
-      const bonusValue = typeBuffMapAll.get(String(team)).get(buff)['value'];
-      const bonusType = typesJS.getBonusStatType(buff);
-      const buffText = `${buff}: ${bonusType} +${bonusValue}`;
-      const newUnit = typesJS.getBuffFuncAll(buff)(newBoard.get(unitPos), bonusValue)
-        .set('buff', (newBoard.get(unitPos).get('buff') || List([])).push(buffText));
-      newBoard = await newBoard.set(unitPos, newUnit);
-      tempBuffAll = allBuffIter.next();
-    }
-
-    // Enemy buffs
-    const enemyTeam = 1 - team;
-    const enemyDebuffIter = typeDebuffMapEnemy.get(String(enemyTeam)).keys();
-    let tempEnemy = enemyDebuffIter.next();
-    while (!tempEnemy.done) {
-      const buff = tempEnemy.value;
-      const bonusValue = typeDebuffMapEnemy.get(String(enemyTeam)).get(buff)['value'];
-      const bonusType = typesJS.getBonusStatType(buff);
-      const buffText = `${buff}: ${bonusType} +${bonusValue}`;
-      const newUnit = typesJS.getEnemyDebuff(buff)(newBoard.get(unitPos), bonusValue)
-        .set('buff', (newBoard.get(unitPos).get('buff') || List([])).push(buffText));
-      newBoard = await newBoard.set(unitPos, newUnit);
-      tempEnemy = enemyDebuffIter.next();
-    }
-    tempUnit = boardKeysIter.next();
-  }
-  if (f.isUndefined(newBoard) || Object.keys(newBoard).length === 0) {
-    console.log('@markBoardBonuses CHECK ME', newBoard);
-  } */
-  // console.log('NEWBOARD: ', newBoard);
-  return {
-    board,
-    buffMap,
-    typeBuffMapSolo,
-    typeBuffMapAll,
-    typeDebuffMapEnemy
-  };
 };
 
 /**
@@ -413,7 +218,6 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
   }
 
   // TODO
-  // const tempMarkedResults = await BoardJS.markBoardBonuses(board);
   // const tempBoard = tempMarkedResults.get('newBoard');
 
   let upgradeOccured = false;
@@ -428,23 +232,6 @@ BoardJS.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPo
     board = obj['board'];
     upgradeOccured = obj['upgradeOccured'] || upgradeOccured;
   }
-
-  /* const markedResults = await BoardJS.markBoardBonuses(board);
-  const buffMap = markedResults.get('buffMap').get('0');
-  const typeBuffMapSolo = markedResults.get('typeBuffMapSolo').get('0');
-  const typeBuffMapAll = markedResults.get('typeBuffMapAll').get('0');
-  const typeDebuffMapEnemy = markedResults.get('typeDebuffMapEnemy').get('0');
-  // Add this information to the state, boardBuffs
-
-  const boardBuffs = Map({
-    buffMap,
-    typeBuffMapSolo,
-    typeBuffMapAll,
-    typeDebuffMapEnemy,
-  });
-  // console.log('@boardBuffs', boardBuffs);
-  state = state.setIn(['players', playerIndex, 'boardBuffs'], boardBuffs); */
-  // const markedBoard = markedResults.get('newBoard');
 
   state.setIn(['players', playerIndex, 'hand'], hand);
   state.setIn(['players', playerIndex, 'board'], board);

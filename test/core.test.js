@@ -26,6 +26,7 @@ describe('Core Modules', () => {
   const MOCK_CLIENTS = [MOCK_SOCKETID_1, MOCK_SOCKETID_2, MOCK_SOCKETID_3];
 
   let gameState = null;
+  const firstHandPosition = '0,-1';
 
   describe('ConnectedPlayers Storage and Game start', () => {
     it('Can add customer', () => {
@@ -82,8 +83,8 @@ describe('Core Modules', () => {
     it('can buy pawn', async () => {
       gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       gameState.should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[0].should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[0].should.have.property('lookType');
+      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
     });
 
     it('cannot buy pawn when no gold', async () => {
@@ -93,11 +94,10 @@ describe('Core Modules', () => {
     });
 
     it('player 1 can move pawn to board', async () => {
-      const fromPosition = '0';
       const toPosition = '0,2';
-      const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, fromPosition, toPosition);
+      const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, firstHandPosition, toPosition);
       result.upgradeOccured.should.be.false();
-      should(gameState.players[MOCK_SOCKETID_1].hand[fromPosition]).undefined();
+      should(gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition]).undefined();
       gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
     });
 
@@ -113,16 +113,16 @@ describe('Core Modules', () => {
     it('whole battle can be executed', async () => {
       const npcBoard = await BoardJS.createBoard([
         {
-          name: 'minotaur',
-          x: 1,
-          y: 8
+          name: 'dwarf',
+          x: 0,
+          y: 7
         }
       ]);
       const playerBoard = await BoardJS.createBoard([
         {
           name: 'minotaur',
-          x: 3,
-          y: 4
+          x: 0,
+          y: 0
         }
       ]);
 
@@ -137,8 +137,8 @@ describe('Core Modules', () => {
       const playerBoard = await BoardJS.createBoard([
         {
           name: 'minotaur',
-          x: 1,
-          y: 8
+          x: 0,
+          y: 7
         }
       ]);
       const npcBoard = await BoardJS.createBoard([]);
@@ -146,6 +146,7 @@ describe('Core Modules', () => {
       const combinedBoard = await BoardJS.createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
       battle.should.be.ok();
+      should.exist(battle.winner);
       battle.winner.should.equal(TEAM.A);
     });
   });

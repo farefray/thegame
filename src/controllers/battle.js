@@ -1,6 +1,5 @@
 import Battle from '../objects/Battle';
 
-const _ = require('lodash');
 const pawns = require('../pawns');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
@@ -304,7 +303,6 @@ BattleController.setup = async state => {
     const board = await BoardJS.createBattleBoard(playerBoard, npcBoard);
 
     // Both players have units, battle required
-    // const boardWithBonuses = (await BoardJS.markBoardBonuses(board))['board']; todo
     const battleResult = new Battle(board);
 
     results.battles[players[i]] = {

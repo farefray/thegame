@@ -21,25 +21,16 @@
       "name": "Mocha All",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
-        "--timeout",
-        "999999",
-        "--colors",
-        "${workspaceFolder}/{,!(node_modules)/}*/*.test.js"
+        "--require", "@babel/register",
+        "${workspaceFolder}/{,!(node_modules)/}*/*.test.js",
+        "-u", "tdd",
+        "--timeout", "999999",
+        "--colors"
       ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Mocha Current File",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--timeout",
-        "999999",
-        "--colors",
-        "${file}"
+      "runtimeArgs": [
+        "--nolazy"
       ],
+      "sourceMaps": true,
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }

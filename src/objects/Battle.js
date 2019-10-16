@@ -25,29 +25,29 @@ export default class Battle {
     }
 
     this.units = _.shuffle(units);
-    this.actionQueue = new ActionQueue(this.units, this.calculateAction.bind(this));
+    this.actionQueue = new ActionQueue(this.units, this.calculateAction.bind(this), () => {
+      this.setWinner();
+    });
 
     // console.time('test');
     this.actionQueue.execute();
-    this.setWinner();
+
     // console.log(this.actionStack);
     // console.timeEnd('test');
   }
 
   setWinner() {
     const remainingUnitCount = {
-      [TEAM.A]: this.units.filter(u => u.team === [TEAM.A]),
-      [TEAM.B]: this.units.filter(u => u.team === [TEAM.B])
+      [TEAM.A]: this.units.filter(u => (u.team === TEAM.A && u.hp > 0)),
+      [TEAM.B]: this.units.filter(u => (u.team === TEAM.B && u.hp > 0))
     };
-    if (!remainingUnitCount[TEAM.A] && !remainingUnitCount[TEAM.B]) {
+
+    if (!remainingUnitCount[TEAM.A].length && !remainingUnitCount[TEAM.B].length) {
       this.winner = TEAM.NONE;
+    } else {
+      this.winner = !remainingUnitCount[TEAM.A].length ? TEAM.B : TEAM.A;
     }
-    if (!remainingUnitCount[TEAM.A]) {
-      this.winner = TEAM.B;
-    }
-    if (!remainingUnitCount[TEAM.B]) {
-      this.winner = TEAM.A;
-    }
+
     this.playerDamage = 5;
   }
 

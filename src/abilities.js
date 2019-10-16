@@ -37,7 +37,10 @@ exports.getAbility = async name => {
   // console.log('@abilties.getAbility', name);
   const ability = pawns.getMonsterStats(name)['ability'];
   const returnMe = (await abilitiesMap)[ability];
-  if (f.isUndefined(returnMe)) console.log('@getAbility undefined', name);
+  if (f.isUndefined(returnMe)) {
+    return null;
+  };
+
   return returnMe;
 };
 

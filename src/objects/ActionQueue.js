@@ -1,15 +1,25 @@
 const BATTLE_TIME_LIMIT = 30 * 1000; // time limit for battle
 export default class ActionQueue {
-  constructor(units, actionHandler) {
+  /**
+   *Creates an instance of ActionQueue.
+   * @param {*} units
+   * @param {*} actionHandler
+   * @param {function} callback
+   * @memberof ActionQueue
+   */
+  constructor(units, actionHandler, callback) {
     this.actionQueue = units.map(unit => ({ timestamp: 0, unit }));
     this.actionHandler = actionHandler;
     this.actionGenerator = this.generateActions();
+    this.callback = callback || (() => true);
   }
 
   execute() {
     const { done } = this.actionGenerator.next();
     if (!done) {
       this.execute();
+    } else {
+      this.callback();
     }
   }
 
