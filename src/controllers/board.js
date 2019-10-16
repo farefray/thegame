@@ -1,7 +1,8 @@
-const _ = require('lodash');
+import BattleUnit from '../objects/BattleUnit';
+import Position from '../../app/src/objects/Position'; // todo move to shared
+
 const f = require('../f');
 const pawns = require('../pawns');
-const abilitiesJS = require('../abilities');
 
 const BoardJS = {};
 
@@ -15,7 +16,8 @@ const BoardJS = {};
 async function _checkPieceUpgrade(board, playerIndex, piece, position) {
   const name = piece['name'];
   const stats = pawns.getMonsterStats(name);
-  if (!stats['evolves_to']) {
+  const todo = true;
+  if (todo) {
     return {
       board,
       upgradeOccured: false
@@ -85,47 +87,6 @@ BoardJS.getBoardUnit = name => {
 };
 
 /**
- * Create unit for board battle from createBoardUnit unit given newpos/pos and team
- * @TODO maybe we need to use BattleUnit class here instead -.- !!!
- */
-BoardJS.createBattleUnit = async (unit, unitPos, team) => {
-  const unitStats = pawns.getMonsterStats(unit['name']);
-  const ability = await abilitiesJS.getAbility(unit['name']);
-
-  const battleUnit = _.cloneDeep(unit);
-  // todo proper way :)
-  unitStats.get = field => unitStats[field];
-  const set = (where, what) => {
-    battleUnit[where] = what;
-    return this;
-  };
-
-  set('_uid', unitPos); // this is hack for BattleUnit functionality which is required on front.
-
-  set('team', team);
-  set('attack', unitStats.get('attack'));
-  set('hp', unitStats['hp']);
-  set('maxHp', unitStats['hp']);
-  set('startHp', unitStats['hp']);
-  set('type', unitStats.get('type'));
-  set('next_move', unitStats.get('next_move') || pawns.getStatsDefault('next_move'));
-  set('mana', unitStats['mana'] || pawns.getStatsDefault('mana'));
-  set('ability', unitStats.get('ability'));
-  set('armor', unitStats.get('armor') || pawns.getStatsDefault('armor'));
-  set('speed', unitStats.get('speed'));
-  /* .set('mana_hit_given', unitStats.get('mana_hit_given') || pawns.getStatsDefault('mana_hit_given'))
-  set('mana_hit_taken', unitStats.get('mana_hit_taken') || pawns.getStatsDefault('mana_hit_taken')) */
-  set('mana_multiplier', unitStats.get('mana_multiplier') || pawns.getStatsDefault('mana_multiplier'));
-  set('specialAttack', unitStats.get('specialAttack'));
-  set('specialDefense', unitStats.get('specialDefense'));
-  set('position', unitPos); // its not being updated on move, imho need BattleUnit usage here
-  set('attackRange', unitStats.get('attackRange') || pawns.getStatsDefault('attackRange'));
-  set('manaCost', (ability && ability['mana']) || abilitiesJS.getDefault('mana'));
-
-  return battleUnit;
-};
-
-/**
  * Combines two boards into one for battle
  * Adds all relevant stats for the unit to the unit
  * Reverses position for enemy units
@@ -135,13 +96,13 @@ BoardJS.createBattleBoard = async (board1, board2) => {
 
   for (const unitPos in board1) {
     const unit = board1[unitPos];
-    const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 0);
+    const battleUnit = new BattleUnit(unit, new Position(unitPos), 0);
     newBoard[unitPos] = battleUnit;
   }
 
   for (const unitPos in board2) {
     const unit = board2[unitPos];
-    const battleUnit = await BoardJS.createBattleUnit(unit, unitPos, 1);
+    const battleUnit = new BattleUnit(unit, new Position(unitPos), 1);
     newBoard[unitPos] = battleUnit;
   }
 

@@ -9,13 +9,10 @@ const {
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
 
-
 const GameController = require('./game');
 const BoardController = require('./controllers/board');
 const sessionJS = require('./session');
-const pawns = require('./pawns');
-const abilitiesJS = require('./abilities');
-const f = require('./f');
+
 
 const ConnectedPlayers = require('./models/ConnectedPlayers');
 const SessionsStore = require('./models/SessionsStore');

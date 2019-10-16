@@ -1,4 +1,6 @@
-const BoardJS = require('../controllers/board'); // todo get rid of this dependency here
+import Position from '../../app/src/objects/Position';
+import BattleUnit from '../objects/BattleUnit';
+
 const DEBUG = true; // SORRY
 
 function Player(id) {
@@ -45,7 +47,7 @@ Player.prototype.addToHand = async function(unit) {
   const position = this.get('availableHandPosition');
   if (position !== null) {
     const hand = this.get('hand');
-    hand[position] = await BoardJS.createBattleUnit(unit, position, 0);
+    hand[position] = new BattleUnit(unit, new Position(position), 0);
     this.set('hand', hand);
     return position;
   }

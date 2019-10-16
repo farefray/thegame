@@ -3,7 +3,6 @@ import Battle from '../objects/Battle';
 const pawns = require('../pawns');
 const f = require('../f');
 const gameConstantsJS = require('../game_constants');
-const abilitiesJS = require('../abilities');
 
 const BoardJS = require('./board');
 
@@ -61,102 +60,6 @@ async function _manaIncrease(board, damage, unitPos, enemyPos) {
   return manaChanges;
 }
 
-/**
- * Use ability
- * Remove mana for spell
- * noTarget functionality
- * Damage unit if have power
- * Temp: Move noTarget out of here
- * Doesn't support aoe currently
- * TODO: Mark the specific information in move
- *    Attempt fix by effectMap
- * currently: returns board
- * new: {board, effect} where effect = abilityTriggers contain heals or dot
- */
-async function _useAbility(board, ability, damageParam, unitPos, target) {
-  let damage = damageParam;
-  const manaCost = ability['mana'] || abilitiesJS.getAbilityDefault('mana');
-  const newMana = board[unitPos].mana - manaCost;
-  const manaChanges = {
-    unitPos: newMana
-  };
-  board[unitPos].mana = newMana;
-  let effectMap = {};
-  if (!f.isUndefined(ability['effect'])) {
-    const effect = ability['effect'];
-    const mode = f.isUndefined(effect.length) ? effect : effect[0];
-    const args = f.isUndefined(effect.length) ? undefined : effect.shift(0);
-    console.log('@useAbility mode', mode, ', args', args);
-    switch (mode) {
-      case 'buff': {
-        if (!f.isUndefined(args)) {
-          // Args: Use buff on self on board [buffType, amount]
-          const buffValue = newBoard.getIn([unitPos, args.get(0)]) + args.get(1);
-          console.log('@useAbility - buff', buffValue);
-          newBoard = newBoard.setIn([unitPos, args.get(0)], buffValue);
-          effectMap = effectMap.setIn([unitPos, `buff${args.get(0)}`], buffValue);
-        }
-      }
-      case 'teleport':
-        console.log('@teleport');
-      case 'transform':
-      case 'noTarget': {
-        console.log('@useAbility - noTarget return for mode =', mode);
-        if (damage !== 0) {
-          console.log('@NoTarget HMMM', damage);
-          damage = 0;
-        }
-        // return { board: { board: newBoard }) };
-        break;
-      }
-      case 'lifesteal': {
-        const lsFactor = !f.isUndefined(args) ? args.get(0) : abilitiesJS.getAbilityDefault('lifestealValue');
-        const healObj = await _healUnit(newBoard, unitPos, Math.round(lsFactor * damage));
-        newBoard = healObj['board'];
-        effectMap = effectMap.setIn([unitPos, 'heal'], healObj.get('hpHealed'));
-        break;
-      }
-      case 'dot': {
-        const accuracy = !f.isUndefined(args) ? args.get(0) : abilitiesJS.getAbilityDefault('dotAccuracy');
-        const dmg = !f.isUndefined(args) ? args.get(1) : abilitiesJS.getAbilityDefault('dotDamage');
-        if (dmg > (newBoard.getIn([target, 'dot']) || 0)) {
-          if (Math.random() < accuracy) {
-            // Successfully puts poison
-            console.log(' --- Poison hit on ', target);
-            newBoard = await newBoard.setIn([target, 'dot'], dmg);
-            effectMap = effectMap.setIn([target, 'dot'], dmg);
-          }
-        }
-        break;
-      }
-      case 'aoe':
-        // TODO - Can it even be checked here first? Probably before this stage
-        break;
-      case 'multiStrike': {
-        const percentages = abilitiesJS.getAbilityDefault('multiStrikePercentage');
-        const r = Math.random();
-        let sum = 0;
-        for (let i = 0; i < 4; i++) {
-          sum += percentages.get(i);
-          if (r <= sum) {
-            // 2-5 hits
-            damage *= 2 + i;
-            effectMap = effectMap.setIn([unitPos, 'multiStrike'], 2 + i);
-            break;
-          }
-        }
-        break;
-      }
-      default:
-        console.log('@useAbility - default, mode =', mode);
-    }
-  }
-  return {
-    removeHpBoard: await BattleController.removeHpBattle(newBoard, target, damage),
-    effect: effectMap,
-    manaChanges
-  };
-}
 
 /**
  * Convert damage in percentage to value

@@ -3,7 +3,6 @@ import Pathfinder from './Pathfinder';
 import BattleUnit from './BattleUnit';
 
 const _ = require('lodash');
-const f = require('../f');
 
 const { TEAM, ACTION } = require('../../app/src/shared/constants');
 
@@ -19,7 +18,7 @@ export default class Battle {
     this.pathfinder = new Pathfinder({ gridWidth: 8, gridHeight: 8 });
     // internal setup
     for (const boardPos in board) {
-      const battleUnit = new BattleUnit(board[boardPos], f.coords(boardPos)); // maybe f.* is overhead
+      const battleUnit = board[boardPos];
       units.push(battleUnit);
       this.pathfinder.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
     }
