@@ -60,6 +60,7 @@ export default class Battle {
       this.cast(unit, timestamp);
       return;
     }
+
     const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
     if (distanceToTarget < unit.attackRange) {
       this.attackUnit(unit, targetUnit, timestamp);

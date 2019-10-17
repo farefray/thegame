@@ -21,6 +21,7 @@
     "hp": 375,
     "mana": 0,
     "attack": 50,
+    "attackRange": 1,
     "armor": 5,
     "speed": 1000,
     "attackSpeed": 1000
@@ -33,6 +34,7 @@
     "hp": 300,
     "mana": 0,
     "attack": 60,
+    "attackRange": 1,
     "armor": 7,
     "speed": 1000,
     "attackSpeed": 1500

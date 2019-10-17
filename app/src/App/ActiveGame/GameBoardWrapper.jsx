@@ -8,7 +8,6 @@ import { StateProvider } from './GameBoard.context.js';
 const { ACTION } = require('../../shared/constants');
 
 function unitReducer(unitComponents, action) {
-  console.log("TCL: unitReducer -> unitComponents", unitComponents)
   switch (action.type) {
     case 'SPAWN': {
       const { unit } = action;
