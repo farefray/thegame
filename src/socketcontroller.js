@@ -2,20 +2,16 @@
  * Actually it seems like overall game controller already, cuz we handle a lot of logic here, even if trying to move it to different controllers... maybe consider having it renamed :D
  */
 import BattleController from './controllers/battle';
+import GameController from './game';
+import BoardController from './controllers/board';
 
 const {
   fromJS
 } = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
-
-
-const GameController = require('./game');
-const BoardController = require('./controllers/board');
 const sessionJS = require('./session');
-const pawns = require('./pawns');
-const abilitiesJS = require('./abilities');
-const f = require('./f');
+
 
 const ConnectedPlayers = require('./models/ConnectedPlayers');
 const SessionsStore = require('./models/SessionsStore');
@@ -226,20 +222,11 @@ function SocketController(socket, io) {
     }
   });
 
-  socket.on('PLACE_PIECE', async (fromPosition, toPosition) => {
+  socket.on('PLACE_PIECE', async (fromBoardPosition, toBoardPosition) => {
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const state = session.get('state');
-    const result = await GameController.mutateStateByPawnPlacing(state, socket.id, fromPosition, toPosition);
-    const evolutionDisplayName = result['upgradeOccured'];
-    //  console.log('@PlacePieceSocket', evolutionDisplayName);
-    if (evolutionDisplayName) {
-      for (let i = 0; i < evolutionDisplayName.size; i++) {
-        // const playerName = session.getPlayerName(socket.id);
-        // newChatMessage(socket, io, socket.id, `${playerName} -> `, evolutionDisplayName.get(i), 'pieceUpgrade');
-      }
-    }
-    console.log('Place piece from', fromPosition, 'at', toPosition, '(evolution =', `${evolutionDisplayName})`);
+    await BoardController.mutateStateByPawnPlacing(state, socket.id, fromBoardPosition, toBoardPosition);
     session.set('state', state);
     sessionsStore.store(session);
     // todo some abstract sending with try catch, to not crash app every time it bugs :)

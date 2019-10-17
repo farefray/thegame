@@ -1,6 +1,5 @@
 const f = require('./f');
 const pawns = require('./pawns');
-const gameConstantsJS = require('./game_constants');
 
 const Decks = {};
 const _buildDecks = async () => {
@@ -32,7 +31,7 @@ exports.buildPieceStorage = async optList => {
     for (let j = 0; j < decks.get(i).size; j++) {
       const pokemon = decks.get(i).get(j);
       if (f.isUndefined(optList) || optList.includes(pokemon.get('name'))) {
-        const rarityAmount = gameConstantsJS.getRarityAmount(pokemon.get('cost'));
+        const rarityAmount = 3;
         // console.log('Adding', rarityAmount, pokemon.get('name'), 'to', pokemon.get('cost'));
         for (let l = 0; l < rarityAmount; l++) {
           availablePieces = f.push(availablePieces, i, pokemon.get('name'));

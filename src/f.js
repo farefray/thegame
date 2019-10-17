@@ -1,5 +1,4 @@
 const shuffle = require('immutable-shuffle');
-const gameConstantsJS = require('./game_constants');
 
 const Position = require('../app/src/objects/Position');
 
@@ -45,7 +44,6 @@ exports.reverseUnitPos = posInput => new Position(7 - x(posInput), 7 - y(posInpu
 exports.print = (obj, msg = '') => console.log(msg + JSON.stringify(obj, null, 2)); // Pretty printed version
 
 const p = (msg, msgs) => {
-  if (gameConstantsJS.debugMode) {
     let s = msg;
     if (!isUndefined(msgs)) {
       for (let i = 0; i < msgs.length; i++) {
@@ -53,7 +51,6 @@ const p = (msg, msgs) => {
       }
     }
     console.log(s);
-  }
 };
 
 exports.p = (msg, ...msgs) => p(msg, msgs);

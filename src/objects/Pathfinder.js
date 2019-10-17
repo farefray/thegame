@@ -148,7 +148,7 @@ export default class Pathfinder {
   }
 
   /**
-   * @param {BattleUnit} unit1
+   * @param {BattleUnit|Pathobject?} unit1
    * @param {BattleUnit} unit2
    * @returns {Integer}
    */

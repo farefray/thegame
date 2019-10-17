@@ -3,7 +3,7 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import RightSidebar from './RightSidebar';
-import * as GameController from '../../../../src/game.js';
+import GameController from '../../../../src/game.js';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
@@ -37,7 +37,7 @@ const MyReduxContext = () => {
     runEffect();
   }, [setData]);
 
-  return data && <RightSidebar {...data.players[PLAYER_INDEX]} /> || <div>Loading</div>;
+  return data ? <RightSidebar {...data.players[PLAYER_INDEX]} /> : <div>Loading</div>;
 };
 
 const MyReduxMock = ({ children }) => {

@@ -1,4 +1,6 @@
-const BoardJS = require('../controllers/board'); // todo get rid of this dependency here
+import Position from '../../app/src/objects/Position';
+import BattleUnit from './BattleUnit';
+
 const DEBUG = true; // SORRY
 
 function Player(id) {
@@ -10,14 +12,14 @@ function Player(id) {
   this.gold = 1;
   this.shopUnits = {};
   this.hand = {};
-  this.board = {};
+  this.board = {}; // todo keep it simple {x,y,name}
   this.rivals = {}; // ?
   this.unitAmounts = {}; // ??
 
   return this;
 }
 
-Player.prototype.get = function(field) {
+Player.prototype.get = function (field) {
   switch (field) {
     case 'availableHandPosition': {
       const hand = this.get('hand');
@@ -35,17 +37,22 @@ Player.prototype.get = function(field) {
   }
 };
 
-Player.prototype.set = function(field, value) {
+Player.prototype.set = function (field, value) {
   this[field] = value;
 };
 
 // not sure if we should carry such support functions with all the objects. Assuming it may affect performance...
-
-Player.prototype.addToHand = async function(unit) {
+Player.prototype.addToHand = async function (unit) {
   const position = this.get('availableHandPosition');
   if (position !== null) {
     const hand = this.get('hand');
-    hand[position] = await BoardJS.createBattleUnit(unit, position, 0);
+    const pos = new Position(position);
+    hand[position] = {
+      ...unit,
+      x: pos.x,
+      y: pos.y
+    };
+
     this.set('hand', hand);
     return position;
   }
@@ -53,12 +60,12 @@ Player.prototype.addToHand = async function(unit) {
   return null;
 };
 
-Player.prototype.increaseExperience = function() {
+Player.prototype.increaseExperience = function () {
   // TODO
 };
 
-Player.prototype.isDead = function() {
+Player.prototype.isDead = function () {
   return this.hp <= 0;
 };
 
-module.exports = Player;
+export default Player;

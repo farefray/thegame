@@ -2,11 +2,21 @@ import _ from 'lodash';
 
 const MAX_MANA = 100;
 
+/**
+ *
+ *
+ * @export
+ * @class BattleUnit
+ */
 export default class BattleUnit {
-  constructor(unit, coords) {
+  constructor(unit, coords, team) {
     _.assign(this, unit);
     this.x = +coords.x;
     this.y = +coords.y;
+    this.team = team;
+
+    // frontend
+    this.position = this.getBoardPosition(); // fixme
 
     // internal
     this._uid = this.getBoardPosition(); // uid = starting position for mob

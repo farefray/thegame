@@ -10,11 +10,11 @@ import ItemTypes from './ItemTypes';
 import { useStateValue } from '../GameBoard.context.js';
 
 export default function BoardSquare({ cellPosition, children }) {
-  const { isDead, isActiveBattleGoing, isBattle, myBoard, myHand } = useStateValue();
+  const { isDead, isActiveBattleGoing, myBoard, myHand } = useStateValue();
 
   // TODO the same check must be added to backend[without repeating the code!]
   const canMovePawn = (fromPosition, toPosition) => {
-    if (isDead || (!isActiveBattleGoing && isBattle)) {
+    if (isDead || isActiveBattleGoing) {
       return false;
     }
 

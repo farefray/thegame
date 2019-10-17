@@ -1,20 +1,20 @@
+import Player from './objects/Player';
+import BoardController from './controllers/board';
+
 const {
   List,
   fromJS
 } = require('immutable');
 
-const pawns = require('./pawns');
 const f = require('./f');
 const shopJS = require('./controllers/shop');
 const BattleController = require('./controllers/battle');
-const StateJS = require('./controllers/state');
-const BoardJS = require('./controllers/board');
-const SessionJS = require('./session');
-
+const pawns = require('./pawns');
 const State = require('./objects/State');
-const Player = require('./objects/Player');
 
-const GameController = {};
+const GameController = function () {
+  return this;
+};
 // Cost of 2 gold(todo check for balance?)
 GameController.refreshShopGlobal = async (stateParam, index) => {
   const state = stateParam.setIn(['players', index, 'gold'], stateParam.getIn(['players', index, 'gold']) - 2);
@@ -28,15 +28,12 @@ GameController.buyExp = (state, playerIndex) => {
   // TODO
   const gold = state.getIn(['players', playerIndex, 'gold']);
   const newState = state.setIn(['players', playerIndex, 'gold'], gold - 5);
-  return StateJS.increaseExp(newState, playerIndex, 4);
+  return newState;
 };
-
-GameController.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') =>
-  BoardJS.mutateStateByPawnPlacing(state, playerIndex, fromPosition, toPosition, shouldSwap);
 
 GameController.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleController.withdrawPiece(state, playerIndex, piecePosition);
 
-GameController.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardJS.sellPiece(state, playerIndex, piecePosition);
+GameController.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardController.sellPiece(state, playerIndex, piecePosition);
 
 GameController.removeDeadPlayer = async (stateParam, playerIndex) => {
   // console.log('@removeDeadPlayer')
@@ -68,7 +65,7 @@ GameController.removeDeadPlayer = async (stateParam, playerIndex) => {
   const playerUnits = shopUnits.concat(boardList).concat(handList);
   console.log('@removeDeadPlayer', shopUnits, boardList, handList, '=', playerUnits);
   for (let i = 0; i < playerUnits.size; i++) {
-    state = await BoardJS.discardBaseUnits(state, playerIndex, playerUnits.get(i));
+    state = await BoardController.discardBaseUnits(state, playerIndex, playerUnits.get(i));
   }
   // state = state.set('discardedPieces', state.get('discardedPieces').concat(playerUnits));
   const newState = state.set('players', state.get('players').delete(playerIndex));
@@ -112,8 +109,7 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
    * remove gold
    * set player state
    */
-  const boardUnit = BoardJS.getBoardUnit(unit.name);
-  await player.addToHand(boardUnit);
+  await player.addToHand(pawns.getMonsterStats(unit.name));
   delete player.shopUnits[pieceIndex];
   player.gold -= unit.cost;
 
@@ -199,4 +195,4 @@ GameController.endBattle = async (stateParam, playerIndex, winner, finishedBoard
   return potentialEndTurnObj;
 };
 
-module.exports = GameController;
+export default GameController;

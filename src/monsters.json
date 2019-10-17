@@ -5,17 +5,13 @@
     "lookType": 62,
     "cost": 1,
     "hp": 150,
+    "mana": 0,
     "attack": 45,
     "attackRange": 3,
     "particle": 1,
     "armor": 2,
     "speed": 1200,
-    "attackSpeed": 1000,
-    "type": "normal",
-    "ability": "",
-    "evolves_to": null,
-    "specialAttack": 15,
-    "specialDefense": 20
+    "attackSpeed": 1000
   },
   "minotaur": {
     "name": "minotaur",
@@ -23,15 +19,12 @@
     "lookType": 25,
     "cost": 1,
     "hp": 375,
+    "mana": 0,
     "attack": 50,
+    "attackRange": 1,
     "armor": 5,
     "speed": 1000,
-    "attackSpeed": 1000,
-    "type": "normal",
-    "ability": "",
-    "evolves_to": null,
-    "specialAttack": 15,
-    "specialDefense": 20
+    "attackSpeed": 1000
   },
   "dwarf": {
     "name": "dwarf",
@@ -39,14 +32,11 @@
     "lookType": 69,
     "cost": 1,
     "hp": 300,
+    "mana": 0,
     "attack": 60,
+    "attackRange": 1,
     "armor": 7,
     "speed": 1000,
-    "attackSpeed": 1500,
-    "type": "normal",
-    "ability": "",
-    "evolves_to": null,
-    "specialAttack": 0,
-    "specialDefense": 0
+    "attackSpeed": 1500
   }
 }
