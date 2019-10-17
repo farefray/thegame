@@ -41,12 +41,7 @@ SocketConnector.init = function (dispatch) {
   });
 
   socket.on('UPDATE_PLAYER', (index, player) => {
-    console.log('socket on update player');
     dispatch({ type: 'UPDATE_PLAYER', index: index, player: player });
-  });
-
-  socket.on('LOCK_TOGGLED', (index, lock) => {
-    dispatch({ type: 'LOCK_TOGGLED', index: index, lock: lock });
   });
 
   socket.on('ADD_PLAYER', index => {
@@ -64,9 +59,6 @@ SocketConnector.init = function (dispatch) {
     } else {
       dispatch({ type: 'END_BATTLE', upcomingRoundType });
     }
-    setTimeout(() => {
-      dispatch({ type: 'TOGGLE_SHOW_DMGBOARD' });
-    }, 10000);
   });
 
   socket.on('END_GAME', winningPlayer => {
@@ -74,14 +66,6 @@ SocketConnector.init = function (dispatch) {
     setTimeout(() => {
       window.location.reload();
     }, 60000);
-  });
-
-  socket.on('SET_STATS', (name, stats) => {
-    dispatch({ type: 'SET_STATS', name, stats });
-  });
-
-  socket.on('NEW_CHAT_MESSAGE', (senderMessage, message, type) => {
-    dispatch({ type: 'NEW_CHAT_MESSAGE', senderMessage, newMessage: message, chatType: type });
   });
 
   socket.on('DEAD_PLAYER', (pid, position) => {

@@ -37,7 +37,7 @@ const MyReduxContext = () => {
     runEffect();
   }, [setData]);
 
-  return data && <RightSidebar {...data.players[PLAYER_INDEX]} /> || <div>Loading</div>;
+  return data ? <RightSidebar {...data.players[PLAYER_INDEX]} /> : <div>Loading</div>;
 };
 
 const MyReduxMock = ({ children }) => {

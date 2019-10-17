@@ -212,7 +212,6 @@ BoardController.preBattleCheck = async function(state) {
     }
   }
 
-  console.log('Returning state');
   return state;
 };
 

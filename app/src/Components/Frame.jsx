@@ -1,6 +1,5 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
 
 import prefix from '../UI/utils/prefix';
 
@@ -36,9 +35,7 @@ class Frame extends React.Component {
       return null;
     }
 
-    if (!React.isValidElement(header) || Array.isArray(header)) {
-      header = header;
-    } else {
+    if (React.isValidElement(header)) {
       const className = classNames(this.addPrefix('title'), header.props.className);
       header = React.cloneElement(header, {
         className
@@ -49,16 +46,6 @@ class Frame extends React.Component {
         {header}{' '}
       </div>
     );
-  }
-
-  /**
-   *
-   * @param {React.Node} header
-   * @returns
-   * @memberof Frame
-   */
-  renderAnchor(header) {
-    return <a href={`#`}>{header} </a>;
   }
 
   render() {

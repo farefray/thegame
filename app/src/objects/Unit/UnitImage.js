@@ -5,8 +5,7 @@ import fallbackImage from '../../assets/monsters/default.png';
 
 export default function UnitImage({ lookType = 1, direction, isMoving, extraClass = '' }) {
   // Load all images which will be required for this unit
-  const look = isMoving ? 'animated' : 'idle';
-  const [sprites, loadSprites] = React.useState({
+  const [sprites] = React.useState({
     idle: {
       1: require(`../../assets/monsters/${lookType}/idle/1.png`),
       2: require(`../../assets/monsters/${lookType}/idle/2.png`),
@@ -40,7 +39,7 @@ export default function UnitImage({ lookType = 1, direction, isMoving, extraClas
 
   React.useEffect(() => {
     setSprite(sprites[isMoving ? 'animated' : 'idle'][direction]);
-  }, [direction, isMoving]);
+  }, [direction, isMoving, sprites]);
 
   const classes = classNames({
     'unit-image': true
