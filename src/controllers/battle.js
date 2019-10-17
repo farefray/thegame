@@ -1,6 +1,5 @@
 import Battle from '../objects/Battle';
 import createBattleBoard from '../utils/createBattleBoard';
-import gameConstantsJS from '../game_constants';
 
 const pawns = require('../pawns');
 const f = require('../f');
@@ -181,6 +180,14 @@ BattleController.battleTime = async stateParam => {
 };
 
 
+const roundSetConfiguration = {
+  1: [{ name: 'dwarf', x: 0, y: 7 }],
+  2: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf', x: 6, y: 7 }],
+  3: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf', x: 6, y: 7 }, { name: 'dwarf', x: 1, y: 7 }],
+  4: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf', x: 6, y: 7 }, { name: 'dwarf', x: 1, y: 7 }],
+  5: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf', x: 6, y: 7 }, { name: 'dwarf', x: 1, y: 7 }]
+};
+
 /**
  * Check not too many units on board
  * Calculate battle for given board, either pvp or npc/gym round
@@ -188,7 +195,8 @@ BattleController.battleTime = async stateParam => {
 BattleController.setup = async state => {
   const players = Object.keys(state.get('players'));
   const round = state.get('round');
-  const npcBoard = await gameConstantsJS.getSetRound(round);
+
+  const npcBoard = roundSetConfiguration[round];
 
   // TODO: Future: All battles calculate concurrently, structurize this object maybe
   const results = {

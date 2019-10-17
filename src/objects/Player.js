@@ -12,7 +12,7 @@ function Player(id) {
   this.gold = 1;
   this.shopUnits = {};
   this.hand = {};
-  this.board = {};
+  this.board = {}; // todo keep it simple {x,y,name}
   this.rivals = {}; // ?
   this.unitAmounts = {}; // ??
 

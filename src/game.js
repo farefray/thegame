@@ -9,7 +9,6 @@ const {
 const f = require('./f');
 const shopJS = require('./controllers/shop');
 const BattleController = require('./controllers/battle');
-const StateJS = require('./controllers/state');
 const pawns = require('./pawns');
 const State = require('./objects/State');
 
@@ -29,7 +28,7 @@ GameController.buyExp = (state, playerIndex) => {
   // TODO
   const gold = state.getIn(['players', playerIndex, 'gold']);
   const newState = state.setIn(['players', playerIndex, 'gold'], gold - 5);
-  return StateJS.increaseExp(newState, playerIndex, 4);
+  return newState;
 };
 
 GameController.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') =>

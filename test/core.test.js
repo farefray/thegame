@@ -1,7 +1,6 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle';
 import createBattleBoard from '../src/utils/createBattleBoard';
-import createBoard from '../src/utils/createBoard';
 import GameController from '../src/game';
 import BattleController from '../src/controllers/battle';
 
@@ -111,20 +110,20 @@ describe('Core Modules', () => {
   describe('Battle', () => {
     let battle;
     it('whole battle can be executed', async () => {
-      const npcBoard = createBoard([
+      const npcBoard = [
         {
           name: 'dwarf',
           x: 0,
           y: 7
         }
-      ]);
-      const playerBoard = createBoard([
+      ];
+      const playerBoard = [
         {
           name: 'minotaur',
           x: 0,
           y: 0
         }
-      ]);
+      ];
 
       const combinedBoard = createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);
@@ -134,14 +133,14 @@ describe('Core Modules', () => {
     });
 
     it('can handle battle with no units', async () => {
-      const playerBoard = createBoard([
+      const playerBoard = [
         {
           name: 'minotaur',
           x: 0,
           y: 7
         }
-      ]);
-      const npcBoard = createBoard([]);
+      ];
+      const npcBoard = [];
 
       const combinedBoard = createBattleBoard(playerBoard, npcBoard);
       battle = new Battle(combinedBoard);

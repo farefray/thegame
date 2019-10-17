@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const pawns = require('../pawns');
 const f = require('../f');
-const gameConstantsJS = require('../game_constants');
 
 const ShopJS = {};
 
