@@ -31,9 +31,6 @@ GameController.buyExp = (state, playerIndex) => {
   return newState;
 };
 
-GameController.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') =>
-  BoardController.mutateStateByPawnPlacing(state, playerIndex, fromPosition, toPosition, shouldSwap);
-
 GameController.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleController.withdrawPiece(state, playerIndex, piecePosition);
 
 GameController.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardController.sellPiece(state, playerIndex, piecePosition);
@@ -112,8 +109,7 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
    * remove gold
    * set player state
    */
-  const boardUnit = pawns.getMonsterStats(unit.name);
-  await player.addToHand(boardUnit);
+  await player.addToHand(pawns.getMonsterStats(unit.name));
   delete player.shopUnits[pieceIndex];
   player.gold -= unit.cost;
 

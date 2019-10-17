@@ -222,20 +222,11 @@ function SocketController(socket, io) {
     }
   });
 
-  socket.on('PLACE_PIECE', async (fromPosition, toPosition) => {
+  socket.on('PLACE_PIECE', async (fromBoardPosition, toBoardPosition) => {
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const state = session.get('state');
-    const result = await GameController.mutateStateByPawnPlacing(state, socket.id, fromPosition, toPosition);
-    const evolutionDisplayName = result['upgradeOccured'];
-    //  console.log('@PlacePieceSocket', evolutionDisplayName);
-    if (evolutionDisplayName) {
-      for (let i = 0; i < evolutionDisplayName.size; i++) {
-        // const playerName = session.getPlayerName(socket.id);
-        // newChatMessage(socket, io, socket.id, `${playerName} -> `, evolutionDisplayName.get(i), 'pieceUpgrade');
-      }
-    }
-    console.log('Place piece from', fromPosition, 'at', toPosition, '(evolution =', `${evolutionDisplayName})`);
+    await BoardController.mutateStateByPawnPlacing(state, socket.id, fromBoardPosition, toBoardPosition);
     session.set('state', state);
     sessionsStore.store(session);
     // todo some abstract sending with try catch, to not crash app every time it bugs :)

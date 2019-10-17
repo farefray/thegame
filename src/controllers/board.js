@@ -1,30 +1,12 @@
 
+import Position from '../../app/src/objects/Position';
+
 const f = require('../f');
 const pawns = require('../pawns');
 
 const BoardController = () => {
   return this;
 };
-
-/** Private methods */
-
-/**
- * Checks all units on board for player of that piece type
- * if 3 units are found, remove those 3 units and replace @ position with evolution
- * No units are added to discardedPieces
- */
-async function _checkPieceUpgrade(board, playerIndex, piece, position) {
-  const todo = true;
-  if (todo) {
-    return {
-      board,
-      upgradeOccured: false
-    };
-  }
-}
-
-/** Public methods */
-
 
 /**
  * Get first available spot on hand
@@ -53,69 +35,63 @@ BoardController.withdrawPiece = async (state, playerIndex, piecePosition) => {
 };
 
 /**
- * Place piece
- * Swap functionality by default, if something is there already
- * * Assumes that only half of the board is placed on
+ * @function
+ * @description
+ * Assumes that only half of the board is placed on
  * TODO: Mark units to be sent back if too many
  *       Do buff calculations and mark on board
- *       Return if PieceUpgrade occured Map({state, upgradeOccured: true})
+ * @param {State} state @mutable
+ * @param {String} playerIndex
+ * @param {BoardPosition} fromBoardPosition
+ * @param {BoardPosition} toBoardPosition
+ * @param {Boolean} shouldSwap @default true Swap functionality by default, if something is there already
  */
-BoardController.mutateStateByPawnPlacing = async (state, playerIndex, fromPosition, toPosition, shouldSwap = 'true') => {
+BoardController.mutateStateByPawnPlacing = async (state, playerIndex, fromBoardPosition, toBoardPosition, shouldSwap = 'true') => {
+  const fromPosition = new Position(fromBoardPosition);
+  const toPosition = new Position(toBoardPosition);
   const hand = state.getIn(['players', playerIndex, 'hand']);
-  let board = state.getIn(['players', playerIndex, 'board']);
+  const board = state.getIn(['players', playerIndex, 'board']);
 
   let piece;
   // Update pawns positions and remove from old stores based on fromPosition
-  if (f.isPositionBelongsToHand(fromPosition)) {
-    piece = hand[fromPosition];
-    hand[fromPosition].position = toPosition;
-    delete hand[fromPosition];
+  if (fromPosition.isMyHandPosition()) {
+    // TODO some unit.Move()
+    piece = hand[fromBoardPosition];
+    hand[fromBoardPosition].position = toPosition;
+    // also consider using only position, not .x and .y
+    hand[fromBoardPosition].x = toPosition.x;
+    hand[fromBoardPosition].y = toPosition.y;
+    delete hand[fromBoardPosition];
   } else {
-    piece = board[fromPosition];
-    board[fromPosition].position = toPosition;
-    delete board[fromPosition];
+    piece = board[fromBoardPosition];
+    board[fromBoardPosition].position = toPosition;
+    board[fromBoardPosition].x = toPosition.x;
+    board[fromBoardPosition].y = toPosition.y;
+    delete board[fromBoardPosition];
   }
 
   let newPiece;
-  if (f.isPositionBelongsToHand(toPosition)) {
-    newPiece = hand[toPosition];
-    hand[toPosition] = piece;
+  if (toPosition.isMyHandPosition()) {
+    newPiece = hand[toBoardPosition];
+    hand[toBoardPosition] = piece;
   } else {
-    newPiece = board[toPosition];
-    board[toPosition] = piece;
-  }
-
-  if (shouldSwap && !f.isUndefined(newPiece)) {
-    newPiece.position = fromPosition;
-
-    if (f.isPositionBelongsToHand(fromPosition)) {
-      hand[fromPosition] = newPiece;
-    } else {
-      board[fromPosition] = newPiece;
-    }
+    newPiece = board[toBoardPosition];
+    board[toBoardPosition] = piece;
   }
 
   // TODO
-  // const tempBoard = tempMarkedResults.get('newBoard');
+  if (shouldSwap && !!newPiece) {
+    newPiece.position = fromPosition;
 
-  let upgradeOccured = false;
-  if (!f.isPositionBelongsToHand(toPosition)) {
-    const obj = await _checkPieceUpgrade(board, playerIndex, board[toPosition], toPosition);
-    board = obj['board'];
-    upgradeOccured = obj['upgradeOccured'];
-  }
-
-  if (shouldSwap && !f.isUndefined(newPiece) && !f.isPositionBelongsToHand(fromPosition)) {
-    const obj = await _checkPieceUpgrade(board, playerIndex, board[fromPosition], fromPosition);
-    board = obj['board'];
-    upgradeOccured = obj['upgradeOccured'] || upgradeOccured;
+    if (fromPosition.isMyHandPosition()) {
+      hand[fromBoardPosition] = newPiece;
+    } else {
+      board[fromBoardPosition] = newPiece;
+    }
   }
 
   state.setIn(['players', playerIndex, 'hand'], hand);
   state.setIn(['players', playerIndex, 'board'], board);
-  return {
-    upgradeOccured
-  };
 };
 
 /**

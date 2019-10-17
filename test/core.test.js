@@ -3,6 +3,7 @@ import Battle from '../src/objects/Battle';
 import createBattleBoard from '../src/utils/createBattleBoard';
 import GameController from '../src/game';
 import BattleController from '../src/controllers/battle';
+import BoardController from '../src/controllers/board';
 
 const should = require('should');
 const rewire = require('rewire');
@@ -94,8 +95,7 @@ describe('Core Modules', () => {
 
     it('player 1 can move pawn to board', async () => {
       const toPosition = '0,2';
-      const result = await GameController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, firstHandPosition, toPosition);
-      result.upgradeOccured.should.be.false();
+      await BoardController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, firstHandPosition, toPosition);
       should(gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition]).undefined();
       gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
     });
