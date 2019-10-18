@@ -1,3 +1,5 @@
+import MutableObject from '../abstract/MutableObject';
+
 function State(playersArray, deck) {
   this.discardedPieces = [];
   this.round = 1;
@@ -12,52 +14,19 @@ function State(playersArray, deck) {
   this.players = playersObject;
   this.pieces = deck;
 
-  return this;
+  return MutableObject.call(this);
 }
 
-State.prototype.get = function(field) {
-  return this[field] || null;
-};
+State.prototype = Object.create(MutableObject.prototype);
 
-State.prototype.set = function(field, value) {
-  this[field] = value;
-};
-
-State.prototype.delete = function(field) {
-  if (this.get(field)) {
-    delete this[field];
-  }
-};
-
+/**
+ * @description prepares state for sending via socket. Removing all unnessesary data
+ * @TODO
+ */
 State.prototype.prepareForSending = function() {
   this.delete('pieces');
-  this.delete('discardedPieces');
 };
 
-// bad [todo get rid of setIn getIn methods, they are present only cuz of compatibility with immutable]
-// UPD seems we cannot remove them, as I'm already getting used to their usage. Need optimize then :)
-/**
- * @param {Array[firstIndex, secondIndex, thirdIndex]}
- * @returns {Any} this[firstIndex][secondIndex][thirdIndex]
- */
-State.prototype.getIn = function([what, index, param]) {
-  if (param) {
-    return this.get(what)[index][param];
-  }
-
-  return this.get(what)[index];
-};
-
-State.prototype.setIn = function([what, where, which], value) {
-  const whatToModify = this.get(what);
-  if (which) {
-    whatToModify[where][which] = value;
-  } else {
-    whatToModify[where] = value;
-  }
-
-  this.set(what, whatToModify);
-};
 
 /**
  * @function

@@ -144,14 +144,14 @@ BoardController.mutateStateByPawnSelling = async (state, playerIndex, fromBoardP
     ? state.getIn(['players', playerIndex, 'hand', fromBoardPosition])
     : state.getIn(['players', playerIndex, 'board', fromBoardPosition]);
 
-  const cost = pawns.getMonsterStats(piece.name).cost;
+  const cost = piece.cost;
   const gold = state.getIn(['players', playerIndex, 'gold']);
   state.setIn(['players', playerIndex, 'gold'], +gold + +cost);
 
   if (fromPosition.isMyHandPosition()) {
-    state.setIn(['players', playerIndex, 'hand', fromBoardPosition], undefined);
+    state.deleteIn(['players', playerIndex, 'hand', fromBoardPosition]);
   } else {
-    state.setIn(['players', playerIndex, 'board', fromBoardPosition], undefined);
+    state.deleteIn(['players', playerIndex, 'board', fromBoardPosition]);
   }
 };
 

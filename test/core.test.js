@@ -88,9 +88,17 @@ describe('Core Modules', () => {
     });
 
     it('cannot buy pawn when no gold', async () => {
-      gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0);
+      gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
       const state = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       should(state).Null();
+    });
+
+    it('can sell pawn', async () => {
+      await GameController.purchasePawn(gameState, MOCK_SOCKETID_2, 0);
+      gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(0);
+      await BoardController.mutateStateByPawnSelling(gameState, MOCK_SOCKETID_2, firstHandPosition);
+      gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(1);
+      should(gameState.players[MOCK_SOCKETID_2].hand[firstHandPosition]).Undefined();
     });
 
     it('player 1 can move pawn to board', async () => {

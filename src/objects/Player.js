@@ -1,5 +1,4 @@
 import Position from '../../app/src/objects/Position';
-import BattleUnit from './BattleUnit';
 
 const DEBUG = true; // SORRY
 
