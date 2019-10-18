@@ -8,7 +8,6 @@ const {
 
 const f = require('./f');
 const shopJS = require('./controllers/shop');
-const BattleController = require('./controllers/battle');
 const pawns = require('./pawns');
 const State = require('./objects/State');
 
@@ -20,20 +19,6 @@ GameController.refreshShopGlobal = async (stateParam, index) => {
   const state = stateParam.setIn(['players', index, 'gold'], stateParam.getIn(['players', index, 'gold']) - 2);
   return shopJS.refreshShop(state, index);
 };
-
-/**
- * Buy exp for player (setIn)
- */
-GameController.buyExp = (state, playerIndex) => {
-  // TODO
-  const gold = state.getIn(['players', playerIndex, 'gold']);
-  const newState = state.setIn(['players', playerIndex, 'gold'], gold - 5);
-  return newState;
-};
-
-GameController.withdrawPieceGlobal = async (state, playerIndex, piecePosition) => BattleController.withdrawPiece(state, playerIndex, piecePosition);
-
-GameController.sellPieceGlobal = (state, playerIndex, piecePosition) => BoardController.sellPiece(state, playerIndex, piecePosition);
 
 GameController.removeDeadPlayer = async (stateParam, playerIndex) => {
   // console.log('@removeDeadPlayer')

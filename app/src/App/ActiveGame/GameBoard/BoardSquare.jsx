@@ -3,7 +3,7 @@ import { useDrop } from 'react-dnd';
 import classNames from 'classnames';
 import prefix from '../../../UI/utils/prefix';
 
-import { placePiece } from '../../../socketConnector';
+import { SocketConnector } from '../../../socketConnector';
 
 import ItemTypes from './ItemTypes';
 
@@ -38,7 +38,7 @@ export default function BoardSquare({ cellPosition, children }) {
 
   const movePawn = (fromPosition, toPosition) => {
     if (canMovePawn(fromPosition, toPosition)) {
-      placePiece(fromPosition.toBoardPosition(), toPosition.toBoardPosition());
+      SocketConnector.placePiece(fromPosition.toBoardPosition(), toPosition.toBoardPosition());
     }
   };
 

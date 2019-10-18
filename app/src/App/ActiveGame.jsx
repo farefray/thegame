@@ -18,10 +18,11 @@ function ActiveGame() {
 
   const appState = useSelector(state => state.app, shallowEqual);
   const gameboardState = useSelector(state => state.gameboard, shallowEqual);
+  const playerState  = useSelector(state => state.player, shallowEqual);
   return (
     <Container className="activegame">
       <Header className="gameheader">
-        <PlayerStats playerInfo={{ health: appState.hp, mana: appState.mana, gold: appState.gold }} />
+        <PlayerStats playerInfo={{ health: playerState.hp, mana: playerState.mana, gold: playerState.gold }} />
         <Timer initialTimerValue={appState.countdown} />
       </Header>
       <Container>
@@ -32,7 +33,7 @@ function ActiveGame() {
           <GameBoardWrapper state={gameboardState}/>
         </Content>
         <Sidebar width={520}>
-          <RightSidebar shopUnits={appState.shopUnits}/>
+          <RightSidebar shopUnits={playerState.shopUnits}/>
         </Sidebar>
       </Container>
       <Footer></Footer>

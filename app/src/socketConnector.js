@@ -52,15 +52,6 @@ SocketConnector.init = function (dispatch) {
     dispatch({ type: 'BATTLE_TIME', actionStack, startBoard, winner });
   });
 
-  /// ???
-  socket.on('END_BATTLE', (upcomingRoundType, upcomingGymLeader) => {
-    if (upcomingGymLeader) {
-      dispatch({ type: 'END_BATTLE', upcomingRoundType, upcomingGymLeader });
-    } else {
-      dispatch({ type: 'END_BATTLE', upcomingRoundType });
-    }
-  });
-
   socket.on('END_GAME', winningPlayer => {
     dispatch({ type: 'END_GAME', winningPlayer });
     setTimeout(() => {
@@ -75,6 +66,10 @@ SocketConnector.init = function (dispatch) {
   return socket;
 };
 
+
+// the following are functions that our client side uses
+// to emit actions to everyone connected to our web socket
+
 SocketConnector.login = (customerData) => new Promise((resolve) => {
   socket.emit('CUSTOMER_LOGIN_TRY', customerData, (response) => {
     resolve(response);
@@ -85,25 +80,20 @@ SocketConnector.startRoundVsAI = () => {
   socket.emit('START_AI');
 }
 
+SocketConnector.startSolo = () => {
+  socket.emit('START_GAME');
+}
+
 SocketConnector.purchaseUnit = (unitIndex) => {
   socket.emit('PURCHASE_UNIT', unitIndex);
 }
 
+SocketConnector.placePiece = (fromBoardPosition, toBoardPosition) => {
+  socket.emit('PLACE_PIECE', fromBoardPosition, toBoardPosition);
+}
+
+SocketConnector.sellPiece = (fromBoardPosition) => {
+  socket.emit('SELL_PIECE', fromBoardPosition);
+}
 
 export { SocketConnector };
-
-// the following are functions that our client side uses
-// to emit actions to everyone connected to our web socket
-export const startGame = () => socket.emit('START_GAME');
-
-export const buyExp = state => socket.emit('BUY_EXP', state);
-
-export const refreshShop = state => socket.emit('REFRESH_SHOP', state);
-
-export const placePiece = (fromBoardPosition, toBoardPosition) => socket.emit('PLACE_PIECE', fromBoardPosition, toBoardPosition);
-
-export const withdrawPiece = (state, from) => socket.emit('WITHDRAW_PIECE', state, from);
-
-export const sellPiece = (state, from) => socket.emit('SELL_PIECE', state, from);
-
-

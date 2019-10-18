@@ -150,10 +150,8 @@ BattleController.battleTime = async stateParam => {
     // For visualization of battle
     const actionStack = resultBattle.get('actionStack');
     const startBoard = resultBattle.get('startBoard');
-    const dmgBoard = resultBattle.get('dmgBoard');
     battleObject = battleObject.setIn(['actionStack', index], actionStack);
     battleObject = battleObject.setIn(['startingBoards', index], startBoard);
-    battleObject = battleObject.setIn(['dmgBoards', index], dmgBoard);
 
     // For endbattle calculations
     const winner = resultBattle.get('winner') === 0;

@@ -2,32 +2,13 @@ export function app(
   state = {
     gameIsLive: false,
     index: -1,
-    players: {},
-    shopUnits: {},
-    level: -1,
-    exp: -1,
-    expToReach: -1,
-    gold: -1,
+    players: {}, // do we need this here??
+    isDead: true,
+    round: 1,
     enemyIndex: -1,
     roundType: '',
     winner: false,
-    dmgBoard: {},
-    stats: {},
-    statsMap: {},
-    typeStatsString: '',
-    typeBonusString: '',
-    round: 1,
-    isDead: true,
-    selectedShopUnit: '',
-    isSelectModeShop: false,
     deadPlayers: [],
-    unitJson: {},
-    battleStartBoards: {},
-    dmgBoards: {},
-    dmgBoardTotalDmg: -1,
-    markedBuff: '',
-    displayMarkedBuff: false,
-    prevDmgBoard: {}
   },
   action
 ) {
@@ -75,7 +56,6 @@ export function app(
         gameIsLive: true,
         enemyIndex: -1,
         winner: false,
-        dmgBoard: {},
         isDead: false,
         deadPlayers: []
       };
@@ -86,26 +66,6 @@ export function app(
         countdown: action.countdown
       };
     }
-    case 'UPDATE_PLAYER':
-      state = {
-        ...state,
-        shopUnits: action.player.shopUnits,
-        level: action.player.level,
-        exp: action.player.exp,
-        expToReach: action.player.expToReach,
-        gold: action.player.gold
-      };
-
-      // todo revise players. Do I need state for all players?
-      const players = state.players;
-      players[action.index] = action.player;
-      state = {
-        ...state,
-        players: {
-          ...players
-        }
-      };
-      break;
     case 'END_GAME': {
       console.log('Remaining keys in players ...', Object.keys(state.players));
       Object.keys(state.players).forEach(key => {

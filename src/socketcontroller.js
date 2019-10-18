@@ -5,13 +5,8 @@ import BattleController from './controllers/battle';
 import GameController from './game';
 import BoardController from './controllers/board';
 
-const {
-  fromJS
-} = require('immutable');
 const Customer = require('./objects/Customer');
 const Session = require('./objects/Session');
-const sessionJS = require('./session');
-
 
 const ConnectedPlayers = require('./models/ConnectedPlayers');
 const SessionsStore = require('./models/SessionsStore');
@@ -36,7 +31,6 @@ function asNetworkMessage(object) {
     return '';
   }
 }
-
 
 /*
   Example io code
@@ -70,7 +64,7 @@ function SocketController(socket, io) {
       // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
       connectedPlayers.disconnect(socket.id);
     } else {
-      /// Important TODO, make handle for case when no customer(Cannot read properpty 'get' of null)
+      // Important @TODO, make handle for case when no customer(Cannot read properpty 'get' of null)
     }
 
     // update rooms
@@ -82,10 +76,8 @@ function SocketController(socket, io) {
         return; // notify about disconnect todo
       }
 
-      return sessionsStore.destroy(sessionID);
+      sessionsStore.destroy(sessionID);
     }
-
-    return;
   });
 
   socket.on('CUSTOMER_LOGIN_TRY', async (customerData, callback) => {
@@ -121,7 +113,7 @@ function SocketController(socket, io) {
       // TODO fixme
       socket.join(sessionID, () => {
         const rooms = Object.keys(socket.rooms);
-        console.log(rooms); // [ <socket.id>, 'room 237' ]
+        // console.log(rooms); // [ <socket.id>, 'room 237' ]
         io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
       });
     });
@@ -187,7 +179,7 @@ function SocketController(socket, io) {
       }, STARTBATTLE_TIMER);
 
     scheduleNextRound();
-  }
+  };
 
   socket.on('START_AI', async () => {
     const clients = [socket.id];
@@ -208,7 +200,7 @@ function SocketController(socket, io) {
   });
 
   socket.on('PURCHASE_UNIT', async pieceIndex => {
-    // TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable?)
+    // @TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable?)
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const state = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
@@ -234,57 +226,13 @@ function SocketController(socket, io) {
     io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
   });
 
-  // ////////// OLD STUFF \/
-
-
-  socket.on('BUY_EXP', async stateParam => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.buyExp(stateWithPieces, index);
-    // Gold, shop, hand
-    console.log('Bought exp, Player', index);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    emitMessage(socket, io, getSessionId(socket.id), socketId => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('REFRESH_SHOP', async stateParam => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.refreshShopGlobal(stateWithPieces, index);
-    console.log('Refreshes Shop, level', state.getIn(['players', index, 'level']), 'Player', index);
-    // Requires Shop and Pieces
-    // socket.emit('UPDATED_PIECES', state);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    emitMessage(socket, io, getSessionId(socket.id), socketId => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('WITHDRAW_PIECE', async (stateParam, from) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.withdrawPieceGlobal(stateWithPieces, index, from);
-    console.log('Withdraw piece at ', from);
-    // Hand and board
-    emitMessage(socket, io, getSessionId(socket.id), socketId => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
-  });
-
-  socket.on('SELL_PIECE', async (stateParam, from) => {
-    const index = getPlayerIndex(socket.id);
-    const stateWithPieces = sessionJS.addPiecesToState(socket.id, connectedPlayers, sessions, fromJS(stateParam));
-    const state = await GameController.sellPieceGlobal(stateWithPieces, index, from);
-    console.log('Sell piece at ', from);
-    sessions = sessionJS.updateSessionPlayer(socket.id, connectedPlayers, sessions, state, index);
-    sessions = sessionJS.updateSessionPieces(socket.id, connectedPlayers, sessions, state);
-    // Hand and board
-    emitMessage(socket, io, getSessionId(socket.id), socketId => {
-      io.to(socketId).emit('UPDATE_PLAYER', index, state.getIn(['players', index]));
-    });
+  socket.on('SELL_PIECE', async (fromBoardPosition) => {
+    const sessionID = connectedPlayers.getSessionID(socket.id);
+    const session = sessionsStore.get(sessionID);
+    const state = session.get('state');
+    await BoardController.mutateStateByPawnSelling(state, socket.id, fromBoardPosition);
+    const playerState = state.getIn(['players', socket.id]);
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
   });
 
   return this;

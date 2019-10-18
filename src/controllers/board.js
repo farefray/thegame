@@ -25,7 +25,7 @@ BoardController.getFirstAvailableSpot = async (state, playerIndex) => {
 
 /**
  * WithdrawPiece from board to best spot on bench
- * * Assumes not bench is full
+ * * Assumes not bench is full (todo?)
  */
 BoardController.withdrawPiece = async (state, playerIndex, piecePosition) => {
   const benchPosition = await BoardController.getFirstAvailableSpot(state, playerIndex);
@@ -128,37 +128,31 @@ BoardController.discardBaseUnits = async (stateParam, playerIndex, name, depth =
 };
 
 /**
+ * @function
+ * @description
  * Sell piece
  * Increase money for player
  * Remove piece from position
  * add piece to discarded pieces
+ * @param {State} state @mutable
+ * @param {String} playerIndex
+ * @param {BoardPosition} fromBoardPosition
  */
-BoardController.sellPiece = async (state, playerIndex, piecePosition) => {
-  // TODO test this
-  let pieceTemp;
-  if (f.isPositionBelongsToHand(piecePosition)) {
-    pieceTemp = state.getIn(['players', playerIndex, 'hand', piecePosition]);
-  } else {
-    pieceTemp = state.getIn(['players', playerIndex, 'board', piecePosition]);
-  }
-  const piece = pieceTemp;
-  const unitStats = pawns.getMonsterStats(piece.get('name'));
-  const cost = unitStats.get('cost');
+BoardController.mutateStateByPawnSelling = async (state, playerIndex, fromBoardPosition) => {
+  const fromPosition = new Position(fromBoardPosition);
+  const piece = fromPosition.isMyHandPosition()
+    ? state.getIn(['players', playerIndex, 'hand', fromBoardPosition])
+    : state.getIn(['players', playerIndex, 'board', fromBoardPosition]);
+
+  const cost = pawns.getMonsterStats(piece.name).cost;
   const gold = state.getIn(['players', playerIndex, 'gold']);
-  let newState = state.setIn(['players', playerIndex, 'gold'], +gold + +cost);
-  if (f.isPositionBelongsToHand(piecePosition)) {
-    const unitToSell = newState.getIn(['players', playerIndex, 'hand', piecePosition]);
-    const newHand = newState.getIn(['players', playerIndex, 'hand']).delete(piecePosition);
-    const newDiscardedPieces = newState.set('discardedPieces', newState.get('discardedPieces').push(unitToSell.get('name')));
-    newState = newDiscardedPieces.setIn(['players', playerIndex, 'hand'], newHand);
+  state.setIn(['players', playerIndex, 'gold'], +gold + +cost);
+
+  if (fromPosition.isMyHandPosition()) {
+    state.setIn(['players', playerIndex, 'hand', fromBoardPosition], undefined);
   } else {
-    const unitToSell = newState.getIn(['players', playerIndex, 'board', piecePosition]);
-    const newBoard = newState.getIn(['players', playerIndex, 'board']).delete(piecePosition);
-    const newDiscardedPieces = newState.set('discardedPieces', newState.get('discardedPieces').push(unitToSell.get('name')));
-    newState = newDiscardedPieces.setIn(['players', playerIndex, 'board'], newBoard);
+    state.setIn(['players', playerIndex, 'board', fromBoardPosition], undefined);
   }
-  // Add units to discarded Cards, add base level of card
-  return BoardController.discardBaseUnits(newState, playerIndex, piece.get('name'));
 };
 
 

@@ -32,15 +32,6 @@ export function gameboard(
         isActiveBattleGoing: action.value
       };
     }
-    case 'END_BATTLE': {
-      return {
-        ...state,
-        isActiveBattleGoing: false,
-        round: state.round + 1,
-        roundType: action.upcomingRoundType,
-        enemyIndex: action.upcomingGymLeader || ''
-      };
-    }
     case 'UPDATED_STATE': {
       return {
         ...state,

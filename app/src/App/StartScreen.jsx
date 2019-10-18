@@ -6,7 +6,6 @@ import LoginForm from './StartScreen/LoginForm';
 import Lobby from './StartScreen/Lobby';
 
 class StartScreen extends Component {
-  // TODO wait for unitJSON appear in localstorage before rendeing
   render() {
     const { isConnected, customer } = this.props;
 
