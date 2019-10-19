@@ -29,7 +29,7 @@ const flipBoard = board => {
 const combinedBoard = {
   A: [
     {
-      name: 'minotaur',
+      name: 'bigboy',
       x: 4,
       y: 2
     }
@@ -37,4 +37,4 @@ const combinedBoard = {
   B: flipBoard(generateBoard())
 };
 
-export default <ActiveGame props={combinedBoard}/>;
+export default <ActiveGame props={combinedBoard} />;

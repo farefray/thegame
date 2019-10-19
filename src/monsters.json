@@ -1,4 +1,17 @@
 {
+  "bigboy": {
+    "name": "bigboy",
+    "displayName": "Big Boy",
+    "lookType": 25,
+    "cost": 1,
+    "hp": 3000,
+    "mana": 0,
+    "attack": 50,
+    "attackRange": 1,
+    "armor": 2,
+    "speed": 1200,
+    "attackSpeed": 1000
+  },
   "elf": {
     "name": "elf",
     "displayName": "Elf",
