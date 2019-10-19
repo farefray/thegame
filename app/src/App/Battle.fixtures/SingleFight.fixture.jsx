@@ -1,6 +1,5 @@
 import React from 'react';
-
-import ActiveGame from '../App/ActiveGame';
+import ActiveGame from '../ActiveGame';
 
 const defaultBoard = {
   A: [
@@ -12,12 +11,11 @@ const defaultBoard = {
   ],
   B: [
     {
-      name: 'minotaur',
+      name: 'elf',
       x: 2,
       y: 0
     }
   ]
 };
 
-
-export default <ActiveGame defaultBoard={defaultBoard} />;
+export default <ActiveGame props={defaultBoard}/>;

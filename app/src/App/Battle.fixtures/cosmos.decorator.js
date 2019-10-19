@@ -1,11 +1,12 @@
 import React from 'react';
 import { ReduxMock } from 'react-cosmos-redux';
-import rootReducer from '../reducers';
+import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import Battle from '../../../src/objects/Battle.js';
-import createBattleBoard from '../../../src/utils/createBattleBoard';
+import Battle from '../../../../src/objects/Battle.js';
+import createBattleBoard from '../../../../src/utils/createBattleBoard';
 
+// todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
   const seen = new WeakSet();
   return (key, value) => {
@@ -19,8 +20,8 @@ const getCircularReplacer = () => {
   };
 };
 
-const generateBattle = async function({ boards }) {
-  const combinedBoard = createBattleBoard(boards.A, boards.B);
+const generateGameState = async function(board) {
+  const combinedBoard = createBattleBoard(board.A, board.B);
   const battleResult = new Battle(combinedBoard);
   return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
 };
@@ -35,11 +36,11 @@ const MyReduxMock = ({ children }) => {
   );
 };
 
-const MyReduxContext = ({ boards, children }) => {
+const MyReduxContext = ({ children, deco }) => {
   const dispatch = useDispatch();
-
+  const board = deco.children.props.props; // I have no idea why its like that, but it works
   React.useEffect(() => {
-    generateBattle(boards).then(battleRoundResult => {
+    generateGameState(board).then(battleRoundResult => {
       dispatch({
         type: 'BATTLE_TIME',
         actionStack: battleRoundResult.actionStack,
@@ -49,15 +50,10 @@ const MyReduxContext = ({ boards, children }) => {
     });
   }, []);
 
-  return {children};
+  return children;
 };
-
-const Fixture = ({boards, children}) => {
-  return (
-    <MyReduxMock>
-      <MyReduxContext boards={boards}>{children}</MyReduxContext>
-    </MyReduxMock>
-  );
-};
-
-export default ({ children, defaultBoard }) => <Fixture boards={defaultBoard}>{children} </Fixture>;
+export default ({ children }) => (
+  <MyReduxMock>
+    <MyReduxContext deco={children.props}>{children}</MyReduxContext>
+  </MyReduxMock>
+);
