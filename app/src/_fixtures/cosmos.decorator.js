@@ -4,10 +4,8 @@ import rootReducer from '../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import Battle from '../../../src/objects/Battle.js';
-import ActiveGame from './ActiveGame';
 import createBattleBoard from '../../../src/utils/createBattleBoard';
 
-// todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
   const seen = new WeakSet();
   return (key, value) => {
@@ -21,24 +19,7 @@ const getCircularReplacer = () => {
   };
 };
 
-const defaultBoard = {
-  A: [
-    {
-      name: 'dwarf',
-      x: 6,
-      y: 6
-    }
-  ],
-  B: [
-    {
-      name: 'minotaur',
-      x: 2,
-      y: 0
-    }
-  ]
-};
-
-const generateGameState = async function({ boards }) {
+const generateBattle = async function({ boards }) {
   const combinedBoard = createBattleBoard(boards.A, boards.B);
   const battleResult = new Battle(combinedBoard);
   return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
@@ -54,11 +35,11 @@ const MyReduxMock = ({ children }) => {
   );
 };
 
-const MyReduxContext = ({ boards }) => {
+const MyReduxContext = ({ boards, children }) => {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    generateGameState(boards).then(battleRoundResult => {
+    generateBattle(boards).then(battleRoundResult => {
       dispatch({
         type: 'BATTLE_TIME',
         actionStack: battleRoundResult.actionStack,
@@ -68,15 +49,15 @@ const MyReduxContext = ({ boards }) => {
     });
   }, []);
 
-  return <ActiveGame />;
+  return {children};
 };
 
-const Fixture = boards => {
+const Fixture = ({boards, children}) => {
   return (
     <MyReduxMock>
-      <MyReduxContext boards={boards} />
+      <MyReduxContext boards={boards}>{children}</MyReduxContext>
     </MyReduxMock>
   );
 };
 
-export default <Fixture boards={defaultBoard} />;
+export default ({ children, defaultBoard }) => <Fixture boards={defaultBoard}>{children} </Fixture>;
