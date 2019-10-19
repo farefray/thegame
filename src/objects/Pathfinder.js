@@ -178,9 +178,7 @@ export default class Pathfinder {
   getFirstStepInValidPath(unit, target) {
     this.initializeGrid();
     const openSet = [this.grid[unit.x][unit.y]];
-    let counter = 0;
-    while (openSet.length && counter < 200) { // @Jacek, what is 200? Please, move to constant variable
-      counter++;
+    while (openSet.length) {
       const currentNode = openSet.shift();
       if (this.constructor.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) {
         let node = currentNode;
