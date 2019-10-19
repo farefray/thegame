@@ -9,8 +9,14 @@ export default class TargetPairPool {
     this._targetPairs.push(new TargetPair({ target, attacker }));
   }
 
+  remove({ target, attacker }) {
+    this._targetPairs = this._targetPairs.filter(targetPair => targetPair.target === target && targetPair.attacker === attacker);
+  }
+
   removeByUnitId(id) {
+    const affectedAttackers = this._targetPairs.filter(targetPair => targetPair.target.id === id).map(targetPair => targetPair.attacker);
     this._targetPairs = this._targetPairs.filter(targetPair => targetPair.target.id !== id && targetPair.attacker.id !== id);
+    return { affectedAttackers };
   }
 
   findTargetByUnitId(id) {

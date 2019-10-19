@@ -59,7 +59,18 @@ export default class Battle {
         targetUnit = closestTarget;
         this.targetPairPool.add({ attacker: unit, target: targetUnit });
       }
+    } else {
+      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
+      if (distanceToTarget > unit.attackRange) {
+        const closestTarget = this.getUnitClosestTarget(unit);
+        if (closestTarget && Pathfinder.getDistanceBetweenUnits(unit, targetUnit) < distanceToTarget) {
+          this.targetPairPool.remove({ attacker: unit, target: targetUnit });
+          targetUnit = closestTarget;
+          this.targetPairPool.add({ attacker: unit, target: targetUnit });
+        }
+      }
     }
+
     if (!targetUnit) return;
     if (unit.canCast()) {
       this.cast(unit, timestamp);
@@ -72,8 +83,15 @@ export default class Battle {
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
-        this.targetPairPool.removeByUnitId(targetUnit.id);
         this.moveUnit(targetUnit, null, timestamp);
+
+        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== unit.id);
+        for (const affectedAttacker of affectedAttackers) {
+          if (affectedAttacker.actionLockTimestamp >= timestamp) continue;
+          this.actionQueue.removeUnitFromQueue(affectedAttacker);
+          this.actionQueue.addToActionQueue({ timestamp, unit: affectedAttacker });
+          affectedAttacker.test = timestamp + affectedAttacker.speed;
+        }
       }
     } else {
       const step = this.pathfinder.findStepToTarget(unit, targetUnit);
@@ -108,6 +126,7 @@ export default class Battle {
     const attackResult = unit.doAttack(targetUnit);
     unit.mana += 5;
     targetUnit.mana += 2;
+    unit.actionLockTimestamp = timestamp + 100;
     this.addActionToStack(
       {
         type: ACTION.ATTACK,
@@ -142,6 +161,7 @@ export default class Battle {
       },
       timestamp
     );
+    unit.actionLockTimestamp = timestamp + unit.speed;
 
     if (position) {
       unit.previousStep = step;
