@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import RightSidebar from './RightSidebar';
-import GameController from '../../../../controllers/GameController.js';
+import GameController from '../../../../src/controllers/GameController';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
