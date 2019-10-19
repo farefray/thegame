@@ -16,5 +16,8 @@ module.exports = {
     MOVE: 1,
     ATTACK: 2,
     CAST: 3
+  },
+  STATE: {
+    COUNTDOWN_BETWEEN_ROUNDS: 30 * 1000
   }
 };

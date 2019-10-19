@@ -11,10 +11,10 @@ const basePlayerState = {
 
 export default function player(state = basePlayerState, action) {
   switch (action.type) {
-    case 'INITIALIZE': {
+    case 'CUSTOMER_LOGIN_SUCCESS': {
       return {
         ...state,
-        index: action.index
+        index: action.customer.index
       };
     }
     case 'UPDATE_PLAYER':

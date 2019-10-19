@@ -1,9 +1,13 @@
 import MutableObject from '../abstract/MutableObject';
 
+const sleep = require('util').promisify(setTimeout);
+const { STATE } = require('../../app/src/shared/constants');
+
 function State(playersArray) {
   this.round = 1;
   this.incomeBase = 1;
   this.amountOfPlayers = playersArray.length;
+  this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
   const playersObject = {};
   playersArray.forEach(player => {
@@ -16,12 +20,6 @@ function State(playersArray) {
 }
 
 State.prototype = Object.create(MutableObject.prototype);
-
-/**
- * @description prepares state for sending via socket. Removing all unnessesary data
- * @TODO
- */
-State.prototype.prepareForSending = function() {};
 
 
 /**
@@ -79,6 +77,24 @@ State.prototype.dropPlayer = playerID => {
       this.amountOfPlayers -= 1;
     }
   }
+};
+
+
+/** Lifecycle methods */
+State.prototype.scheduleRoundStart = async function () {
+  await sleep(this.countdown);
+  return true;
+};
+
+State.prototype.scheduleRoundEnd = async function (battleRoundResult) {
+  await sleep(battleRoundResult.battleTime);
+  this.endRound();
+  this.damagePlayers(battleRoundResult.battles);
+};
+
+State.prototype.scheduleNextRound = async function () {
+  await sleep(this.countdown);
+  return true;
 };
 
 export default State;

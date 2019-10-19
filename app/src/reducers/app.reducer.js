@@ -5,14 +5,17 @@ export function app(
     players: {}, // do we need this here??
     isDead: true,
     round: 1,
-    enemyIndex: -1,
-    roundType: '',
-    winner: false,
-    deadPlayers: [],
+    roundType: ''
   },
   action
 ) {
   switch (action.type) {
+    case 'CUSTOMER_LOGIN_SUCCESS': {
+      return {
+        ...state,
+        index: action.customer.index
+      };
+    }
     case 'INIT': {
       // Used for cosmos fixtures
       state.isDead = false;
@@ -34,7 +37,7 @@ export function app(
         ...state,
         players: action.newState.players,
         round: action.newState.round,
-        countdown: 10
+        countdown: action.newState.countdown / 1000
       };
 
       // revise players array here
@@ -52,18 +55,8 @@ export function app(
     case 'INITIALIZE': {
       return {
         ...state,
-        index: action.index,
         gameIsLive: true,
-        enemyIndex: -1,
-        winner: false,
-        isDead: false,
-        deadPlayers: []
-      };
-    }
-    case 'SET_ONGOING_BATTLE': {
-      return {
-        ...state,
-        countdown: action.countdown
+        isDead: false
       };
     }
     case 'END_GAME': {
@@ -97,14 +90,7 @@ export function app(
       };
       delete players[action.pid];
       console.log('Removing player ' + action.pid, players, state.players);
-      const deadPlayers = state.deadPlayers;
-      deadPlayers.push(deadPlayer);
-      state = {
-        ...state,
-        deadPlayers,
-        players
-      };
-      console.log('reducer.Dead_player', state.deadPlayers, deadPlayers);
+    
       break;
     }
     default:

@@ -1,3 +1,5 @@
+import SocketController from './controllers/SocketController';
+
 const express = require('express');
 
 const app = express();
@@ -6,8 +8,6 @@ const io = require('socket.io')(server);
 
 const router = express.Router();
 const cors = require('cors');
-
-const SocketController = require('./controllers/SocketController');
 
 // we will use port 8000 for our app
 server.listen(8000, () => console.log('connected to port 8000!'));

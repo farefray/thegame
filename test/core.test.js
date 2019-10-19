@@ -88,7 +88,7 @@ describe('Core Modules', () => {
     });
 
     it('can refill shop', async () => {
-      await ShopController.mutateStateByShopRefreshing(gameState, MOCK_SOCKETID_1);
+      ShopController.mutateStateByShopRefreshing(gameState, MOCK_SOCKETID_1);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].shopUnits[0].should.be.an.Object();

@@ -1,7 +1,7 @@
 import BattleController from './BattleController';
-import GameController from './GameController';
 import BoardController from './BoardController';
 import ShopController from './ShopController';
+import GameController from './GameController';
 
 const Customer = require('../objects/Customer');
 const Session = require('../objects/Session');
@@ -13,7 +13,6 @@ const SessionsStore = require('../models/SessionsStore');
 const connectedPlayers = new ConnectedPlayers();
 const sessionsStore = new SessionsStore();
 
-const STARTBATTLE_TIMER = 15000;
 /**
  * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
  * @todo better way for this or at least test this performance. Imho there shouldnt be any circular references at all.
@@ -48,6 +47,9 @@ function SocketController(socket, io) {
   this.onConnection = () => {
     socket.join('WAITING_ROOM'); // place new customers to waiting room
   };
+
+  this.io = io;
+  this.socket = socket;
 
   socket.on('ON_CONNECTION', async () => {
     console.log('@ON_CONNECTION', socket.id);
@@ -88,7 +90,8 @@ function SocketController(socket, io) {
     if (email && password && email !== 'false@gmail.com') {
       connectedPlayers.setIn(socket.id, ['isLoggedIn', true]);
       io.to(socket.id).emit('CUSTOMER_LOGIN_SUCCESS', {
-        email
+        email,
+        index: socket.id
       });
 
       return callback(true);
@@ -97,93 +100,9 @@ function SocketController(socket, io) {
     return callback(false);
   });
 
-  const initializeGameSessions = async (clients) => {
-    const state = await GameController.initialize(clients); // deep TODO, mostly for shop and so on
-    const session = new Session(clients, state);
-    const sessionID = session.get('ID');
-    sessionsStore.store(session);
-    state.prepareForSending();
-
-    clients.forEach(socketID => {
-      connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
-      io.to(socketID).emit('INITIALIZE', socketID);
-
-      // TODO fixme
-      socket.join(sessionID, () => {
-        const rooms = Object.keys(socket.rooms);
-        console.log(rooms); // [ <socket.id>, 'room 237' ]
-        io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
-      });
-    });
-
-    // Schedule battle start
-    const scheduleNextRound = () =>
-      setTimeout(async () => {
-        // TODO lock all players actions on BE/FE so they wont interrupt battle? Or need to be checked for active battle for actions which are permitted
-        const preBattleSession = sessionsStore.get(sessionID);
-
-        if (!preBattleSession) {
-          // no more session exists, f.e. players has disconnected
-          // todo maybe remove session from store if exist? state? memory leak?
-          return;
-        }
-
-        const preBattleState = preBattleSession.get('state');
-        await BoardController.preBattleCheck(preBattleState);
-        const battleRoundResult = await BattleController.setup(preBattleState);
-        clients.forEach(socketID => {
-          io.to(`${socketID}`).emit('BATTLE_TIME', battleRoundResult.battles[socketID].actionStack, battleRoundResult.battles[socketID].startBoard, battleRoundResult.battles[socketID].winner);
-        });
-
-        // We can actually count battle finish state here already and only schedule update
-        /*
-          Update state with:
-          a - round change, gold reward winners,
-          a_2 - refresh shop
-          b - damage for losers
-          c - update state, endgame maybe, save state to session,
-          d - update players
-        */
-
-        preBattleState.endRound(); // a
-        await ShopController.mutateStateByShopRefreshing(preBattleState); // a_2
-        preBattleState.damagePlayers(battleRoundResult.battles); // b
-
-        // Schedule all this to happen after last battle finished on FE
-        const EXTRA_TIME = 25000;
-        setTimeout(async () => {
-          // TODO Future: handle player dead time, to properly assign placing if multiple players are dead
-          clients.forEach(socketID => {
-            const player = preBattleState.getIn(['players', socketID]);
-
-            if (player.isDead()) {
-              const amountOfPlayers = preBattleState.get('amountOfPlayers');
-              io.to(socketID).emit('DEAD_PLAYER', socketID, amountOfPlayers + 1);
-              preBattleState.dropPlayer(socketID);
-            } else {
-              io.to(socketID).emit('UPDATED_STATE', asNetworkMessage(preBattleState));
-              io.to(socketID).emit('SET_ONGOING_BATTLE', false, STARTBATTLE_TIMER);
-            }
-
-            if (preBattleState.get('amountOfPlayers') === 0) {
-              // game end
-              io.to(socketID).emit('END_GAME', socketID);
-            } else {
-              sessionsStore.store(preBattleSession);
-              scheduleNextRound();
-            }
-          });
-        }, battleRoundResult.battleTime + EXTRA_TIME); // fixme somehow it ends quite faster than game ends on FE. Maybe battleTime is wrong?
-
-        // round ended, next round must be scheduled?
-      }, STARTBATTLE_TIMER);
-
-    scheduleNextRound();
-  };
-
   socket.on('START_AI', async () => {
     const clients = [socket.id];
-    await initializeGameSessions(clients);
+    await this.initializeGameSessions(clients);
   });
 
   socket.on('START_GAME', async () => {
@@ -195,7 +114,7 @@ function SocketController(socket, io) {
         throw new Error(err);
       }
 
-      await initializeGameSessions(clients);
+      await this.initializeGameSessions(clients);
     });
   });
 
@@ -238,4 +157,57 @@ function SocketController(socket, io) {
   return this;
 }
 
-module.exports = SocketController;
+SocketController.prototype.initializeGameSessions = async function (clients) {
+  const state = await GameController.initialize(clients);
+  const session = new Session(clients, state);
+  const sessionID = session.get('ID');
+  sessionsStore.store(session);
+
+  // Update players, to notify them that they are in game and countdown till round start
+  clients.forEach(socketID => {
+    connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
+    this.io.to(socketID).emit('INITIALIZE', socketID);
+    console.log('Initializing player: ', socketID);
+
+    // TODO
+    this.socket.join(sessionID, () => {
+      const rooms = Object.keys(this.socket.rooms);
+      console.log(rooms); // [ <socket.id>, 'room 237' ]
+      this.io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state)); // todo get rid of asNetwork
+    });
+  });
+
+  this.round(state, clients, sessionID);
+};
+
+/**
+ * @todo this maybe should be moved to gamecontroller
+ */
+SocketController.prototype.round = async function (state, clients, sessionID) {
+  // start round when its time
+  await state.scheduleRoundStart();
+
+  // do we need to update our session from storage?? TODO Test
+  const preBattleSession = sessionsStore.get(sessionID);
+  const preBattleState = preBattleSession.get('state');
+  await BoardController.preBattleCheck(preBattleState);
+  const battleRoundResult = await BattleController.setup(preBattleState);
+  clients.forEach(socketID => {
+    const {
+      actionStack,
+      startBoard,
+      winner
+    } = battleRoundResult.battles[socketID];
+
+    this.io.to(`${socketID}`).emit('START_BATTLE', actionStack, startBoard, winner);
+  });
+
+  await state.scheduleRoundEnd(battleRoundResult);
+  ShopController.mutateStateByShopRefreshing(state);
+  this.io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
+
+  await state.scheduleNextRound();
+  this.round(state, clients, sessionID);
+};
+
+export default SocketController;

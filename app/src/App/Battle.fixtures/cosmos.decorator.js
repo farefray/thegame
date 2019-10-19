@@ -42,7 +42,7 @@ const MyReduxContext = ({ children, deco }) => {
   React.useEffect(() => {
     generateGameState(board).then(battleRoundResult => {
       dispatch({
-        type: 'BATTLE_TIME',
+        type: 'START_BATTLE',
         actionStack: battleRoundResult.actionStack,
         startBoard: battleRoundResult.startBoard,
         winner: battleRoundResult.winner

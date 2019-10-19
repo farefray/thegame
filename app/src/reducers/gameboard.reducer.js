@@ -11,13 +11,13 @@ export function gameboard(
   action
 ) {
   switch (action.type) {
-    case 'INITIALIZE': {
+    case 'CUSTOMER_LOGIN_SUCCESS': {
       return {
         ...state,
-        index: action.index
+        index: action.customer.index
       };
     }
-    case 'BATTLE_TIME': {
+    case 'START_BATTLE': {
       const { actionStack, startBoard } = action;
       return {
         ...state,
@@ -26,17 +26,12 @@ export function gameboard(
         battleStartBoard: startBoard
       };
     }
-    case 'SET_ONGOING_BATTLE': {
-      return {
-        ...state,
-        isActiveBattleGoing: action.value
-      };
-    }
     case 'UPDATED_STATE': {
       return {
         ...state,
         myHand: action.newState.players[state.index].hand,
-        myBoard: action.newState.players[state.index].board
+        myBoard: action.newState.players[state.index].board,
+        isActiveBattleGoing: false
       };
     }
     case 'UPDATE_PLAYER': {
