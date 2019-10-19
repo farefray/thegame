@@ -44,8 +44,8 @@ SocketConnector.init = function (dispatch) {
     dispatch({ type: 'UPDATE_PLAYER', index: index, player: player });
   });
 
-  socket.on('ADD_PLAYER', index => {
-    dispatch({ type: 'ADD_PLAYER', index: index });
+  socket.on('INITIALIZE', index => {
+    dispatch({ type: 'INITIALIZE', index: index });
   });
 
   socket.on('BATTLE_TIME', (actionStack, startBoard, winner) => {

@@ -11,7 +11,7 @@ export function gameboard(
   action
 ) {
   switch (action.type) {
-    case 'ADD_PLAYER': {
+    case 'INITIALIZE': {
       return {
         ...state,
         index: action.index

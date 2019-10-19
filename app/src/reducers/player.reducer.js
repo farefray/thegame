@@ -1,4 +1,5 @@
 const basePlayerState = {
+  index: -1, // revise
   hp: 100,
   mana: 0,
   level: -1,
@@ -10,6 +11,12 @@ const basePlayerState = {
 
 export default function player(state = basePlayerState, action) {
   switch (action.type) {
+    case 'INITIALIZE': {
+      return {
+        ...state,
+        index: action.index
+      };
+    }
     case 'UPDATE_PLAYER':
       return state = {
         ...state,
@@ -18,7 +25,12 @@ export default function player(state = basePlayerState, action) {
         expToReach: action.player.expToReach,
         gold: action.player.gold,
         shopUnits: action.player.shopUnits
-    };
+    }
+    case 'UPDATED_STATE':
+      return {
+        ...state,
+        shopUnits: action.newState.players[state.index].shopUnits,
+      };
     default:
       return state
   }

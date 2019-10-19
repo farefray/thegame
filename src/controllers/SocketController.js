@@ -106,12 +106,12 @@ function SocketController(socket, io) {
 
     clients.forEach(socketID => {
       connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
-      io.to(socketID).emit('ADD_PLAYER', socketID); // ??
+      io.to(socketID).emit('INITIALIZE', socketID);
 
       // TODO fixme
       socket.join(sessionID, () => {
         const rooms = Object.keys(socket.rooms);
-        // console.log(rooms); // [ <socket.id>, 'room 237' ]
+        console.log(rooms); // [ <socket.id>, 'room 237' ]
         io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
       });
     });

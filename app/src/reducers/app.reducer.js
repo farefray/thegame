@@ -49,7 +49,7 @@ export function app(
         };
       }
       break;
-    case 'ADD_PLAYER': {
+    case 'INITIALIZE': {
       return {
         ...state,
         index: action.index,
