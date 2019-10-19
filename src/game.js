@@ -1,5 +1,6 @@
 import Player from './objects/Player';
 import BoardController from './controllers/board';
+import State from './objects/State';
 
 const {
   List,
@@ -9,7 +10,6 @@ const {
 const f = require('./f');
 const shopJS = require('./controllers/shop');
 const pawns = require('./pawns');
-const State = require('./objects/State');
 
 const GameController = function () {
   return this;

@@ -88,4 +88,4 @@ State.prototype.dropPlayer = playerID => {
   }
 };
 
-module.exports = State;
+export default State;
