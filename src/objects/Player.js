@@ -12,8 +12,6 @@ function Player(id) {
   this.shopUnits = {};
   this.hand = {};
   this.board = {}; // todo keep it simple {x,y,name}
-  this.rivals = {}; // ?
-  this.unitAmounts = {}; // ??
 
   return this;
 }

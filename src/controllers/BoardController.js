@@ -1,9 +1,6 @@
 
 import Position from '../../app/src/objects/Position';
 
-const f = require('../f');
-const pawns = require('../pawns');
-
 const BoardController = () => {
   return this;
 };
@@ -13,9 +10,10 @@ const BoardController = () => {
  */
 BoardController.getFirstAvailableSpot = async (state, playerIndex) => {
   const hand = state.getIn(['players', playerIndex, 'hand']);
-  for (let i = 0; i < 8; i++) {
-    const pos = f.pos(i);
-    if (f.isUndefined(hand[pos]) && f.isUndefined(hand[pos])) {
+  const myHandY = '-1';
+  for (let x = 0; x < 8; x++) {
+    const pos = new Position(x, myHandY); // performance wise better to concatenate strings here
+    if (hand[pos.toString()]) {
       return pos;
     }
   }
@@ -25,13 +23,11 @@ BoardController.getFirstAvailableSpot = async (state, playerIndex) => {
 
 /**
  * WithdrawPiece from board to best spot on bench
- * * Assumes not bench is full (todo?)
+ * Assumes not bench is full (todo?)
  */
 BoardController.withdrawPiece = async (state, playerIndex, piecePosition) => {
   const benchPosition = await BoardController.getFirstAvailableSpot(state, playerIndex);
-  // TODO: Handle placePiece return upgradeOccured
   await BoardController.mutateStateByPawnPlacing(state, playerIndex, piecePosition, benchPosition, false);
-  return true;
 };
 
 /**
@@ -94,38 +90,6 @@ BoardController.mutateStateByPawnPlacing = async (state, playerIndex, fromBoardP
   state.setIn(['players', playerIndex, 'board'], board);
 };
 
-/**
- * When units are sold, when level 1, a level 1 unit should be added to discardedPieces
- * Level 2 => 3 level 1 units, Level 3 => 9 level 1 units
- */
-BoardController.discardBaseUnits = async (stateParam, playerIndex, name, depth = 1) => {
-  let state = stateParam;
-  const unitStats = pawns.getMonsterStats(name);
-  const evolutionFrom = unitStats.get('evolves_from');
-  // console.log('@discardBaseUnits start', name, depth);
-  if (f.isUndefined(evolutionFrom)) {
-    // Base level
-    let discPieces = state.get('discardedPieces');
-    const amountOfPieces = 3 ** (depth - 1); // Math.pow
-    console.log('@discardBaseUnits', amountOfPieces, depth, name);
-    for (let i = 0; i < amountOfPieces; i++) {
-      discPieces = discPieces.push(name);
-    }
-    const unitAmounts = state.getIn(['players', playerIndex, 'unitAmounts']);
-    if (unitAmounts) {
-      const newValue = unitAmounts.get(name) - amountOfPieces;
-      if (newValue === 0) {
-        state = state.setIn(['players', playerIndex, 'unitAmounts'], unitAmounts.delete(name));
-      } else {
-        state = state.setIn(['players', playerIndex, 'unitAmounts', name], newValue);
-      }
-    }
-    return state.set('discardedPieces', await discPieces);
-  }
-  const newName = evolutionFrom;
-  // console.log('@discardBaseUnits', newName, depth);
-  return BoardController.discardBaseUnits(state, playerIndex, newName, depth + 1);
-};
 
 /**
  * @function
@@ -133,7 +97,6 @@ BoardController.discardBaseUnits = async (stateParam, playerIndex, name, depth =
  * Sell piece
  * Increase money for player
  * Remove piece from position
- * add piece to discarded pieces
  * @param {State} state @mutable
  * @param {String} playerIndex
  * @param {BoardPosition} fromBoardPosition
@@ -200,9 +163,7 @@ BoardController.preBattleCheck = async function(state) {
   for (const uid in state.players) {
     const player = state.players[uid];
     if (Object.keys(player.board).length > player.level) {
-      console.log('Before awaiting state mutation');
       await _mutateStateByFixingUnitLimit(state, uid);
-      console.log('After awaiting state mutation');
     }
   }
 

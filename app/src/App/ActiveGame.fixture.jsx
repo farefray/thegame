@@ -4,7 +4,7 @@ import rootReducer from '../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import ActiveGame from './ActiveGame';
-import GameController from '../../../src/game.js';
+import GameController from '../../../src/controllers/GameController.js';
 
 
 // todo make it share functionality with jest and core.test.js

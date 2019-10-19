@@ -1,7 +1,6 @@
 import BattleUnit from '../objects/BattleUnit';
 import Position from '../../app/src/objects/Position';
-
-const pawns = require('../pawns');
+import Pawns from '../pawns';
 
 /**
  * Combines two boards into one for battle
@@ -14,14 +13,14 @@ export default function createBattleBoard(board1, board2) {
   const board = {};
   for (const index in board1) {
     const el = board1[index]; // @TODO handle case when board already contains BattleUnits
-    const unit = pawns.getMonsterStats(el.name);
+    const unit = Pawns.getMonsterStats(el.name);
     const unitPos = new Position(el.x, el.y);
     board[unitPos.toString()] = new BattleUnit(unit, unitPos, 0);
   }
 
   for (const index in board2) {
     const el = board2[index];
-    const unit = pawns.getMonsterStats(el.name);
+    const unit = Pawns.getMonsterStats(el.name);
     const unitPos = new Position(el.x, el.y);
     board[unitPos.toString()] = new BattleUnit(unit, unitPos, 1);
   }

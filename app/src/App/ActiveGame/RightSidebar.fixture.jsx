@@ -3,7 +3,7 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import RightSidebar from './RightSidebar';
-import GameController from '../../../../src/game.js';
+import GameController from '../../../../controllers/GameController.js';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {

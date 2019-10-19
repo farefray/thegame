@@ -4,9 +4,7 @@ function Session(clients, state) {
   this.ID = uuidv1();
   this.state = state;
   this.clients = clients; // was connectedPlayers, so handle this in case
-  // also there as session.pieces, but i see no point cuz state is here(state.pieces)
 
-  this.discardedPieces = [];
   this.players = {}; // ??
   return this;
 }

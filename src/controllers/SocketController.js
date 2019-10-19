@@ -1,15 +1,13 @@
-/**
- * Actually it seems like overall game controller already, cuz we handle a lot of logic here, even if trying to move it to different controllers... maybe consider having it renamed :D
- */
-import BattleController from './controllers/battle';
-import GameController from './game';
-import BoardController from './controllers/board';
+import BattleController from './BattleController';
+import GameController from './GameController';
+import BoardController from './BoardController';
+import ShopController from './ShopController';
 
-const Customer = require('./objects/Customer');
-const Session = require('./objects/Session');
+const Customer = require('../objects/Customer');
+const Session = require('../objects/Session');
 
-const ConnectedPlayers = require('./models/ConnectedPlayers');
-const SessionsStore = require('./models/SessionsStore');
+const ConnectedPlayers = require('../models/ConnectedPlayers');
+const SessionsStore = require('../models/SessionsStore');
 
 // Init connected players models\
 const connectedPlayers = new ConnectedPlayers();
@@ -141,12 +139,14 @@ function SocketController(socket, io) {
         /*
           Update state with:
           a - round change, gold reward winners,
+          a_2 - refresh shop
           b - damage for losers
           c - update state, endgame maybe, save state to session,
           d - update players
         */
 
         preBattleState.endRound(); // a
+        await ShopController.mutateStateByShopRefreshing(preBattleState); // a_2
         preBattleState.damagePlayers(battleRoundResult.battles); // b
 
         // Schedule all this to happen after last battle finished on FE

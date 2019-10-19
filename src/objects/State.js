@@ -1,7 +1,6 @@
 import MutableObject from '../abstract/MutableObject';
 
-function State(playersArray, deck) {
-  this.discardedPieces = [];
+function State(playersArray) {
   this.round = 1;
   this.incomeBase = 1;
   this.amountOfPlayers = playersArray.length;
@@ -12,7 +11,6 @@ function State(playersArray, deck) {
   });
 
   this.players = playersObject;
-  this.pieces = deck;
 
   return MutableObject.call(this);
 }
@@ -23,9 +21,7 @@ State.prototype = Object.create(MutableObject.prototype);
  * @description prepares state for sending via socket. Removing all unnessesary data
  * @TODO
  */
-State.prototype.prepareForSending = function() {
-  this.delete('pieces');
-};
+State.prototype.prepareForSending = function() {};
 
 
 /**
@@ -47,9 +43,6 @@ State.prototype.endRound = function() {
 
   for (const uid in this.players) {
     const player = this.players[uid];
-    // TODO update shop
-    // state = await ShopJS.refreshShop(state, index);
-
     const gold = player.get('gold');
     const bonusGold = Math.min(Math.floor(gold / 10), 5);
     const streak = player.streak || 0;

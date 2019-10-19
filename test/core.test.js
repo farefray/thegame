@@ -1,9 +1,10 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle';
 import createBattleBoard from '../src/utils/createBattleBoard';
-import GameController from '../src/game';
-import BattleController from '../src/controllers/battle';
-import BoardController from '../src/controllers/board';
+import GameController from '../src/controllers/GameController';
+import BattleController from '../src/controllers/BattleController';
+import BoardController from '../src/controllers/BoardController';
+import ShopController from '../src/controllers/ShopController';
 
 const should = require('should');
 const rewire = require('rewire');
@@ -59,7 +60,6 @@ describe('Core Modules', () => {
     it('Can initialize game', async () => {
       gameState = await GameController.initialize(MOCK_CLIENTS);
       gameState.should.be.an.Object();
-      gameState.should.have.property('pieces');
       gameState.should.have.property('players');
       gameState.players[MOCK_SOCKETID_1].index.should.be.equal(MOCK_SOCKETID_1);
     });
@@ -85,6 +85,13 @@ describe('Core Modules', () => {
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
+    });
+
+    it('can refill shop', async () => {
+      await ShopController.mutateStateByShopRefreshing(gameState, MOCK_SOCKETID_1);
+      gameState.should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].shopUnits[0].should.be.an.Object();
     });
 
     it('cannot buy pawn when no gold', async () => {
