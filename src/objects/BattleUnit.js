@@ -40,27 +40,16 @@ export default class BattleUnit {
     this._mana = Math.max(0, Math.min(100, value));
   }
 
+  get id() {
+    return this._uid;
+  }
+
   getUID() {
     return this._uid;
   }
 
   canCast() {
     return this.mana === MAX_MANA;
-  }
-
-  hasTarget() {
-    return !!this._target;
-  }
-
-  getTarget() {
-    return this._target;
-  }
-
-  /**
-   * @param {Target} target {position: {Position}, range: {Int}}
-   */
-  setTarget(target) {
-    this._target = target;
   }
 
   oppositeTeam() {

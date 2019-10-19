@@ -1,5 +1,6 @@
 import ActionQueue from './ActionQueue';
 import Pathfinder from './Pathfinder';
+import TargetPairPool from './TargetPairPool';
 
 const _ = require('lodash');
 
@@ -14,6 +15,7 @@ export default class Battle {
     this.playerDamage = 0;
 
     const units = [];
+    this.targetPairPool = new TargetPairPool();
     this.pathfinder = new Pathfinder({ gridWidth: 8, gridHeight: 8 });
     // internal setup
     for (const boardPos in board) {
@@ -36,8 +38,8 @@ export default class Battle {
 
   setWinner() {
     const remainingUnitCount = {
-      [TEAM.A]: this.units.filter(u => (u.team === TEAM.A && u.hp > 0)),
-      [TEAM.B]: this.units.filter(u => (u.team === TEAM.B && u.hp > 0))
+      [TEAM.A]: this.units.filter(u => u.team === TEAM.A && u.hp > 0),
+      [TEAM.B]: this.units.filter(u => u.team === TEAM.B && u.hp > 0)
     };
 
     if (!remainingUnitCount[TEAM.A].length && !remainingUnitCount[TEAM.B].length) {
@@ -50,10 +52,13 @@ export default class Battle {
   }
 
   calculateAction({ timestamp, unit }) {
-    let targetUnit = unit.getTarget();
-    if (!targetUnit || !targetUnit.isAlive()) {
-      unit.setTarget(this.getUnitClosestTarget(unit));
-      targetUnit = unit.getTarget();
+    let targetUnit = this.targetPairPool.findTargetByUnitId(unit.id);
+    if (!targetUnit) {
+      const closestTarget = this.getUnitClosestTarget(unit);
+      if (closestTarget) {
+        targetUnit = closestTarget;
+        this.targetPairPool.add({ attacker: unit, target: targetUnit });
+      }
     }
     if (!targetUnit) return;
     if (unit.canCast()) {
@@ -67,6 +72,7 @@ export default class Battle {
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
+        this.targetPairPool.removeByUnitId(targetUnit.id);
         this.moveUnit(targetUnit, null, timestamp);
       }
     } else {
