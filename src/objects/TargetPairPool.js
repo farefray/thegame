@@ -9,6 +9,10 @@ export default class TargetPairPool {
     this._targetPairs.push(new TargetPair({ target, attacker }));
   }
 
+  remove({ target, attacker }) {
+    this._targetPairs = this._targetPairs.filter(targetPair => targetPair.target === target && targetPair.attacker === attacker);
+  }
+
   removeByUnitId(id) {
     this._targetPairs = this._targetPairs.filter(targetPair => targetPair.target.id !== id && targetPair.attacker.id !== id);
   }

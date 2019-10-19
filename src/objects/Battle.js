@@ -59,7 +59,18 @@ export default class Battle {
         targetUnit = closestTarget;
         this.targetPairPool.add({ attacker: unit, target: targetUnit });
       }
+    } else {
+      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
+      if (distanceToTarget > unit.attackRange) {
+        const closestTarget = this.getUnitClosestTarget(unit);
+        if (closestTarget && Pathfinder.getDistanceBetweenUnits(unit, targetUnit) < distanceToTarget) {
+          this.targetPairPool.remove({ attacker: unit, target: targetUnit });
+          targetUnit = closestTarget;
+          this.targetPairPool.add({ attacker: unit, target: targetUnit });
+        }
+      }
     }
+
     if (!targetUnit) return;
     if (unit.canCast()) {
       this.cast(unit, timestamp);
@@ -72,8 +83,9 @@ export default class Battle {
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
-        this.targetPairPool.removeByUnitId(targetUnit.id);
         this.moveUnit(targetUnit, null, timestamp);
+
+        this.targetPairPool.removeByUnitId(targetUnit.id);
       }
     } else {
       const step = this.pathfinder.findStepToTarget(unit, targetUnit);
