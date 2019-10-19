@@ -14,7 +14,7 @@ export default class TargetPairPool {
   }
 
   findTargetByUnitId(id) {
-    const relevantTargetPair = this._targetPairs.find(targetPair => targetPair.attacker === id);
+    const relevantTargetPair = this._targetPairs.find(targetPair => targetPair.attacker.id === id);
     return relevantTargetPair && relevantTargetPair.target;
   }
 }
