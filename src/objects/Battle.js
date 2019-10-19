@@ -85,7 +85,13 @@ export default class Battle {
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
         this.moveUnit(targetUnit, null, timestamp);
 
-        this.targetPairPool.removeByUnitId(targetUnit.id);
+        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== unit.id);
+        for (const affectedAttacker of affectedAttackers) {
+          if (affectedAttacker.actionLockTimestamp >= timestamp) continue;
+          this.actionQueue.removeUnitFromQueue(affectedAttacker);
+          this.actionQueue.addToActionQueue({ timestamp, unit: affectedAttacker });
+          affectedAttacker.test = timestamp + affectedAttacker.speed;
+        }
       }
     } else {
       const step = this.pathfinder.findStepToTarget(unit, targetUnit);
@@ -120,6 +126,7 @@ export default class Battle {
     const attackResult = unit.doAttack(targetUnit);
     unit.mana += 5;
     targetUnit.mana += 2;
+    unit.actionLockTimestamp = timestamp + 100;
     this.addActionToStack(
       {
         type: ACTION.ATTACK,
@@ -154,6 +161,7 @@ export default class Battle {
       },
       timestamp
     );
+    unit.actionLockTimestamp = timestamp + unit.speed;
 
     if (position) {
       unit.previousStep = step;

@@ -22,6 +22,7 @@ export default class BattleUnit {
     this._uid = this.getBoardPosition(); // uid = starting position for mob
     this._previousStep = null;
     this._mana = 0;
+    this._actionLockTimestamp = 0;
   }
 
   get previousStep() {
@@ -30,6 +31,14 @@ export default class BattleUnit {
 
   set previousStep(value) {
     this._previousStep = value;
+  }
+
+  get actionLockTimestamp() {
+    return this._actionLockTimestamp;
+  }
+
+  set actionLockTimestamp(value) {
+    this._actionLockTimestamp = value;
   }
 
   get mana() {

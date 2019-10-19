@@ -14,7 +14,9 @@ export default class TargetPairPool {
   }
 
   removeByUnitId(id) {
+    const affectedAttackers = this._targetPairs.filter(targetPair => targetPair.target.id === id).map(targetPair => targetPair.attacker);
     this._targetPairs = this._targetPairs.filter(targetPair => targetPair.target.id !== id && targetPair.attacker.id !== id);
+    return { affectedAttackers };
   }
 
   findTargetByUnitId(id) {
