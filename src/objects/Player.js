@@ -4,7 +4,8 @@ const DEBUG = true; // SORRY
 
 function Player(id) {
   this.index = id;
-  this.hp = 100;
+  this.health = 100;
+  this.mana = 0;
   this.level = DEBUG ? 5 : 1;
   this.exp = 0;
   this.expToReach = 1; // ?
@@ -62,7 +63,7 @@ Player.prototype.increaseExperience = function () {
 };
 
 Player.prototype.isDead = function () {
-  return this.hp <= 0;
+  return this.health <= 0;
 };
 
 export default Player;

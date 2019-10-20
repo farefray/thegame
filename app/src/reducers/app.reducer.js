@@ -39,18 +39,6 @@ export function app(
         round: action.newState.round,
         countdown: action.newState.countdown / 1000
       };
-
-      // revise players array here
-      if (action.newState.players[state.index]) {
-        state = {
-          ...state,
-          shopUnits: action.newState.players[state.index].shopUnits,
-          level: action.newState.players[state.index].level,
-          exp: action.newState.players[state.index].exp,
-          expToReach: action.newState.players[state.index].expToReach,
-          gold: action.newState.players[state.index].gold
-        };
-      }
       break;
     case 'INITIALIZE': {
       return {
@@ -82,15 +70,7 @@ export function app(
       }
       console.log('Before: Removing player ' + action.pid, state.players);
       const players = state.players;
-      const deadPlayer = {
-        index: action.pid,
-        hp: 0,
-        pos: state.position,
-        name: players[action.pid].name
-      };
       delete players[action.pid];
-      console.log('Removing player ' + action.pid, players, state.players);
-    
       break;
     }
     default:

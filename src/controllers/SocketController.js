@@ -188,7 +188,7 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
   await state.scheduleRoundStart();
 
   // do we need to update our session from storage?? TODO Test
-  const preBattleSession = sessionsStore.get(sessionID);
+  const preBattleSession = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMEWHERE (!!URGENT)
   const preBattleState = preBattleSession.get('state');
   await BoardController.preBattleCheck(preBattleState);
   const battleRoundResult = await BattleController.setup(preBattleState);

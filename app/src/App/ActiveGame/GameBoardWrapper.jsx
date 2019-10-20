@@ -4,7 +4,6 @@ import Position from '../../objects/Position';
 import GameBoard from './GameBoard.jsx';
 import { StateProvider } from './GameBoard.context.js';
 
-
 const { ACTION } = require('../../shared/constants');
 
 function unitReducer(unitComponents, action) {
@@ -32,6 +31,10 @@ function GameBoardWrapper({ state }) {
   const [unitComponents, dispatchUnitLifecycle] = useReducer(unitReducer, {});
   const { isActiveBattleGoing, actionStack } = state;
   
+  // useEffect(() => {
+  //   setActiveBattle(isActiveBattleGoing)
+  // }, [isActiveBattleGoing])
+
   const combineBoard = () => {
     const boardMap = isActiveBattleGoing ? state.battleStartBoard : state.myBoard;
     return _.merge(boardMap, state.myHand);

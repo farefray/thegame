@@ -60,8 +60,8 @@ State.prototype.damagePlayers = function(battles) {
     // actually now there will be always damage, need to finish :D
     if (battleResult.playerDamage) {
       const player = this.players[uid];
-      const newHP = player.get('hp') - battleResult.playerDamage;
-      player.set('hp', newHP);
+      const newHP = player.get('health') - battleResult.playerDamage;
+      player.set('health', newHP);
 
       if (newHP <= 0) {
         this.amountOfPlayers = this.amountOfPlayers - 1;

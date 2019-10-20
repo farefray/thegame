@@ -1,6 +1,6 @@
 const basePlayerState = {
   index: -1, // revise
-  hp: 100,
+  health: 100,
   mana: 0,
   level: -1,
   exp: -1,
@@ -30,6 +30,12 @@ export default function player(state = basePlayerState, action) {
       return {
         ...state,
         shopUnits: action.newState.players[state.index].shopUnits,
+        level: action.newState.players[state.index].level,
+        exp: action.newState.players[state.index].exp,
+        expToReach: action.newState.players[state.index].expToReach,
+        gold: action.newState.players[state.index].gold,
+        health: action.newState.players[state.index].health,
+        mana: action.newState.players[state.index].mana
       };
     default:
       return state
