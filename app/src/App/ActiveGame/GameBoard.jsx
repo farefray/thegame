@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import BoardSquare from './GameBoard/BoardSquare.jsx';
 import { DndProvider } from 'react-dnd';
@@ -12,12 +13,25 @@ const gameBoardHeight = 8;
 class GameBoard extends React.Component {
   constructor(props) {
     super(props);
+    console.log("TCL: GameBoardView -> constructor -> props", props)
 
-    this.isInitialLoad = true;
     this.state = {
       gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth),
-      isMounted: false
+      isMounted: false,
+      active: props.isActive,
+      units: {},
     };
+  }
+
+  static getDerivedStateFromProps(props, current_state) {
+    console.log('getDerivedStateFromProps')
+    if (!_.isEqual(current_state.units, props.units)) {
+      return {
+        units: props.units,
+      }
+    }
+
+    return null
   }
 
   componentDidMount() {
@@ -60,8 +74,8 @@ class GameBoard extends React.Component {
   }
 
   render() {
-    const { onLifecycle, units } = this.props;
-    const { gameBoard, isMounted } = this.state;
+    const { gameBoard, isMounted, units } = this.state;
+    console.log("TCL: GameBoardView -> render -> units", _.cloneDeep(units))
     return (
       <div className="gameboard">
         <div className="gameboard-wrapper">
@@ -75,7 +89,8 @@ class GameBoard extends React.Component {
                   getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
                   gameBoardWidth={gameBoardWidth}
                   gameBoardHeight={gameBoardHeight}
-                  onLifecycle={onLifecycle}
+                  onLifecycle={this.props.onLifecycle}
+                  boardIsActive={this.props.active}
                 />
               ))}
               <div ref={e => (this.boardRef = e)}>

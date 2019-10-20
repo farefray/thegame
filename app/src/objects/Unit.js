@@ -17,6 +17,7 @@ export default class Unit extends React.Component {
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
     this.state = {
+      boardIsActive: props.boardIsActive,
       top,
       left,
       x: parseInt(x, 10),
@@ -53,6 +54,15 @@ export default class Unit extends React.Component {
     });
   }
 
+  static getDerivedStateFromProps(props, current_state) {
+    if (current_state.boardIsActive !== props.boardIsActive) {
+      // maybe here update to reset unit? [TODO]
+      return {
+        boardIsActive: props.boardIsActive
+      }
+    }
+    return null
+  }
   /**
    *
    * @param {Object} action Action happened
@@ -60,20 +70,6 @@ export default class Unit extends React.Component {
    */
   onAction(action, isTarget) {
     switch (action.type) {
-      case ACTION.RESET: {
-        const { initPosition } = this.state;
-        this.move(initPosition.x, initPosition.y, {
-          instant: true,
-          direction: DIRECTION.SOUTH
-        });
-
-        this.setState({
-          health: this.state.maxHealth,
-          isDead: false
-        });
-
-        break;
-      }
       case ACTION.MOVE: {
         action.to && this.move(action.to.x, action.to.y);
         break;

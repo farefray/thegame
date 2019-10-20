@@ -18,6 +18,7 @@ function ActiveGame() {
 
   const appState = useSelector(state => state.app, shallowEqual);
   const gameboardState = useSelector(state => state.gameboard, shallowEqual);
+  console.log("TCL: ActiveGame -> gameboardState", gameboardState)
   const playerState  = useSelector(state => state.player, shallowEqual);
   return (
     <Container className="activegame">

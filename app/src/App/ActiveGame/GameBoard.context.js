@@ -1,3 +1,6 @@
+/**
+ * React context in order to pass gameboard state down into children components without passing directly for every member
+ */
 import React, { createContext, useContext } from 'react';
 
 const StateContext = createContext();

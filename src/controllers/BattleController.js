@@ -52,7 +52,8 @@ BattleController.setup = async state => {
     }
   }
 
-  results.battleTime = battleTime;
+  results.battleTime = battleTime + 7500; // adding extra 5 seconds delay to cover network issues and final effects
+  console.log("TCL: battleTime", battleTime)
   return results;
 };
 

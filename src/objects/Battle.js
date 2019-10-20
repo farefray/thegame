@@ -103,12 +103,20 @@ export default class Battle {
     return Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
   }
 
-  addActionToStack(actionObject, time) {
+  /**
+   * @description Adds current action to actionStack to be later sent to frontend
+   * Before adding, modifying added action by Unit itself, in case additional data need to be added
+   * @param {Object} actionObject
+   * @param {Integer} time
+   * @param {BattleUnit} unit
+   * @memberof Battle
+   */
+  addActionToStack(actionObject, time, unit) {
+    actionObject = unit.beforeAddActionToStack(actionObject);
     this.actionStack.push({
       ...actionObject,
       time
     });
-    return this;
   }
 
   cast(unit, timestamp) {
@@ -118,7 +126,8 @@ export default class Battle {
         type: ACTION.CAST,
         from: unit.getPosition()
       },
-      timestamp
+      timestamp,
+      unit
     );
   }
 
@@ -134,7 +143,8 @@ export default class Battle {
         to: targetUnit.getPosition(),
         damage: attackResult.damage
       },
-      timestamp
+      timestamp,
+      unit
     );
   }
 
@@ -159,7 +169,8 @@ export default class Battle {
         from: fromPosition,
         to: position
       },
-      timestamp
+      timestamp,
+      unit
     );
     unit.actionLockTimestamp = timestamp + unit.speed;
 

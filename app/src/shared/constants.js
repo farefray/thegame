@@ -11,7 +11,6 @@ module.exports = {
     B: 1
   },
   ACTION: {
-    RESET: -1,
     INIT: 0,
     MOVE: 1,
     ATTACK: 2,
