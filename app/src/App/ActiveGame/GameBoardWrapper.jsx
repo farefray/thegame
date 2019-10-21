@@ -1,14 +1,27 @@
+/**
+ * Logical component for gameboard
+ * It's quite complex, but I cannot find any more suitable way to make it simplier
+ */
 import _ from 'lodash';
 import React, { useEffect, useState, useReducer } from 'react';
-import Position from '../../objects/Position';
+import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
 import { StateProvider } from './GameBoard.context.js';
-
+import usePrevious from '../../customhooks/usePrevious';
 
 const { ACTION } = require('../../shared/constants');
 
-function unitReducer(unitComponents, action) {
+/**
+ *
+ * Handles previously stored actions(actionStack) as well as frontend generated events
+ * contains unit itself in case its frontend generated event or unitID in case its backend event
+ * @param {Object} action
+ * @maybe its more performant to not use reducer hook here and hold unitComponents outside of react component like here in commit daa60d0e74d01d67232d70e69731e8c2e9e5f423
+ * @returns
+ */
+function dispatchUnitLifecycleReducer(unitComponents, action) {
   switch (action.type) {
+    // Lifecycle events which are being triggered by frontend events for Unit components
     case 'SPAWN': {
       const { unit } = action;
       unitComponents[unit.id] = unit; // very confusing, we use id here cuz its component, but later its UID cuz BattleUnit, TODO!!
@@ -19,124 +32,122 @@ function unitReducer(unitComponents, action) {
       delete unitComponents[unit.id];
       return unitComponents;
     }
-    default: {
-      // init
-      return _.cloneDeep(action.unitComponents); // maybe not need to clone
-    }
+    // actionStack events which are being generated on backend
+    case ACTION.MOVE:
+      unitComponents[action.unitID].onAction(action);
+      return unitComponents;
+    case ACTION.ATTACK:
+      // todo plzmake this more understandable
+      unitComponents[action.unitID].onAction(action);
+
+      if (action.affectedUnits) {
+        for (const index in action.affectedUnits) {
+          unitComponents[action.affectedUnits[index]].onAction(action, true);
+        }
+      }
+      return unitComponents;
+    case ACTION.CAST:
+      unitComponents[action.unitID].onAction(action);
+      return unitComponents;
+    default:
+      throw new Error();
   }
 }
 
+GameBoardWrapper.propTypes = {
+  state: PropTypes.shape({
+    isActiveBattleGoing: PropTypes.bool,
+    actionStack: PropTypes.array,
+    battleStartBoard: PropTypes.objectOf(PropTypes.object),
+    myHand: PropTypes.objectOf(PropTypes.object),
+    myBoard: PropTypes.objectOf(PropTypes.object)
+  })
+};
+
+/**
+ * Logical component for GameBoard
+ * @param {gameboard.reducer} state
+ * @returns
+ */
 function GameBoardWrapper({ state }) {
-  const [activeBattle, setActiveBattle] = useState(false);
-  const [units, setUnits] = useState([]);
-  const [unitComponents, dispatchUnitLifecycle] = useReducer(unitReducer, {});
-  const { isActiveBattleGoing, actionStack } = state;
-  
-  const combineBoard = () => {
-    const boardMap = isActiveBattleGoing ? state.battleStartBoard : state.myBoard;
-    return _.merge(boardMap, state.myHand);
-  };
+  /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
+  const [gameboardKey, setGameboardKey] = useState(1);
 
-  let combinedBoard = combineBoard();
+  // Get all passed down props which we will use, from gameboard state
+  const { myHand, myBoard, battleStartBoard, isActiveBattleGoing, actionStack } = state;
 
-  const boardReducer = (board, action) => {
-    if (action.type === ACTION.INIT) {
-      return _.cloneDeep(action.board);
-    } else if (action.type === ACTION.RESET) {
-      // todo this is being triggered twise, need to fix.
+  // Contains current board units(if thats battle, then battleStartBoard, else combination of myBoard && myHand)
+  const [board, setBoard] = useState({});
 
-      // As react wont rerender our units, we reset their positions to initial
-      for (let id in unitComponents) {
-        const unit = unitComponents[id];
-        unit.onAction(action);
-      }
-
-      // also board getting resetted to initial state
-      const clonedBoard = _.cloneDeep(combinedBoard); // maybe can be omitted and wont require cloning
-      return clonedBoard;
-    }
-
-    const fromPos = new Position(action.from.x, action.from.y).toBoardPosition(); // idiotic way for forming ID's for units and other stuff. Make it good please someone
-    const toPos = action.to && new Position(action.to.x, action.to.y).toBoardPosition();
-
-    switch (action.type) {
-      case ACTION.MOVE:
-        const reducedBoard = _.cloneDeep(board); // maybe can be omitted
-        const creature = _.clone(board[fromPos]);
-        if (!creature) {
-          return reducedBoard;
-        }
-
-        delete reducedBoard[fromPos];
-        if (toPos) {
-          unitComponents[creature._uid].onAction(action);
-          reducedBoard[toPos] = creature;
-        }
-
-        return reducedBoard;
-      case ACTION.ATTACK:
-        // todo plzmake this more understandable
-        if (!board[fromPos] || !board[toPos]) {
-          return board;
-        }
-
-        unitComponents[board[fromPos].position].onAction(action);
-        unitComponents[board[toPos].position].onAction(action, true);
-        return _.clone(board);
-      case ACTION.CAST:
-        unitComponents[board[fromPos].position].onAction(action);
-        return _.clone(board);
-      default:
-        throw new Error();
-    }
-  };
-
-  const [gameBoard, dispatchGameBoard] = useReducer(boardReducer, combinedBoard);
-
+  // If board is being updated by backend, update board state for this component
   useEffect(() => {
-    const units = Object.keys(combinedBoard).map(key => {
+    setBoard(_.merge(isActiveBattleGoing ? state.battleStartBoard : state.myBoard, myHand));
+  }, [myHand, myBoard, battleStartBoard, isActiveBattleGoing]);
+
+  // When board is being updated, we update units [units is array of unit objects which will be later rendered into 'Unit' components]
+  const [units, setUnits] = useState([]);
+  // unitComponents stores children react components 'Unit' which are being rendered from 'units' array
+  const [unitComponents, dispatchUnitLifecycle] = useReducer(dispatchUnitLifecycleReducer, {});
+
+  // If board being updated, update units
+  useEffect(() => {
+    const units = Object.keys(board).map(key => {
       return {
-        ...combinedBoard[key],
+        ...board[key],
         id: key
       };
     });
 
     setUnits(units);
+  }, [board]);
 
-    dispatchGameBoard({
-      type: ACTION.INIT,
-      board: combinedBoard
-    });
-  }, [combinedBoard]);
+  /** Active battle controlling for component state */
+  const [isBattleLaunched, setBattleLaunched] = useState(false);
 
+  /** We use usePrevious hook in order to get previous state value for isBattleLaunched, to know when its changed */
+  const wasBattleLaunched = usePrevious(isBattleLaunched);
+
+  useEffect(() => {
+    /** isActiveBattleGoing is redux state from backend, isBattleLaunched is internal state for this component
+     * we devide those two values, because we cannot start battle immediatly when redux updated, as not all Unit components yet mounted and registered here.
+     */
+    if (isActiveBattleGoing && !isBattleLaunched && !wasBattleLaunched) {
+      // Launch battle and update gameboard key in order to re-render units
+      setBattleLaunched(true);
+      setGameboardKey(gameboardKey + 1);
+    } else if (isActiveBattleGoing && isBattleLaunched && !wasBattleLaunched) {
+      // reset internal counter, effect on this will trigger battle actions animating start
+      setCurrentActionIndex(isActiveBattleGoing ? 0 : -1);
+    } else if (!isActiveBattleGoing && isBattleLaunched && wasBattleLaunched) {
+      // Finished battle (isActiveBattleGoing via redux is false, while battle is running in component yet)
+      setBattleLaunched(false);
+      setGameboardKey(gameboardKey + 1);
+    }
+  }, [isActiveBattleGoing, isBattleLaunched])
+  
+  // Internal counters in order to go past actionStack and execute units behaviors one by one
   const [currentActionIndex, setCurrentActionIndex] = useState(-1);
   const [prevActionIndex, setPrevActionIndex] = useState(-1);
   useEffect(() => {
-    if (!activeBattle && isActiveBattleGoing && actionStack.length) {
-      setActiveBattle(true);
-
-      setCurrentActionIndex(0);
-    } else if (activeBattle && !isActiveBattleGoing) {
-      // backend sent that battle is over (isActiveBattleGoing === false), we update state on frontend
-      setActiveBattle(false);
-    } else if (activeBattle && isActiveBattleGoing && actionStack.length > 0 && currentActionIndex > -1 && currentActionIndex !== prevActionIndex) {
+    if (
+        actionStack.length > 0 // we got actions to execute
+        && currentActionIndex > -1 // current action index is not initial
+        && currentActionIndex !== prevActionIndex // we are not yet finished
+      ) {
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
       setPrevActionIndex(currentActionIndex);
 
       const actionTime = actionStack[currentActionIndex].time;
       const boardActions = actionStack.filter(action => action.time === actionTime);
       for (const action of boardActions) {
-        dispatchGameBoard(action);
+        // reducer which executes action from stack for child Unit component
+        dispatchUnitLifecycle(action);
       }
+
       if (currentActionIndex + boardActions.length >= actionStack.length) {
-        setTimeout(
-          () =>
-            dispatchGameBoard({
-              type: ACTION.RESET
-            }),
-          1000
-        );
+        // no more actions, we could trigger winning/losing animation here
       } else {
+        // Scheduling next action
         const timeoutLength = actionStack[currentActionIndex + boardActions.length].time - actionTime;
 
         setTimeout(() => {
@@ -144,15 +155,17 @@ function GameBoardWrapper({ state }) {
         }, timeoutLength);
       }
     }
-  }, [gameBoard, currentActionIndex]); // eslint-disable-line
+  }, [currentActionIndex]);
 
-  return <StateProvider
-            initialState={{
-              ...state
-            }}
-          >
-            <GameBoard board={gameBoard} units={units} onLifecycle={dispatchUnitLifecycle} />
-          </StateProvider>;
+  return (
+    <StateProvider
+      initialState={{
+        ...state
+      }}
+    >
+      <GameBoard key={gameboardKey} units={units} onLifecycle={dispatchUnitLifecycle} />
+    </StateProvider>
+  );
 }
 
 export default GameBoardWrapper;

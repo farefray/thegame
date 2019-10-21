@@ -22,7 +22,7 @@ function ActiveGame() {
   return (
     <Container className="activegame">
       <Header className="gameheader">
-        <PlayerStats playerInfo={{ health: playerState.hp, mana: playerState.mana, gold: playerState.gold }} />
+        <PlayerStats playerStats={{ health: playerState.health, mana: playerState.mana, gold: playerState.gold }} />
         <Timer initialTimerValue={appState.countdown} />
       </Header>
       <Container>

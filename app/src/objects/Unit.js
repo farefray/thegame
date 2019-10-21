@@ -60,20 +60,6 @@ export default class Unit extends React.Component {
    */
   onAction(action, isTarget) {
     switch (action.type) {
-      case ACTION.RESET: {
-        const { initPosition } = this.state;
-        this.move(initPosition.x, initPosition.y, {
-          instant: true,
-          direction: DIRECTION.SOUTH
-        });
-
-        this.setState({
-          health: this.state.maxHealth,
-          isDead: false
-        });
-
-        break;
-      }
       case ACTION.MOVE: {
         action.to && this.move(action.to.x, action.to.y);
         break;

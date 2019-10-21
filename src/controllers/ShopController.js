@@ -14,12 +14,12 @@ const SHOP_UNITS = 4;
  * @param {State} state
  * @param {String} playerIndex [optional]
  */
-ShopController.mutateStateByShopRefreshing = async (state, playerIndex) => {
+ShopController.mutateStateByShopRefreshing = (state, playerIndex) => {
   if (!playerIndex) {
     // go for all players in state
     const players = state.get('players');
     for (const uid in players) {
-      await ShopController.mutateStateByShopRefreshing(state, uid);
+      ShopController.mutateStateByShopRefreshing(state, uid);
     }
   } else {
     const shop = state.getIn(['players', playerIndex, 'shopUnits']);

@@ -52,7 +52,7 @@ BattleController.setup = async state => {
     }
   }
 
-  results.battleTime = battleTime;
+  results.battleTime = battleTime + 1500; // adding extra 1.5 seconds delay to cover network issues and final effects
   return results;
 };
 

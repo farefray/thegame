@@ -4,7 +4,8 @@ const DEBUG = true; // SORRY
 
 function Player(id) {
   this.index = id;
-  this.hp = 100;
+  this.health = 100;
+  this.mana = 0;
   this.level = DEBUG ? 5 : 1;
   this.exp = 0;
   this.expToReach = 1; // ?
@@ -21,8 +22,9 @@ Player.prototype.get = function (field) {
     case 'availableHandPosition': {
       const hand = this.get('hand');
       for (let i = 0; i < 8; i++) {
-        if (hand[i] === undefined) {
-          return `${String(i)},-1`;
+        const pos = `${String(i)},-1`;
+        if (hand[pos] === undefined) {
+          return pos;
         }
       }
 
@@ -62,7 +64,7 @@ Player.prototype.increaseExperience = function () {
 };
 
 Player.prototype.isDead = function () {
-  return this.hp <= 0;
+  return this.health <= 0;
 };
 
 export default Player;

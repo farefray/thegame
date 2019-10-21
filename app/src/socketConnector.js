@@ -36,10 +36,6 @@ SocketConnector.init = function (dispatch) {
     dispatch({ type: 'UPDATED_STATE', newState: state });
   });
 
-  socket.on('SET_ONGOING_BATTLE', (value, timer) => {
-    dispatch({ type: 'SET_ONGOING_BATTLE', value: value, countdown: timer / 1000 });
-  });
-
   socket.on('UPDATE_PLAYER', (index, player) => {
     dispatch({ type: 'UPDATE_PLAYER', index: index, player: player });
   });
@@ -48,8 +44,8 @@ SocketConnector.init = function (dispatch) {
     dispatch({ type: 'INITIALIZE', index: index });
   });
 
-  socket.on('BATTLE_TIME', (actionStack, startBoard, winner) => {
-    dispatch({ type: 'BATTLE_TIME', actionStack, startBoard, winner });
+  socket.on('START_BATTLE', (actionStack, startBoard, winner) => {
+    dispatch({ type: 'START_BATTLE', actionStack, startBoard, winner });
   });
 
   socket.on('END_GAME', winningPlayer => {

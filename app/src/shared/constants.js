@@ -11,10 +11,12 @@ module.exports = {
     B: 1
   },
   ACTION: {
-    RESET: -1,
     INIT: 0,
     MOVE: 1,
     ATTACK: 2,
     CAST: 3
+  },
+  STATE: {
+    COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000
   }
 };

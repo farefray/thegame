@@ -103,4 +103,14 @@ export default class BattleUnit {
       damage
     };
   }
+
+  /**
+   * @description modify actionObject before adding to actionStack
+   * @param {Object} actionObject
+   * @memberof BattleUnit
+   */
+  beforeAddActionToStack(actionObject) {
+    actionObject.unitID = this._uid;
+    return actionObject;
+  }
 }

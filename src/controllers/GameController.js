@@ -55,8 +55,9 @@ GameController.initialize = async clients => {
   });
 
   const state = new State(playersArray);
-  await ShopController.mutateStateByShopRefreshing(state);
+  ShopController.mutateStateByShopRefreshing(state);
   return state;
 };
+
 
 export default GameController;
