@@ -22,8 +22,9 @@ Player.prototype.get = function (field) {
     case 'availableHandPosition': {
       const hand = this.get('hand');
       for (let i = 0; i < 8; i++) {
-        if (hand[i] === undefined) {
-          return `${String(i)},-1`;
+        const pos = `${String(i)},-1`;
+        if (hand[pos] === undefined) {
+          return pos;
         }
       }
 

@@ -28,6 +28,7 @@ describe('Core Modules', () => {
 
   let gameState = null;
   const firstHandPosition = '0,-1';
+  const secondHandPosition = '1,-1';
 
   describe('ConnectedPlayers Storage and Game start', () => {
     it('Can add customer', () => {
@@ -98,6 +99,14 @@ describe('Core Modules', () => {
       gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
       const state = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       should(state).Null();
+    });
+
+    it('can buy second pawn pawn', async () => {
+      gameState.players[MOCK_SOCKETID_1].gold = 1;
+      gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 1);
+      gameState.should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.have.property('lookType');
     });
 
     it('can sell pawn', async () => {
