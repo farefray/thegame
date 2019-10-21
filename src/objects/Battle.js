@@ -141,7 +141,8 @@ export default class Battle {
         type: ACTION.ATTACK,
         from: unit.getPosition(),
         to: targetUnit.getPosition(),
-        damage: attackResult.damage
+        damage: attackResult.damage,
+        affectedUnits: [targetUnit.id]
       },
       timestamp,
       unit
