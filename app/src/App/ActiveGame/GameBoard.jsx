@@ -13,7 +13,6 @@ const gameBoardHeight = 8;
 class GameBoard extends React.Component {
   constructor(props) {
     super(props);
-    console.log("TCL: GameBoardView -> constructor -> props", props)
 
     this.state = {
       gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth),
@@ -23,7 +22,6 @@ class GameBoard extends React.Component {
   }
 
   static getDerivedStateFromProps(props, current_state) {
-    console.log('getDerivedStateFromProps')
     if (!_.isEqual(current_state.units, props.units)) {
       return {
         units: props.units,
@@ -74,7 +72,6 @@ class GameBoard extends React.Component {
 
   render() {
     const { gameBoard, isMounted, units } = this.state;
-    console.log("TCL: GameBoardView -> render -> units", _.cloneDeep(units))
     return (
       <div className="gameboard">
         <div className="gameboard-wrapper">

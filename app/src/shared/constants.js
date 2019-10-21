@@ -17,6 +17,6 @@ module.exports = {
     CAST: 3
   },
   STATE: {
-    COUNTDOWN_BETWEEN_ROUNDS: 30 * 1000
+    COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000
   }
 };
