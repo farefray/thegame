@@ -17,7 +17,6 @@ export default class Unit extends React.Component {
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
     this.state = {
-      boardIsActive: props.boardIsActive,
       top,
       left,
       x: parseInt(x, 10),
@@ -54,15 +53,6 @@ export default class Unit extends React.Component {
     });
   }
 
-  static getDerivedStateFromProps(props, current_state) {
-    if (current_state.boardIsActive !== props.boardIsActive) {
-      // maybe here update to reset unit? [TODO]
-      return {
-        boardIsActive: props.boardIsActive
-      }
-    }
-    return null
-  }
   /**
    *
    * @param {Object} action Action happened

@@ -18,7 +18,6 @@ class GameBoard extends React.Component {
     this.state = {
       gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth),
       isMounted: false,
-      active: props.isActive,
       units: {},
     };
   }
@@ -90,7 +89,6 @@ class GameBoard extends React.Component {
                   gameBoardWidth={gameBoardWidth}
                   gameBoardHeight={gameBoardHeight}
                   onLifecycle={this.props.onLifecycle}
-                  boardIsActive={this.props.active}
                 />
               ))}
               <div ref={e => (this.boardRef = e)}>

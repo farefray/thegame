@@ -107,22 +107,31 @@ function GameBoardWrapper({ state }) {
   const [currentActionIndex, setCurrentActionIndex] = useState(-1);
   const [prevActionIndex, setPrevActionIndex] = useState(-1);
 
+  /** Gameboard key is used in order to fully rebuild gameboard during rounds  */
+  const [gameboardKey, setGameboardKey] = useState(1);
+
   // when battle state being changed, we need to start or stop battle
   useEffect(() => {
     console.log('TCL: GameBoardLogic -> isActiveBattleGoing', isActiveBattleGoing);
-    if (isActiveBattleGoing) {
-      // reset internal counter, effect on this will trigger battle actions start
-      setTimeout(() => setCurrentActionIndex(0), 150); // weird test way to delay battle start
-    } else {
-    }
+    // if battle started, increment gameboard key to fully reinitialize
+    setGameboardKey(gameboardKey + 1);
+    // reset internal counter, effect on this will trigger battle actions start
+    setTimeout(() => {
+      (() => {
+        // we execute this in next tick
+        setCurrentActionIndex(isActiveBattleGoing ? 0 : -1)
+      })();
+    }, 100);
+    
   }, [isActiveBattleGoing]);
 
   useEffect(() => {
-    console.log('TCL: GameBoardLogic -> currentActionIndex was changed:', currentActionIndex);
-    console.log('TCL: GameBoardLogic -> actionStack.length', actionStack.length);
-
-    if (actionStack.length > 0 && currentActionIndex > -1 && currentActionIndex !== prevActionIndex) {
-      console.log('we go for battle eventse');
+    if (
+        actionStack.length > 0 // we got actions to execute
+        && currentActionIndex > -1 // current action index is not initial
+        && currentActionIndex !== prevActionIndex // we are not yet finished
+      ) {
+      console.log('battle tick, currentActionIndex:', currentActionIndex);
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
       setPrevActionIndex(currentActionIndex);
 
@@ -150,8 +159,7 @@ function GameBoardWrapper({ state }) {
         ...state
       }}
     >
-      {isActiveBattleGoing ? /** experinemtal - remove */
-          <GameBoard units={units} onLifecycle={dispatchUnitLifecycle} isActive={true} /> : <GameBoard units={units} onLifecycle={dispatchUnitLifecycle} isActive={false} />}
+      <GameBoard key={gameboardKey} units={units} onLifecycle={dispatchUnitLifecycle} />
     </StateProvider>
   );
 }
