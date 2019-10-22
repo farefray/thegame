@@ -15,7 +15,7 @@ const SessionsStore = rewire('../src/models/SessionsStore.js');
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
 
-const { TEAM } = rewire('../app/src/shared/constants');
+const { TEAM } = rewire('../../frontend/src/shared/constants');
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();

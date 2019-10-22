@@ -1,7 +1,7 @@
 import MutableObject from '../abstract/MutableObject';
 
 const sleep = require('util').promisify(setTimeout);
-const { STATE } = require('../../app/src/shared/constants');
+const { STATE } = require('../../../frontend/src/shared/constants');
 
 function State(playersArray) {
   this.round = 1;

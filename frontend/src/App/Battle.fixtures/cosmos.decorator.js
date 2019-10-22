@@ -3,8 +3,8 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import Battle from '../../../../src/objects/Battle.js';
-import createBattleBoard from '../../../../src/utils/createBattleBoard';
+import Battle from '../../../../backend/src/objects/Battle.js';
+import createBattleBoard from '../../../../backend/src/utils/createBattleBoard';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {

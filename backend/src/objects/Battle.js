@@ -4,7 +4,7 @@ import TargetPairPool from './TargetPairPool';
 
 const _ = require('lodash');
 
-const { TEAM, ACTION } = require('../../app/src/shared/constants');
+const { TEAM, ACTION } = require('../../../frontend/src/shared/constants');
 
 export default class Battle {
   constructor(board) {

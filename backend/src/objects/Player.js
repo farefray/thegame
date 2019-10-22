@@ -1,4 +1,4 @@
-import Position from '../../app/src/objects/Position';
+import Position from '../../../frontend/src/shared/Position';
 
 const DEBUG = true; // SORRY
 

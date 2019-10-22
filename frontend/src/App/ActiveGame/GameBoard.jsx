@@ -4,7 +4,7 @@ import BoardSquare from './GameBoard/BoardSquare.jsx';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-import Position from '../../objects/Position';
+import Position from '../../shared/Position';
 import Unit from '../../objects/Unit';
 
 const gameBoardWidth = 8;

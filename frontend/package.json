@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env BROWSER=none react-app-rewired start",
-    "go": "concurrently \"react-app-rewired start\" \"babel-node ../src/index.js\"",
+    "go": "concurrently \"react-app-rewired start\" \"babel-node ../backend/src/index.js\"",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
