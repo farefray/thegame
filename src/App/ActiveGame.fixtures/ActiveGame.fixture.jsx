@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReduxMock } from 'react-cosmos-redux';
-import rootReducer from '../../reducers';
+import rootReducer from '@/reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import ActiveGame from '../ActiveGame';

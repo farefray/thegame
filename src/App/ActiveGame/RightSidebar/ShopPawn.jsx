@@ -1,6 +1,6 @@
 import React from 'react';
 import UnitImage from '../../../objects/Unit/UnitImage';
-import Frame from '../../../Components/Frame';
+import Frame from 'components/Frame';
 
 function ShopPawn({ unit, index, onPurchase }) {
   return (
