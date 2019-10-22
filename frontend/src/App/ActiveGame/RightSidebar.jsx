@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { FlexboxGrid } from 'rsuite';
 import _ from 'lodash';
 import ShopPawn from './RightSidebar/ShopPawn';
-import { SocketConnector } from '../../socketConnector';
+import { SocketConnector } from '@/socketConnector';
 
 class RightSidebar extends Component {
   constructor(props) {
