@@ -23,6 +23,7 @@ export default class BattleUnit {
     this._previousStep = null;
     this._mana = 0;
     this._actionLockTimestamp = 0;
+    this._previousActionTimestamp = 0;
   }
 
   get previousStep() {
@@ -39,6 +40,14 @@ export default class BattleUnit {
 
   set actionLockTimestamp(value) {
     this._actionLockTimestamp = value;
+  }
+
+  get previousActionTimestamp() {
+    return this._previousActionTimestamp;
+  }
+
+  set previousActionTimestamp(value) {
+    this._previousActionTimestamp = value;
   }
 
   get mana() {
@@ -112,5 +121,11 @@ export default class BattleUnit {
   beforeAddActionToStack(actionObject) {
     actionObject.unitID = this._uid;
     return actionObject;
+  }
+
+  onAction(timestamp) {
+    const elapsedMilliseconds = timestamp - this.previousActionTimestamp;
+    this.mana += (this.manaRegen * elapsedMilliseconds) / 1000;
+    this.previousActionTimestamp = timestamp;
   }
 }

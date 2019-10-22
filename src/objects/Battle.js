@@ -52,6 +52,8 @@ export default class Battle {
   }
 
   calculateAction({ timestamp, unit }) {
+    unit.onAction(timestamp);
+
     let targetUnit = this.targetPairPool.findTargetByUnitId(unit.id);
     if (!targetUnit) {
       const closestTarget = this.getUnitClosestTarget(unit);
@@ -133,8 +135,6 @@ export default class Battle {
 
   attackUnit(unit, targetUnit, timestamp) {
     const attackResult = unit.doAttack(targetUnit);
-    unit.mana += 5;
-    targetUnit.mana += 2;
     unit.actionLockTimestamp = timestamp + 100;
     this.addActionToStack(
       {

@@ -41,9 +41,12 @@ export default class Unit extends React.Component {
     });
   }
 
-  get id() {
-    const { initPosition } = this.state;
-    return `${initPosition.x},${initPosition.y}`;
+  componentDidMount() {
+    setInterval(() => {
+      const { mana, maxMana } = this.state;
+      const { manaRegen } = this.props.unit;
+      this.setState({ mana: Math.max(0, Math.min(maxMana, mana + manaRegen / 5)) });
+    }, 200);
   }
 
   componentWillUnmount() {
@@ -51,6 +54,11 @@ export default class Unit extends React.Component {
       type: 'DESTROY',
       unit: this
     });
+  }
+
+  get id() {
+    const { initPosition } = this.state;
+    return `${initPosition.x},${initPosition.y}`;
   }
 
   /**
@@ -141,11 +149,9 @@ export default class Unit extends React.Component {
     const { top, left } = this.state;
     const midpointTop = (targetTop + top) / 2;
     const midpointLeft = (targetLeft + left) / 2;
-    const mana = Math.max(0, Math.min(100, this.state.mana + 5));
     this.setState({
       direction: this.getDirectionToTarget(x, y),
-      isMoving: false,
-      mana
+      isMoving: false
     });
 
     setTimeout(() => {
@@ -190,12 +196,10 @@ export default class Unit extends React.Component {
   takeDamage(damage) {
     //console.log("TCL: takeDamage -> this.state.health", this.state.health)
     const health = Math.max(0, this.state.health - damage);
-    const mana = Math.max(0, Math.min(100, this.state.mana + 2));
     //console.log("TCL: takeDamage -> health", health)
     //console.log("TCL: takeDamage -> health === 0", health === 0)
     this.setState({
       health,
-      mana,
       isDead: health === 0
     });
   }

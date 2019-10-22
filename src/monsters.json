@@ -10,7 +10,8 @@
     "attackRange": 1,
     "armor": 2,
     "speed": 1200,
-    "attackSpeed": 1000
+    "attackSpeed": 1000,
+    "manaRegen": 5
   },
   "elf": {
     "name": "elf",
@@ -24,7 +25,8 @@
     "particle": 1,
     "armor": 2,
     "speed": 1200,
-    "attackSpeed": 1000
+    "attackSpeed": 1000,
+    "manaRegen": 10
   },
   "minotaur": {
     "name": "minotaur",
@@ -37,7 +39,8 @@
     "attackRange": 1,
     "armor": 5,
     "speed": 1000,
-    "attackSpeed": 1000
+    "attackSpeed": 1000,
+    "manaRegen": 10
   },
   "dwarf": {
     "name": "dwarf",
@@ -50,6 +53,7 @@
     "attackRange": 1,
     "armor": 7,
     "speed": 1000,
-    "attackSpeed": 1500
+    "attackSpeed": 1500,
+    "manaRegen": 10
   }
 }
