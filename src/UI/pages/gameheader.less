@@ -1,0 +1,70 @@
+
+.background-icon(@src) {
+    background: @src;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.gameheader {
+    display: flex;
+    margin : 2em;
+
+    .timer {
+        background: #21180e;
+        border-radius: 1em;
+        text-align: center;
+        width: 10em;
+
+        &-value {
+            font-size: 17px;
+            text-shadow: black 3px 3px;
+            line-height: 2.4;
+        }
+
+        &-active {
+            .background-icon(url('../res/misc/sandglass.png'));
+            min-height: 3em;
+        }
+    }
+
+    .player {
+        display: flex;
+        justify-content: flex-end;
+        width: 52em;
+
+        &-data {
+            background: #21180e;
+            border-radius: 1em;
+            display: flex;
+            flex-wrap: wrap;
+            width: 10em;
+            margin: 0 2em 0 1em;
+
+            &__hp {
+                .background-icon(url('../res/misc/status_icon_soul_gem.png'));
+                min-width: 3em;
+            }
+
+            &__coin {
+                .background-icon(url('../res/misc/status_icon_coin.png'));
+                min-width: 3em;
+            }
+
+            &__mana {
+                .background-icon(url('../res/misc/status_icon_gem.png'));
+                min-width: 3em;
+            }
+
+            &__value {
+                text-align: center;
+                line-height: 2.4;
+                font-size: 17px;
+                min-width: 4em;
+            }
+        }
+    }
+}
+
+@import './gameboard.less';
+@import './rightsidebar.less';

@@ -1,0 +1,45 @@
+.gameboard {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-shrink: 1;
+    flex-grow: 0;
+
+    &-wrapper {
+        background: url('../res/battleground.png');
+        border: 5px solid #433d37;
+        border-style: inset;
+        background-size: 592px 640px;
+        background-position: -36px -39px;
+        border-radius: 8px;
+    }
+
+    &-board {
+        position: relative;
+        flex-direction: column;
+
+        &-row {
+            height: 64px;
+            width: 512px;
+            flex-direction: row;
+            display: flex;
+        }
+    }
+}
+
+.cell {
+    border-right: 1px dashed #00000030;
+    border-bottom: 1px dashed #00000030;
+    background-color: rgba(0, 0, 0, 0);
+    width: 64px;
+    height: 64px;
+    position: relative;
+
+    &__green {
+        background: rgba(0, 255, 21, 0.562);
+    }
+
+    &__red {
+        background: rgba(255, 0, 0, 0.473);
+    }
+}

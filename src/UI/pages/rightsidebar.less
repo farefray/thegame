@@ -1,0 +1,82 @@
+.rightsidebar {
+  width: 100%;
+  margin-left: 64px;
+
+  &-shop {
+    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
+
+    .shopunit {
+      width: 128px;
+      height: 128px;
+      position: relative;
+      cursor: pointer;
+
+      &:hover {
+        border-image: url('../res/frames/stage_frame_complete.png') 80 110 110 80 stretch stretch;
+
+        .rs-frame-inner, .rs-frame-body {
+          background: #503e34;
+        }
+      }
+
+      .rs-flame-body {
+        justify-content: space-between;
+      }
+
+      .rs-frame-heading {
+        text-align: center;
+        width: 128px;
+        left: -26px;
+        top: -20px;
+        font-size: 1.5em;
+      }
+
+      &-stats {
+        display: flex;
+        flex-direction: column;
+        padding-top: 4px;
+
+        &__wrapper {
+          position: absolute;
+          left: -16px;
+          top: 0;
+        }
+
+        &-stat {
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: left;
+          padding-left: 21px;
+
+          &__hp {
+            background-image: url('../res/icons/icon_potion_red.png');
+          }
+  
+          &__attack {
+            background-image: url('../res/icons/icon_sword_A.png');
+          }
+
+          &__armor {
+            background-image: url('../res/icons/icon_shield_C.png');
+          }
+
+          &__cost {
+            background-image: url('../res/icons/icon_gold.png');
+          }
+
+          &__mana {
+            background-image: url('../res/icons/icon_potion_purple.png');
+          }
+        }
+      }
+
+      &-image {
+        position: absolute;
+        right: -10px;
+        bottom: -10px;
+      }
+    }
+  }
+}

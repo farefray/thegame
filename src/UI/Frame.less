@@ -1,0 +1,61 @@
+
+.rs-frame {
+  background: transparent;
+  border-color: #413b2d;
+  border-image: url('./res/frames/stage_frame_default.png') 80 110 110 80 stretch stretch; 
+  border-style: inset;
+  border-width: 26px;
+
+  &-lock {
+    border-image: url('./res/frames/stage_frame_lock.png') 80 110 110 80 stretch stretch;
+  }
+
+  &-complete {
+    border-image: url('./res/frames/stage_frame_complete.png') 80 110 110 80 stretch stretch;
+  }
+
+  &-heading {
+    color: @panel-heading-color;
+    font-size: @panel-heading-font-size;
+    line-height: unit(@line-height-computed / @panel-heading-font-size);
+    position: absolute;
+    top: 0;
+  }
+
+  &-title {
+    margin: 0;
+
+    a {
+      color: @panel-heading-color;
+
+      &:hover,
+      &:focus,
+      &:active {
+        text-decoration: none;
+      }
+    }
+  }
+
+  &-inner {
+    background: #413b2d;
+    /**
+      Dirty hack to cover inner space with background
+    **/
+    height: 78px;
+    left: -1px;
+    position: absolute;
+    top: -1px;
+    width: 77px;
+
+    &-body {
+      height: 100%;
+      display: flex;
+    }
+  }
+
+  &-body {
+    background: #413b2d;
+    height: 100%;
+    display: flex;
+  }
+}

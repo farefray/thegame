@@ -1,0 +1,28 @@
+.rs-panel {
+  border-image: url('./res/panel/stage_frame_default.png') 95 95 95 95 stretch stretch; 
+  border-color: #413b2d;
+  border-style: inset;
+  border-width: 60px;
+  background: transparent;
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  padding: 0;
+
+  &-heading,
+    &-body {
+    background: #413b2d;
+  }
+
+  &-heading {
+    background: url('./res/panel/title.png'), transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
+}

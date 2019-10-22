@@ -1,0 +1,19 @@
+@lobby-min-height: 45vh;
+
+.lobby {
+    display: flex;
+    min-height: @lobby-min-height;
+
+    .rs-divider {
+        min-height: @lobby-min-height;
+    }
+
+    &-profile, &-control {
+        height: 100%;
+    }
+
+    &-control {
+        display: flex;
+        justify-content: center;
+    }
+}

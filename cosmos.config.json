@@ -1,0 +1,9 @@
+{
+    "globalImports": [
+        "./src/UI/ui.less"
+    ],
+    "webpack": {
+        "configPath": "react-scripts/config/webpack.config",
+        "overridePath": "./config-overrides.js"
+    }
+}
