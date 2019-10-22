@@ -2,7 +2,7 @@ import React from 'react';
 
 import { DIRECTION, ACTION } from '../shared/constants';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
-import Position from './Position';
+import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage';
 import Particle from './Unit/Particle';
 import IsDraggable from './Unit/IsDraggable';

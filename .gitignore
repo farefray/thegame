@@ -1,6 +1,4 @@
 
-app/src/assets/ignored-assets/
-
 # Logs
 logs
 *.log
@@ -63,4 +61,4 @@ typings/
 # next.js build output
 .next
 
-app/public/UI/
+frontend/public/UI/

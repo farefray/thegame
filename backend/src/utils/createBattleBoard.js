@@ -1,5 +1,5 @@
 import BattleUnit from '../objects/BattleUnit';
-import Position from '../../app/src/objects/Position';
+import Position from '../../../frontend/src/shared/Position';
 import Pawns from '../pawns';
 
 /**

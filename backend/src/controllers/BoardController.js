@@ -1,5 +1,5 @@
 
-import Position from '../../app/src/objects/Position';
+import Position from '../../../frontend/src/shared/Position';
 
 const BoardController = () => {
   return this;

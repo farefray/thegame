@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
-import { useDispatch } from 'react-redux';
-import ActiveGame from '../ActiveGame';
-import GameController from '../../../../src/controllers/GameController.js';
-
+import RightSidebar from './RightSidebar';
+import GameController from '../../../../backend/src/controllers/GameController';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
@@ -30,19 +28,16 @@ const generateGameState = async function() {
 };
 
 const MyReduxContext = () => {
-  const dispatch = useDispatch();
+  const [data, setData] = useState();
+  useEffect(() => {
+    const runEffect = async () => {
+      const data = await generateGameState();
+      setData(data);
+    };
+    runEffect();
+  }, [setData]);
 
-  React.useEffect(() => {
-    generateGameState().then(newState => {
-      dispatch({
-        type: 'UPDATE_PLAYER',
-        index: PLAYER_INDEX,
-        player: newState.players[PLAYER_INDEX]
-      });
-    });
-  }, [dispatch]);
-
-  return <ActiveGame />;
+  return data ? <RightSidebar {...data.players[PLAYER_INDEX]} /> : <div>Loading</div>;
 };
 
 const MyReduxMock = ({ children }) => {
