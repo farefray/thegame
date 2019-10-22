@@ -1,0 +1,59 @@
+{
+  "bigboy": {
+    "name": "bigboy",
+    "displayName": "Big Boy",
+    "lookType": 25,
+    "cost": 1,
+    "hp": 10000,
+    "mana": 0,
+    "attack": 150,
+    "attackRange": 1,
+    "armor": 2,
+    "speed": 1200,
+    "attackSpeed": 1000,
+    "manaRegen": 5
+  },
+  "elf": {
+    "name": "elf",
+    "displayName": "Elf",
+    "lookType": 62,
+    "cost": 1,
+    "hp": 150,
+    "mana": 0,
+    "attack": 45,
+    "attackRange": 3,
+    "particle": 1,
+    "armor": 2,
+    "speed": 1200,
+    "attackSpeed": 1000,
+    "manaRegen": 10
+  },
+  "minotaur": {
+    "name": "minotaur",
+    "displayName": "Minotaur★",
+    "lookType": 25,
+    "cost": 1,
+    "hp": 375,
+    "mana": 0,
+    "attack": 50,
+    "attackRange": 1,
+    "armor": 5,
+    "speed": 1000,
+    "attackSpeed": 1000,
+    "manaRegen": 10
+  },
+  "dwarf": {
+    "name": "dwarf",
+    "displayName": "Dwarf",
+    "lookType": 69,
+    "cost": 1,
+    "hp": 300,
+    "mana": 0,
+    "attack": 60,
+    "attackRange": 1,
+    "armor": 7,
+    "speed": 1000,
+    "attackSpeed": 1500,
+    "manaRegen": 10
+  }
+}

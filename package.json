@@ -1,0 +1,52 @@
+{
+  "name": "the_game",
+  "version": "1.0.0",
+  "description": "Pixel Champions",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "babel-node src/index.js",
+    "dev": "nodemon --exec babel-node src/index.js",
+    "debug": "babel-node --inspect src/index.js",
+    "complete": "eslint ./src && mocha --exit && node src/index.js",
+    "pretest": "eslint ./src && mocha --exit",
+    "posttest": "mocha --exit && eslint ./src",
+    "test": "mocha --exit",
+    "mocha": "mocha -w --require @babel/register",
+    "lint": "eslint ./src",
+    "lintfix": "eslint --fix ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farefray/thegame.git"
+  },
+  "author": "Maksym Fedan&&Jacek Kizinsky",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "easystarjs": "^0.4.3",
+    "eslint": "6.1.0",
+    "express": "^4.16.4",
+    "fs": "0.0.1-security",
+    "global": "^4.4.0",
+    "http": "0.0.0",
+    "keyv": "^3.1.0",
+    "lodash": "^4.17.15",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.19.1",
+    "npm": "^6.9.0",
+    "prettier": "^1.18.2",
+    "rewire": "^4.0.1",
+    "socket.io": "^2.2.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
+    "eslint-plugin-react": "^7.12.4",
+    "should": "^13.2.3"
+  }
+}
