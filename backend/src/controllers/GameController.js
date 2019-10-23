@@ -1,7 +1,7 @@
 import Player from '../objects/Player';
 import ShopController from './ShopController';
 import State from '../objects/State';
-import Pawns from '../pawns';
+import Monsters from '../utils/Monsters';
 
 const HAND_UNITS_LIMIT = 9;
 
@@ -40,7 +40,7 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
    * remove gold
    * set player state
    */
-  await player.addToHand(Pawns.getMonsterStats(unit.name)); // getmonsterstats not needed here I guess(todo)
+  await player.addToHand(Monsters.getMonsterStats(unit.name)); // getmonsterstats not needed here I guess(todo)
   delete player.shopUnits[pieceIndex];
   player.gold -= unit.cost;
 
