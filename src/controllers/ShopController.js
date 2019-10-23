@@ -1,4 +1,4 @@
-import Pawns from '../pawns';
+import Monsters from '../utils/Monsters';
 
 const ShopController = () => {
   return this;
@@ -25,7 +25,7 @@ ShopController.mutateStateByShopRefreshing = (state, playerIndex) => {
     const shop = state.getIn(['players', playerIndex, 'shopUnits']);
     for (let i = 0; i <= SHOP_UNITS; i++) {
       if (!shop[i]) {
-        state.setIn(['players', playerIndex, 'shopUnits', i], Pawns.getRandomUnit());
+        state.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit());
       }
     }
   }
