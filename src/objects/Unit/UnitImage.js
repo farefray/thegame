@@ -7,16 +7,16 @@ export default function UnitImage({ lookType = 1, direction, isMoving, extraClas
   // Load all images which will be required for this unit
   const [sprites] = React.useState({
     idle: {
-      1: require(`../../assets/monsters/${lookType}/idle/1.png`),
-      2: require(`../../assets/monsters/${lookType}/idle/2.png`),
-      3: require(`../../assets/monsters/${lookType}/idle/3.png`),
-      4: require(`../../assets/monsters/${lookType}/idle/4.png`)
+      1: require(`../../assets/monsters/${lookType}/1.png`),
+      2: require(`../../assets/monsters/${lookType}/2.png`),
+      3: require(`../../assets/monsters/${lookType}/3.png`),
+      4: require(`../../assets/monsters/${lookType}/4.png`)
     },
     animated: {
-      1: require(`../../assets/monsters/${lookType}/animated/1.gif`),
-      2: require(`../../assets/monsters/${lookType}/animated/2.gif`),
-      3: require(`../../assets/monsters/${lookType}/animated/3.gif`),
-      4: require(`../../assets/monsters/${lookType}/animated/4.gif`)
+      1: require(`../../assets/monsters/${lookType}/1.gif`),
+      2: require(`../../assets/monsters/${lookType}/2.gif`),
+      3: require(`../../assets/monsters/${lookType}/3.gif`),
+      4: require(`../../assets/monsters/${lookType}/4.gif`)
     }
   });
 
