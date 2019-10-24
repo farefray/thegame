@@ -1,4 +1,4 @@
-import Monster from '../abstract/Monster';
+import Monster from '../../abstract/Monster';
 
 function Minotaur_Archer() {
   return new Monster({

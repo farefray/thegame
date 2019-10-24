@@ -1,14 +1,15 @@
-import monsters from '../monsters/loader';
+import * as monsters from '../monsters/loader';
 
 const Monsters = {
   units: {}
 };
 
-Object.keys(monsters).forEach(element => {
+Object.keys(monsters.default).forEach(element => {
   const monsterName = element.toLowerCase();
+  const mob = monsters.default[element]();
   Monsters.units[monsterName] = Object.assign({
     name: monsterName
-  }, monsters[element].default());
+  }, mob);
 });
 
 Monsters.getMonsterStats = name => Monsters.units[name.toLowerCase()];

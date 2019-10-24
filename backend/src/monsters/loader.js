@@ -1,21 +1,24 @@
-import path from 'path';
-import fs from 'fs';
+import Dwarf from './dwarfs/Dwarf';
+import Dwarf_Geomancer from './dwarfs/Dwarf Geomancer';
+import Dwarf_Guard from './dwarfs/Dwarf Guard';
+import Dwarf_Soldier from './dwarfs/Dwarf Soldier';
 
-const moduleExports = {}
-const loadDirs = function (dirname) {
-  fs.readdirSync(dirname)
-    .forEach(function (file) {
-      /* If its the current file ignore it */
-      if (file === 'loader.js') return;
+import Elf from './elfs/Elf';
+import Elf_Arcanist from './elfs/Elf Arcanist';
+import Elf_Scout from './elfs/Elf Scout';
 
-      const stat = fs.statSync(path.resolve(path.join('src', 'monsters', file)));
-      if (stat.isDirectory()) {
-        // TODO loadDirs(dirname + '\\' + file);
-      } else {
-        /* Store module with its name (from filename) */
-        moduleExports[path.basename(file, '.js')] = require(path.join(__dirname, file));
-      }
-    });
-};
+import Minotaur from './minotaurs/Minotaur';
+import Minotaur_Archer from './minotaurs/Minotaur Archer';
+import Minotaur_Guard from './minotaurs/Minotaur Guard';
+import Minotaur_Mage from './minotaurs/Minotaur Mage';
 
-loadDirs(__dirname);
+import Beholder from './beholders/Beholder';
+import Baby_Beholder from './beholders/Baby Beholder';
+import Elder_Beholder from './beholders/Elder Beholder';
+
+export default {
+  Dwarf, Dwarf_Geomancer, Dwarf_Guard, Dwarf_Soldier,
+  Elf, Elf_Arcanist, Elf_Scout,
+  Minotaur, Minotaur_Archer, Minotaur_Guard, Minotaur_Mage,
+  Beholder, Baby_Beholder, Elder_Beholder
+}

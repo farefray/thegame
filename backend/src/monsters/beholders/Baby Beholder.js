@@ -1,4 +1,4 @@
-import Monster from '../abstract/Monster';
+import Monster from '../../abstract/Monster';
 
 function Baby_Beholder() {
   return new Monster({

@@ -3,7 +3,12 @@ import classNames from 'classnames';
 
 import fallbackImage from '../../assets/monsters/default.png';
 
-export default function UnitImage({ lookType = 1, direction, isMoving, extraClass = '' }) {
+export default function UnitImage({ lookType, direction, isMoving, extraClass = '' }) {
+
+  if (!lookType) {
+    throw new Error('Looktype for monsters is missing');
+  }
+
   // Load all images which will be required for this unit
   const [sprites] = React.useState({
     idle: {
