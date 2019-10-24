@@ -29,7 +29,7 @@ const flipBoard = board => {
 const combinedBoard = {
   A: [
     {
-      name: 'bigboy',
+      name: 'dwarf guard',
       x: 4,
       y: 2
     }
