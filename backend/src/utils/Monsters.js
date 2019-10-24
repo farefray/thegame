@@ -18,8 +18,6 @@ const randomProperty = function(obj) {
   return obj[keys[(keys.length * Math.random()) << 0]]; // eslint-disable-line
 };
 
-Monsters.getRandomUnit = () => {
-  return randomProperty(Monsters.units);
-};
+Monsters.getRandomUnit = () => randomProperty(Monsters.units);
 
 export default Monsters;
