@@ -16,7 +16,10 @@ import Beholder from './beholders/Beholder';
 import Baby_Beholder from './beholders/Baby Beholder';
 import Elder_Beholder from './beholders/Elder Beholder';
 
+import BigBoy from './BigBoy';
+
 export default {
+  BigBoy,
   Dwarf, Dwarf_Geomancer, Dwarf_Guard, Dwarf_Soldier,
   Elf, Elf_Arcanist, Elf_Scout,
   Minotaur, Minotaur_Archer, Minotaur_Guard, Minotaur_Mage,
