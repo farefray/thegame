@@ -15,7 +15,7 @@ function ShopPawn({ unit, index, onPurchase }) {
       </div>
       </div>
       <div className="shopunit-image">
-        <UnitImage direction="3" isMoving="false" lookType={unit.lookType} extraClass="shop"/>
+        <UnitImage direction="3" isMoving={false} lookType={unit.lookType} extraClass="shop"/>
       </div>
     </Frame>
   );
