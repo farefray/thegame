@@ -6,7 +6,7 @@ function Dwarf_Geomancer() {
     cost: 3,
     hp: 550,
     mana: 0,
-    attack: 75,
+    attack: 40,
     attackRange: 3,
     particle: 1,
     armor: 1,

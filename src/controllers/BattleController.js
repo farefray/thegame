@@ -5,11 +5,11 @@ const BattleController = {};
 
 const roundSetConfiguration = {
   1: [{ name: 'dwarf', x: 0, y: 7 }],
-  2: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf soldier', x: 6, y: 7 }],
-  3: [{ name: 'dwarf guard', x: 5, y: 6 }],
-  4: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf guard', x: 6, y: 7 }, { name: 'dwarf', x: 1, y: 7 }],
-  5: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf soldier', x: 6, y: 7 }, { name: 'dwarf guard', x: 1, y: 7 }],
-  6: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf soldier', x: 6, y: 7 }, { name: 'dwarf guard', x: 1, y: 7 }, { name: 'elf', x: 2, y: 7 }]
+  2: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf_soldier', x: 6, y: 7 }],
+  3: [{ name: 'dwarf_guard', x: 5, y: 6 }],
+  4: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf_guard', x: 6, y: 7 }, { name: 'dwarf', x: 1, y: 7 }],
+  5: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf_soldier', x: 6, y: 7 }, { name: 'dwarf_guard', x: 1, y: 7 }],
+  6: [{ name: 'dwarf', x: 5, y: 6 }, { name: 'dwarf_soldier', x: 6, y: 7 }, { name: 'dwarf_guard', x: 1, y: 7 }, { name: 'elf', x: 2, y: 7 }]
 };
 
 /**
