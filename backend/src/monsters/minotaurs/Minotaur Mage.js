@@ -6,7 +6,7 @@ function Minotaur_Mage() {
     cost: 3,
     hp: 650,
     mana: 0,
-    attack: 80,
+    attack: 45,
     attackRange: 3,
     particle: 1,
     armor: 2,

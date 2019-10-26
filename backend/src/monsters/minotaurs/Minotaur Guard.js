@@ -11,7 +11,8 @@ function Minotaur_Guard() {
     armor: 10,
     speed: 1000,
     attackSpeed: 1000,
-    manaRegen: 3
+    manaRegen: 3,
+    healthRegen: 10
   });
 }
 

@@ -27,12 +27,18 @@ export default class Unit extends React.Component {
       },
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
+      attackRange: unit.attackRange, // maybe consider using 'stats': unit
+      particles: [],
+
+      maxMana: unit.maxMana,
+      mana: 0,
+
       maxHealth: unit.hp,
       health: unit.hp,
-      maxMana: 100,
-      mana: 0,
-      attackRange: unit.attackRange, // maybe consider using 'stats': unit
-      particles: []
+
+      // Regeneration internal
+      previousActionTimestamp: Date.now(),
+
     };
 
     props.onLifecycle({
@@ -41,13 +47,7 @@ export default class Unit extends React.Component {
     });
   }
 
-  componentDidMount() {
-    setInterval(() => {
-      const { mana, maxMana } = this.state;
-      const { manaRegen } = this.props.unit;
-      this.setState({ mana: Math.max(0, Math.min(maxMana, mana + manaRegen / 5)) });
-    }, 200);
-  }
+  componentDidMount() {}
 
   componentWillUnmount() {
     this.props.onLifecycle({
@@ -67,6 +67,16 @@ export default class Unit extends React.Component {
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
   onAction(action, isTarget) {
+    // Regen same as on backend, maybe we could avoid code dublicating somehow
+    const { mana, maxMana, health, maxHealth, previousActionTimestamp } = this.state;
+    const { manaRegen, healthRegen } = this.props.unit;
+    const elapsedMilliseconds = (Date.now() - previousActionTimestamp);
+    this.setState({ 
+      previousActionTimestamp: Date.now(),
+      mana: Math.max(0, Math.min(maxMana, mana + ((manaRegen * elapsedMilliseconds) / 1000))),
+      health: Math.max(0, Math.min(maxHealth, health + ((healthRegen * elapsedMilliseconds) / 1000))),
+    });
+    
     switch (action.type) {
       case ACTION.MOVE: {
         action.to && this.move(action.to.x, action.to.y);
@@ -190,6 +200,7 @@ export default class Unit extends React.Component {
   }
 
   cast() {
+    console.log('CAST');
     this.setState({ mana: 0 });
   }
 

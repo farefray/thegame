@@ -11,7 +11,8 @@ function Minotaur() {
     armor: 5,
     speed: 1000,
     attackSpeed: 1000,
-    manaRegen: 10
+    manaRegen: 10,
+    healthRegen: 10
   });
 }
 
