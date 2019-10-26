@@ -79,7 +79,13 @@ export default class Unit extends React.Component {
     
     switch (action.type) {
       case ACTION.MOVE: {
-        action.to && this.move(action.to.x, action.to.y);
+        if (action.to) {
+          this.move(action.to.x, action.to.y);
+        } else {
+          // if action move.to === null, then its unit death
+          this.remove()
+        }
+
         break;
       }
       case ACTION.ATTACK: {
@@ -154,6 +160,10 @@ export default class Unit extends React.Component {
     });
   }
 
+  remove() {
+    this.setState({ isDead: true });
+  }
+
   attack(x, y) {
     const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
     const { top, left } = this.state;
@@ -200,18 +210,13 @@ export default class Unit extends React.Component {
   }
 
   cast() {
-    console.log('CAST');
     this.setState({ mana: 0 });
   }
 
   takeDamage(damage) {
-    //console.log("TCL: takeDamage -> this.state.health", this.state.health)
-    const health = Math.max(0, this.state.health - damage);
-    //console.log("TCL: takeDamage -> health", health)
-    //console.log("TCL: takeDamage -> health === 0", health === 0)
+    const health = Math.max(0, Math.floor(this.state.health - damage));
     this.setState({
-      health,
-      isDead: health === 0
+      health
     });
   }
 
