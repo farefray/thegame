@@ -121,8 +121,10 @@ export default class BattleUnit {
 
   onAction(timestamp) {
     const elapsedMilliseconds = timestamp - this.previousActionTimestamp;
-    this.mana += (this.manaRegen * elapsedMilliseconds) / 1000;
-    this.hp += (this.healthRegen * elapsedMilliseconds) / 1000;
+    const manaGained = Math.floor((this.manaRegen * elapsedMilliseconds) / 1000);
+    const healthGained = Math.floor((this.healthRegen * elapsedMilliseconds) / 1000);
+    this.mana += manaGained;
+    this.hp += healthGained;
     this.previousActionTimestamp = timestamp;
   }
 }
