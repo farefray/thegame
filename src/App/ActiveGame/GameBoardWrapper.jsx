@@ -34,19 +34,9 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     }
     // actionStack events which are being generated on backend
     case ACTION.MOVE:
-      unitComponents[action.unitID].onAction(action);
-      return unitComponents;
     case ACTION.ATTACK:
-      // todo plzmake this more understandable
-      unitComponents[action.unitID].onAction(action);
-
-      if (action.affectedUnits) {
-        for (const index in action.affectedUnits) {
-          unitComponents[action.affectedUnits[index]].onAction(action, true);
-        }
-      }
-      return unitComponents;
     case ACTION.CAST:
+    case ACTION.TAKE_DAMAGE:
       unitComponents[action.unitID].onAction(action);
       return unitComponents;
     default:
@@ -130,10 +120,10 @@ function GameBoardWrapper({ state }) {
   const [prevActionIndex, setPrevActionIndex] = useState(-1);
   useEffect(() => {
     if (
-        actionStack.length > 0 // we got actions to execute
-        && currentActionIndex > -1 // current action index is not initial
-        && currentActionIndex !== prevActionIndex // we are not yet finished
-      ) {
+      actionStack.length > 0 && // we got actions to execute
+      currentActionIndex > -1 && // current action index is not initial
+      currentActionIndex !== prevActionIndex // we are not yet finished
+    ) {
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
       setPrevActionIndex(currentActionIndex);
 
