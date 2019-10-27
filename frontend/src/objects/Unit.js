@@ -27,12 +27,18 @@ export default class Unit extends React.Component {
       },
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
+      attackRange: unit.attackRange, // maybe consider using 'stats': unit
+      particles: [],
+
+      maxMana: unit.maxMana,
+      mana: 0,
+
       maxHealth: unit.hp,
       health: unit.hp,
-      maxMana: 100,
-      mana: 0,
-      attackRange: unit.attackRange, // maybe consider using 'stats': unit
-      particles: []
+
+      // Regeneration internal
+      previousActionTimestamp: Date.now(),
+
     };
 
     props.onLifecycle({
@@ -41,13 +47,7 @@ export default class Unit extends React.Component {
     });
   }
 
-  componentDidMount() {
-    setInterval(() => {
-      const { mana, maxMana } = this.state;
-      const { manaRegen } = this.props.unit;
-      this.setState({ mana: Math.max(0, Math.min(maxMana, mana + manaRegen / 5)) });
-    }, 200);
-  }
+  componentDidMount() {}
 
   componentWillUnmount() {
     this.props.onLifecycle({
@@ -67,9 +67,25 @@ export default class Unit extends React.Component {
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
   onAction(action, isTarget) {
+    // Regen same as on backend, maybe we could avoid code dublicating somehow
+    const { mana, maxMana, health, maxHealth, previousActionTimestamp } = this.state;
+    const { manaRegen, healthRegen } = this.props.unit;
+    const elapsedMilliseconds = (Date.now() - previousActionTimestamp);
+    this.setState({ 
+      previousActionTimestamp: Date.now(),
+      mana: Math.max(0, Math.min(maxMana, mana + ((manaRegen * elapsedMilliseconds) / 1000))),
+      health: Math.max(0, Math.min(maxHealth, health + ((healthRegen * elapsedMilliseconds) / 1000))),
+    });
+    
     switch (action.type) {
       case ACTION.MOVE: {
-        action.to && this.move(action.to.x, action.to.y);
+        if (action.to) {
+          this.move(action.to.x, action.to.y);
+        } else {
+          // if action move.to === null, then its unit death
+          this.remove()
+        }
+
         break;
       }
       case ACTION.ATTACK: {
@@ -144,6 +160,10 @@ export default class Unit extends React.Component {
     });
   }
 
+  remove() {
+    this.setState({ isDead: true });
+  }
+
   attack(x, y) {
     const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
     const { top, left } = this.state;
@@ -194,13 +214,9 @@ export default class Unit extends React.Component {
   }
 
   takeDamage(damage) {
-    //console.log("TCL: takeDamage -> this.state.health", this.state.health)
-    const health = Math.max(0, this.state.health - damage);
-    //console.log("TCL: takeDamage -> health", health)
-    //console.log("TCL: takeDamage -> health === 0", health === 0)
+    const health = Math.max(0, Math.floor(this.state.health - damage));
     this.setState({
-      health,
-      isDead: health === 0
+      health
     });
   }
 

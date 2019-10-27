@@ -23,7 +23,7 @@ export default class ActionQueue {
     }
   }
 
-  *generateActions() {
+  * generateActions() {
     while (this.actionQueue.length) {
       const { timestamp, unit } = this.actionQueue.shift();
       const nextTimestamp = timestamp + unit.speed;
@@ -50,7 +50,7 @@ export default class ActionQueue {
     let min = 0;
     let max = this.actionQueue.length;
     while (min < max) {
-      const mid = (min + max) >>> 1;
+      const mid = (min + max) >>> 1; // eslint-disable-line
       if (this.actionQueue[mid].timestamp < timestamp) {
         min = mid + 1;
       } else {

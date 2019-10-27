@@ -1,10 +1,6 @@
 import _ from 'lodash';
 
-const MAX_MANA = 100;
-
 /**
- *
- *
  * @export
  * @class BattleUnit
  */
@@ -67,7 +63,7 @@ export default class BattleUnit {
   }
 
   canCast() {
-    return this.mana === MAX_MANA;
+    return this.mana === this.maxMana;
   }
 
   oppositeTeam() {
@@ -125,7 +121,10 @@ export default class BattleUnit {
 
   onAction(timestamp) {
     const elapsedMilliseconds = timestamp - this.previousActionTimestamp;
-    this.mana += (this.manaRegen * elapsedMilliseconds) / 1000;
+    const manaGained = Math.floor((this.manaRegen * elapsedMilliseconds) / 1000);
+    const healthGained = Math.floor((this.healthRegen * elapsedMilliseconds) / 1000);
+    this.mana += manaGained;
+    this.hp += healthGained;
     this.previousActionTimestamp = timestamp;
   }
 }
