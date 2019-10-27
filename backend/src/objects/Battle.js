@@ -85,7 +85,6 @@ export default class Battle {
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
-        this.moveUnit(targetUnit, null, timestamp);
 
         const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== unit.id);
         for (const affectedAttacker of affectedAttackers) {
@@ -107,16 +106,15 @@ export default class Battle {
 
   /**
    * @description Adds current action to actionStack to be later sent to frontend
-   * Before adding, modifying added action by Unit itself, in case additional data need to be added
    * @param {Object} actionObject
    * @param {Integer} time
    * @param {BattleUnit} unit
    * @memberof Battle
    */
   addActionToStack(actionObject, time, unit) {
-    actionObject = unit.beforeAddActionToStack(actionObject);
     this.actionStack.push({
       ...actionObject,
+      unitID: unit.id,
       time
     });
   }
@@ -136,13 +134,12 @@ export default class Battle {
   attackUnit(unit, targetUnit, timestamp) {
     const attackResult = unit.doAttack(targetUnit);
     unit.actionLockTimestamp = timestamp + 100;
+    this.addActionToStack({ type: ACTION.TAKE_DAMAGE, damage: attackResult.damage }, timestamp, targetUnit);
     this.addActionToStack(
       {
         type: ACTION.ATTACK,
         from: unit.getPosition(),
-        to: targetUnit.getPosition(),
-        damage: attackResult.damage,
-        affectedUnits: [targetUnit.id]
+        to: targetUnit.getPosition()
       },
       timestamp,
       unit
@@ -159,7 +156,7 @@ export default class Battle {
       y: unit.y
     };
 
-    const position = step && {
+    const position = {
       x: unit.x + step.x,
       y: unit.y + step.y
     };
