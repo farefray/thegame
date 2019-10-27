@@ -40,6 +40,10 @@ SocketConnector.init = function (dispatch) {
     dispatch({ type: 'UPDATE_PLAYER', index: index, player: player });
   });
 
+  socket.on('NOTIFICATION', (index, notification) => {
+    dispatch({ type: 'NOTIFICATION', index: index, notification: notification });
+  });
+
   socket.on('INITIALIZE', index => {
     dispatch({ type: 'INITIALIZE', index: index });
   });
