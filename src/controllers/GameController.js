@@ -2,6 +2,7 @@ import Player from '../objects/Player';
 import ShopController from './ShopController';
 import State from '../objects/State';
 import Monsters from '../utils/Monsters';
+import AppError from '../objects/AppError';
 
 const HAND_UNITS_LIMIT = 9;
 
@@ -20,7 +21,7 @@ const GameController = function () {
 GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
   const player = state.getIn(['players', playerIndex]);
   if (player.isDead()) {
-    return null;
+    return new AppError('warning', 'Sorry, you\'re already dead');
   }
 
   /**
@@ -30,8 +31,12 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
    * can afford
    */
   const unit = player.shopUnits[pieceIndex];
-  if (!unit || Object.keys(player.hand) >= HAND_UNITS_LIMIT || player.gold < unit.cost) {
-    return null;
+  if (!unit || Object.keys(player.hand) >= HAND_UNITS_LIMIT) {
+    return new AppError('warning', 'Your hand is full');
+  }
+
+  if (player.gold < unit.cost) {
+    return new AppError('warning', 'Not enough money');
   }
 
   /**

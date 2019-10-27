@@ -15,7 +15,6 @@ function State(playersArray) {
   });
 
   this.players = playersObject;
-
   return MutableObject.call(this);
 }
 

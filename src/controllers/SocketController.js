@@ -2,6 +2,7 @@ import BattleController from './BattleController';
 import BoardController from './BoardController';
 import ShopController from './ShopController';
 import GameController from './GameController';
+import AppError from '../objects/AppError';
 
 const Customer = require('../objects/Customer');
 const Session = require('../objects/Session');
@@ -122,15 +123,18 @@ function SocketController(socket, io) {
     // @TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable?)
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
-    const state = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
-    if (state) {
-      session.set('state', state);
-      sessionsStore.store(session);
-
-      // todo some abstract sending with try catch, to not crash app every time it bugs :)
-      const playerState = state.getIn(['players', socket.id]);
-      io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
+    const stateResult = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
+    if (stateResult instanceof AppError) {
+      io.to(`${socket.id}`).emit('NOTIFICATION', socket.id, asNetworkMessage(stateResult));
+      return;
     }
+
+    session.set('state', stateResult);
+    sessionsStore.store(session);
+
+    // todo some abstract sending with try catch, to not crash app every time it bugs :)
+    const playerState = stateResult.getIn(['players', socket.id]);
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
   });
 
   socket.on('PLACE_PIECE', async (fromBoardPosition, toBoardPosition) => {
