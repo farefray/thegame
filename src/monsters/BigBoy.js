@@ -1,5 +1,4 @@
 import Monster from '../abstract/Monster';
-import Pathfinder from '../objects/Pathfinder';
 
 function BigBoy() {
   return new Monster({
@@ -14,16 +13,20 @@ function BigBoy() {
     attackSpeed: 1000,
     manaRegen: 10,
     spell: {
-      evaluate: unit => {
-        const manaCost = 50;
-        const target = Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: unit.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
-        return { canCast: unit.mana >= manaCost && target, target };
+      requirements: {
+        mana: 50,
+        target: {
+          type: 'single', // move to constants or to spells utils
+          distance: 4
+        }
       },
-      execute: (unit, props) => {
-        const target = props.target;
-        unit.mana -= 50;
-        unit.healthChange(5000);
-        target.healthChange(-5000);
+      config: {
+        target: {
+          damage: 5000
+        },
+        self: {
+          damage: -5000
+        }
       }
     }
   });
