@@ -14,7 +14,8 @@ module.exports = {
     INIT: 0,
     MOVE: 1,
     ATTACK: 2,
-    CAST: 3
+    CAST: 3,
+    TAKE_DAMAGE: 4
   },
   STATE: {
     COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000

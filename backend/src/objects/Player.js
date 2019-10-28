@@ -13,7 +13,6 @@ function Player(id) {
   this.shopUnits = {};
   this.hand = {};
   this.board = {}; // todo keep it simple {x,y,name}
-
   return this;
 }
 

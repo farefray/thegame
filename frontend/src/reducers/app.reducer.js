@@ -5,7 +5,8 @@ export function app(
     players: {}, // do we need this here??
     isDead: true,
     round: 1,
-    roundType: ''
+    roundType: '',
+    notification: null
   },
   action
 ) {
@@ -30,6 +31,11 @@ export function app(
       return {
         ...action.newState.app
       };
+    }
+    case 'NOTIFICATION':
+      return state = {
+        ...state,
+        notification: action.notification
     }
     case 'UPDATED_STATE':
       // Update state with incoming data from server

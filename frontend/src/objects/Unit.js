@@ -37,8 +37,7 @@ export default class Unit extends React.Component {
       health: unit.hp,
 
       // Regeneration internal
-      previousActionTimestamp: Date.now(),
-
+      previousActionTimestamp: Date.now()
     };
 
     props.onLifecycle({
@@ -66,35 +65,36 @@ export default class Unit extends React.Component {
    * @param {Object} action Action happened
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
-  onAction(action, isTarget) {
+  onAction(action) {
     // Regen same as on backend, maybe we could avoid code dublicating somehow
     const { mana, maxMana, health, maxHealth, previousActionTimestamp } = this.state;
     const { manaRegen, healthRegen } = this.props.unit;
-    const elapsedMilliseconds = (Date.now() - previousActionTimestamp);
-    this.setState({ 
+    const elapsedMilliseconds = Date.now() - previousActionTimestamp;
+    this.setState({
       previousActionTimestamp: Date.now(),
-      mana: Math.max(0, Math.min(maxMana, mana + ((manaRegen * elapsedMilliseconds) / 1000))),
-      health: Math.max(0, Math.min(maxHealth, health + ((healthRegen * elapsedMilliseconds) / 1000))),
+      mana: Math.max(0, Math.min(maxMana, mana + (manaRegen * elapsedMilliseconds) / 1000)),
+      health: Math.max(0, Math.min(maxHealth, health + (healthRegen * elapsedMilliseconds) / 1000))
     });
-    
+
     switch (action.type) {
       case ACTION.MOVE: {
-        action.to && this.move(action.to.x, action.to.y);
+        if (action.to) {
+          this.move(action.to.x, action.to.y);
+        }
         break;
       }
       case ACTION.ATTACK: {
-        isTarget
-          ? (() => {
-              // displaying hp remove after a delay, for attack to finish. But this has to be done better way, I'll redo
-              setTimeout(() => {
-                this.takeDamage(action.damage);
-              }, 500);
-            })()
-          : action.to && this.attack(action.to.x, action.to.y, action.damage);
+        action.to && this.attack(action.to.x, action.to.y, action.damage);
         break;
       }
       case ACTION.CAST: {
         this.cast();
+        break;
+      }
+      case ACTION.TAKE_DAMAGE: {
+        setTimeout(() => {
+          this.takeDamage(action.damage);
+        }, 500);
         break;
       }
       default: {
@@ -200,18 +200,14 @@ export default class Unit extends React.Component {
   }
 
   cast() {
-    console.log('CAST');
     this.setState({ mana: 0 });
   }
 
   takeDamage(damage) {
-    //console.log("TCL: takeDamage -> this.state.health", this.state.health)
-    const health = Math.max(0, this.state.health - damage);
-    //console.log("TCL: takeDamage -> health", health)
-    //console.log("TCL: takeDamage -> health === 0", health === 0)
+    const health = Math.max(0, Math.floor(this.state.health - damage));
     this.setState({
       health,
-      isDead: health === 0
+      isDead: health <= 0
     });
   }
 
