@@ -9,7 +9,7 @@ const { TEAM, ACTION } = require('../../../frontend/src/shared/constants');
 export default class Battle {
   constructor(board) {
     // returnable values
-    this.startBoard = _.cloneDeep(board); // test if thats needed or just adding perf issues
+    this.startBoard = board;
     this.actionStack = [];
     this.winner = null;
     this.playerDamage = 0;
@@ -48,7 +48,7 @@ export default class Battle {
       this.winner = !remainingUnitCount[TEAM.A].length ? TEAM.B : TEAM.A;
     }
 
-    this.playerDamage = 5;
+    this.playerDamage = 5; // todo count damage based on units left?
   }
 
   calculateAction({ timestamp, unit }) {
