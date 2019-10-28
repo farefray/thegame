@@ -1,5 +1,5 @@
 import _ from 'lodash';
-
+const { ACTION } = require('../../../frontend/src/shared/constants');
 /**
  * @export
  * @class BattleUnit
@@ -18,6 +18,7 @@ export default class BattleUnit {
     this._uid = this.getBoardPosition(); // uid = starting position for mob
     this._previousStep = null;
     this._mana = 0;
+    this._health = this.hp;
     this._actionLockTimestamp = 0;
     this._previousActionTimestamp = 0;
   }
@@ -46,6 +47,14 @@ export default class BattleUnit {
     this._previousActionTimestamp = value;
   }
 
+  get health() {
+    return this._health;
+  }
+
+  set health(value) {
+    this._health = Math.max(0, Math.min(value, this.hp));
+  }
+
   get mana() {
     return this._mana;
   }
@@ -70,11 +79,6 @@ export default class BattleUnit {
     return 1 - this.team;
   }
 
-  move(coords) {
-    this.x = +coords.x;
-    this.y = +coords.y;
-  }
-
   getBoardPosition() {
     return `${this.x},${this.y}`;
   }
@@ -87,11 +91,32 @@ export default class BattleUnit {
   }
 
   isAlive() {
-    return this.hp > 0;
+    return this.health > 0;
   }
 
-  removeHealth(amount) {
-    this.hp = this.hp <= amount ? 0 : this.hp - amount;
+  addToActionStack(props) {
+    return this.actionQueue.addToActionStack(this.id, props);
+  }
+
+  move(step) {
+    this.previousStep = step;
+    this.actionLockTimestamp = this.actionQueue.currentTimestamp + this.speed;
+
+    this.x += step.x;
+    this.y += step.y;
+
+    this.addToActionStack({
+      type: ACTION.MOVE,
+      to: { x: this.x, y: this.y }
+    });
+  }
+
+  healthChange(value) {
+    this.health += value;
+    this.addToActionStack({
+      type: ACTION.HEALTH_CHANGE,
+      value
+    });
   }
 
   /**
@@ -99,11 +124,19 @@ export default class BattleUnit {
    * @warning Mutating objects
    */
   doAttack(targetUnit) {
+    this.actionLockTimestamp = this.currentTimestamp + 100;
+
+    this.addToActionStack({
+      type: ACTION.ATTACK,
+      from: this.getPosition(),
+      to: targetUnit.getPosition()
+    });
+
     const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
     const maximumRoll = Math.floor(this.attack * 1.1);
     const minimumRoll = Math.ceil(this.attack * 0.9);
     const damage = Math.floor(multiplier * Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll);
-    targetUnit.removeHealth(damage);
+    targetUnit.healthChange(-damage);
     return {
       damage
     };
@@ -116,5 +149,17 @@ export default class BattleUnit {
     this.mana += manaGained;
     this.hp += healthGained;
     this.previousActionTimestamp = timestamp;
+  }
+
+  tryCastSpell() {
+    if (!this.spell) return false;
+    const { evaluate, execute } = this.spell;
+    const spellProps = evaluate(this);
+    if (!spellProps.canCast) return false;
+    this.addToActionStack({
+      type: ACTION.CAST,
+      from: this.getPosition()
+    });
+    return execute(this, spellProps);
   }
 }

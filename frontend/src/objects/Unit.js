@@ -91,9 +91,9 @@ export default class Unit extends React.Component {
         this.cast();
         break;
       }
-      case ACTION.TAKE_DAMAGE: {
+      case ACTION.HEALTH_CHANGE: {
         setTimeout(() => {
-          this.takeDamage(action.damage);
+          this.healthChange(action.value);
         }, 500);
         break;
       }
@@ -203,8 +203,10 @@ export default class Unit extends React.Component {
     this.setState({ mana: 0 });
   }
 
-  takeDamage(damage) {
-    const health = Math.max(0, Math.floor(this.state.health - damage));
+  healthChange(value) {
+    let { health } = this.state;
+    const { maxHealth } = this.state;
+    health = Math.max(0, Math.min(health + value, maxHealth));
     this.setState({
       health,
       isDead: health <= 0
