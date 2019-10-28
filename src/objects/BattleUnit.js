@@ -161,15 +161,14 @@ export default class BattleUnit {
    *
    * @param {*} units
    * @param {*} pathfinder
-   * @param {*} actionQueue
    * @returns {Boolean|Object}
    * @memberof BattleUnit
    */
-  canEvaluate(units, pathfinder, actionQueue) {
+  canEvaluateSpell(units, pathfinder) {
     if (!this.spell) return false;
     // @todo this could be moved somewhere to spells utils or smt
 
-    // object with requirements which later is being passed to 'doCast' method, in order to not repeat requirements gathering
+    // object with requirements which later is being passed to 'doCastSpell' method, in order to not repeat requirements gathering
     const spellProps = {};
 
     const { requirements: req } = this.spell;
@@ -179,9 +178,14 @@ export default class BattleUnit {
     if (req.target) {
       let target = null;
       switch (req.target.type) {
-        case 'single':
+        case 'single': {
           target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.oppositeTeam() && u.isAlive()) }, req.target.distance);
           break;
+        }
+
+        case 'ally': {
+          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.team && u.isAlive()) }, req.target.distance);
+        }
 
         default:
           break;
@@ -194,7 +198,7 @@ export default class BattleUnit {
     return spellProps;
   }
 
-  doCast(spellProps) {
+  doCastSpell(spellProps) {
     this.mana -= spellProps.mana;
 
     const { config } = this.spell;

@@ -1,4 +1,5 @@
 const BATTLE_TIME_LIMIT = 30 * 1000; // time limit for battle
+
 export default class ActionQueue {
   /**
    *Creates an instance of ActionQueue.

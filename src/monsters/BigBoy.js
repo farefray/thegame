@@ -1,4 +1,5 @@
 import Monster from '../abstract/Monster';
+import Spell from '../abstract/Spell';
 
 function BigBoy() {
   return new Monster({
@@ -12,7 +13,7 @@ function BigBoy() {
     speed: 1000,
     attackSpeed: 1000,
     manaRegen: 10,
-    spell: {
+    spell: new Spell({
       requirements: {
         mana: 50,
         target: {
@@ -22,13 +23,13 @@ function BigBoy() {
       },
       config: {
         target: {
-          damage: 5000
+          damage: 250
         },
         self: {
-          damage: -5000
+          damage: 500
         }
       }
-    }
+    })
   });
 }
 

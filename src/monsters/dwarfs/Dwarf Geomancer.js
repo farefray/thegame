@@ -1,4 +1,5 @@
 import Monster from '../../abstract/Monster';
+import Spell from '../../abstract/Spell';
 
 function Dwarf_Geomancer() {
   return new Monster({
@@ -12,7 +13,19 @@ function Dwarf_Geomancer() {
     armor: 1,
     speed: 1400,
     attackSpeed: 900,
-    manaRegen: 20
+    manaRegen: 20,
+    spell: new Spell({
+      requirements: {
+        mana: 100,
+        target: 'ally',
+        distance: 4
+      },
+      config: {
+        target: {
+          damage: -100
+        }
+      }
+    })
   });
 }
 
