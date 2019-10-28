@@ -88,6 +88,7 @@ export default class Unit extends React.Component {
         break;
       }
       case ACTION.CAST: {
+        console.log('CAST!');
         this.cast();
         break;
       }
