@@ -1,0 +1,44 @@
+@import './utils/mixins.less';
+
+.rs-alert {
+  &-item-content {
+    background: url('./res/skillbar/skill_bar_n.png')
+  }
+
+  &-warning {
+    .rs-alert-item-content {
+      div {
+        color: @B000;
+      }
+
+      .rs-icon.rs-icon-remind {
+        position: absolute;
+        top: 17px;
+        left: 15px;
+
+        &:before {
+          content: ''; // to remove default icon
+        }
+
+        .background-icon(url('./res/misc/notification_alert.png'));
+        height: 22px;
+        width: 22px;
+      }
+    }
+  }
+
+  .rs-alert-item-close-x {
+    display: block;
+    top: -15px;
+    position: absolute;
+    right: -5px;
+
+    &:before {
+      content: '';
+    }
+
+    .background-icon(url('./res/misc/popup_btn_close.png'));
+    height: 22px;
+    width: 22px;
+  }
+}

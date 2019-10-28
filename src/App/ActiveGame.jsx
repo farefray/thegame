@@ -9,7 +9,7 @@ import GameBoardWrapper from './ActiveGame/GameBoardWrapper.jsx';
 
 import RightSidebar from './ActiveGame/RightSidebar.jsx';
 import LeftSidebar from './ActiveGame/LeftSidebar.jsx';
-
+import Notification from './ActiveGame/Notification.jsx';
 
 function ActiveGame() {
   useEffect(() => {
@@ -19,11 +19,14 @@ function ActiveGame() {
   const appState = useSelector(state => state.app, shallowEqual);
   const gameboardState = useSelector(state => state.gameboard, shallowEqual);
   const playerState  = useSelector(state => state.player, shallowEqual);
+
+  const { notification } = appState;
   return (
     <Container className="activegame">
       <Header className="gameheader">
         <PlayerStats playerStats={{ health: playerState.health, mana: playerState.mana, gold: playerState.gold }} />
         <Timer initialTimerValue={appState.countdown} />
+        {notification && <Notification notificationObject={notification}/>}
       </Header>
       <Container>
         <Sidebar>
