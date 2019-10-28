@@ -29,16 +29,14 @@ export default class Battle {
       this.setWinner();
     });
 
-    // xD
+    // todo refactor this
     units.forEach(unit => {
-      unit.units = this.units;
       unit.actionQueue = this.actionQueue;
-      unit.pathfinder = this.pathfinder;
     });
 
     // console.time('test');
     this.actionQueue.execute();
-    this.actionStack = this.actionQueue.actionStack;
+    this.actionStack = this.actionQueue.actionStack; // this is fr what?
     // console.log(this.actionStack);
     // console.timeEnd('test');
   }
@@ -58,42 +56,52 @@ export default class Battle {
     this.playerDamage = 5;
   }
 
-  calculateAction({ timestamp, unit }) {
-    unit.onAction(timestamp);
+  /**
+   * @param {Integer, BattleUnit} { timestamp, battleUnit }
+   * @returns
+   * @memberof Battle
+   */
+  calculateAction({ timestamp, unit: battleUnit }) {
+    battleUnit.onAction(timestamp);
 
-    let targetUnit = this.targetPairPool.findTargetByUnitId(unit.id);
+    let targetUnit = this.targetPairPool.findTargetByUnitId(battleUnit.id);
     if (!targetUnit) {
-      const closestTarget = this.getUnitClosestTarget(unit);
+      const closestTarget = this.getUnitClosestTarget(battleUnit);
       if (closestTarget) {
         targetUnit = closestTarget;
-        this.targetPairPool.add({ attacker: unit, target: targetUnit });
+        this.targetPairPool.add({ attacker: battleUnit, target: targetUnit });
       }
     } else {
-      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
-      if (distanceToTarget > unit.attackRange) {
-        const closestTarget = this.getUnitClosestTarget(unit);
-        if (closestTarget && Pathfinder.getDistanceBetweenUnits(unit, targetUnit) < distanceToTarget) {
-          this.targetPairPool.remove({ attacker: unit, target: targetUnit });
+      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
+      if (distanceToTarget > battleUnit.attackRange) {
+        const closestTarget = this.getUnitClosestTarget(battleUnit);
+        if (closestTarget && Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit) < distanceToTarget) {
+          this.targetPairPool.remove({ attacker: battleUnit, target: targetUnit });
           targetUnit = closestTarget;
-          this.targetPairPool.add({ attacker: unit, target: targetUnit });
+          this.targetPairPool.add({ attacker: battleUnit, target: targetUnit });
         }
       }
     }
 
     if (!targetUnit) return;
-    const spellResult = unit.tryCastSpell();
-    if (spellResult) {
-      return;
+
+    // Spell casting
+    if (battleUnit.hasSpell()) {
+      const spellProps = battleUnit.canEvaluate(this.units, this.pathfinder, this.actionQueue);
+      if (spellProps) {
+        battleUnit.doCast(spellProps);
+        return;
+      }
     }
 
-    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
-    if (distanceToTarget < unit.attackRange) {
-      unit.doAttack(targetUnit);
+    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
+    if (distanceToTarget < battleUnit.attackRange) {
+      battleUnit.doAttack(targetUnit);
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
 
-        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== unit.id);
+        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== battleUnit.id);
         for (const affectedAttacker of affectedAttackers) {
           if (affectedAttacker.actionLockTimestamp >= timestamp) continue;
           this.actionQueue.removeUnitFromQueue(affectedAttacker);
@@ -102,8 +110,8 @@ export default class Battle {
         }
       }
     } else {
-      const step = this.pathfinder.findStepToTarget(unit, targetUnit);
-      this.moveUnit(unit, step, timestamp);
+      const step = this.pathfinder.findStepToTarget(battleUnit, targetUnit);
+      this.moveUnit(battleUnit, step, timestamp);
     }
   }
 

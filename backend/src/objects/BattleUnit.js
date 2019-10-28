@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import Pathfinder from './Pathfinder';
+
 const { ACTION } = require('../../../frontend/src/shared/constants');
 /**
  * @export
@@ -151,15 +153,68 @@ export default class BattleUnit {
     this.previousActionTimestamp = timestamp;
   }
 
-  tryCastSpell() {
+  hasSpell() {
+    return !!this.spell;
+  }
+
+  /**
+   *
+   * @param {*} units
+   * @param {*} pathfinder
+   * @param {*} actionQueue
+   * @returns {Boolean|Object}
+   * @memberof BattleUnit
+   */
+  canEvaluate(units, pathfinder, actionQueue) {
     if (!this.spell) return false;
-    const { evaluate, execute } = this.spell;
-    const spellProps = evaluate(this);
-    if (!spellProps.canCast) return false;
+    // @todo this could be moved somewhere to spells utils or smt
+
+    // object with requirements which later is being passed to 'doCast' method, in order to not repeat requirements gathering
+    const spellProps = {};
+
+    const { requirements: req } = this.spell;
+    if (req.mana && this.mana < req.mana) return false;
+    spellProps.mana = req.mana || 0;
+
+    if (req.target) {
+      let target = null;
+      switch (req.target.type) {
+        case 'single':
+          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.oppositeTeam() && u.isAlive()) }, req.target.distance);
+          break;
+
+        default:
+          break;
+      }
+
+      if (!target) return false;
+      spellProps.target = target;
+    }
+
+    return spellProps;
+  }
+
+  doCast(spellProps) {
+    this.mana -= spellProps.mana;
+
+    const { config } = this.spell;
+    if (config.target) {
+      const { target } = config;
+      if (target.damage) {
+        spellProps.target.healthChange(-target.damage);
+      }
+    }
+
+    if (config.self) {
+      const { self } = config;
+      if (self.damage) {
+        this.healthChange(-self.damage);
+      }
+    }
+
     this.addToActionStack({
       type: ACTION.CAST,
       from: this.getPosition()
     });
-    return execute(this, spellProps);
   }
 }
