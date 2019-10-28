@@ -14,7 +14,6 @@ export default class Battle {
     this.playerDamage = 0;
 
     const units = [];
-    this.actionStack = [];
     this.targetPairPool = new TargetPairPool();
     this.pathfinder = new Pathfinder({ gridWidth: 8, gridHeight: 8 });
     // internal setup
@@ -36,9 +35,17 @@ export default class Battle {
 
     // console.time('test');
     this.actionQueue.execute();
-    this.actionStack = this.actionQueue.actionStack; // this is fr what?
     // console.log(this.actionStack);
     // console.timeEnd('test');
+  }
+
+  /**
+   * @description returns actionstack from 
+   * completed actionQueque to be sent to frontend
+   * @returns {Array} ActionStack
+   */
+  get actionStack() {
+    return this.actionQueue.actionStack;
   }
 
   setWinner() {
@@ -85,18 +92,8 @@ export default class Battle {
 
     if (!targetUnit) return;
 
-    // Spell casting
-    if (battleUnit.hasSpell()) {
-      const spellProps = battleUnit.canEvaluate(this.units, this.pathfinder, this.actionQueue);
-      if (spellProps) {
-        battleUnit.doCast(spellProps);
-        return;
-      }
-    }
-
-    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
-    if (distanceToTarget < battleUnit.attackRange) {
-      battleUnit.doAttack(targetUnit);
+    // internal function to update target if its affected
+    const _updateTarget = () => {
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
@@ -109,6 +106,22 @@ export default class Battle {
           affectedAttacker.test = timestamp + affectedAttacker.speed;
         }
       }
+    };
+
+    // Spell casting
+    if (battleUnit.hasSpell()) {
+      const spellProps = battleUnit.canEvaluateSpell(this.units, this.pathfinder);
+      if (spellProps) {
+        battleUnit.doCastSpell(spellProps);
+        _updateTarget()
+        return;
+      }
+    }
+
+    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
+    if (distanceToTarget < battleUnit.attackRange) {
+      battleUnit.doAttack(targetUnit);
+      _updateTarget();
     } else {
       const step = this.pathfinder.findStepToTarget(battleUnit, targetUnit);
       this.moveUnit(battleUnit, step, timestamp);

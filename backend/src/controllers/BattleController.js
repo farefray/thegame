@@ -39,14 +39,14 @@ BattleController.setup = async state => {
     const battleResult = new Battle(board);
 
     results.battles[players[i]] = {
-      actionStack: battleResult['actionStack'],
+      actionStack: battleResult.actionStack,
       startBoard: battleResult['startBoard'],
       winner: battleResult.winner, // actually should be boolean I guess, as every player will have own battleresult(todo)
       playerDamage: battleResult.playerDamage
     };
 
-    if (battleResult['actionStack'].length) {
-      const playerBattleTime = battleResult['actionStack'][battleResult['actionStack'].length - 1].time;
+    if (battleResult.actionStack.length) {
+      const playerBattleTime = battleResult.actionStack[battleResult.actionStack.length - 1].time;
       if (playerBattleTime > battleTime) {
         battleTime = playerBattleTime;
       }
