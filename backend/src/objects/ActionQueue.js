@@ -9,7 +9,14 @@ export default class ActionQueue {
    * @memberof ActionQueue
    */
   constructor(units, actionHandler, callback) {
-    this.actionQueue = units.map(unit => ({ timestamp: 0, unit }));
+    this.actionQueue = units.map(unit => {
+      // Using symbol property to map battle unit into current ActionQueque and stay
+      unit[Symbol.for('proxy')] = {
+        actionQueue: this
+      };
+
+      return ({ timestamp: 0, unit });
+    });
     this.actionHandler = actionHandler;
     this.actionGenerator = this.generateActions();
     this.callback = callback || (() => true);
