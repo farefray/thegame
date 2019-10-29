@@ -17,8 +17,10 @@ function Dwarf_Geomancer() {
     spell: new Spell({
       requirements: {
         mana: 100,
-        target: 'ally',
-        distance: 4
+        target: {
+          type: 'ally',
+          distance: 4
+        }
       },
       config: {
         target: {

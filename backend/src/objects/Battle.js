@@ -113,7 +113,7 @@ export default class Battle {
       const spellProps = battleUnit.canEvaluateSpell(this.units, this.pathfinder);
       if (spellProps) {
         battleUnit.doCastSpell(spellProps);
-        _updateTarget()
+        _updateTarget();
         return;
       }
     }
