@@ -184,7 +184,7 @@ export default class BattleUnit {
         }
 
         case 'ally': {
-          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.team && u.isAlive()) }, req.target.distance);
+          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.team && u.isAlive() && u.id !== this.id) }, req.target.distance);
         }
 
         default:
