@@ -34,10 +34,7 @@ export default class Unit extends React.Component {
       mana: 0,
 
       maxHealth: unit.hp,
-      health: unit.hp,
-
-      // Regeneration internal
-      previousActionTimestamp: Date.now()
+      health: unit.hp
     };
 
     props.onLifecycle({
@@ -55,6 +52,16 @@ export default class Unit extends React.Component {
     });
   }
 
+  regenerationTick(action) {
+    // we might generate it over time somehow?
+    const { mana, health } = this.state;
+
+    this.setState({
+      mana: mana + action.mana,
+      health: health + action.health
+    });
+  }
+
   get id() {
     const { initPosition } = this.state;
     return `${initPosition.x},${initPosition.y}`;
@@ -66,16 +73,6 @@ export default class Unit extends React.Component {
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
   onAction(action) {
-    // Regen same as on backend, maybe we could avoid code dublicating somehow
-    const { mana, maxMana, health, maxHealth, previousActionTimestamp } = this.state;
-    const { manaRegen, healthRegen } = this.props.unit;
-    const elapsedMilliseconds = Date.now() - previousActionTimestamp;
-    this.setState({
-      previousActionTimestamp: Date.now(),
-      mana: Math.max(0, Math.min(maxMana, mana + (manaRegen * elapsedMilliseconds) / 1000)),
-      health: Math.max(0, Math.min(maxHealth, health + (healthRegen * elapsedMilliseconds) / 1000))
-    });
-
     switch (action.type) {
       case ACTION.MOVE: {
         if (action.to) {
@@ -89,7 +86,7 @@ export default class Unit extends React.Component {
       }
       case ACTION.CAST: {
         console.log('CAST!');
-        this.cast();
+        this.cast(action);
         break;
       }
       case ACTION.HEALTH_CHANGE: {
@@ -97,6 +94,9 @@ export default class Unit extends React.Component {
           this.healthChange(action.value);
         }, 500);
         break;
+      }
+      case ACTION.REGENERATION: {
+        this.regenerationTick(action);
       }
       default: {
         break;
@@ -200,8 +200,15 @@ export default class Unit extends React.Component {
     }, 500); // todo better than constant delay
   }
 
-  cast() {
-    this.setState({ mana: 0 });
+  cast(spell) {
+    if (spell.manacost) {
+      this.manaChange(spell.manacost);
+    }
+  }
+
+  manaChange(value) {
+    const { mana } = this.state;
+    this.setState({ mana: mana - value});
   }
 
   healthChange(value) {

@@ -33,14 +33,9 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
       return unitComponents;
     }
     // actionStack events which are being generated on backend
-    case ACTION.MOVE:
-    case ACTION.ATTACK:
-    case ACTION.CAST:
-    case ACTION.HEALTH_CHANGE:
+    default:
       unitComponents[action.unitID].onAction(action);
       return unitComponents;
-    default:
-      throw new Error();
   }
 }
 
