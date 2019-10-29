@@ -28,15 +28,7 @@ export default class Battle {
       this.setWinner();
     });
 
-    // todo refactor this
-    units.forEach(unit => {
-      unit.actionQueue = this.actionQueue;
-    });
-
-    // console.time('test');
     this.actionQueue.execute();
-    // console.log(this.actionStack);
-    // console.timeEnd('test');
   }
 
   /**
@@ -69,7 +61,7 @@ export default class Battle {
    * @memberof Battle
    */
   calculateAction({ timestamp, unit: battleUnit }) {
-    battleUnit.onAction(timestamp);
+    battleUnit.proceedRegeneration(timestamp);
 
     let targetUnit = this.targetPairPool.findTargetByUnitId(battleUnit.id);
     if (!targetUnit) {
@@ -113,7 +105,7 @@ export default class Battle {
       const spellProps = battleUnit.canEvaluateSpell(this.units, this.pathfinder);
       if (spellProps) {
         battleUnit.doCastSpell(spellProps);
-        _updateTarget()
+        _updateTarget();
         return;
       }
     }
