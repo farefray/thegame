@@ -22,7 +22,7 @@ export default class BattleUnit {
     this._mana = 0;
     this._health = this.hp;
     this._actionLockTimestamp = 0;
-    this._previousActionTimestamp = 0;
+    this._regenerationTickTimestamp = 0;
   }
 
   get previousStep() {
@@ -41,12 +41,12 @@ export default class BattleUnit {
     this._actionLockTimestamp = value;
   }
 
-  get previousActionTimestamp() {
-    return this._previousActionTimestamp;
+  get regenerationTick() {
+    return this._regenerationTickTimestamp;
   }
 
-  set previousActionTimestamp(value) {
-    this._previousActionTimestamp = value;
+  set regenerationTick(value) {
+    this._regenerationTickTimestamp = value;
   }
 
   get health() {
@@ -97,12 +97,12 @@ export default class BattleUnit {
   }
 
   addToActionStack(props) {
-    return this.actionQueue.addToActionStack(this.id, props);
+    return this[Symbol.for('proxy')].actionQueue.addToActionStack(this.id, props);
   }
 
   move(step) {
     this.previousStep = step;
-    this.actionLockTimestamp = this.actionQueue.currentTimestamp + this.speed;
+    this.actionLockTimestamp = this[Symbol.for('proxy')].actionQueue.currentTimestamp + this.speed;
 
     this.x += step.x;
     this.y += step.y;
@@ -144,13 +144,21 @@ export default class BattleUnit {
     };
   }
 
-  onAction(timestamp) {
-    const elapsedMilliseconds = timestamp - this.previousActionTimestamp;
+  proceedRegeneration(timestamp) {
+    const elapsedMilliseconds = timestamp - this.regenerationTick;
     const manaGained = Math.floor((this.manaRegen * elapsedMilliseconds) / 1000);
     const healthGained = Math.floor((this.healthRegen * elapsedMilliseconds) / 1000);
     this.mana += manaGained;
     this.hp += healthGained;
-    this.previousActionTimestamp = timestamp;
+    this.regenerationTick = timestamp;
+
+    // We are passing regeneration ticks into action stack which is probably leads to HUGE overload of actionstack array, but thats the only proper way to have it sync with real battle flow. This may be reconsidered if it will become a problem
+    this.addToActionStack({
+      type: ACTION.REGENERATION,
+      from: this.getPosition(),
+      health: healthGained,
+      mana: manaGained
+    });
   }
 
   hasSpell() {
@@ -160,11 +168,10 @@ export default class BattleUnit {
   /**
    *
    * @param {*} units
-   * @param {*} pathfinder
    * @returns {Boolean|Object}
    * @memberof BattleUnit
    */
-  canEvaluateSpell(units, pathfinder) {
+  canEvaluateSpell(units) {
     if (!this.spell) return false;
     // @todo this could be moved somewhere to spells utils or smt
 
@@ -200,6 +207,11 @@ export default class BattleUnit {
 
   doCastSpell(spellProps) {
     this.mana -= spellProps.mana;
+    this.addToActionStack({
+      type: ACTION.CAST,
+      from: this.getPosition(),
+      manacost: spellProps.mana
+    });
 
     const { config } = this.spell;
     if (config.target) {
@@ -215,10 +227,5 @@ export default class BattleUnit {
         this.healthChange(-self.damage);
       }
     }
-
-    this.addToActionStack({
-      type: ACTION.CAST,
-      from: this.getPosition()
-    });
   }
 }
