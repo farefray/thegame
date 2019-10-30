@@ -1,6 +1,8 @@
 import ActionQueue from './ActionQueue';
 import Pathfinder from './Pathfinder';
 import TargetPairPool from './TargetPairPool';
+import SpellController from '../controllers/SpellController';
+import pathUtils from '../utils/pathUtils';
 
 const _ = require('lodash');
 
@@ -101,13 +103,9 @@ export default class Battle {
     };
 
     // Spell casting
-    if (battleUnit.hasSpell()) {
-      const spellProps = battleUnit.canEvaluateSpell(this.units, this.pathfinder);
-      if (spellProps) {
-        battleUnit.doCastSpell(spellProps);
-        _updateTarget();
-        return;
-      }
+    if (battleUnit.hasSpell() && SpellController.castSpell(this, battleUnit)) {
+      _updateTarget();
+      return;
     }
 
     const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
@@ -121,7 +119,7 @@ export default class Battle {
   }
 
   getUnitClosestTarget(unit) {
-    return Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
+    return pathUtils.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
   }
 
   /**

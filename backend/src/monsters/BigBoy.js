@@ -1,5 +1,5 @@
 import Monster from '../abstract/Monster';
-import Spell from '../abstract/Spell';
+import SpellConfig from '../../abstract/SpellConfig';
 
 function BigBoy() {
   return new Monster({
@@ -13,23 +13,11 @@ function BigBoy() {
     speed: 1000,
     attackSpeed: 1000,
     manaRegen: 10,
-    spell: new Spell({
-      requirements: {
-        mana: 50,
-        target: {
-          type: 'single', // move to constants or to spells utils
-          distance: 4
-        }
-      },
-      config: {
-        target: {
-          damage: 250
-        },
-        self: {
-          damage: 500
-        }
-      }
-    })
+    // spellconfig: new SpellConfig({
+    //   name: 'singletargetdamage',
+    //   mana: 50,
+    //   value: 150
+    // })
   });
 }
 

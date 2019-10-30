@@ -92,7 +92,11 @@ export default class Unit extends React.Component {
       case ACTION.HEALTH_CHANGE: {
         setTimeout(() => {
           this.healthChange(action.value);
-        }, 500);
+        }, 500); // todo get rid of timeout
+        break;
+      }
+      case ACTION.MANA_CHANGE: {
+        this.manaChange(action.value);
         break;
       }
       case ACTION.REGENERATION: {

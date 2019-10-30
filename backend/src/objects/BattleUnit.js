@@ -121,6 +121,14 @@ export default class BattleUnit {
     });
   }
 
+  manaChange(value) {
+    this.mana += value;
+    this.addToActionStack({
+      type: ACTION.MANA_CHANGE,
+      value
+    });
+  }
+
   /**
    * @description Mutating both units by attacking
    * @warning Mutating objects
@@ -162,70 +170,6 @@ export default class BattleUnit {
   }
 
   hasSpell() {
-    return !!this.spell;
-  }
-
-  /**
-   *
-   * @param {*} units
-   * @returns {Boolean|Object}
-   * @memberof BattleUnit
-   */
-  canEvaluateSpell(units) {
-    if (!this.spell) return false;
-    // @todo this could be moved somewhere to spells utils or smt
-
-    // object with requirements which later is being passed to 'doCastSpell' method, in order to not repeat requirements gathering
-    const spellProps = {};
-
-    const { requirements: req } = this.spell;
-    if (req.mana && this.mana < req.mana) return false;
-    spellProps.mana = req.mana || 0;
-
-    if (req.target) {
-      let target = null;
-      switch (req.target.type) {
-        case 'single': {
-          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.oppositeTeam() && u.isAlive()) }, req.target.distance);
-          break;
-        }
-
-        case 'ally': {
-          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.team && u.isAlive() && u.id !== this.id) }, req.target.distance);
-        }
-
-        default:
-          break;
-      }
-
-      if (!target) return false;
-      spellProps.target = target;
-    }
-
-    return spellProps;
-  }
-
-  doCastSpell(spellProps) {
-    this.mana -= spellProps.mana;
-    this.addToActionStack({
-      type: ACTION.CAST,
-      from: this.getPosition(),
-      manacost: spellProps.mana
-    });
-
-    const { config } = this.spell;
-    if (config.target) {
-      const { target } = config;
-      if (target.damage) {
-        spellProps.target.healthChange(-target.damage);
-      }
-    }
-
-    if (config.self) {
-      const { self } = config;
-      if (self.damage) {
-        this.healthChange(-self.damage);
-      }
-    }
+    return !!this.spellconfig;
   }
 }
