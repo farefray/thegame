@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Pathfinder from './Pathfinder';
+import Spell from '../abstract/Spell';
 
 const { ACTION } = require('../../../frontend/src/shared/constants');
 /**
@@ -20,9 +21,12 @@ export default class BattleUnit {
     this._uid = this.getBoardPosition(); // uid = starting position for mob
     this._previousStep = null;
     this._mana = 0;
-    this._health = this.hp;
+    this._health = this.hp; // ?? why need _health
+    this.maxHealth = this.hp;
     this._actionLockTimestamp = 0;
     this._regenerationTickTimestamp = 0;
+
+    this.initializeSpells();
   }
 
   get previousStep() {
@@ -121,6 +125,17 @@ export default class BattleUnit {
     });
   }
 
+  manaChange(value, addToActionStack = true) {
+    this.mana += value;
+
+    if (addToActionStack) {
+      this.addToActionStack({
+        type: ACTION.MANA_CHANGE,
+        value
+      });
+    }
+  }
+
   /**
    * @description Mutating both units by attacking
    * @warning Mutating objects
@@ -145,87 +160,63 @@ export default class BattleUnit {
   }
 
   proceedRegeneration(timestamp) {
+    const health = this.hp;
+    const mana = this.mana;
+
     const elapsedMilliseconds = timestamp - this.regenerationTick;
     const manaGained = Math.floor((this.manaRegen * elapsedMilliseconds) / 1000);
     const healthGained = Math.floor((this.healthRegen * elapsedMilliseconds) / 1000);
-    this.mana += manaGained;
-    this.hp += healthGained;
+
+    this.mana = Math.min(mana + manaGained, this.maxMana);
+    this.hp = Math.min(health + healthGained, this.maxHealth);
     this.regenerationTick = timestamp;
 
     // We are passing regeneration ticks into action stack which is probably leads to HUGE overload of actionstack array, but thats the only proper way to have it sync with real battle flow. This may be reconsidered if it will become a problem
-    this.addToActionStack({
-      type: ACTION.REGENERATION,
-      from: this.getPosition(),
-      health: healthGained,
-      mana: manaGained
-    });
+    const gainedHealth = this.hp - health;
+    const gainedMana = this.mana - mana;
+    if (gainedHealth || gainedMana) {
+      this.addToActionStack({
+        type: ACTION.REGENERATION,
+        from: this.getPosition(),
+        health: gainedHealth,
+        mana: gainedMana
+      });
+    }
+  }
+
+  initializeSpells() {
+    if (!this.hasSpell()) return false;
+
+    // having it in symbol so its not enumerable
+    this[Symbol.for('spell')] = new Spell(this.spellconfig.name, this);
+    return true;
   }
 
   hasSpell() {
-    return !!this.spell;
+    return !!this.spellconfig;
   }
 
-  /**
-   *
-   * @param {*} units
-   * @returns {Boolean|Object}
-   * @memberof BattleUnit
-   */
-  canEvaluateSpell(units) {
-    if (!this.spell) return false;
-    // @todo this could be moved somewhere to spells utils or smt
-
-    // object with requirements which later is being passed to 'doCastSpell' method, in order to not repeat requirements gathering
-    const spellProps = {};
-
-    const { requirements: req } = this.spell;
-    if (req.mana && this.mana < req.mana) return false;
-    spellProps.mana = req.mana || 0;
-
-    if (req.target) {
-      let target = null;
-      switch (req.target.type) {
-        case 'single': {
-          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.oppositeTeam() && u.isAlive()) }, req.target.distance);
-          break;
-        }
-
-        case 'ally': {
-          target = Pathfinder.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.team === this.team && u.isAlive() && u.id !== this.id) }, req.target.distance);
-        }
-
-        default:
-          break;
-      }
-
-      if (!target) return false;
-      spellProps.target = target;
+  castSpell(battle) {
+    // generic checks for all spells
+    const { mana: manaRequired } = this.spellconfig;
+    if (this) {
+      if (this.mana < manaRequired) return false;
     }
 
-    return spellProps;
-  }
+    const spell = this[Symbol.for('spell')];
+    if (spell.canBeCast({
+      units: battle.units
+    })) {
+      this.addToActionStack({
+        type: ACTION.CAST,
+        from: this.getPosition(),
+        manacost: manaRequired
+      });
 
-  doCastSpell(spellProps) {
-    this.mana -= spellProps.mana;
-    this.addToActionStack({
-      type: ACTION.CAST,
-      from: this.getPosition(),
-      manacost: spellProps.mana
-    });
-
-    const { config } = this.spell;
-    if (config.target) {
-      const { target } = config;
-      if (target.damage) {
-        spellProps.target.healthChange(-target.damage);
-      }
+      this.manaChange(-manaRequired, false);
+      return spell.cast();
     }
 
-    if (config.self) {
-      const { self } = config;
-      if (self.damage) {
-        this.healthChange(-self.damage);
-      }
-    }
+    return false;
   }
 }
