@@ -124,12 +124,15 @@ export default class BattleUnit {
     });
   }
 
-  manaChange(value) {
+  manaChange(value, addToActionStack = true) {
     this.mana += value;
-    this.addToActionStack({
-      type: ACTION.MANA_CHANGE,
-      value
-    });
+
+    if (addToActionStack) {
+      this.addToActionStack({
+        type: ACTION.MANA_CHANGE,
+        value
+      });
+    }
   }
 
   /**
@@ -195,7 +198,13 @@ export default class BattleUnit {
     if (spell.canBeCast({
       units: battle.units
     })) {
-      this.manaChange(-manaRequired);
+      this.addToActionStack({
+        type: ACTION.CAST,
+        from: this.getPosition(),
+        manacost: manaRequired
+      });
+
+      this.manaChange(-manaRequired, true);
       return spell.execute();
     }
 

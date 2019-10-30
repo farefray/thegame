@@ -206,7 +206,7 @@ export default class Unit extends React.Component {
 
   cast(spell) {
     if (spell.manacost) {
-      this.manaChange(spell.manacost);
+      this.manaChange(-spell.manacost);
     }
   }
 

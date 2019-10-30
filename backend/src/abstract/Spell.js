@@ -1,5 +1,4 @@
-import Regeneration from '../spells/regeneration';
-
+import spellsUtils from '../utils/spellUtils';
 /**
  * @description Data structure which respresents spell logic
  * @returns {Spell}
@@ -25,7 +24,7 @@ function Spell(spellname, caster) {
   this.execute = () => {  // eslint-disable-line
   };
 
-  return new Regeneration(this);
+  return Object.assign({}, this, spellsUtils.loadSpell(spellname, this));
 }
 
 export default Spell;
