@@ -14,8 +14,9 @@ module.exports = {
     INIT: 'init',
     MOVE: 'move',
     ATTACK: 'attack',
-    CAST: 'cast',
+    CAST: 'cast', // maybe not needed
     HEALTH_CHANGE: 'healthchange',
+    MANA_CHANGE: 'manachange',
     REGENERATION: 'regen'
   },
   STATE: {
