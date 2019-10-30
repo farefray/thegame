@@ -16,12 +16,12 @@ const defaultBoard = {
   ],
   B: [
     {
-      name: 'dwarf',
+      name: 'dwarf_geomancer',
       x: 2,
       y: 0
     },
     {
-      name: 'dwarf',
+      name: 'dwarf_geomancer',
       x: 2,
       y: 1
     }

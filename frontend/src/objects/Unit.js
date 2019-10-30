@@ -92,11 +92,16 @@ export default class Unit extends React.Component {
       case ACTION.HEALTH_CHANGE: {
         setTimeout(() => {
           this.healthChange(action.value);
-        }, 500);
+        }, 500); // todo get rid of timeout
+        break;
+      }
+      case ACTION.MANA_CHANGE: {
+        this.manaChange(action.value);
         break;
       }
       case ACTION.REGENERATION: {
         this.regenerationTick(action);
+        break;
       }
       default: {
         break;
@@ -202,13 +207,13 @@ export default class Unit extends React.Component {
 
   cast(spell) {
     if (spell.manacost) {
-      this.manaChange(spell.manacost);
+      this.manaChange(-spell.manacost);
     }
   }
 
   manaChange(value) {
     const { mana } = this.state;
-    this.setState({ mana: mana - value});
+    this.setState({ mana: mana + value});
   }
 
   healthChange(value) {

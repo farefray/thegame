@@ -1,10 +1,11 @@
 import ActionQueue from './ActionQueue';
 import Pathfinder from './Pathfinder';
 import TargetPairPool from './TargetPairPool';
+import pathUtils from '../utils/pathUtils';
 
 const _ = require('lodash');
 
-const { TEAM, ACTION } = require('../../../frontend/src/shared/constants');
+const { TEAM } = require('../../../frontend/src/shared/constants');
 
 export default class Battle {
   constructor(board) {
@@ -101,13 +102,9 @@ export default class Battle {
     };
 
     // Spell casting
-    if (battleUnit.hasSpell()) {
-      const spellProps = battleUnit.canEvaluateSpell(this.units, this.pathfinder);
-      if (spellProps) {
-        battleUnit.doCastSpell(spellProps);
-        _updateTarget();
-        return;
-      }
+    if (battleUnit.hasSpell() && battleUnit.castSpell(this)) {
+      _updateTarget();
+      return;
     }
 
     const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
@@ -121,7 +118,7 @@ export default class Battle {
   }
 
   getUnitClosestTarget(unit) {
-    return Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
+    return pathUtils.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
   }
 
   /**
