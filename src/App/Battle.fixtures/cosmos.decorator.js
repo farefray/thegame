@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
@@ -23,7 +24,9 @@ const getCircularReplacer = () => {
 const generateGameState = async function(board) {
   const combinedBoard = createBattleBoard(board.A, board.B);
   const battleResult = new Battle(combinedBoard);
-  return JSON.parse(JSON.stringify(battleResult, getCircularReplacer()));
+  const result = _.cloneDeep(battleResult);
+  console.table(battleResult.actionStack);
+  return JSON.parse(JSON.stringify({...result, actionStack: battleResult.actionStack}, getCircularReplacer()));
 };
 
 const MyReduxMock = ({ children }) => {

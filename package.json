@@ -10,8 +10,7 @@
     "eject": "react-app-rewired eject",
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
-    "cosmos": "cosmos",
-    "cosmos:export": "cosmos-export"
+    "cosmos": "cosmos"
   },
   "dependencies": {
     "classnames": "^2.2.6",
