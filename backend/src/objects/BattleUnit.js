@@ -21,7 +21,8 @@ export default class BattleUnit {
     this._uid = this.getBoardPosition(); // uid = starting position for mob
     this._previousStep = null;
     this._mana = 0;
-    this._health = this.hp;
+    this._health = this.hp; // ?? why need _health
+    this.maxHealth = this.hp;
     this._actionLockTimestamp = 0;
     this._regenerationTickTimestamp = 0;
 
@@ -159,20 +160,28 @@ export default class BattleUnit {
   }
 
   proceedRegeneration(timestamp) {
+    const health = this.hp;
+    const mana = this.mana;
+
     const elapsedMilliseconds = timestamp - this.regenerationTick;
     const manaGained = Math.floor((this.manaRegen * elapsedMilliseconds) / 1000);
     const healthGained = Math.floor((this.healthRegen * elapsedMilliseconds) / 1000);
-    this.mana += manaGained;
-    this.hp += healthGained;
+
+    this.mana = Math.min(mana + manaGained, this.maxMana);
+    this.hp = Math.min(health + healthGained, this.maxHealth);
     this.regenerationTick = timestamp;
 
     // We are passing regeneration ticks into action stack which is probably leads to HUGE overload of actionstack array, but thats the only proper way to have it sync with real battle flow. This may be reconsidered if it will become a problem
-    this.addToActionStack({
-      type: ACTION.REGENERATION,
-      from: this.getPosition(),
-      health: healthGained,
-      mana: manaGained
-    });
+    const gainedHealth = this.hp - health;
+    const gainedMana = this.mana - mana;
+    if (gainedHealth || gainedMana) {
+      this.addToActionStack({
+        type: ACTION.REGENERATION,
+        from: this.getPosition(),
+        health: gainedHealth,
+        mana: gainedMana
+      });
+    }
   }
 
   initializeSpells() {
@@ -204,8 +213,8 @@ export default class BattleUnit {
         manacost: manaRequired
       });
 
-      this.manaChange(-manaRequired, true);
-      return spell.execute();
+      this.manaChange(-manaRequired, false);
+      return spell.cast();
     }
 
     return false;

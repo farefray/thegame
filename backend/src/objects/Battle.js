@@ -5,7 +5,7 @@ import pathUtils from '../utils/pathUtils';
 
 const _ = require('lodash');
 
-const { TEAM, ACTION } = require('../../../frontend/src/shared/constants');
+const { TEAM } = require('../../../frontend/src/shared/constants');
 
 export default class Battle {
   constructor(board) {

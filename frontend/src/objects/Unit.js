@@ -101,6 +101,7 @@ export default class Unit extends React.Component {
       }
       case ACTION.REGENERATION: {
         this.regenerationTick(action);
+        break;
       }
       default: {
         break;
@@ -212,7 +213,7 @@ export default class Unit extends React.Component {
 
   manaChange(value) {
     const { mana } = this.state;
-    this.setState({ mana: mana - value});
+    this.setState({ mana: mana + value});
   }
 
   healthChange(value) {

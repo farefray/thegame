@@ -21,7 +21,7 @@ function Spell(spellname, caster) {
   };
 
   // Casts spell by modifying actionStack
-  this.execute = () => {  // eslint-disable-line
+  this.cast = () => {  // eslint-disable-line
   };
 
   return Object.assign({}, this, spellsUtils.loadSpell(spellname, this));

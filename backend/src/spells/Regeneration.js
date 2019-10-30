@@ -14,11 +14,12 @@ function Regeneration(self) {
       self.updateProps({ target });
       return true;
     },
-    execute: () => {
+    cast: () => {
       // initial cast
-      self.props.target.healthChange(-caster.spellconfig.value);
+      self.props.target.healthChange(caster.spellconfig.value);
 
       // side effect [todo]
+      
     }
   };
 }
