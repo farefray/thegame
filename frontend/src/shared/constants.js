@@ -11,11 +11,12 @@ module.exports = {
     B: 1
   },
   ACTION: {
-    INIT: 0,
-    MOVE: 1,
-    ATTACK: 2,
-    CAST: 3,
-    TAKE_DAMAGE: 4
+    INIT: 'init',
+    MOVE: 'move',
+    ATTACK: 'attack',
+    CAST: 'cast',
+    HEALTH_CHANGE: 'healthchange',
+    REGENERATION: 'regen'
   },
   STATE: {
     COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000

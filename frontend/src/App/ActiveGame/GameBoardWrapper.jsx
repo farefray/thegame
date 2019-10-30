@@ -33,14 +33,9 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
       return unitComponents;
     }
     // actionStack events which are being generated on backend
-    case ACTION.MOVE:
-    case ACTION.ATTACK:
-    case ACTION.CAST:
-    case ACTION.TAKE_DAMAGE:
+    default:
       unitComponents[action.unitID].onAction(action);
       return unitComponents;
-    default:
-      throw new Error();
   }
 }
 
@@ -113,8 +108,8 @@ function GameBoardWrapper({ state }) {
       setBattleLaunched(false);
       setGameboardKey(gameboardKey + 1);
     }
-  }, [isActiveBattleGoing, isBattleLaunched, gameboardKey, wasBattleLaunched])
-  
+  }, [isActiveBattleGoing, isBattleLaunched, gameboardKey, wasBattleLaunched]);
+
   // Internal counters in order to go past actionStack and execute units behaviors one by one
   const [currentActionIndex, setCurrentActionIndex] = useState(-1);
   const [prevActionIndex, setPrevActionIndex] = useState(-1);

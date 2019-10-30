@@ -10,7 +10,6 @@ export default class Battle {
   constructor(board) {
     // returnable values
     this.startBoard = _.cloneDeep(board); // test if thats needed or just adding perf issues
-    this.actionStack = [];
     this.winner = null;
     this.playerDamage = 0;
 
@@ -29,11 +28,16 @@ export default class Battle {
       this.setWinner();
     });
 
-    // console.time('test');
     this.actionQueue.execute();
+  }
 
-    // console.log(this.actionStack);
-    // console.timeEnd('test');
+  /**
+   * @description returns actionstack from 
+   * completed actionQueque to be sent to frontend
+   * @returns {Array} ActionStack
+   */
+  get actionStack() {
+    return this.actionQueue.actionStack;
   }
 
   setWinner() {
@@ -51,42 +55,42 @@ export default class Battle {
     this.playerDamage = 5;
   }
 
-  calculateAction({ timestamp, unit }) {
-    unit.onAction(timestamp);
+  /**
+   * @param {Integer, BattleUnit} { timestamp, battleUnit }
+   * @returns
+   * @memberof Battle
+   */
+  calculateAction({ timestamp, unit: battleUnit }) {
+    battleUnit.proceedRegeneration(timestamp);
 
-    let targetUnit = this.targetPairPool.findTargetByUnitId(unit.id);
+    let targetUnit = this.targetPairPool.findTargetByUnitId(battleUnit.id);
     if (!targetUnit) {
-      const closestTarget = this.getUnitClosestTarget(unit);
+      const closestTarget = this.getUnitClosestTarget(battleUnit);
       if (closestTarget) {
         targetUnit = closestTarget;
-        this.targetPairPool.add({ attacker: unit, target: targetUnit });
+        this.targetPairPool.add({ attacker: battleUnit, target: targetUnit });
       }
     } else {
-      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
-      if (distanceToTarget > unit.attackRange) {
-        const closestTarget = this.getUnitClosestTarget(unit);
-        if (closestTarget && Pathfinder.getDistanceBetweenUnits(unit, targetUnit) < distanceToTarget) {
-          this.targetPairPool.remove({ attacker: unit, target: targetUnit });
+      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
+      if (distanceToTarget > battleUnit.attackRange) {
+        const closestTarget = this.getUnitClosestTarget(battleUnit);
+        if (closestTarget && Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit) < distanceToTarget) {
+          this.targetPairPool.remove({ attacker: battleUnit, target: targetUnit });
           targetUnit = closestTarget;
-          this.targetPairPool.add({ attacker: unit, target: targetUnit });
+          this.targetPairPool.add({ attacker: battleUnit, target: targetUnit });
         }
       }
     }
 
     if (!targetUnit) return;
-    if (unit.canCast()) {
-      this.cast(unit, timestamp);
-      return;
-    }
 
-    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
-    if (distanceToTarget < unit.attackRange) {
-      this.attackUnit(unit, targetUnit, timestamp);
+    // internal function to update target if its affected
+    const _updateTarget = () => {
       if (!targetUnit.isAlive()) {
         this.actionQueue.removeUnitFromQueue(targetUnit);
         this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
 
-        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== unit.id);
+        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== battleUnit.id);
         for (const affectedAttacker of affectedAttackers) {
           if (affectedAttacker.actionLockTimestamp >= timestamp) continue;
           this.actionQueue.removeUnitFromQueue(affectedAttacker);
@@ -94,9 +98,25 @@ export default class Battle {
           affectedAttacker.test = timestamp + affectedAttacker.speed;
         }
       }
+    };
+
+    // Spell casting
+    if (battleUnit.hasSpell()) {
+      const spellProps = battleUnit.canEvaluateSpell(this.units, this.pathfinder);
+      if (spellProps) {
+        battleUnit.doCastSpell(spellProps);
+        _updateTarget();
+        return;
+      }
+    }
+
+    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
+    if (distanceToTarget < battleUnit.attackRange) {
+      battleUnit.doAttack(targetUnit);
+      _updateTarget();
     } else {
-      const step = this.pathfinder.findStepToTarget(unit, targetUnit);
-      this.moveUnit(unit, step, timestamp);
+      const step = this.pathfinder.findStepToTarget(battleUnit, targetUnit);
+      this.moveUnit(battleUnit, step, timestamp);
     }
   }
 
@@ -105,81 +125,16 @@ export default class Battle {
   }
 
   /**
-   * @description Adds current action to actionStack to be later sent to frontend
-   * @param {Object} actionObject
-   * @param {Integer} time
    * @param {BattleUnit} unit
-   * @memberof Battle
+   * @param {Object} step position delta
    */
-  addActionToStack(actionObject, time, unit) {
-    this.actionStack.push({
-      ...actionObject,
-      unitID: unit.id,
-      time
-    });
-  }
-
-  cast(unit, timestamp) {
-    unit.mana = 0;
-    this.addActionToStack(
-      {
-        type: ACTION.CAST,
-        from: unit.getPosition()
-      },
-      timestamp,
-      unit
-    );
-  }
-
-  attackUnit(unit, targetUnit, timestamp) {
-    const attackResult = unit.doAttack(targetUnit);
-    unit.actionLockTimestamp = timestamp + 100;
-    this.addActionToStack({ type: ACTION.TAKE_DAMAGE, damage: attackResult.damage }, timestamp, targetUnit);
-    this.addActionToStack(
-      {
-        type: ACTION.ATTACK,
-        from: unit.getPosition(),
-        to: targetUnit.getPosition()
-      },
-      timestamp,
-      unit
-    );
-  }
-
-  /**
-   * @param {BattleUnit} unit
-   * @param {Object/null} position if null, then removing from board
-   */
-  moveUnit(unit, step, timestamp) {
+  moveUnit(unit, step) {
     const fromPosition = {
       x: unit.x,
       y: unit.y
     };
-
-    const position = {
-      x: unit.x + step.x,
-      y: unit.y + step.y
-    };
-
-    this.addActionToStack(
-      {
-        type: ACTION.MOVE,
-        from: fromPosition,
-        to: position
-      },
-      timestamp,
-      unit
-    );
-    unit.actionLockTimestamp = timestamp + unit.speed;
-
-    if (position) {
-      unit.previousStep = step;
-      unit.move(position);
-    }
-
+    unit.move(step);
     this.pathfinder.occupiedTileSet.delete(`${fromPosition.x},${fromPosition.y}`);
-    if (position) {
-      this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`);
-    }
+    this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`);
   }
 }

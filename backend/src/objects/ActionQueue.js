@@ -1,4 +1,5 @@
 const BATTLE_TIME_LIMIT = 30 * 1000; // time limit for battle
+
 export default class ActionQueue {
   /**
    *Creates an instance of ActionQueue.
@@ -8,10 +9,35 @@ export default class ActionQueue {
    * @memberof ActionQueue
    */
   constructor(units, actionHandler, callback) {
-    this.actionQueue = units.map(unit => ({ timestamp: 0, unit }));
+    this.actionQueue = units.map(unit => {
+      // Using symbol property to map battle unit into current ActionQueque and stay
+      unit[Symbol.for('proxy')] = {
+        actionQueue: this
+      };
+
+      return ({ timestamp: 0, unit });
+    });
     this.actionHandler = actionHandler;
     this.actionGenerator = this.generateActions();
     this.callback = callback || (() => true);
+    this._actionStack = [];
+    this._currentTimestamp = 0;
+  }
+
+  get actionStack() {
+    return this._actionStack;
+  }
+
+  get currentTimestamp() {
+    return this._currentTimestamp;
+  }
+
+  addToActionStack(unitId, props) {
+    this.actionStack.push({
+      ...props,
+      unitID: unitId,
+      time: this._currentTimestamp
+    });
   }
 
   execute() {
@@ -23,9 +49,10 @@ export default class ActionQueue {
     }
   }
 
-  * generateActions() {
+  *generateActions() {
     while (this.actionQueue.length) {
       const { timestamp, unit } = this.actionQueue.shift();
+      this._currentTimestamp = timestamp;
       const nextTimestamp = timestamp + unit.speed;
       this.actionHandler({ timestamp, unit });
       if (nextTimestamp < BATTLE_TIME_LIMIT) {

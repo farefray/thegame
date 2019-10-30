@@ -9,7 +9,7 @@ const generateBoard = () => {
     const y = Math.floor(Math.random() * 4);
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
     board.push({
-      name: 'minotaur',
+      name: 'dwarf_geomancer',
       x,
       y
     });
