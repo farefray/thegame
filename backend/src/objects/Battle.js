@@ -1,7 +1,6 @@
 import ActionQueue from './ActionQueue';
 import Pathfinder from './Pathfinder';
 import TargetPairPool from './TargetPairPool';
-import SpellController from '../controllers/SpellController';
 import pathUtils from '../utils/pathUtils';
 
 const _ = require('lodash');
@@ -103,7 +102,7 @@ export default class Battle {
     };
 
     // Spell casting
-    if (battleUnit.hasSpell() && SpellController.castSpell(this, battleUnit)) {
+    if (battleUnit.hasSpell() && battleUnit.castSpell(this)) {
       _updateTarget();
       return;
     }

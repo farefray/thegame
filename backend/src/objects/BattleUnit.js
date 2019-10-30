@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Pathfinder from './Pathfinder';
+import Spell from '../abstract/Spell';
 
 const { ACTION } = require('../../../frontend/src/shared/constants');
 /**
@@ -23,6 +24,8 @@ export default class BattleUnit {
     this._health = this.hp;
     this._actionLockTimestamp = 0;
     this._regenerationTickTimestamp = 0;
+
+    this.initializeSpells();
   }
 
   get previousStep() {
@@ -169,7 +172,33 @@ export default class BattleUnit {
     });
   }
 
+  initializeSpells() {
+    if (!this.hasSpell()) return false;
+
+    // having it in symbol so its not enumerable
+    this[Symbol.for('spell')] = new Spell(this.spellconfig.name, this);
+    return true;
+  }
+
   hasSpell() {
     return !!this.spellconfig;
+  }
+
+  castSpell(battle) {
+    // generic checks for all spells
+    const { mana: manaRequired } = this.spellconfig;
+    if (this) {
+      if (this.mana < manaRequired) return false;
+    }
+
+    const spell = this[Symbol.for('spell')];
+    if (spell.canBeCast({
+      units: battle.units
+    })) {
+      this.manaChange(-manaRequired);
+      return spell.execute();
+    }
+
+    return false;
   }
 }

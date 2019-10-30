@@ -1,10 +1,12 @@
+import Regeneration from '../spells/regeneration';
+
 /**
  * @description Data structure which respresents spell logic
  * @returns {Spell}
  */
 
 
-function Spell(caster, overrides) {
+function Spell(spellname, caster) {
   // Holds evaluated data required for spell to be cast
   this.props = {};
 
@@ -21,10 +23,9 @@ function Spell(caster, overrides) {
 
   // Casts spell by modifying actionStack
   this.execute = () => {  // eslint-disable-line
-
   };
 
-  return Object.assign(this, overrides);
+  return new Regeneration(this);
 }
 
 export default Spell;
