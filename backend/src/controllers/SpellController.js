@@ -1,11 +1,9 @@
 
-import pathUtils from '../utils/pathUtils';
-
-import regeneration from '../spells/regeneration';
+import Regeneration from '../spells/regeneration';
 
 const SpellController = {};
 
-SpellController.constructSpell = function ();
+SpellController.constructSpell = function () {};
 
 SpellController.castSpell = function (battle, battleUnit) {
   // generic checks for all spells
@@ -15,8 +13,8 @@ SpellController.castSpell = function (battle, battleUnit) {
   }
 
   // construct spell and check its own requirements
-  const spell = new regeneration(battleUnit);
-  if (spell.canBeCast(units)) {
+  const spell = new Regeneration(battleUnit);
+  if (spell.canBeCast(battle.units)) {
     battleUnit.manaChange(-manaRequired);
     return spell.execute();
   }

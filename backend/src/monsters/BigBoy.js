@@ -1,5 +1,5 @@
 import Monster from '../abstract/Monster';
-import SpellConfig from '../../abstract/SpellConfig';
+import SpellConfig from '../abstract/SpellConfig';
 
 function BigBoy() {
   return new Monster({

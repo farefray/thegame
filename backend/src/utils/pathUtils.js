@@ -26,3 +26,7 @@ exports.getClosestTarget = function ({
 
   return closestTarget;
 };
+
+exports.getDistanceBetweenCoordinates = function ({ x, y, targetX, targetY }) {
+  return Math.max(0, Math.abs(targetX - x) - 1) + Math.max(0, Math.abs(targetY - y) - 1);
+};
