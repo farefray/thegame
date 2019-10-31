@@ -16,10 +16,18 @@ function Regeneration(self) {
     },
     cast: () => {
       // initial cast
-      self.props.target.healthChange(caster.spellconfig.value);
+      const target = self.props.target;
+      const regenValue = caster.spellconfig.value;
+      target.healthChange(regenValue);
 
       // side effect [todo]
-      
+      self.props.addSideEffect({
+        effect: () => {
+          target.healthChange(regenValue);
+        },
+        tick: 1000,
+        amount: 15
+      });
     }
   };
 }

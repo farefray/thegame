@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import Pathfinder from './Pathfinder';
 import Spell from '../abstract/Spell';
 
 const { ACTION } = require('../../../frontend/src/shared/constants');
@@ -102,6 +101,10 @@ export default class BattleUnit {
 
   addToActionStack(props) {
     return this[Symbol.for('proxy')].actionQueue.addToActionStack(this.id, props);
+  }
+
+  addSideEffect(sideEffect) {
+    return this[Symbol.for('proxy')].actionQueue.addSideEffect(sideEffect);
   }
 
   move(step) {

@@ -1,4 +1,4 @@
-const BATTLE_TIME_LIMIT = 30 * 1000; // time limit for battle
+const BATTLE_TIME_LIMIT = 300 * 1000; // time limit for battle
 
 export default class ActionQueue {
   /**
@@ -9,8 +9,9 @@ export default class ActionQueue {
    * @memberof ActionQueue
    */
   constructor(units, actionHandler, callback) {
+    // Please todo some comments about mechanics of actionQueque/actionStack and generator
     this.actionQueue = units.map(unit => {
-      // Using symbol property to map battle unit into current ActionQueque and stay
+      // Using symbol property to map battle unit into current ActionQueque and stay not enumerable
       unit[Symbol.for('proxy')] = {
         actionQueue: this
       };
@@ -22,6 +23,7 @@ export default class ActionQueue {
     this.callback = callback || (() => true);
     this._actionStack = [];
     this._currentTimestamp = 0;
+    this._sideEffects = {};
   }
 
   get actionStack() {
@@ -38,6 +40,16 @@ export default class ActionQueue {
       unitID: unitId,
       time: this._currentTimestamp
     });
+  }
+
+  addSideEffect(sideEffect) {
+    const { tick, amount, effect } = sideEffect;
+
+    let effectTimestamp = this._currentTimestamp + tick;
+    for (let index = 0; index < amount; index++) {
+      this._sideEffects[effectTimestamp] = effect;
+      effectTimestamp += tick;
+    }
   }
 
   execute() {
