@@ -5,6 +5,7 @@ import GameController from '../src/controllers/GameController';
 import BattleController from '../src/controllers/BattleController';
 import BoardController from '../src/controllers/BoardController';
 import ShopController from '../src/controllers/ShopController';
+import AppError from '../src/objects/AppError';
 
 const should = require('should');
 const rewire = require('rewire');
@@ -98,7 +99,7 @@ describe('Core Modules', () => {
     it('cannot buy pawn when no gold', async () => {
       gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
       const state = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
-      should(state).Null();
+      should(state).instanceOf(AppError);
     });
 
     it('can buy second pawn pawn', async () => {

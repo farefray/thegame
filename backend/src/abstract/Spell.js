@@ -4,10 +4,14 @@ import spellsUtils from '../utils/spellUtils';
  * @returns {Spell}
  */
 
-
 function Spell(spellname, caster) {
   // Holds evaluated data required for spell to be cast
-  this.props = {};
+  this.props = {
+    // in case spell is affecting gameboard after cast, such effects are being pushed into actionqueue side effects and being executed without battle unit actions
+    addSideEffect: () => {
+
+    }
+  };
 
   this.updateProps = (props) => {
     this.props = Object.assign(this.props, props);
