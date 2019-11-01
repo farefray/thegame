@@ -12,7 +12,7 @@
     "posttest": "mocha --exit && eslint ./src",
     "test": "mocha --exit",
     "mocha": "mocha -w --require @babel/register",
-    "mocha:debug": "node --inspect node_modules/mocha/bin/_mocha -w --require @babel/register",
+    "mocha:perf": "node --allow-natives-syntax ./node_modules/mocha/bin/_mocha --opt ./test/mocha.opts ./test/performance.test.js",
     "lint": "eslint ./src",
     "lintfix": "eslint --fix ./src"
   },
@@ -23,6 +23,7 @@
   "author": "Maksym Fedan&&Jacek Kizinsky",
   "license": "ISC",
   "dependencies": {
+    "benchtest": "^2.0.2",
     "cors": "^2.8.5",
     "easystarjs": "^0.4.3",
     "eslint": "6.1.0",
