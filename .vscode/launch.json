@@ -22,8 +22,8 @@
       "name": "Mocha All",
       "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
       "args": [
-        "-w",
-        "--require @babel/register",
+        "--opts", 
+        "${workspaceFolder}/backend/test/mocha.opts",
         "{,!(node_modules)/}*/*.test.js"
       ],
       "runtimeArgs": [
@@ -32,7 +32,7 @@
       "sourceMaps": true,
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "cwd":"${workspaceFolder}"
+      "cwd":"${workspaceFolder}/backend"
     },
     {
       "type": "node",
