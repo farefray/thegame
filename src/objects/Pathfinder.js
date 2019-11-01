@@ -1,3 +1,5 @@
+import pathUtils from '../utils/pathUtils';
+
 class Step {
   constructor({ x, y, resistance } = {}) {
     this.x = x || 0;
@@ -128,32 +130,13 @@ export default class Pathfinder {
       .map(step => this.grid[x + step.x][y + step.y]);
   }
 
-  static getClosestTarget({ x, y, targets }) {
-    let closestTarget = null;
-    let closestTargetDistance = Infinity;
-    for (const target of targets) {
-      const { x: targetX, y: targetY } = target;
-      const distance = this.getDistanceBetweenCoordinates({ x, y, targetX, targetY });
-      if (distance < closestTargetDistance) {
-        closestTarget = target;
-        closestTargetDistance = distance;
-      }
-      if (!distance) break;
-    }
-    return closestTarget;
-  }
-
-  static getDistanceBetweenCoordinates({ x, y, targetX, targetY }) {
-    return Math.max(0, Math.abs(targetX - x) - 1) + Math.max(0, Math.abs(targetY - y) - 1);
-  }
-
   /**
    * @param {BattleUnit|Pathobject?} unit1
    * @param {BattleUnit} unit2
    * @returns {Integer}
    */
   static getDistanceBetweenUnits(unit1, unit2) {
-    return this.getDistanceBetweenCoordinates({
+    return pathUtils.getDistanceBetweenCoordinates({
       x: unit1.x,
       y: unit1.y,
       targetX: unit2.x,
