@@ -74,6 +74,7 @@ class GameBoard extends React.Component {
     const { gameBoard, isMounted, units } = this.state;
     return (
       <div className="gameboard">
+        <div className="gameboard-background"></div>
         <div className="gameboard-wrapper">
           <div className="gameboard-board">
             <DndProvider backend={HTML5Backend}>

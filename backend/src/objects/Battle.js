@@ -1,10 +1,11 @@
 import ActionQueue from './ActionQueue';
 import Pathfinder from './Pathfinder';
 import TargetPairPool from './TargetPairPool';
+import pathUtils from '../utils/pathUtils';
 
 const _ = require('lodash');
 
-const { TEAM, ACTION } = require('../../../frontend/src/shared/constants');
+const { TEAM } = require('../../../frontend/src/shared/constants');
 
 export default class Battle {
   constructor(board) {
@@ -14,12 +15,19 @@ export default class Battle {
     this.winner = null;
     this.playerDamage = 0;
 
+    // internal setup
     const units = [];
     this.targetPairPool = new TargetPairPool();
     this.pathfinder = new Pathfinder({ gridWidth: 8, gridHeight: 8 });
-    // internal setup
     for (const boardPos in board) {
       const battleUnit = board[boardPos];
+
+      // Using symbol property to map battle unit into current battle and stay not enumerable
+      battleUnit.proxy({
+        name: 'Battle',
+        instance: this
+      });
+
       units.push(battleUnit);
       this.pathfinder.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
     }
@@ -29,11 +37,16 @@ export default class Battle {
       this.setWinner();
     });
 
-    // console.time('test');
     this.actionQueue.execute();
+  }
 
-    // console.log(this.actionStack);
-    // console.timeEnd('test');
+  /**
+   * @description returns actionstack from 
+   * completed actionQueque to be sent to frontend
+   * @returns {Array} ActionStack
+   */
+  get actionStack() {
+    return this.actionQueue.actionStack;
   }
 
   setWinner() {
@@ -51,135 +64,79 @@ export default class Battle {
     this.playerDamage = 5; // todo count damage based on units left?
   }
 
-  calculateAction({ timestamp, unit }) {
-    unit.onAction(timestamp);
+  /**
+   * @param {Integer, BattleUnit} { timestamp, battleUnit }
+   * @returns
+   * @memberof Battle
+   */
+  calculateAction({ timestamp, unit: battleUnit }) {
+    battleUnit.lastActionTimestamp = timestamp;
+    battleUnit.proceedRegeneration(timestamp);
 
-    let targetUnit = this.targetPairPool.findTargetByUnitId(unit.id);
+    let targetUnit = this.targetPairPool.findTargetByUnitId(battleUnit.id);
     if (!targetUnit) {
-      const closestTarget = this.getUnitClosestTarget(unit);
+      const closestTarget = this.getUnitClosestTarget(battleUnit);
       if (closestTarget) {
         targetUnit = closestTarget;
-        this.targetPairPool.add({ attacker: unit, target: targetUnit });
+        this.targetPairPool.add({ attacker: battleUnit, target: targetUnit });
       }
     } else {
-      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
-      if (distanceToTarget > unit.attackRange) {
-        const closestTarget = this.getUnitClosestTarget(unit);
-        if (closestTarget && Pathfinder.getDistanceBetweenUnits(unit, targetUnit) < distanceToTarget) {
-          this.targetPairPool.remove({ attacker: unit, target: targetUnit });
+      const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
+      if (distanceToTarget > battleUnit.attackRange) {
+        const closestTarget = this.getUnitClosestTarget(battleUnit);
+        if (closestTarget && Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit) < distanceToTarget) {
+          this.targetPairPool.remove({ attacker: battleUnit, target: targetUnit });
           targetUnit = closestTarget;
-          this.targetPairPool.add({ attacker: unit, target: targetUnit });
+          this.targetPairPool.add({ attacker: battleUnit, target: targetUnit });
         }
       }
     }
 
     if (!targetUnit) return;
-    if (unit.canCast()) {
-      this.cast(unit, timestamp);
+
+     // Spell casting
+    if (battleUnit.hasSpell() && battleUnit.castSpell()) {
       return;
     }
 
-    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(unit, targetUnit);
-    if (distanceToTarget < unit.attackRange) {
-      this.attackUnit(unit, targetUnit, timestamp);
-      if (!targetUnit.isAlive()) {
-        this.actionQueue.removeUnitFromQueue(targetUnit);
-        this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
-
-        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== unit.id);
-        for (const affectedAttacker of affectedAttackers) {
-          if (affectedAttacker.actionLockTimestamp >= timestamp) continue;
-          this.actionQueue.removeUnitFromQueue(affectedAttacker);
-          this.actionQueue.addToActionQueue({ timestamp, unit: affectedAttacker });
-          affectedAttacker.test = timestamp + affectedAttacker.speed;
-        }
-      }
+    const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
+    if (distanceToTarget < battleUnit.attackRange) {
+      battleUnit.doAttack(targetUnit);
     } else {
-      const step = this.pathfinder.findStepToTarget(unit, targetUnit);
-      this.moveUnit(unit, step, timestamp);
+      const step = this.pathfinder.findStepToTarget(battleUnit, targetUnit);
+      this.moveUnit(battleUnit, step, timestamp);
+    }
+  }
+
+  onUnitDeath(battleUnit, killerID) {
+    this.actionQueue.removeUnitFromQueue(battleUnit);
+    this.pathfinder.occupiedTileSet.delete(`${battleUnit.x},${battleUnit.y}`);
+
+    let affectedAttackers = this.targetPairPool.removeByUnitId(battleUnit.id).affectedAttackers;
+    affectedAttackers = affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== killerID);
+    for (const affectedAttacker of affectedAttackers) {
+      if (affectedAttacker.actionLockTimestamp >= battleUnit.lastActionTimestamp) continue;
+      this.actionQueue.removeUnitFromQueue(affectedAttacker);
+      this.actionQueue.addToActionQueue({ timestamp: battleUnit.lastActionTimestamp, unit: affectedAttacker });
+      affectedAttacker.test = battleUnit.lastActionTimestamp + affectedAttacker.speed; // what is that .test about?
     }
   }
 
   getUnitClosestTarget(unit) {
-    return Pathfinder.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
-  }
-
-  /**
-   * @description Adds current action to actionStack to be later sent to frontend
-   * @param {Object} actionObject
-   * @param {Integer} time
-   * @param {BattleUnit} unit
-   * @memberof Battle
-   */
-  addActionToStack(actionObject, time, unit) {
-    this.actionStack.push({
-      ...actionObject,
-      unitID: unit.id,
-      time
-    });
-  }
-
-  cast(unit, timestamp) {
-    unit.mana = 0;
-    this.addActionToStack(
-      {
-        type: ACTION.CAST,
-        from: unit.getPosition()
-      },
-      timestamp,
-      unit
-    );
-  }
-
-  attackUnit(unit, targetUnit, timestamp) {
-    const attackResult = unit.doAttack(targetUnit);
-    unit.actionLockTimestamp = timestamp + 100;
-    this.addActionToStack({ type: ACTION.TAKE_DAMAGE, damage: attackResult.damage }, timestamp, targetUnit);
-    this.addActionToStack(
-      {
-        type: ACTION.ATTACK,
-        from: unit.getPosition(),
-        to: targetUnit.getPosition()
-      },
-      timestamp,
-      unit
-    );
+    return pathUtils.getClosestTarget({ x: unit.x, y: unit.y, targets: this.units.filter(u => u.team === unit.oppositeTeam() && u.isAlive()) });
   }
 
   /**
    * @param {BattleUnit} unit
-   * @param {Object/null} position if null, then removing from board
+   * @param {Object} step position delta
    */
-  moveUnit(unit, step, timestamp) {
+  moveUnit(unit, step) {
     const fromPosition = {
       x: unit.x,
       y: unit.y
     };
-
-    const position = {
-      x: unit.x + step.x,
-      y: unit.y + step.y
-    };
-
-    this.addActionToStack(
-      {
-        type: ACTION.MOVE,
-        from: fromPosition,
-        to: position
-      },
-      timestamp,
-      unit
-    );
-    unit.actionLockTimestamp = timestamp + unit.speed;
-
-    if (position) {
-      unit.previousStep = step;
-      unit.move(position);
-    }
-
+    unit.move(step);
     this.pathfinder.occupiedTileSet.delete(`${fromPosition.x},${fromPosition.y}`);
-    if (position) {
-      this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`);
-    }
+    this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`);
   }
 }

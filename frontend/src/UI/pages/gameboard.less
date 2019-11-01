@@ -5,13 +5,16 @@
     flex-shrink: 1;
     flex-grow: 0;
 
-    &-wrapper {
-        background: url('../res/battleground.png');
+    &-background {
+        position: absolute;
+        top: -18px;
+        left: -111px;
+        background: url('../res/battleground3.png');
         border: 5px solid #433d37;
         border-style: inset;
-        background-size: 592px 640px;
-        background-position: -36px -39px;
         border-radius: 8px;
+        width: 720px;
+        height: 720px;
     }
 
     &-board {
@@ -28,12 +31,15 @@
 }
 
 .cell {
-    border-right: 1px dashed #00000030;
     border-bottom: 1px dashed #00000030;
     background-color: rgba(0, 0, 0, 0);
     width: 64px;
     height: 64px;
     position: relative;
+
+    &:not(:last-child) {
+        border-right: 1px dashed #00000030;
+    }
 
     &__green {
         background: rgba(0, 255, 21, 0.562);

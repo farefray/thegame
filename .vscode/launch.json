@@ -13,26 +13,38 @@
         "run-script",
         "debug"
       ],
-      "port": 9229
+      "port": 9229,
+      "cwd":"${workspaceFolder}/backend"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Mocha All",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
       "args": [
-        "--require", "@babel/register",
-        "${workspaceFolder}/{,!(node_modules)/}*/*.test.js",
-        "-u", "tdd",
-        "--timeout", "999999",
-        "--colors"
+        "--opts", 
+        "${workspaceFolder}/backend/test/mocha.opts",
+        "{,!(node_modules)/}*/*.test.js"
       ],
       "runtimeArgs": [
         "--nolazy"
       ],
       "sourceMaps": true,
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "cwd":"${workspaceFolder}/backend"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug mocha",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script",
+        "mocha:debug"
+      ],
+      "port": 9229,
+      "cwd":"${workspaceFolder}/backend"
     }
   ]
 }

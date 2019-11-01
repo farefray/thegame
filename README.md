@@ -1,4 +1,5 @@
-# Pixel(TIbia?) Auto Chess
+# TheGame (awaiting for proposals about game naming)
+Browser game based on fantasy 'auto-chess' game settings
 
 #### Collaborators: 
 <a href="https://github.com/farefray"><img src="https://avatars1.githubusercontent.com/u/30721331?s=460&v=4" title="farefray" width="64" height="64"></a>
