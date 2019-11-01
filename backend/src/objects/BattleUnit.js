@@ -2,6 +2,7 @@ import _ from 'lodash';
 import Spell from '../abstract/Spell';
 
 const { ACTION } = require('../../../frontend/src/shared/constants');
+
 /**
  * @export
  * @class BattleUnit
@@ -24,8 +25,17 @@ export default class BattleUnit {
     this.maxHealth = this.hp;
     this._actionLockTimestamp = 0;
     this._regenerationTickTimestamp = 0;
+    this._lastActionTimestamp = 0; // holding timestamp when last action for current unit was executed
 
     this.initializeSpells();
+  }
+
+  get lastActionTimestamp() {
+    return this._lastActionTimestamp;
+  }
+
+  set lastActionTimestamp(value) {
+    this._lastActionTimestamp = value;
   }
 
   get previousStep() {
@@ -99,17 +109,36 @@ export default class BattleUnit {
     return this.health > 0;
   }
 
+  /**
+   * @description mapping some higher order structure into battle unit to have a not enumerable link
+   * @param {Object} higherOrderComponent
+   * @memberof BattleUnit
+   */
+  proxy(higherOrderComponent) {
+    // Symbolic link to bigger objects in memory which may be needed inside battle unit(battle, actionqueque and so on). Handling it as not enumerable, in order to not pass anywhere. Also, those links are not created during BattleUnit contructor, they are linked in higher order structures when its needed
+    const proxy = Symbol.for('proxy');
+    if (!this[proxy]) {
+      this[proxy] = {};
+    }
+
+    this[proxy][higherOrderComponent.name] = higherOrderComponent.instance;
+  }
+
+  proxied(instance) {
+    return this[Symbol.for('proxy')][instance];
+  }
+
   addToActionStack(props) {
-    return this[Symbol.for('proxy')].actionQueue.addToActionStack(this.id, props);
+    return this.proxied('actionQueue').addToActionStack(this.id, props);
   }
 
   addSideEffect(sideEffect) {
-    return this[Symbol.for('proxy')].actionQueue.addSideEffect(sideEffect);
+    return this.proxied('actionQueue').addSideEffect(sideEffect);
   }
 
   move(step) {
     this.previousStep = step;
-    this.actionLockTimestamp = this[Symbol.for('proxy')].actionQueue.currentTimestamp + this.speed;
+    this.actionLockTimestamp = this.proxied('actionQueue').currentTimestamp + this.speed;
 
     this.x += step.x;
     this.y += step.y;
@@ -120,12 +149,16 @@ export default class BattleUnit {
     });
   }
 
-  healthChange(value) {
+  healthChange(value, sourceID) {
     this.health += value;
     this.addToActionStack({
       type: ACTION.HEALTH_CHANGE,
       value
     });
+
+    if (!this.isAlive()) {
+      this.proxied('Battle').onUnitDeath(this, sourceID);
+    }
   }
 
   manaChange(value, addToActionStack = true) {
@@ -144,7 +177,7 @@ export default class BattleUnit {
    * @warning Mutating objects
    */
   doAttack(targetUnit) {
-    this.actionLockTimestamp = this.currentTimestamp + 100;
+    this.actionLockTimestamp = this.currentTimestamp + 100; // ?
 
     this.addToActionStack({
       type: ACTION.ATTACK,
@@ -156,7 +189,7 @@ export default class BattleUnit {
     const maximumRoll = Math.floor(this.attack * 1.1);
     const minimumRoll = Math.ceil(this.attack * 0.9);
     const damage = Math.floor(multiplier * Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll);
-    targetUnit.healthChange(-damage);
+    targetUnit.healthChange(-damage, this.id);
     return {
       damage
     };
@@ -199,7 +232,7 @@ export default class BattleUnit {
     return !!this.spellconfig;
   }
 
-  castSpell(battle) {
+  castSpell() {
     // generic checks for all spells
     const { mana: manaRequired } = this.spellconfig;
     if (this) {
@@ -208,7 +241,7 @@ export default class BattleUnit {
 
     const spell = this[Symbol.for('spell')];
     if (spell.canBeCast({
-      units: battle.units
+      units: this.proxied('Battle').units
     })) {
       this.addToActionStack({
         type: ACTION.CAST,

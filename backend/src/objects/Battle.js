@@ -14,12 +14,19 @@ export default class Battle {
     this.winner = null;
     this.playerDamage = 0;
 
+    // internal setup
     const units = [];
     this.targetPairPool = new TargetPairPool();
     this.pathfinder = new Pathfinder({ gridWidth: 8, gridHeight: 8 });
-    // internal setup
     for (const boardPos in board) {
       const battleUnit = board[boardPos];
+
+      // Using symbol property to map battle unit into current battle and stay not enumerable
+      battleUnit.proxy({
+        name: 'Battle',
+        instance: this
+      });
+
       units.push(battleUnit);
       this.pathfinder.occupiedTileSet.add(`${battleUnit.x},${battleUnit.y}`);
     }
@@ -62,6 +69,7 @@ export default class Battle {
    * @memberof Battle
    */
   calculateAction({ timestamp, unit: battleUnit }) {
+    battleUnit.lastActionTimestamp = timestamp;
     battleUnit.proceedRegeneration(timestamp);
 
     let targetUnit = this.targetPairPool.findTargetByUnitId(battleUnit.id);
@@ -85,35 +93,31 @@ export default class Battle {
 
     if (!targetUnit) return;
 
-    // internal function to update target if its affected
-    const _updateTarget = () => {
-      if (!targetUnit.isAlive()) {
-        this.actionQueue.removeUnitFromQueue(targetUnit);
-        this.pathfinder.occupiedTileSet.delete(`${targetUnit.x},${targetUnit.y}`);
-
-        const affectedAttackers = this.targetPairPool.removeByUnitId(targetUnit.id).affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== battleUnit.id);
-        for (const affectedAttacker of affectedAttackers) {
-          if (affectedAttacker.actionLockTimestamp >= timestamp) continue;
-          this.actionQueue.removeUnitFromQueue(affectedAttacker);
-          this.actionQueue.addToActionQueue({ timestamp, unit: affectedAttacker });
-          affectedAttacker.test = timestamp + affectedAttacker.speed;
-        }
-      }
-    };
-
-    // Spell casting
-    if (battleUnit.hasSpell() && battleUnit.castSpell(this)) {
-      _updateTarget();
+     // Spell casting
+    if (battleUnit.hasSpell() && battleUnit.castSpell()) {
       return;
     }
 
     const distanceToTarget = Pathfinder.getDistanceBetweenUnits(battleUnit, targetUnit);
     if (distanceToTarget < battleUnit.attackRange) {
       battleUnit.doAttack(targetUnit);
-      _updateTarget();
     } else {
       const step = this.pathfinder.findStepToTarget(battleUnit, targetUnit);
       this.moveUnit(battleUnit, step, timestamp);
+    }
+  }
+
+  onUnitDeath(battleUnit, killerID) {
+    this.actionQueue.removeUnitFromQueue(battleUnit);
+    this.pathfinder.occupiedTileSet.delete(`${battleUnit.x},${battleUnit.y}`);
+
+    let affectedAttackers = this.targetPairPool.removeByUnitId(battleUnit.id).affectedAttackers;
+    affectedAttackers = affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== killerID);
+    for (const affectedAttacker of affectedAttackers) {
+      if (affectedAttacker.actionLockTimestamp >= battleUnit.lastActionTimestamp) continue;
+      this.actionQueue.removeUnitFromQueue(affectedAttacker);
+      this.actionQueue.addToActionQueue({ timestamp: battleUnit.lastActionTimestamp, unit: affectedAttacker });
+      affectedAttacker.test = battleUnit.lastActionTimestamp + affectedAttacker.speed; // what is that .test about?
     }
   }
 

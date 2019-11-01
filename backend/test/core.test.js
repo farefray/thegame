@@ -137,14 +137,14 @@ describe('Core Modules', () => {
     it('whole battle can be executed', async () => {
       const npcBoard = [
         {
-          name: 'dwarf',
+          name: 'dwarf_geomancer',
           x: 0,
           y: 7
         }
       ];
       const playerBoard = [
         {
-          name: 'minotaur',
+          name: 'dwarf_geomancer',
           x: 0,
           y: 0
         }

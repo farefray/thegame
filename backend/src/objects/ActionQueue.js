@@ -2,19 +2,19 @@ const BATTLE_TIME_LIMIT = 300 * 1000; // time limit for battle
 
 export default class ActionQueue {
   /**
-   *Creates an instance of ActionQueue.
-   * @param {*} units
-   * @param {*} actionHandler
-   * @param {function} callback
+   * Creates an instance of ActionQueue.
+   * @param {Array[{BattleUnit}]} units
+   * @param {Function} actionHandler bound to battle, function 'calculateAction'
+   * @param {Function} callback to be executed after actionQueque class is done executing
    * @memberof ActionQueue
    */
   constructor(units, actionHandler, callback) {
     // Please todo some comments about mechanics of actionQueque/actionStack and generator
     this.actionQueue = units.map(unit => {
-      // Using symbol property to map battle unit into current ActionQueque and stay not enumerable
-      unit[Symbol.for('proxy')] = {
-        actionQueue: this
-      };
+      unit.proxy({
+        name: 'actionQueue',
+        instance: this
+      });
 
       return ({ timestamp: 0, unit });
     });
@@ -47,7 +47,7 @@ export default class ActionQueue {
 
     let effectTimestamp = this._currentTimestamp + tick;
     for (let index = 0; index < amount; index++) {
-      this._sideEffects[effectTimestamp] = effect;
+      this._sideEffects[Number(effectTimestamp)] = effect;
       effectTimestamp += tick;
     }
   }
@@ -61,8 +61,22 @@ export default class ActionQueue {
     }
   }
 
-  *generateActions() {
+  * generateActions() {
     while (this.actionQueue.length) {
+      // Before processing actions from units inside actionQueue, we check for a side effects
+      const sideEffectsTimestamps = Object.keys(this._sideEffects);
+      if (sideEffectsTimestamps.length) {
+        // we need to check, if there any side effects supposed to happen between last execution of generator and next action from queue
+        const closestSideEffectTimestamp = sideEffectsTimestamps.sort((a, b) => a - b)[0]; // closest side effect
+        const closestActionQueue = this.actionQueue[0];
+        if (closestSideEffectTimestamp < closestActionQueue.timestamp) {
+          // execute side effects first
+          // This may lead to problem when garbage collector will never free up this memory, as we are linking function from spell to here via different objects and recursive links will stay. Need proper destruction then to be considered
+          this._sideEffects[closestSideEffectTimestamp]();
+          yield true;
+        }
+      }
+
       const { timestamp, unit } = this.actionQueue.shift();
       this._currentTimestamp = timestamp;
       const nextTimestamp = timestamp + unit.speed;
@@ -70,6 +84,7 @@ export default class ActionQueue {
       if (nextTimestamp < BATTLE_TIME_LIMIT) {
         this.addToActionQueue({ timestamp: timestamp + unit.speed, unit });
       }
+
       yield true;
     }
   }
