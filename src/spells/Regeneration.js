@@ -3,9 +3,12 @@ import pathUtils from '../utils/pathUtils';
 function Regeneration(self) {
   const caster = self.caster;
   return {
-    canBeCast: ({ units }) => {
-      // move to some abstract thing, like spellUtils.getClosestTarget(amount: 1, enemy: false)
-      const target = pathUtils.getClosestTarget({ x: caster.x, y: caster.y, targets: units.filter(u => u.team === self.caster.team && u.isAlive()) });
+    prepare: ({ units }) => {
+      // move to some abstract thing, like spellUtils?
+      // get alied unit with lowest health
+      const target = units.filter(u => {
+        return u.team === caster.team && u.isAlive();
+      }).sort((a, b) => a.health - b.health).shift();
 
       if (!target) {
         return false;
@@ -15,18 +18,19 @@ function Regeneration(self) {
       return true;
     },
     cast: () => {
-      // initial cast
       const target = self.props.target;
-      const regenValue = caster.spellconfig.value;
+      const { spellconfig } = caster;
+      const regenValue = spellconfig.value;
       target.healthChange(regenValue, caster.id);
 
-      // side effect [todo]
       self.props.addSideEffect(caster, {
         effect: () => {
-          target.healthChange(regenValue, caster.id);
+          if (target && target.isAlive()) {
+            target.healthChange(regenValue, caster.id);
+          }
         },
         tick: 1000,
-        amount: 15
+        amount: spellconfig.ticks
       });
 
       return true;
