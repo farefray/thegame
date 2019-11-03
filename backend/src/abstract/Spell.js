@@ -1,6 +1,7 @@
 import spellsUtils from '../utils/spellUtils';
 /**
- * @description Data structure which respresents spell logic
+ * @description Data structure which respresents initial object for a spell logic
+ * All the spells are entending this one, overwriting those methods
  * @returns {Spell}
  */
 
@@ -9,7 +10,7 @@ function Spell(spellname, caster) {
   this.props = {
     // in case spell is affecting gameboard after cast, such effects are being pushed into actionqueue side effects and being executed without battle unit actions
     addSideEffect: (_caster, sideEffect) => {
-      _caster[Symbol.for('proxy')].actionQueue.addSideEffect(sideEffect);
+      _caster.proxied('actionQueue').addSideEffect(sideEffect);
     }
   };
 
@@ -19,14 +20,12 @@ function Spell(spellname, caster) {
 
   this.caster = caster;
 
-  // Checks if spell can be cast and saves props
-  this.canBeCast = (units) => { // eslint-disable-line
+  // Checks if requirements for spell cast were met and stores them into props for later cast
+  this.prepare = (units) => { // eslint-disable-line
     return true;
   };
 
-  // Casts spell by modifying actionStack
-  this.cast = () => {  // eslint-disable-line
-  };
+  this.cast = () => {}; // eslint-disable-line
 
   return Object.assign({}, this, spellsUtils.loadSpell(spellname, this));
 }

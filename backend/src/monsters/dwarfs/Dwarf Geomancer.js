@@ -17,7 +17,8 @@ function Dwarf_Geomancer() {
     spellconfig: new SpellConfig({
       name: 'regeneration',
       mana: 100,
-      value: 30
+      value: 30,
+      ticks: 10
     })
   });
 }

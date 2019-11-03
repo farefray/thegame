@@ -107,10 +107,17 @@ export default class Battle {
     }
   }
 
+  /**
+   * Executed from BattleUnit instance once its die
+   * @param {BattleUnit} battleUnit
+   * @param {String} killerID
+   * @memberof Battle
+   */
   onUnitDeath(battleUnit, killerID) {
     this.actionQueue.removeUnitFromQueue(battleUnit);
     this.pathfinder.occupiedTileSet.delete(`${battleUnit.x},${battleUnit.y}`);
 
+    // Updates targets for attackers right after this one died
     let affectedAttackers = this.targetPairPool.removeByUnitId(battleUnit.id).affectedAttackers;
     affectedAttackers = affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== killerID);
     for (const affectedAttacker of affectedAttackers) {
