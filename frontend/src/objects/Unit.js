@@ -14,6 +14,7 @@ export default class Unit extends React.Component {
 
     const { unit } = props;
     const { x, y } = unit;
+    console.log("TCL: Unit -> constructor -> unit", unit)
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
     this.state = {
@@ -21,10 +22,7 @@ export default class Unit extends React.Component {
       left,
       x: parseInt(x, 10),
       y: parseInt(y, 10),
-      initPosition: {
-        x: parseInt(x, 10),
-        y: parseInt(y, 10)
-      },
+      id: `${x},${y}`,
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
       attackRange: unit.attackRange, // maybe consider using 'stats': unit
@@ -52,6 +50,11 @@ export default class Unit extends React.Component {
     });
   }
 
+  get id() {
+    const { id } = this.state;
+    return id;
+  }
+
   regenerationTick(action) {
     // we might generate it over time somehow?
     const { mana, health } = this.state;
@@ -60,11 +63,6 @@ export default class Unit extends React.Component {
       mana: mana + action.mana,
       health: health + action.health
     });
-  }
-
-  get id() {
-    const { initPosition } = this.state;
-    return `${initPosition.x},${initPosition.y}`;
   }
 
   /**
@@ -260,7 +258,7 @@ export default class Unit extends React.Component {
           zIndex: 9999
         }}
       >
-        <IsDraggable cellPosition={new Position(this.state.initPosition)}>
+        <IsDraggable cellPosition={new Position(this.state.id)}>
           <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
         </IsDraggable>
         {this.renderParticles()}

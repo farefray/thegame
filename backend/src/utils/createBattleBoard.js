@@ -16,12 +16,12 @@ export default function createBattleBoard(board1, board2, boardID1, boardID2) {
 
   if (boardID1) {
     // hidden property to identify board owner
-    board[Symbol('_board1Index')] = boardID1;
+    board[Symbol.for('_board1Index')] = boardID1;
   }
 
   if (boardID2) {
     // hidden property to identify board owner
-    board[Symbol('_board2Index')] = boardID2;
+    board[Symbol.for('_board2Index')] = boardID2;
   }
 
   for (const index in board1) {

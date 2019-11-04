@@ -9,8 +9,6 @@ import GameBoard from './GameBoard.jsx';
 import { StateProvider } from './GameBoard.context.js';
 import usePrevious from '../../customhooks/usePrevious';
 
-const { ACTION } = require('../../shared/constants');
-
 /**
  *
  * Handles previously stored actions(actionStack) as well as frontend generated events
@@ -24,16 +22,19 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     // Lifecycle events which are being triggered by frontend events for Unit components
     case 'SPAWN': {
       const { unit } = action;
+      console.log(unit.id + ' spawned')
       unitComponents[unit.id] = unit; // very confusing, we use id here cuz its component, but later its UID cuz BattleUnit, TODO!!
       return unitComponents;
     }
     case 'DESTROY': {
       const { unit } = action;
+      console.log('destructor for '+ unit.id);
       delete unitComponents[unit.id];
       return unitComponents;
     }
     // actionStack events which are being generated on backend
     default:
+      console.log('action for ' + action.unitID);
       unitComponents[action.unitID].onAction(action);
       return unitComponents;
   }

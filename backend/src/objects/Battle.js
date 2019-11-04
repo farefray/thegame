@@ -11,7 +11,6 @@ export default class Battle {
   constructor(board) {
     // returnable values
     this.startBoard = board;
-    this.actionStack = [];
     this.winner = null;
     this.playerDamage = 0;
 
