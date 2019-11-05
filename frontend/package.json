@@ -13,6 +13,9 @@
     "cosmos": "cosmos"
   },
   "dependencies": {
+    "@types/node": "^12.12.5",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.3",
     "classnames": "^2.2.6",
     "concurrently": "^4.1.0",
     "cross-env": "^5.2.0",
@@ -34,7 +37,8 @@
     "redux-logger": "^3.0.6",
     "rsuite": "^4.0.2",
     "socket.io-client": "^2.3.0",
-    "styled-components": "^4.4.0"
+    "styled-components": "^4.4.0",
+    "typescript": "^3.7.2"
   },
   "eslintConfig": {
     "extends": "react-app"
