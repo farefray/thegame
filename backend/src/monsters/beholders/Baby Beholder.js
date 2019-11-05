@@ -2,17 +2,17 @@ import Monster from '../../abstract/Monster';
 
 function Baby_Beholder() {
   return new Monster({
-    lookType: 109,
-    cost: 2,
-    hp: 550,
-    mana: 0,
+    armor: 1,
     attack: 45,
     attackRange: 2,
-    particle: 1,
-    armor: 1,
-    speed: 1200,
     attackSpeed: 1000,
-    manaRegen: 10
+    cost: 2,
+    lookType: 109,
+    mana: 0,
+    manaRegen: 10,
+    maxHealth: 550,
+    particle: 1,
+    speed: 1200,
   });
 }
 

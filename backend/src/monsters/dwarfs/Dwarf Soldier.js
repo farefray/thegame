@@ -2,17 +2,17 @@ import Monster from '../../abstract/Monster';
 
 function Dwarf_Soldier() {
   return new Monster({
-    lookType: 71,
-    cost: 2,
-    hp: 600,
-    mana: 0,
+    armor: 8,
     attack: 55,
     attackRange: 2,
-    particle: 1,
-    armor: 8,
-    speed: 800,
     attackSpeed: 1200,
-    manaRegen: 6
+    cost: 2,
+    lookType: 71,
+    mana: 0,
+    manaRegen: 6,
+    maxHealth: 600,
+    particle: 1,
+    speed: 800,
   });
 }
 

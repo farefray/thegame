@@ -3,16 +3,16 @@ import SpellConfig from '../abstract/SpellConfig';
 
 function BigBoy() {
   return new Monster({
-    lookType: 25,
-    cost: 1,
-    hp: 3750,
-    mana: 0,
+    armor: 5,
     attack: 50,
     attackRange: 1,
-    armor: 5,
-    speed: 1000,
     attackSpeed: 1000,
-    manaRegen: 10
+    cost: 1,
+    lookType: 25,
+    mana: 0,
+    manaRegen: 10,
+    maxHealth: 3750,
+    speed: 1000,
   });
 }
 

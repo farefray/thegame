@@ -13,16 +13,13 @@ export default class BattleUnit {
     this.x = +coords.x;
     this.y = +coords.y;
     this.team = team;
-
-    // frontend
-    this.position = this.getBoardPosition(); // fixme
+    this.id = this.getBoardPosition(); // id = is also a starting position for mob
 
     // internal
-    this._uid = this.getBoardPosition(); // uid = starting position for mob
     this._previousStep = null;
     this._mana = 0;
-    this._health = this.hp; // ?? why need _health
-    this.maxHealth = this.hp;
+    this._health = this.maxHealth;
+    this.maxHealth = this.maxHealth;
     this._actionLockTimestamp = 0;
     this._regenerationTickTimestamp = 0;
     this._lastActionTimestamp = 0; // holding timestamp when last action for current unit was executed
@@ -67,7 +64,7 @@ export default class BattleUnit {
   }
 
   set health(value) {
-    this._health = Math.max(0, Math.min(value, this.hp));
+    this._health = Math.max(0, Math.min(value, this.health));
   }
 
   get mana() {
@@ -76,14 +73,6 @@ export default class BattleUnit {
 
   set mana(value) {
     this._mana = Math.max(0, Math.min(100, value));
-  }
-
-  get id() {
-    return this._uid;
-  }
-
-  getUID() {
-    return this._uid;
   }
 
   canCast() {
@@ -196,7 +185,7 @@ export default class BattleUnit {
   }
 
   proceedRegeneration(timestamp) {
-    const health = this.hp;
+    const health = this.health;
     const mana = this.mana;
 
     const elapsedMilliseconds = timestamp - this.regenerationTick;
@@ -204,11 +193,11 @@ export default class BattleUnit {
     const healthGained = Math.floor((this.healthRegen * elapsedMilliseconds) / 1000);
 
     this.mana = Math.min(mana + manaGained, this.maxMana);
-    this.hp = Math.min(health + healthGained, this.maxHealth);
+    this.health = Math.min(health + healthGained, this.maxHealth);
     this.regenerationTick = timestamp;
 
     // We are passing regeneration ticks into action stack which is probably leads to HUGE overload of actionstack array, but thats the only proper way to have it sync with real battle flow. This may be reconsidered if it will become a problem
-    const gainedHealth = this.hp - health;
+    const gainedHealth = this.health - health;
     const gainedMana = this.mana - mana;
     if (gainedHealth || gainedMana) {
       this.addToActionStack({
