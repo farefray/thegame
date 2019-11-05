@@ -1,5 +1,6 @@
 import * as spells from '../spells/loader';
 
+// Spell loader utils
 const Spells = {};
 
 Object.keys(spells.default).forEach(element => {
