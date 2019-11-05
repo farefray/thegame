@@ -229,7 +229,7 @@ export default class BattleUnit {
     }
 
     const spell = this[Symbol.for('spell')];
-    if (spell.canBeCast({
+    if (spell.prepare({
       units: this.proxied('Battle').units
     })) {
       this.addToActionStack({

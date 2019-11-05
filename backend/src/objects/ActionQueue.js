@@ -16,14 +16,17 @@ export default class ActionQueue {
         instance: this
       });
 
-      return ({ timestamp: 0, unit });
+      return ({
+        timestamp: 0,
+        unit
+      });
     });
     this.actionHandler = actionHandler;
     this.actionGenerator = this.generateActions();
     this.callback = callback || (() => true);
     this._actionStack = [];
-    this._currentTimestamp = 0;
-    this._sideEffects = {};
+    this._currentTimestamp = 0; // while processing generator, saving current processing timestamp here
+    this._sideEffects = []; // holding side effects on board which supposed to be executed
   }
 
   get actionStack() {
@@ -42,18 +45,33 @@ export default class ActionQueue {
     });
   }
 
+  /**
+   * Side effects are events which are happing on battle board, without BattleUnit action
+   * @param {SideEffect} sideEffect
+   * @memberof ActionQueue
+   */
   addSideEffect(sideEffect) {
-    const { tick, amount, effect } = sideEffect;
+    const {
+      tick,
+      amount,
+      effect
+    } = sideEffect;
 
-    let effectTimestamp = this._currentTimestamp + tick;
+    let effectTimestamp = Number(this._currentTimestamp + tick);
     for (let index = 0; index < amount; index++) {
-      this._sideEffects[Number(effectTimestamp)] = effect;
+      this._sideEffects.splice(this.constructor.findInsertionIndex(effectTimestamp, this._sideEffects), 0, {
+        timestamp: effectTimestamp,
+        effect
+      });
+
       effectTimestamp += tick;
     }
   }
 
   execute() {
-    const { done } = this.actionGenerator.next();
+    const {
+      done
+    } = this.actionGenerator.next();
     if (!done) {
       this.execute();
     } else {
@@ -64,48 +82,66 @@ export default class ActionQueue {
   * generateActions() {
     while (this.actionQueue.length) {
       // Before processing actions from units inside actionQueue, we check for a side effects
-      const sideEffectsTimestamps = Object.keys(this._sideEffects);
-      if (sideEffectsTimestamps.length) {
+      if (this._sideEffects) {
         // we need to check, if there any side effects supposed to happen between last execution of generator and next action from queue
-        const closestSideEffectTimestamp = sideEffectsTimestamps.sort((a, b) => a - b)[0]; // closest side effect
+        const closestSideEffectTimestamp = this._sideEffects[0]; // closest side effect
         const closestActionQueue = this.actionQueue[0];
         if (closestSideEffectTimestamp < closestActionQueue.timestamp) {
           // execute side effects first
           // This may lead to problem when garbage collector will never free up this memory, as we are linking function from spell to here via different objects and recursive links will stay. Need proper destruction then to be considered
-          this._sideEffects[closestSideEffectTimestamp]();
+          const { effect } = this._sideEffects.shift();
+          effect();
           yield true;
         }
       }
 
-      const { timestamp, unit } = this.actionQueue.shift();
+      const {
+        timestamp,
+        unit
+      } = this.actionQueue.shift();
       this._currentTimestamp = timestamp;
       const nextTimestamp = timestamp + unit.speed;
-      this.actionHandler({ timestamp, unit });
+      this.actionHandler({
+        timestamp,
+        unit
+      });
       if (nextTimestamp < BATTLE_TIME_LIMIT) {
-        this.addToActionQueue({ timestamp: timestamp + unit.speed, unit });
+        this.addToActionQueue({
+          timestamp: timestamp + unit.speed,
+          unit
+        });
       }
 
       yield true;
     }
   }
 
-  addToActionQueue({ timestamp, unit }) {
-    this.actionQueue.splice(this.findInsertionIndex(timestamp), 0, { timestamp, unit });
+  addToActionQueue({
+    timestamp,
+    unit
+  }) {
+    this.actionQueue.splice(this.constructor.findInsertionIndex(timestamp, this.actionQueue), 0, {
+      timestamp,
+      unit
+    });
   }
 
+  // Removing BattleUnit from actionQueue, as he is not acting anymore(dead)
   removeUnitFromQueue(unit) {
     const unitIndex = this.actionQueue.findIndex(entry => entry.unit === unit);
     if (unitIndex > -1) {
       this.actionQueue.splice(unitIndex, 1);
     }
+
+    // Also clean up all side effects to this unit? todo
   }
 
-  findInsertionIndex(timestamp) {
+  static findInsertionIndex(timestamp, array) {
     let min = 0;
-    let max = this.actionQueue.length;
+    let max = array.length;
     while (min < max) {
       const mid = (min + max) >>> 1; // eslint-disable-line
-      if (this.actionQueue[mid].timestamp < timestamp) {
+      if (array[mid].timestamp < timestamp) {
         min = mid + 1;
       } else {
         max = mid;

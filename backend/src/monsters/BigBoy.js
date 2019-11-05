@@ -13,11 +13,6 @@ function BigBoy() {
     manaRegen: 10,
     maxHealth: 3750,
     speed: 1000,
-    // spellconfig: new SpellConfig({
-    //   name: 'singletargetdamage',
-    //   mana: 50,
-    //   value: 150
-    // })
   });
 }
 
