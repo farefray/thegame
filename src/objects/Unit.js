@@ -31,8 +31,8 @@ export default class Unit extends React.Component {
       maxMana: unit.maxMana,
       mana: 0,
 
-      maxHealth: unit.hp,
-      health: unit.hp
+      maxHealth: unit.maxHealth,
+      health: unit.maxHealth
     };
 
     props.onLifecycle({
@@ -252,12 +252,12 @@ export default class Unit extends React.Component {
         style={{
           // TODO pointerEvent:none when in battle
           height: '64px',
-          width: '64px',
-          position: 'absolute',
-          transition,
-          top: 0,
           left: 0,
+          position: 'absolute',
+          top: 0,
           transform: `translate3d(${left}px, ${top}px, 0px)`,
+          transition,
+          width: '64px',
           zIndex: 9999
         }}
       >
