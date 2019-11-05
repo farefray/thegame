@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import fallbackImage from '../../assets/monsters/default.png';
 
-export default function UnitImage({ lookType, direction, isMoving, extraClass = '' }) {
+export default function UnitImage({ lookType, direction, isMoving, extraClass = '' } : { lookType: number, direction: number, isMoving: boolean, extraClass: string}) {
 
   if (!lookType) {
     throw new Error('Looktype for monsters is missing');
