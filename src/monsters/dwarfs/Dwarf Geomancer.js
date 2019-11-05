@@ -3,17 +3,17 @@ import SpellConfig from '../../abstract/SpellConfig';
 
 function Dwarf_Geomancer() {
   return new Monster({
-    lookType: 66,
-    cost: 3,
-    hp: 550,
-    mana: 0,
+    armor: 1,
     attack: 40,
     attackRange: 3,
-    particle: 1,
-    armor: 1,
-    speed: 1400,
     attackSpeed: 900,
+    cost: 3,
+    lookType: 66,
+    mana: 0,
     manaRegen: 20,
+    maxHealth: 550,
+    particle: 1,
+    speed: 1400,
     spellconfig: new SpellConfig({
       name: 'regeneration',
       mana: 100,

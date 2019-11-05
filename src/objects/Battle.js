@@ -50,8 +50,8 @@ export default class Battle {
 
   setWinner() {
     const remainingUnitCount = {
-      [TEAM.A]: this.units.filter(u => u.team === TEAM.A && u.hp > 0),
-      [TEAM.B]: this.units.filter(u => u.team === TEAM.B && u.hp > 0)
+      [TEAM.A]: this.units.filter(u => u.team === TEAM.A && u.health > 0),
+      [TEAM.B]: this.units.filter(u => u.team === TEAM.B && u.health > 0)
     };
 
     if (!remainingUnitCount[TEAM.A].length && !remainingUnitCount[TEAM.B].length) {
