@@ -35,7 +35,7 @@ function ActiveGame() {
         <Content>
           <GameBoardWrapper state={gameboardState}/>
         </Content>
-        <Sidebar width={520}>
+        <Sidebar width={448}>
           <RightSidebar shopUnits={playerState.shopUnits}/>
         </Sidebar>
       </Container>
