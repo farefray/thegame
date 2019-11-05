@@ -186,7 +186,8 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
       winner
     } = battleRoundResult.battles[socketID];
 
-    this.io.to(`${socketID}`).emit('START_BATTLE', actionStack, startBoard, winner);
+    const countdown = battleRoundResult.battleTime;
+    this.io.to(`${socketID}`).emit('START_BATTLE', actionStack, startBoard, winner, countdown);
   });
 
   await state.scheduleRoundEnd(battleRoundResult);
