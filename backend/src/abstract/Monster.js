@@ -4,19 +4,18 @@
  */
 
 const defaultMonster = {
-  lookType: 1,
-  cost: 1,
-  hp: 0, // todo rename to health
-  mana: 0,
+  armor: 0,
   attack: 0,
   attackRange: 1,
-  particle: 0,
-  armor: 0,
-  speed: 1000,
   attackSpeed: 1000,
-  maxMana: 100,
+  cost: 1,
+  healthRegen: 5,
+  lookType: 1,
   manaRegen: 2,
-  healthRegen: 5
+  maxHealth: 0,
+  maxMana: 100,
+  particle: 0, // would be good to remove
+  speed: 1000,
 };
 
 function Monster(params) {

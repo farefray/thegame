@@ -2,17 +2,17 @@ import Monster from '../../abstract/Monster';
 
 function Minotaur() {
   return new Monster({
-    lookType: 25,
-    cost: 1,
-    hp: 375,
-    mana: 0,
+    armor: 5,
     attack: 50,
     attackRange: 1,
-    armor: 5,
-    speed: 1000,
     attackSpeed: 1000,
+    cost: 1,
+    healthRegen: 10,
+    lookType: 25,
+    mana: 0,
     manaRegen: 10,
-    healthRegen: 10
+    maxHealth: 375,
+    speed: 1000,
   });
 }
 

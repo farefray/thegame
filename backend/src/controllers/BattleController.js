@@ -34,7 +34,6 @@ BattleController.setup = async state => {
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
     const board = createBattleBoard(playerBoard, npcBoard, players[i]);
-    console.log("TCL: board", board)
 
     // Both players have units, battle required
     const battleResult = new Battle(board);
@@ -54,7 +53,7 @@ BattleController.setup = async state => {
     }
   }
 
-  results.battleTime = battleTime + 1500; // adding extra 1.5 seconds delay to cover network issues and final effects
+  results.battleTime = battleTime + 200; // adding extra 2 seconds delay to cover network issues and final effects
   return results;
 };
 
