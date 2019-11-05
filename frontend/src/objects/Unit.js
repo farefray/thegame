@@ -13,7 +13,7 @@ export default class Unit extends React.Component {
     super(props);
 
     const { unit } = props;
-    const { x, y } = unit;
+    const { x, y, id } = unit;
     console.log("TCL: Unit -> constructor -> unit", unit)
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
@@ -22,7 +22,7 @@ export default class Unit extends React.Component {
       left,
       x: parseInt(x, 10),
       y: parseInt(y, 10),
-      id: `${x},${y}`,
+      id,
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
       attackRange: unit.attackRange, // maybe consider using 'stats': unit
@@ -51,8 +51,11 @@ export default class Unit extends React.Component {
   }
 
   get id() {
-    const { id } = this.state;
-    return id;
+    return this.state.id;
+  }
+
+  get startingPosition() {
+    return new Position(this.state.id);
   }
 
   regenerationTick(action) {
@@ -258,7 +261,7 @@ export default class Unit extends React.Component {
           zIndex: 9999
         }}
       >
-        <IsDraggable cellPosition={new Position(this.state.id)}>
+        <IsDraggable cellPosition={this.startingPosition}>
           <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
         </IsDraggable>
         {this.renderParticles()}

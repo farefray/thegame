@@ -6,7 +6,8 @@ export function app(
     isDead: true,
     round: 1,
     roundType: '',
-    notification: null
+    notification: null,
+    countdown: 0
   },
   action
 ) {
@@ -37,15 +38,20 @@ export function app(
         ...state,
         notification: action.notification
     }
-    case 'UPDATED_STATE':
-      // Update state with incoming data from server
-      state = {
+    case 'UPDATED_STATE': {
+      return {
         ...state,
         players: action.newState.players,
         round: action.newState.round,
         countdown: action.newState.countdown / 1000
       };
-      break;
+    }
+    case 'START_BATTLE': {
+      return {
+        ...state,
+        countdown: action.countdown / 1000
+      };
+    }
     case 'INITIALIZE': {
       return {
         ...state,

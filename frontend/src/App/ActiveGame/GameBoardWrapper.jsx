@@ -22,13 +22,11 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     // Lifecycle events which are being triggered by frontend events for Unit components
     case 'SPAWN': {
       const { unit } = action;
-      console.log(unit.id + ' spawned')
-      unitComponents[unit.id] = unit; // very confusing, we use id here cuz its component, but later its UID cuz BattleUnit, TODO!!
+      unitComponents[unit.id] = unit;
       return unitComponents;
     }
     case 'DESTROY': {
       const { unit } = action;
-      console.log('destructor for '+ unit.id);
       delete unitComponents[unit.id];
       return unitComponents;
     }

@@ -13,12 +13,9 @@ export default class BattleUnit {
     this.x = +coords.x;
     this.y = +coords.y;
     this.team = team;
-
-    // frontend
-    this.position = this.getBoardPosition(); // fixme
+    this.id = this.getBoardPosition(); // id = is also a starting position for mob
 
     // internal
-    this._uid = this.getBoardPosition(); // uid = starting position for mob
     this._previousStep = null;
     this._mana = 0;
     this._health = this.hp; // ?? why need _health
@@ -76,14 +73,6 @@ export default class BattleUnit {
 
   set mana(value) {
     this._mana = Math.max(0, Math.min(100, value));
-  }
-
-  get id() {
-    return this._uid;
-  }
-
-  getUID() {
-    return this._uid;
   }
 
   canCast() {

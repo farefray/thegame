@@ -10,7 +10,7 @@ const { TEAM } = require('../../../frontend/src/shared/constants');
 export default class Battle {
   constructor(board) {
     // returnable values
-    this.startBoard = board;
+    this.startBoard = _.cloneDeep(board); // todo get rid of this
     this.winner = null;
     this.playerDamage = 0;
 
@@ -72,7 +72,7 @@ export default class Battle {
     battleUnit.lastActionTimestamp = timestamp;
     battleUnit.proceedRegeneration(timestamp);
 
-    let targetUnit = this.targetPairPool.findTargetByUnitId(battleUnit.id);
+    let targetUnit = this.targetPairPool.findTargetByUnitID(battleUnit.id);
     if (!targetUnit) {
       const closestTarget = this.getUnitClosestTarget(battleUnit);
       if (closestTarget) {
@@ -111,7 +111,7 @@ export default class Battle {
     this.actionQueue.removeUnitFromQueue(battleUnit);
     this.pathfinder.occupiedTileSet.delete(`${battleUnit.x},${battleUnit.y}`);
 
-    let affectedAttackers = this.targetPairPool.removeByUnitId(battleUnit.id).affectedAttackers;
+    let affectedAttackers = this.targetPairPool.removeByUnitID(battleUnit.id).affectedAttackers;
     affectedAttackers = affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== killerID);
     for (const affectedAttacker of affectedAttackers) {
       if (affectedAttacker.actionLockTimestamp >= battleUnit.lastActionTimestamp) continue;
