@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "babel-node src/index.js",
-    "dev": "nodemon --exec babel-node src/index.js",
+    "dev": "nodemon --exec babel-node-ts src/index.js",
+    "check-types": "tsc",
     "debug": "babel-node --inspect src/index.js",
     "complete": "eslint ./src && mocha --exit && node src/index.js",
     "pretest": "eslint ./src && mocha --exit",
@@ -23,6 +24,7 @@
   "author": "Maksym Fedan&&Jacek Kizinsky",
   "license": "ISC",
   "dependencies": {
+    "babel-node-ts": "^1.0.3",
     "benchtest": "^2.0.2",
     "cors": "^2.8.5",
     "easystarjs": "^0.4.3",
@@ -44,7 +46,10 @@
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/node": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.7.0",
     "@babel/register": "^7.6.2",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",

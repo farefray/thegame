@@ -1,5 +1,5 @@
 import React from 'react';
-import UnitImage from '../../../objects/Unit/UnitImage';
+import UnitImage from '../../../objects/Unit/UnitImage.tsx';
 import Frame from 'components/Frame';
 
 function ShopPawn({ unit, index, onPurchase }) {

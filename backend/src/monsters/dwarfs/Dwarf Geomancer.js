@@ -1,5 +1,4 @@
 import Monster from '../../abstract/Monster';
-import SpellConfig from '../../abstract/SpellConfig';
 
 function Dwarf_Geomancer() {
   return new Monster({
@@ -14,13 +13,14 @@ function Dwarf_Geomancer() {
     maxHealth: 550,
     particle: 1,
     speed: 1400,
-    spellconfig: new SpellConfig({
+    spellconfig: {
       name: 'regeneration',
       mana: 100,
       value: 30,
       ticks: 10
-    })
-  });
+    }
+  })
 }
 
 export default Dwarf_Geomancer;
+
