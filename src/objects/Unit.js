@@ -13,7 +13,8 @@ export default class Unit extends React.Component {
     super(props);
 
     const { unit } = props;
-    const { x, y } = unit;
+    const { x, y, id } = unit;
+    console.log("TCL: Unit -> constructor -> unit", unit)
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
     this.state = {
@@ -21,10 +22,7 @@ export default class Unit extends React.Component {
       left,
       x: parseInt(x, 10),
       y: parseInt(y, 10),
-      initPosition: {
-        x: parseInt(x, 10),
-        y: parseInt(y, 10)
-      },
+      id,
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
       attackRange: unit.attackRange, // maybe consider using 'stats': unit
@@ -33,8 +31,8 @@ export default class Unit extends React.Component {
       maxMana: unit.maxMana,
       mana: 0,
 
-      maxHealth: unit.hp,
-      health: unit.hp
+      maxHealth: unit.maxHealth,
+      health: unit.maxHealth
     };
 
     props.onLifecycle({
@@ -52,6 +50,14 @@ export default class Unit extends React.Component {
     });
   }
 
+  get id() {
+    return this.state.id;
+  }
+
+  get startingPosition() {
+    return new Position(this.state.id);
+  }
+
   regenerationTick(action) {
     // we might generate it over time somehow?
     const { mana, health } = this.state;
@@ -60,11 +66,6 @@ export default class Unit extends React.Component {
       mana: mana + action.mana,
       health: health + action.health
     });
-  }
-
-  get id() {
-    const { initPosition } = this.state;
-    return `${initPosition.x},${initPosition.y}`;
   }
 
   /**
@@ -251,16 +252,16 @@ export default class Unit extends React.Component {
         style={{
           // TODO pointerEvent:none when in battle
           height: '64px',
-          width: '64px',
-          position: 'absolute',
-          transition,
-          top: 0,
           left: 0,
+          position: 'absolute',
+          top: 0,
           transform: `translate3d(${left}px, ${top}px, 0px)`,
+          transition,
+          width: '64px',
           zIndex: 9999
         }}
       >
-        <IsDraggable cellPosition={new Position(this.state.initPosition)}>
+        <IsDraggable cellPosition={this.startingPosition}>
           <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
         </IsDraggable>
         {this.renderParticles()}

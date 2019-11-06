@@ -23,6 +23,7 @@ class GameBoard extends React.Component {
 
   static getDerivedStateFromProps(props, current_state) {
     if (!_.isEqual(current_state.units, props.units)) {
+      console.log("TCL: GameBoard -> getDerivedStateFromProps -> props.units", props.units)
       return {
         units: props.units,
       }
