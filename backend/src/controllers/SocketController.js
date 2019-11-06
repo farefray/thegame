@@ -14,22 +14,6 @@ const SessionsStore = require('../models/SessionsStore');
 const connectedPlayers = new ConnectedPlayers();
 const sessionsStore = new SessionsStore();
 
-/**
- * @description Prepares object to be sent with socket in order to not pass additional function and proto stuff
- * @todo better way for this or at least test this performance. Imho there shouldnt be any circular references at all.
- * @param {Object} object
- * @returns {Object}
- */
-function asNetworkMessage(object) {
-  try {
-    return JSON.parse(JSON.stringify(object));
-  } catch (e) {
-    console.log('asNetworkMessage critical error: ', e.message);
-    console.log(object);
-    return '';
-  }
-}
-
 /*
   Example io code
   io.on('connection', function(socket){
@@ -120,12 +104,11 @@ function SocketController(socket, io) {
   });
 
   socket.on('PURCHASE_UNIT', async pieceIndex => {
-    // @TODO socket.id is available here is our player index. Need more knowledge about this(if this being unique and stable?)
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const stateResult = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
     if (stateResult instanceof AppError) {
-      io.to(`${socket.id}`).emit('NOTIFICATION', socket.id, asNetworkMessage(stateResult));
+      io.to(`${socket.id}`).emit('NOTIFICATION', socket.id, stateResult);
       return;
     }
 
@@ -134,7 +117,7 @@ function SocketController(socket, io) {
 
     // todo some abstract sending with try catch, to not crash app every time it bugs :)
     const playerState = stateResult.getIn(['players', socket.id]);
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, playerState);
   });
 
   socket.on('PLACE_PIECE', async (fromBoardPosition, toBoardPosition) => {
@@ -146,7 +129,7 @@ function SocketController(socket, io) {
     sessionsStore.store(session);
     // todo some abstract sending with try catch, to not crash app every time it bugs :)
     const playerState = state.getIn(['players', socket.id]);
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, playerState);
   });
 
   socket.on('SELL_PIECE', async (fromBoardPosition) => {
@@ -155,7 +138,7 @@ function SocketController(socket, io) {
     const state = session.get('state');
     await BoardController.mutateStateByPawnSelling(state, socket.id, fromBoardPosition);
     const playerState = state.getIn(['players', socket.id]);
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, asNetworkMessage(playerState));
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, playerState);
   });
 
   return this;
@@ -177,7 +160,7 @@ SocketController.prototype.initializeGameSessions = async function (clients) {
     this.socket.join(sessionID, () => {
       const rooms = Object.keys(this.socket.rooms);
       console.log(rooms); // [ <socket.id>, 'room 237' ]
-      this.io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state)); // todo get rid of asNetwork
+      this.io.to(sessionID).emit('UPDATED_STATE', state); // todo get rid of asNetwork
     });
   });
 
@@ -203,12 +186,13 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
       winner
     } = battleRoundResult.battles[socketID];
 
-    this.io.to(`${socketID}`).emit('START_BATTLE', actionStack, startBoard, winner);
+    const countdown = battleRoundResult.battleTime;
+    this.io.to(`${socketID}`).emit('START_BATTLE', actionStack, startBoard, winner, countdown);
   });
 
   await state.scheduleRoundEnd(battleRoundResult);
   ShopController.mutateStateByShopRefreshing(state);
-  this.io.to(sessionID).emit('UPDATED_STATE', asNetworkMessage(state));
+  this.io.to(sessionID).emit('UPDATED_STATE', state);
 
   await state.scheduleNextRound();
   this.round(state, clients, sessionID);

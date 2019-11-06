@@ -41,18 +41,18 @@ Player.prototype.set = function (field, value) {
 
 // not sure if we should carry such support functions with all the objects. Assuming it may affect performance...
 Player.prototype.addToHand = async function (unit) {
-  const position = this.get('availableHandPosition');
-  if (position !== null) {
+  const availableHandPosition = this.get('availableHandPosition');
+  if (availableHandPosition !== null) {
     const hand = this.get('hand');
-    const pos = new Position(position);
-    hand[position] = {
+    const pos = new Position(availableHandPosition);
+    hand[availableHandPosition] = {
       ...unit,
       x: pos.x,
       y: pos.y
     };
 
     this.set('hand', hand);
-    return position;
+    return availableHandPosition;
   }
 
   return null;

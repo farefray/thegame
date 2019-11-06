@@ -33,7 +33,7 @@ BattleController.setup = async state => {
     const playerBoard = state.getIn(['players', players[i], 'board']);
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
-    const board = createBattleBoard(playerBoard, npcBoard);
+    const board = createBattleBoard(playerBoard, npcBoard, players[i]);
 
     // Both players have units, battle required
     const battleResult = new Battle(board);
@@ -41,7 +41,7 @@ BattleController.setup = async state => {
     results.battles[players[i]] = {
       actionStack: battleResult.actionStack,
       startBoard: battleResult['startBoard'],
-      winner: battleResult.winner, // actually should be boolean I guess, as every player will have own battleresult(todo)
+      winner: battleResult.winner,
       playerDamage: battleResult.playerDamage
     };
 
@@ -53,7 +53,7 @@ BattleController.setup = async state => {
     }
   }
 
-  results.battleTime = battleTime + 1500; // adding extra 1.5 seconds delay to cover network issues and final effects
+  results.battleTime = battleTime + 200; // adding extra 2 seconds delay to cover network issues and final effects
   return results;
 };
 
