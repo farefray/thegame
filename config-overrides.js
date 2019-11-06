@@ -20,9 +20,11 @@ const enchantBabelForTypescript = () => config => {
     outsideBabelOptions.plugins = [];
   }
 
-  outsideBabelOptions.plugins.push("@babel/proposal-class-properties");
-  outsideBabelOptions.plugins.push("@babel/proposal-object-rest-spread");
-  outsideBabelOptions.presets.push("@babel/typescript");
+  outsideBabelOptions.plugins.push('@babel/proposal-class-properties');
+  outsideBabelOptions.plugins.push('@babel/proposal-object-rest-spread');
+  outsideBabelOptions.plugins.push('@babel/proposal-optional-chaining');
+  outsideBabelOptions.plugins.push('@babel/proposal-nullish-coalescing-operator');
+  outsideBabelOptions.presets.push('@babel/typescript');
   getBabelLoader(config, true).test = mainConfig.test;
   return config;
 };
@@ -32,7 +34,7 @@ const config = override(
   addLessLoader({
     modifyVars: require('./src/UI/ui-overrides.js'),
     async: true,
-    env: "development",
+    env: 'development',
     useFileCache: true,
     sourceMap: {},
     javascriptEnabled: true // required for rsuite
@@ -40,11 +42,11 @@ const config = override(
   rewiredMap(),
   enchantBabelForTypescript(), // required only for cosmos. TODO: Exclude it from frontend builds
   addWebpackAlias({
-    backend: path.resolve(__dirname, "..", "backend"),
-    components: path.resolve(__dirname, "src", "components"),
-    shared: path.resolve(__dirname, "src", "shared"),
-    ['@']: path.join(__dirname, "src")
-  }),
+    backend: path.resolve(__dirname, '..', 'backend'),
+    components: path.resolve(__dirname, 'src', 'components'),
+    shared: path.resolve(__dirname, 'src', 'shared'),
+    ['@']: path.join(__dirname, 'src')
+  })
 );
 
 module.exports = config;

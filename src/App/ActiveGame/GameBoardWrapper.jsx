@@ -32,7 +32,6 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     }
     // actionStack events which are being generated on backend
     default:
-      console.log('action for ' + action.unitID);
       unitComponents[action.unitID].onAction(action);
       return unitComponents;
   }
