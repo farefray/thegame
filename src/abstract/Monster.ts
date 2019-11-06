@@ -1,6 +1,6 @@
 import SpellConfig from './SpellConfig';
 
-interface Monster {
+interface MonsterInterface {
   lookType: number,
   cost: number,
   health: number,
@@ -17,9 +17,9 @@ interface Monster {
   spellConfig: SpellConfig
 }
 
-export default function Monster(monsterConfig: Monster): Monster {
+export default function Monster(monsterConfig: MonsterInterface): MonsterInterface {
   // exported instance
-  const monster = {} as Monster;
+  const monster = {} as MonsterInterface;
 
   // default values via Lazy Object Literal Initialization pattern
   monster.cost = 1;
