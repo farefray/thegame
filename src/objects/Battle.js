@@ -10,7 +10,7 @@ const { TEAM } = require('../../../frontend/src/shared/constants');
 export default class Battle {
   constructor(board) {
     // returnable values
-    this.startBoard = _.cloneDeep(board); // test if thats needed or just adding perf issues
+    this.startBoard = _.cloneDeep(board); // todo get rid of this
     this.winner = null;
     this.playerDamage = 0;
 
@@ -50,8 +50,8 @@ export default class Battle {
 
   setWinner() {
     const remainingUnitCount = {
-      [TEAM.A]: this.units.filter(u => u.team === TEAM.A && u.hp > 0),
-      [TEAM.B]: this.units.filter(u => u.team === TEAM.B && u.hp > 0)
+      [TEAM.A]: this.units.filter(u => u.team === TEAM.A && u.health > 0),
+      [TEAM.B]: this.units.filter(u => u.team === TEAM.B && u.health > 0)
     };
 
     if (!remainingUnitCount[TEAM.A].length && !remainingUnitCount[TEAM.B].length) {
@@ -60,7 +60,7 @@ export default class Battle {
       this.winner = !remainingUnitCount[TEAM.A].length ? TEAM.B : TEAM.A;
     }
 
-    this.playerDamage = 5;
+    this.playerDamage = 5; // todo count damage based on units left?
   }
 
   /**
@@ -72,7 +72,7 @@ export default class Battle {
     battleUnit.lastActionTimestamp = timestamp;
     battleUnit.proceedRegeneration(timestamp);
 
-    let targetUnit = this.targetPairPool.findTargetByUnitId(battleUnit.id);
+    let targetUnit = this.targetPairPool.findTargetByUnitID(battleUnit.id);
     if (!targetUnit) {
       const closestTarget = this.getUnitClosestTarget(battleUnit);
       if (closestTarget) {
@@ -118,7 +118,7 @@ export default class Battle {
     this.pathfinder.occupiedTileSet.delete(`${battleUnit.x},${battleUnit.y}`);
 
     // Updates targets for attackers right after this one died
-    let affectedAttackers = this.targetPairPool.removeByUnitId(battleUnit.id).affectedAttackers;
+    let affectedAttackers = this.targetPairPool.removeByUnitID(battleUnit.id).affectedAttackers;
     affectedAttackers = affectedAttackers.filter(affectedAttacker => affectedAttacker.id !== killerID);
     for (const affectedAttacker of affectedAttackers) {
       if (affectedAttacker.actionLockTimestamp >= battleUnit.lastActionTimestamp) continue;

@@ -63,7 +63,7 @@ State.prototype.damagePlayers = function(battles) {
       player.set('health', newHP);
 
       if (newHP <= 0) {
-        this.amountOfPlayers = this.amountOfPlayers - 1;
+        // todo loss
       }
     }
   }
@@ -89,6 +89,7 @@ State.prototype.scheduleRoundEnd = async function (battleRoundResult) {
   await sleep(battleRoundResult.battleTime);
   this.endRound();
   this.damagePlayers(battleRoundResult.battles);
+  this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 };
 
 State.prototype.scheduleNextRound = async function () {

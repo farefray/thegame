@@ -53,14 +53,11 @@ BoardController.mutateStateByPawnPlacing = async (state, playerIndex, fromBoardP
   if (fromPosition.isMyHandPosition()) {
     // TODO some unit.Move()
     piece = hand[fromBoardPosition];
-    hand[fromBoardPosition].position = toPosition;
-    // also consider using only position, not .x and .y
     hand[fromBoardPosition].x = toPosition.x;
     hand[fromBoardPosition].y = toPosition.y;
     delete hand[fromBoardPosition];
   } else {
     piece = board[fromBoardPosition];
-    board[fromBoardPosition].position = toPosition;
     board[fromBoardPosition].x = toPosition.x;
     board[fromBoardPosition].y = toPosition.y;
     delete board[fromBoardPosition];
