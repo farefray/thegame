@@ -2,6 +2,7 @@
     "globalImports": [
         "./src/UI/ui.less"
     ],
+    "watchDirs": [ "src" ],
     "webpack": {
         "configPath": "react-scripts/config/webpack.config",
         "overridePath": "./config-overrides.js"
