@@ -1,30 +1,25 @@
-module.exports = function (api) {
+module.exports = function(api) {
   api.cache(true);
   const presets = [
     ['@babel/typescript'],
-    ['@babel/preset-env', {
-      useBuiltIns: 'usage',
-      corejs: 3,
-      targets: {
-        browsers: ['last 2 Chrome versions']
+    [
+      '@babel/preset-env',
+      {
+        useBuiltIns: 'usage',
+        corejs: 3,
+        targets: {
+          browsers: ['last 2 Chrome versions']
+        }
       }
-    }]
+    ]
   ];
 
-  const plugins = [
-    "@babel/proposal-class-properties",
-    "@babel/proposal-object-rest-spread"
-  ];
+  const plugins = ['@babel/proposal-class-properties', '@babel/proposal-object-rest-spread', '@babel/proposal-optional-chaining', '@babel/plugin-proposal-nullish-coalescing-operator'];
 
   console.log('Babel loaded.');
   return {
-    babelrcRoots: [
-      '.',
-      './src/*',
-    ],
-    ignore: [
-      './node_modules/*',
-    ],
+    babelrcRoots: ['.', './src/*'],
+    ignore: ['./node_modules/*'],
     presets,
     plugins,
     retainLines: true

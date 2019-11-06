@@ -47,7 +47,9 @@
     "@babel/core": "^7.5.5",
     "@babel/node": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.7.0",
     "@babel/register": "^7.6.2",
@@ -55,6 +57,7 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.0",
     "eslint-plugin-react": "^7.12.4",
-    "should": "^13.2.3"
+    "should": "^13.2.3",
+    "typescript": "^3.7.2"
   }
 }
