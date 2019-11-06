@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "babel-node src/index.js",
-    "dev": "nodemon --exec babel-node-ts src/index.js",
+    "dev": "tsc && nodemon --exec babel-node-ts src/index.js",
     "check-types": "tsc",
     "debug": "babel-node --inspect src/index.js",
     "complete": "eslint ./src && mocha --exit && node src/index.js",
