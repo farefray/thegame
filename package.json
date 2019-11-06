@@ -21,7 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/farefray/thegame.git"
   },
-  "author": "Maksym Fedan&&Jacek Kizinsky",
+  "author": "Maksym Fedan&&Jacek Kizinski",
   "license": "ISC",
   "dependencies": {
     "babel-node-ts": "^1.0.3",
