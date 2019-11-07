@@ -1,6 +1,6 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle';
-import createBattleBoard from '../src/utils/createBattleBoard';
+import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import GameController from '../src/controllers/GameController';
 import BattleController from '../src/controllers/BattleController';
 import BoardController from '../src/controllers/BoardController';
@@ -85,6 +85,7 @@ describe('Core Modules', () => {
     it('can buy pawn', async () => {
       gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       gameState.should.be.an.Object();
+      console.log("TCL: gameState", gameState)
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
     });
@@ -150,7 +151,7 @@ describe('Core Modules', () => {
         }
       ];
 
-      const combinedBoard = createBattleBoard(playerBoard, npcBoard);
+      const combinedBoard = createBattleBoard({units: playerBoard}, {units:npcBoard});
       battle = new Battle(combinedBoard);
       battle.should.be.ok();
       battle.actionStack.should.be.an.Array();
@@ -167,7 +168,7 @@ describe('Core Modules', () => {
       ];
       const npcBoard = [];
 
-      const combinedBoard = createBattleBoard(playerBoard, npcBoard);
+      const combinedBoard = createBattleBoard({units:playerBoard}, {units:npcBoard});
       battle = new Battle(combinedBoard);
       battle.should.be.ok();
       should.exist(battle.winner);
