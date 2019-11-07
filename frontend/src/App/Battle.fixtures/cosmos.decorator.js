@@ -22,7 +22,7 @@ const getCircularReplacer = () => {
 };
 
 const generateGameState = async function(board) {
-  const combinedBoard = createBattleBoard(board.A, board.B);
+  const combinedBoard = createBattleBoard({units:board.A}, {units:board.B});
   const battleResult = new Battle(combinedBoard);
   const result = _.cloneDeep(battleResult);
   console.table(battleResult.actionStack);

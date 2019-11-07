@@ -1,6 +1,6 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle';
-import createBattleBoard from '../src/utils/createBattleBoard';
+import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import Monsters from '../src/utils/Monsters';
 
 const should = require('should');
@@ -59,7 +59,7 @@ if (typeof (module) !== "undefined" && typeof (window) === "undefined") {
         });
       }
 
-      const combinedBoard = createBattleBoard(playerBoard, npcBoard);
+      const combinedBoard = createBattleBoard({units:playerBoard}, {units:npcBoard});
       const battle = new Battle(combinedBoard);
       battle.should.be.ok();
       battle.actionStack.should.be.an.Array();
