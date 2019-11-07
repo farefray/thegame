@@ -22,10 +22,13 @@ ShopController.mutateStateByShopRefreshing = (state, playerIndex) => {
       ShopController.mutateStateByShopRefreshing(state, uid);
     }
   } else {
-    const shop = state.getIn(['players', playerIndex, 'shopUnits']);
+    const player = state.getIn(['players', playerIndex]);
+    const shop = player.get('shopUnits');
     for (let i = 0; i <= SHOP_UNITS; i++) {
       if (!shop[i]) {
-        state.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit());
+        state.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit({
+          cost: player.get('level')
+        }));
       }
     }
   }

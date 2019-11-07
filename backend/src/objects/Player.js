@@ -1,12 +1,10 @@
 import Position from '../../../frontend/src/shared/Position';
 
-const DEBUG = true; // SORRY
-
 function Player(id) {
   this.index = id;
   this.health = 100;
   this.mana = 0;
-  this.level = DEBUG ? 5 : 1;
+  this.level = 1;
   this.exp = 0;
   this.expToReach = 1; // ?
   this.gold = 1;

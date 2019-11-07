@@ -19,6 +19,18 @@ const randomProperty = function(obj) {
   return obj[keys[(keys.length * Math.random()) << 0]]; // eslint-disable-line
 };
 
-Monsters.getRandomUnit = () => randomProperty(Monsters.units);
+Monsters.getRandomUnit = (filterObject) => {
+  const filtered = {};
+  Object.keys(Monsters.units).forEach(key => {
+    const mob = Monsters.units[key];
+    if (!filterObject
+      || !filterObject.cost
+      || mob.cost <= filterObject.cost) {
+        filtered[key] = mob;
+      }
+  });
+
+  return randomProperty(filtered);
+};
 
 export default Monsters;
