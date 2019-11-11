@@ -13,16 +13,17 @@ export default class Unit extends React.Component {
     super(props);
 
     const { unit } = props;
-    const { x, y, id } = unit;
-    console.log("TCL: Unit -> constructor -> unit", unit)
+    const { x, y, id, key } = unit;
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
+    this.ref = React.createRef();
     this.state = {
       top,
       left,
       x: parseInt(x, 10),
       y: parseInt(y, 10),
       id,
+      key,
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
       attackRange: unit.attackRange, // maybe consider using 'stats': unit
@@ -34,24 +35,28 @@ export default class Unit extends React.Component {
       maxHealth: unit.maxHealth,
       health: unit.maxHealth
     };
-
-    props.onLifecycle({
-      type: 'SPAWN',
-      unit: this
-    });
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.props.onLifecycle({
+      type: 'SPAWN',
+      component: this
+    });
+  }
 
   componentWillUnmount() {
     this.props.onLifecycle({
       type: 'DESTROY',
-      unit: this
+      component: this
     });
   }
 
   get id() {
     return this.state.id;
+  }
+
+  get key() {
+    return this.state.key;
   }
 
   get startingPosition() {
@@ -249,6 +254,7 @@ export default class Unit extends React.Component {
     const { unit } = this.props;
     return (
       <div
+        ref={this.ref}
         style={{
           // TODO pointerEvent:none when in battle
           height: '64px',
