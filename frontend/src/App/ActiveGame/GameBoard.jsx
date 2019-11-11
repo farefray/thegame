@@ -5,7 +5,7 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import Position from '../../shared/Position';
-import Unit from '../../objects/Unit';
+import Unit from '../../objects/Unit.js';
 
 const gameBoardWidth = 8;
 const gameBoardHeight = 8;
@@ -17,19 +17,26 @@ class GameBoard extends React.Component {
     this.state = {
       gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth),
       isMounted: false,
-      units: {},
+      unitComponents: {}
     };
   }
 
   static getDerivedStateFromProps(props, current_state) {
-    if (!_.isEqual(current_state.units, props.units)) {
-      console.log("TCL: GameBoard -> getDerivedStateFromProps -> props.units", props.units)
+    console.log("TCL: getDerivedStateFromProps -> getDerivedStateFromProps", props)
+    if (!_.isEqualWith(current_state.unitComponents, props.unitComponents, (fUnit, sUnit) => {
+      console.log("TCL: getDerivedStateFromProps -> sUnit", sUnit)
+      console.log("TCL: getDerivedStateFromProps -> fUnit", fUnit)
+      return fUnit.key && sUnit.key && fUnit.key === sUnit.key && fUnit.id === sUnit.id;
+    })) {
+      console.log('%c not equal! ', 'background: #222; color: #bada55');
+      console.log(_.cloneDeep(props.unitComponents));
+      console.log(_.cloneDeep(current_state.unitComponents));
       return {
-        units: props.units,
-      }
+        unitComponents: _.cloneDeep(props.unitComponents)
+      };
     }
 
-    return null
+    return null;
   }
 
   componentDidMount() {
@@ -62,43 +69,40 @@ class GameBoard extends React.Component {
     return (
       <div className="gameboard-board-row">
         {handRow.map(cellPosition => {
-          return (
-            <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-            </BoardSquare>
-          );
+          return <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}></BoardSquare>;
         })}
       </div>
     );
   }
 
   render() {
-    const { gameBoard, isMounted, units } = this.state;
+    const { gameBoard, isMounted, unitComponents } = this.state;
     return (
       <div className="gameboard">
         <div className="gameboard-background"></div>
         <div className="gameboard-wrapper">
           <div className="gameboard-board">
             <DndProvider backend={HTML5Backend}>
-            {isMounted &&
-              units.map(unit => (
-                <Unit
-                  key={unit.id}
-                  unit={unit}
-                  getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
-                  gameBoardWidth={gameBoardWidth}
-                  gameBoardHeight={gameBoardHeight}
-                  onLifecycle={this.props.onLifecycle}
-                />
-              ))}
+              {isMounted &&
+                Object.keys(unitComponents).map(pos => {
+                  const unit = unitComponents[pos];
+                  return (
+                    <Unit
+                      key={unit.key}
+                      unit={unit}
+                      getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
+                      gameBoardWidth={gameBoardWidth}
+                      gameBoardHeight={gameBoardHeight}
+                      onLifecycle={this.props.onLifecycle}
+                    />
+                  );
+                })}
               <div ref={e => (this.boardRef = e)}>
                 {gameBoard.map((boardRow, index) => {
                   return (
                     <div className="gameboard-board-row" key={index}>
                       {boardRow.map(cellPosition => {
-                        return (
-                          <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                          </BoardSquare>
-                        );
+                        return <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}></BoardSquare>;
                       })}
                     </div>
                   );

@@ -1,4 +1,6 @@
 import Position from '../../../frontend/src/shared/Position';
+import BattleUnit from './BattleUnit';
+import Monsters from '../utils/Monsters';
 
 function Player(id) {
   this.index = id;
@@ -7,10 +9,10 @@ function Player(id) {
   this.level = 1;
   this.exp = 0;
   this.expToReach = 1; // ?
-  this.gold = 1;
+  this.gold = 2;
   this.shopUnits = {};
   this.hand = {};
-  this.board = {}; // todo keep it simple {x,y,name}
+  this.board = {};
   return this;
 }
 
@@ -38,16 +40,12 @@ Player.prototype.set = function (field, value) {
 };
 
 // not sure if we should carry such support functions with all the objects. Assuming it may affect performance...
-Player.prototype.addToHand = async function (unit) {
+Player.prototype.addToHand = async function (unitName) {
   const availableHandPosition = this.get('availableHandPosition');
   if (availableHandPosition !== null) {
     const hand = this.get('hand');
     const pos = new Position(availableHandPosition);
-    hand[availableHandPosition] = {
-      ...unit,
-      x: pos.x,
-      y: pos.y
-    };
+    hand[availableHandPosition] = new BattleUnit(Monsters.getMonsterStats(unitName), pos, 0);
 
     this.set('hand', hand);
     return availableHandPosition;
