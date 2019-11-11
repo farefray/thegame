@@ -42,17 +42,18 @@ BattleController.setup = async state => {
     });
 
     // Both players have units, battle required
+    // todo async maybe and some good syntax
     const battleResult = new Battle(board);
-
+    const { actionStack, startBoard, winner, playerDamage } = battleResult;
     results.battles[players[i]] = {
-      actionStack: battleResult.actionStack,
-      startBoard: battleResult['startBoard'],
-      winner: battleResult.winner,
-      playerDamage: battleResult.playerDamage
+      actionStack: actionStack,
+      startBoard: startBoard,
+      winner: winner,
+      playerDamage: playerDamage
     };
 
-    if (battleResult.actionStack.length) {
-      const playerBattleTime = battleResult.actionStack[battleResult.actionStack.length - 1].time;
+    if (actionStack.length) {
+      const playerBattleTime = actionStack[actionStack.length - 1].time;
       if (playerBattleTime > battleTime) {
         battleTime = playerBattleTime;
       }

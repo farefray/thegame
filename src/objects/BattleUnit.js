@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import Spell from '../abstract/Spell';
 
+const uuidv1 = require('uuid/v1');
+
 const { ACTION } = require('../../../frontend/src/shared/constants');
 
 /**
@@ -14,6 +16,7 @@ export default class BattleUnit {
     this.y = +coords.y;
     this.team = team;
     this.id = this.getBoardPosition(); // id = is also a starting position for mob
+    this.key = uuidv1();
 
     // internal
     this._previousStep = null;
