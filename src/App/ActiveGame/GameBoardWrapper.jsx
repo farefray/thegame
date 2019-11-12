@@ -19,7 +19,6 @@ const uuidv1 = require('uuid/v1');
  * @returns
  */
 function dispatchUnitLifecycleReducer(unitComponents, action) {
-  console.log("TCL: dispatchUnitLifecycleReducer -> unitComponents", unitComponents)
   if (action.type === 'BOARD_UPDATE') {
     const _unitComponents = {};
     const { board } = action;
@@ -42,18 +41,33 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     case 'SPAWN': {
       const { component } = action;
       console.log("TCL: SPAWN", component)
-      unitComponents[component.id].component = component;
+      
+      if (unitComponents[component.id]) {
+        unitComponents[component.id].component = component;
+      } else {
+        window.todo('[P0] Investigate why mounted Units execute this even twise')
+      }
+
       return unitComponents;
     }
     case 'DESTROY': {
       const { component } = action;
       console.log("TCL: DESTROY", component)
-      delete unitComponents[component.id];
+
+      if (unitComponents[component.id]) {
+        delete unitComponents[component.id];
+      } else {
+        window.todo('[P0] Investigate why dismounted Units execute this even twise')
+      }
+
       return unitComponents;
     }
     // actionStack events which are being generated on backend
     default:
-      unitComponents[action.unitID].component.onAction(action);
+      if (unitComponents[action.unitID]) {
+        unitComponents[action.unitID].component.onAction(action);
+      }
+
       return unitComponents;
   }
 }
