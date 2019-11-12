@@ -5,7 +5,7 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import Position from '../../shared/Position';
-import Unit from '../../objects/Unit.js';
+import Unit from '../../objects/Unit.jsx';
 
 const gameBoardWidth = 8;
 const gameBoardHeight = 8;
@@ -22,17 +22,15 @@ class GameBoard extends React.Component {
   }
 
   static getDerivedStateFromProps(props, current_state) {
-    console.log("TCL: getDerivedStateFromProps -> getDerivedStateFromProps", props)
+    console.log("TCL: getDerivedStateFromProps -> getDerivedStateFromProps", props.unitComponents)
     if (!_.isEqualWith(current_state.unitComponents, props.unitComponents, (fUnit, sUnit) => {
-      console.log("TCL: getDerivedStateFromProps -> sUnit", sUnit)
-      console.log("TCL: getDerivedStateFromProps -> fUnit", fUnit)
       return fUnit.key && sUnit.key && fUnit.key === sUnit.key && fUnit.id === sUnit.id;
     })) {
       console.log('%c not equal! ', 'background: #222; color: #bada55');
       console.log(_.cloneDeep(props.unitComponents));
       console.log(_.cloneDeep(current_state.unitComponents));
       return {
-        unitComponents: _.cloneDeep(props.unitComponents)
+        unitComponents: props.unitComponents
       };
     }
 
@@ -86,6 +84,7 @@ class GameBoard extends React.Component {
               {isMounted &&
                 Object.keys(unitComponents).map(pos => {
                   const unit = unitComponents[pos];
+                  console.log("TCL: render -> unit", unit)
                   return (
                     <Unit
                       key={unit.key}
