@@ -1,22 +1,21 @@
-import BattleUnit from '../objects/BattleUnit';
+import BattleUnit from '../objects/BattleUnit.ts';
 import Position from '../../../frontend/src/shared/Position';
 import Monsters from './Monsters';
 
 interface SimpleUnit {
-  x: number,
-  y: number,
-  name: string
+  x: number;
+  y: number;
+  name: string;
 }
 
 interface Units {
-  [key: string]: SimpleUnit
+  [key: string]: SimpleUnit;
 }
 
 interface Board {
   owner: string;
   units: Units;
 }
-
 
 /**
  * Combines two boards into one for battle

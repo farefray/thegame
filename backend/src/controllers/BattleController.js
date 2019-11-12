@@ -1,5 +1,5 @@
 import Battle from '../objects/Battle';
-import createBattleBoard from '../utils/createBattleBoard';
+import createBattleBoard from '../utils/createBattleBoard.ts';
 
 const BattleController = {};
 
@@ -33,17 +33,20 @@ BattleController.setup = async state => {
     const playerBoard = state.getIn(['players', players[i], 'board']);
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
-    const board = createBattleBoard({
-      owner: players[i],
-      units: playerBoard
-    }, {
-      owner: '',
-      units: npcBoard
-    });
+    const board = createBattleBoard(
+      {
+        owner: players[i],
+        units: playerBoard
+      },
+      {
+        owner: '',
+        units: npcBoard
+      }
+    );
 
     // Both players have units, battle required
     // todo async maybe and some good syntax
-    const battleResult = new Battle(board);
+    const battleResult = new Battle({ board });
     const { actionStack, startBoard, winner, playerDamage } = battleResult;
     results.battles[players[i]] = {
       actionStack: actionStack,

@@ -1,5 +1,5 @@
 /* global describe, it */
-import Battle from '../src/objects/Battle';
+import Battle from '../src/objects/Battle.ts';
 import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import GameController from '../src/controllers/GameController';
 import BattleController from '../src/controllers/BattleController';
@@ -16,7 +16,7 @@ const SessionsStore = rewire('../src/models/SessionsStore.js');
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
 
-const { TEAM } = rewire('../../frontend/src/shared/constants');
+const { TEAM } = rewire('../../frontend/src/shared/constants.js');
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -78,7 +78,6 @@ describe('Core Modules', () => {
       const savedSession = sessionsStore.get(sessID);
       savedSession.ID.should.equal(sessID);
     });
-
   });
 
   describe('Game Mechanics', () => {
@@ -154,8 +153,8 @@ describe('Core Modules', () => {
         }
       ];
 
-      const combinedBoard = createBattleBoard({units: playerBoard}, {units:npcBoard});
-      battle = new Battle(combinedBoard);
+      const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
+      battle = new Battle({ board: combinedBoard });
       battle.should.be.ok();
       battle.actionStack.should.be.an.Array();
       battle.actionStack.length.should.be.above(0);
@@ -171,8 +170,8 @@ describe('Core Modules', () => {
       ];
       const npcBoard = [];
 
-      const combinedBoard = createBattleBoard({units:playerBoard}, {units:npcBoard});
-      battle = new Battle(combinedBoard);
+      const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
+      battle = new Battle({ board: combinedBoard });
       battle.should.be.ok();
       should.exist(battle.winner);
       battle.winner.should.equal(TEAM.A);
