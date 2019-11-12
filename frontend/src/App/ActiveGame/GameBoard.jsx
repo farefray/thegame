@@ -4,7 +4,6 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import Position from '../../shared/Position';
-import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
 
 const gameBoardWidth = 8;
 const gameBoardHeight = 8;
@@ -37,15 +36,14 @@ class GameBoard extends React.Component {
 
   render() {
     const { gameBoard } = this.state;
-    window.warn('TCL: render -> GameBoard');
     return (
       <div className="gameboard">
         <div className="gameboard-background"></div>
         <div className="gameboard-wrapper">
           <div className="gameboard-board">
             <DndProvider backend={HTML5Backend}>
-            {this.boardRef.current && <UnitsWrapper unitComponents={this.props.unitComponents} onLifecycle={this.props.onLifecycle} boardRef={this.boardRef} />}
               <div ref={this.boardRef}>
+                {this.props.render(this.boardRef)}
                 {gameBoard.map((boardRow, index) => {
                   return (
                     <div className="gameboard-board-row" key={index}>

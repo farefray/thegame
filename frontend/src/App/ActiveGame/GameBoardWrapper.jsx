@@ -6,6 +6,8 @@ import _ from 'lodash';
 import React, { useEffect, useState, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
+import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
+
 import { StateProvider } from './GameBoard.context.js';
 import usePrevious from '../../customhooks/usePrevious';
 
@@ -176,7 +178,7 @@ function GameBoardWrapper({ state }) {
         ...state
       }}
     >
-      <GameBoard key={gameboardKey} unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} />
+      <GameBoard key={gameboardKey} render={boardRef => (<UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />)} />
     </StateProvider>
   );
 }

@@ -8,8 +8,9 @@ import { SocketConnector } from './socketConnector';
 import store from './store';
 import { Provider } from 'react-redux';
 
-require('./console.log.tweaks.js');
-window.todo('Those console tweaks should be just for development!')
+if (process.env.NODE_ENV !== 'production') {
+  require('./console.log.tweaks.js');
+}
 
 // setup socket connection
 SocketConnector.init(store.dispatch);
