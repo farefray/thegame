@@ -9,6 +9,7 @@ import GameBoard from './GameBoard.jsx';
 import { StateProvider } from './GameBoard.context.js';
 import usePrevious from '../../customhooks/usePrevious';
 
+const uuidv1 = require('uuid/v1');
 /**
  *
  * Handles previously stored actions(actionStack) as well as frontend generated events
@@ -20,7 +21,20 @@ import usePrevious from '../../customhooks/usePrevious';
 function dispatchUnitLifecycleReducer(unitComponents, action) {
   console.log("TCL: dispatchUnitLifecycleReducer -> unitComponents", unitComponents)
   if (action.type === 'BOARD_UPDATE') {
-    return _.cloneDeep(action.board);
+    const _unitComponents = {};
+    const { board } = action;
+    for (const pos in board) {
+      if (board.hasOwnProperty(pos)) {
+        const unit = board[pos];
+        _unitComponents[pos] = {
+          ...unit,
+          key: uuidv1(),
+          component: null
+        }
+      }
+    }
+
+    return _unitComponents;
   }
 
   switch (action.type) {
