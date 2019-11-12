@@ -33,14 +33,12 @@ export default function createBattleBoard(firstBoard: Board, secondBoard: Board)
 
   for (const index in firstBoard.units) {
     const simpleUnit = firstBoard.units[index];
-    console.log("TCL: simpleUnit", simpleUnit)
     const unitPos = new Position(simpleUnit.x, simpleUnit.y);
     board[unitPos.toString()] = new BattleUnit(Monsters.getMonsterStats(simpleUnit.name), unitPos, 0);
   }
 
   for (const index in secondBoard.units) {
     const simpleUnit = secondBoard.units[index];
-    console.log("TCL: simpleUnit", simpleUnit)
     const unitPos = new Position(simpleUnit.x, simpleUnit.y);
     board[unitPos.toString()] = new BattleUnit(Monsters.getMonsterStats(simpleUnit.name), unitPos, 1);
   }

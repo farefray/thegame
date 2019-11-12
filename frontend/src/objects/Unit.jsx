@@ -7,6 +7,9 @@ import UnitImage from './Unit/UnitImage.tsx';
 import Particle from './Unit/Particle';
 import IsDraggable from './Unit/IsDraggable';
 
+const gameBoardWidth = 8;
+const gameBoardHeight = 8;
+
 let particleUID = 0; // maybe stupied way, please review @Jacek
 export default class Unit extends React.Component {
   constructor(props) {
@@ -38,6 +41,7 @@ export default class Unit extends React.Component {
   }
 
   componentDidMount() {
+    console.log('component mount', this.id, this.key);
     this.props.onLifecycle({
       type: 'SPAWN',
       component: this
@@ -45,6 +49,7 @@ export default class Unit extends React.Component {
   }
 
   componentWillUnmount() {
+    console.log('component destroy', this.id, this.key);
     this.props.onLifecycle({
       type: 'DESTROY',
       component: this
@@ -116,7 +121,7 @@ export default class Unit extends React.Component {
   }
 
   getPositionFromCoordinates(x, y) {
-    const { getBoardBoundingClientRect, gameBoardWidth, gameBoardHeight } = this.props;
+    const { getBoardBoundingClientRect } = this.props;
     const boundingClientRec = getBoardBoundingClientRect();
     return {
       top: ((gameBoardHeight - y - 1) * boundingClientRec.height) / gameBoardHeight,
