@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { DIRECTION, ACTION } from '../shared/constants';
+import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
 import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage.tsx';
@@ -84,15 +84,16 @@ export default class Unit extends React.Component {
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
   onAction(action) {
+    const { payload } = action;
     switch (action.type) {
       case ACTION.MOVE: {
-        if (action.to) {
-          this.move(action.to.x, action.to.y);
+        if (payload.to) {
+          this.move(payload.to.x, payload.to.y);
         }
         break;
       }
       case ACTION.ATTACK: {
-        action.to && this.attack(action.to.x, action.to.y, action.damage);
+        payload.to && this.attack(payload.to.x, payload.to.y);
         break;
       }
       case ACTION.CAST: {
@@ -102,8 +103,8 @@ export default class Unit extends React.Component {
       }
       case ACTION.HEALTH_CHANGE: {
         setTimeout(() => {
-          this.healthChange(action.value);
-        }, 500); // todo get rid of timeout
+          this.healthChange(payload.value);
+        }, 0); // todo get rid of timeout
         break;
       }
       case ACTION.MANA_CHANGE: {
@@ -165,7 +166,7 @@ export default class Unit extends React.Component {
       y,
       top,
       left,
-      transition: !options.instant ? `transform ${unit.speed / 1000}s linear` : 'auto',
+      transition: !options.instant ? `transform ${unit.actionDelay / 1000}s linear` : 'auto',
       direction: options.direction || this.getDirectionToTarget(x, y),
       isMoving: !options.instant ? true : false
     });
@@ -224,7 +225,7 @@ export default class Unit extends React.Component {
 
   manaChange(value) {
     const { mana } = this.state;
-    this.setState({ mana: mana + value});
+    this.setState({ mana: mana + value });
   }
 
   healthChange(value) {

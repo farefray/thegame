@@ -171,7 +171,6 @@ function GameBoardWrapper({ state }) {
       }
     }
   }, [currentActionIndex, actionStack, prevActionIndex]);
-
   return (
     <StateProvider
       initialState={{
