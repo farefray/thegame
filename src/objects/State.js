@@ -1,7 +1,7 @@
 import MutableObject from '../abstract/MutableObject';
 
 const sleep = require('util').promisify(setTimeout);
-const { STATE } = require('../../../frontend/src/shared/constants');
+const { STATE } = require('../../../frontend/src/shared/constants.js');
 
 function State(playersArray) {
   this.round = 1;
@@ -19,7 +19,6 @@ function State(playersArray) {
 }
 
 State.prototype = Object.create(MutableObject.prototype);
-
 
 /**
  * @function
@@ -78,21 +77,20 @@ State.prototype.dropPlayer = playerID => {
   }
 };
 
-
 /** Lifecycle methods */
-State.prototype.scheduleRoundStart = async function () {
+State.prototype.scheduleRoundStart = async function() {
   await sleep(this.countdown);
   return true;
 };
 
-State.prototype.scheduleRoundEnd = async function (battleRoundResult) {
+State.prototype.scheduleRoundEnd = async function(battleRoundResult) {
   await sleep(battleRoundResult.battleTime);
   this.endRound();
   this.damagePlayers(battleRoundResult.battles);
   this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 };
 
-State.prototype.scheduleNextRound = async function () {
+State.prototype.scheduleNextRound = async function() {
   await sleep(this.countdown);
   return true;
 };

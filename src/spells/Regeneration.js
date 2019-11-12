@@ -1,14 +1,15 @@
-import pathUtils from '../utils/pathUtils';
-
 function Regeneration(self) {
   const caster = self.caster;
   return {
     prepare: ({ units }) => {
       // move to some abstract thing, like spellUtils?
       // get alied unit with lowest health
-      const target = units.filter(u => {
-        return u.team === caster.team && u.isAlive();
-      }).sort((a, b) => a.health - b.health).shift();
+      const target = units
+        .filter(u => {
+          return u.team === caster.team && u.isAlive();
+        })
+        .sort((a, b) => a.health - b.health)
+        .shift();
 
       if (!target) {
         return false;
