@@ -1,5 +1,6 @@
 import { Position } from './Position';
 import BattleUnit from './BattleUnit';
+import Battle from './Battle';
 
 export enum ACTION_TYPE {
   INIT,
@@ -9,7 +10,8 @@ export enum ACTION_TYPE {
   HEALTH_CHANGE,
   MANA_CHANGE,
   REGENERATION,
-  DEATH
+  DEATH,
+  ACQUIRE_TARGET
 }
 
 interface ActionBase {
@@ -45,4 +47,12 @@ export interface DeathAction extends ActionBase {
   };
 }
 
-export type Action = MoveAction | AttackAction | HealthChangeAction | DeathAction;
+export interface AcquireTargetAction extends ActionBase {
+  type: ACTION_TYPE.ACQUIRE_TARGET;
+  payload: {
+    attacker: BattleUnit;
+    target: BattleUnit;
+  };
+}
+
+export type Action = MoveAction | AttackAction | HealthChangeAction | DeathAction | AcquireTargetAction;
