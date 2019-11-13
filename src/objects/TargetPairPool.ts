@@ -6,12 +6,16 @@ export default class TargetPairPool {
     this._targetPairs = [];
   }
 
-  add({ target, attacker }: TargetPairProps) {
-    this._targetPairs.push(new TargetPair({ target, attacker }));
+  add({ attacker, target }: TargetPairProps) {
+    this._targetPairs.push(new TargetPair({ attacker, target }));
   }
 
   remove({ target, attacker }: TargetPairProps) {
     this._targetPairs = this._targetPairs.filter(targetPair => targetPair.target === target && targetPair.attacker === attacker);
+  }
+
+  removeByAttackerId(id: string) {
+    this._targetPairs = this._targetPairs.filter(targetPair => targetPair.attacker.id !== id);
   }
 
   removeByUnitId(id: string) {

@@ -1,6 +1,6 @@
-import { getClosestTarget } from '../utils/pathUtils.ts';
+import * as PathUtil from '../utils/pathUtils.ts';
 import Pathfinder from './Pathfinder';
-import { ACTION_TYPE } from './Action';
+import { ACTION_TYPE, AcquireTargetAction } from './Action';
 import { MoveAction, AttackAction, HealthChangeAction, DeathAction } from './Action';
 import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
@@ -77,14 +77,14 @@ export default class BattleUnit {
     while (this.isAlive) {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
+
       let targetUnit = targetPairPool.findTargetByUnitId(this.id);
-      if (!targetUnit) {
-        const closestTarget = getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.teamId === this.oppositeTeamId && u.isAlive) });
-        if (closestTarget) {
-          targetUnit = closestTarget;
-          targetPairPool.add({ attacker: this, target: targetUnit });
-        }
+      const closestTarget = this.getClosestTarget(units);
+      if (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit)) {
+        yield { actions: this.acquireTarget(closestTarget) };
+        targetUnit = closestTarget;
       }
+
       if (!targetUnit) {
         yield { delay: this.actionDelay };
         continue;
@@ -172,5 +172,22 @@ export default class BattleUnit {
       return [healthChangeAction, deathAction];
     }
     return [healthChangeAction];
+  }
+
+  acquireTarget(target: BattleUnit): [AcquireTargetAction] {
+    return [
+      {
+        unitId: this.id,
+        type: ACTION_TYPE.ACQUIRE_TARGET,
+        payload: {
+          attacker: this,
+          target
+        }
+      }
+    ];
+  }
+
+  getClosestTarget(units) {
+    return PathUtil.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.teamId === this.oppositeTeamId && u.isAlive) });
   }
 }

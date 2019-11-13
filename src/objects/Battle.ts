@@ -130,6 +130,11 @@ export default class Battle {
         this.pathfinder.occupiedTileSet.delete(`${unit.x},${unit.y}`);
         this.targetPairPool.removeByUnitId(unit.id);
         break;
+      case ACTION_TYPE.ACQUIRE_TARGET:
+        const { attacker, target } = action.payload;
+        this.targetPairPool.removeByAttackerId(attacker.id);
+        this.targetPairPool.add({ attacker, target });
+        break;
       default:
         console.log(action, 'default');
         break;
