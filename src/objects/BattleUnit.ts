@@ -1,13 +1,25 @@
-import * as PathUtil from '../utils/pathUtils.ts';
+import * as PathUtil from '../utils/pathUtils';
 import Pathfinder from './Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction } from './Action';
 import { MoveAction, AttackAction, HealthChangeAction, DeathAction } from './Action';
 import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { Context } from './Battle';
+import Monsters from '../utils/Monsters';
+
+
+interface SimpleUnit {
+  name: string,
+  position: {
+    x: number,
+    y: number
+  },
+  teamId: number
+}
 
 export default class BattleUnit {
   public id: string;
+  public name: string;
   public x: number;
   public y: number;
   public teamId: number;
@@ -23,22 +35,24 @@ export default class BattleUnit {
   private _mana: number;
   private _attack: number;
 
-  constructor(unit, coords, teamId) {
-    this.x = +coords.x;
-    this.y = +coords.y;
+  constructor(simpleUnit: SimpleUnit) {
+    this.x = +simpleUnit.position.x;
+    this.y = +simpleUnit.position.y;
     this.id = this.stringifiedPosition; // id = is also a starting position for mob
-    this.teamId = teamId;
+    this.teamId = simpleUnit.teamId;
 
-    this.attackRange = unit.attackRange;
-    this.armor = unit.armor;
-    this.lookType = unit.lookType;
-    this.maxHealth = unit.maxHealth;
-    this.maxMana = unit.maxMana;
-    this.actionDelay = unit.speed;
+    const unitStats = Monsters.getMonsterStats(simpleUnit.name);
+    this.name = unitStats.name;
+    this.attackRange = unitStats.attackRange;
+    this.armor = unitStats.armor;
+    this.lookType = unitStats.lookType;
+    this.maxHealth = unitStats.maxHealth;
+    this.maxMana = unitStats.maxMana;
+    this.actionDelay = unitStats.speed;
 
-    this._health = unit.maxHealth;
+    this._health = unitStats.maxHealth;
     this._mana = 0;
-    this._attack = unit.attack;
+    this._attack = unitStats.attack;
   }
 
   get position(): Position {

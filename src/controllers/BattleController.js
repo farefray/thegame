@@ -1,5 +1,6 @@
-import Battle from '../objects/Battle';
+import Battle from '../objects/Battle.ts';
 import createBattleBoard from '../utils/createBattleBoard.ts';
+import BattleUnit from '../objects/BattleUnit';
 
 const BattleController = {};
 
@@ -21,6 +22,17 @@ BattleController.setup = async state => {
   const round = state.get('round');
 
   const npcBoard = roundSetConfiguration[round];
+  const npcBattleBoard = [];
+  npcBoard.forEach(simpleUnit => {
+    npcBattleBoard.push(new BattleUnit({
+      name: simpleUnit.name,
+      position: {
+        x: simpleUnit.x,
+        y: simpleUnit.y
+      },
+      teamId: 1
+    }))
+  });
 
   // TODO: Future: All battles calculate concurrently, structurize this object maybe
   const results = {
@@ -40,7 +52,7 @@ BattleController.setup = async state => {
       },
       {
         owner: '',
-        units: npcBoard
+        units: npcBattleBoard
       }
     );
 

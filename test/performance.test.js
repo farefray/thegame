@@ -1,5 +1,5 @@
 /* global describe, it */
-import Battle from '../src/objects/Battle';
+import Battle from '../src/objects/Battle.ts';
 import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import Monsters from '../src/utils/Monsters';
 
