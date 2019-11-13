@@ -9,7 +9,7 @@ function Player(id) {
   this.level = 1;
   this.exp = 0;
   this.expToReach = 1; // ?
-  this.gold = 2;
+  this.gold = 1;
   this.shopUnits = {};
   this.hand = {};
   this.board = {};
@@ -45,7 +45,14 @@ Player.prototype.addToHand = async function (unitName) {
   if (availableHandPosition !== null) {
     const hand = this.get('hand');
     const pos = new Position(availableHandPosition);
-    hand[availableHandPosition] = new BattleUnit(Monsters.getMonsterStats(unitName), pos, 0);
+    hand[availableHandPosition] = new BattleUnit({
+      name: unitName,
+      position: {
+        x: pos.x,
+        y: pos.y
+      },
+      teamId: 0
+    });
 
     this.set('hand', hand);
     return availableHandPosition;

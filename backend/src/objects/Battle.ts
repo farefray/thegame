@@ -2,11 +2,10 @@ import Pathfinder from './Pathfinder';
 import shuffle from 'lodash/shuffle';
 import cloneDeep from 'lodash/cloneDeep';
 import Actor from './Actor';
-import TargetPairPool from './TargetPairPool.ts';
+import TargetPairPool from './TargetPairPool';
 import BattleUnit from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
-
-const { ACTION, TEAM } = require('../../../frontend/src/shared/constants');
+import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
 
 const BATTLE_TIME_LIMIT = 300 * 1000;
 

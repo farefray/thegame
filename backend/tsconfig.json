@@ -20,6 +20,10 @@
     // Import non-ES modules as default imports.
     "esModuleInterop": true,
     "noImplicitAny": false,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src"

@@ -1,6 +1,5 @@
-import BattleUnit from '../objects/BattleUnit.ts';
+import BattleUnit from '../objects/BattleUnit';
 import Position from '../../../frontend/src/shared/Position';
-import Monsters from './Monsters';
 
 interface SimpleUnit {
   x: number;
@@ -33,13 +32,27 @@ export default function createBattleBoard(firstBoard: Board, secondBoard: Board)
   for (const index in firstBoard.units) {
     const simpleUnit = firstBoard.units[index];
     const unitPos = new Position(simpleUnit.x, simpleUnit.y);
-    board[unitPos.toString()] = new BattleUnit(Monsters.getMonsterStats(simpleUnit.name), unitPos, 0);
+    board[unitPos.toString()] = new BattleUnit({
+      name: simpleUnit.name,
+      position: {
+        x: unitPos.x,
+        y: unitPos.y
+      },
+      teamId: 0
+    });
   }
 
   for (const index in secondBoard.units) {
     const simpleUnit = secondBoard.units[index];
     const unitPos = new Position(simpleUnit.x, simpleUnit.y);
-    board[unitPos.toString()] = new BattleUnit(Monsters.getMonsterStats(simpleUnit.name), unitPos, 1);
+    board[unitPos.toString()] = new BattleUnit({
+      name: simpleUnit.name,
+      position: {
+        x: unitPos.x,
+        y: unitPos.y
+      },
+      teamId: 1
+    });
   }
 
   return board;
