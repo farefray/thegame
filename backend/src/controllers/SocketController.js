@@ -45,24 +45,21 @@ function SocketController(socket, io) {
   socket.on('disconnect', () => {
     console.log('@disconnect', socket.id);
     const customer = connectedPlayers.get(socket.id);
+    // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
+
     if (customer) {
-      // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
-      connectedPlayers.disconnect(socket.id);
-    } else {
-      // Important @TODO, make handle for case when no customer(Cannot read properpty 'get' of null)
-    }
+      // update rooms
+      const sessionID = customer.get('sessionID');
+      if (sessionID) {
+        const session = sessionsStore.get(sessionID);
+        session.disconnect(socket.id);
+        if (session.hasClients()) {
+          return; // notify about disconnect todo
+        }
 
-    // update rooms
-    const sessionID = customer.get('sessionID');
-    if (sessionID) {
-      const session = sessionsStore.get(sessionID);
-      session.disconnect(socket.id);
-      if (session.hasClients()) {
-        return; // notify about disconnect todo
+        sessionsStore.destroy(sessionID);
       }
-
-      sessionsStore.destroy(sessionID);
-    }
+    } // todo case when no customer?
   });
 
   socket.on('CUSTOMER_LOGIN_TRY', async (customerData, callback) => {

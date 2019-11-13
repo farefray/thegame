@@ -6,7 +6,7 @@ export function gameboard(
     myHand: {},
     myBoard: {},
     index: -1, // player index, but need to get rid of this
-    isDead: false, // get rid plx
+    isDead: false // get rid plx
   },
   action
 ) {
@@ -38,7 +38,7 @@ export function gameboard(
       return {
         ...state,
         myHand: action.player.hand,
-        myBoard: action.player.board,
+        myBoard: action.player.board
       };
     }
     default:

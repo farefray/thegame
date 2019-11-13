@@ -60,7 +60,7 @@ export default class Battle {
       this.winner = !remainingUnitCount[TEAM.A].length ? TEAM.B : TEAM.A;
     }
 
-    this.playerDamage = 5; // todo count damage based on units left?
+    this.playerDamage = this.winner === TEAM.A ? 0 : 5; // todo count damage based on units left?
   }
 
   /**

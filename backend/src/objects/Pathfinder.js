@@ -1,4 +1,4 @@
-import pathUtils from '../utils/pathUtils';
+import { getDistanceBetweenCoordinates } from '../utils/pathUtils.ts';
 
 class Step {
   constructor({ x, y, resistance } = {}) {
@@ -136,7 +136,7 @@ export default class Pathfinder {
    * @returns {Integer}
    */
   static getDistanceBetweenUnits(unit1, unit2) {
-    return pathUtils.getDistanceBetweenCoordinates({
+    return getDistanceBetweenCoordinates({
       x: unit1.x,
       y: unit1.y,
       targetX: unit2.x,

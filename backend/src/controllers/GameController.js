@@ -45,7 +45,7 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
    * remove gold
    * set player state
    */
-  await player.addToHand(Monsters.getMonsterStats(unit.name)); // getmonsterstats not needed here I guess(todo)
+  await player.addToHand(unit.name);
   delete player.shopUnits[pieceIndex];
   player.gold -= unit.cost;
 

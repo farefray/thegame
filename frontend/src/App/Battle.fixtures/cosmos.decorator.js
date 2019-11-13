@@ -4,29 +4,15 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import Battle from '../../../../backend/src/objects/Battle.js';
-import createBattleBoard from '../../../../backend/src/utils/createBattleBoard';
-
-// todo make it share functionality with jest and core.test.js
-const getCircularReplacer = () => {
-  const seen = new WeakSet();
-  return (key, value) => {
-    if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
-    }
-    return value;
-  };
-};
+import Battle from '../../../../backend/src/objects/Battle.ts';
+import createBattleBoard from '../../../../backend/src/utils/createBattleBoard.ts';
 
 const generateGameState = async function(board) {
-  const combinedBoard = createBattleBoard({units:board.A}, {units:board.B});
-  const battleResult = new Battle(combinedBoard);
+  const combinedBoard = createBattleBoard({ units: board.A }, { units: board.B });
+  const battleResult = new Battle({ board: combinedBoard });
   const result = _.cloneDeep(battleResult);
   console.table(battleResult.actionStack);
-  return JSON.parse(JSON.stringify({...result, actionStack: battleResult.actionStack}, getCircularReplacer()));
+  return { ...result, actionStack: battleResult.actionStack };
 };
 
 const MyReduxMock = ({ children }) => {

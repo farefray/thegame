@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Alert } from 'rsuite';
 
 function Notification({ notificationObject }) {
-  console.log("TCL: Notification -> notificationObject", notificationObject)
   useEffect(() => {
     if (notificationObject && notificationObject.type) {
       const { message } = notificationObject;

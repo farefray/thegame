@@ -6,33 +6,70 @@ import _ from 'lodash';
 import React, { useEffect, useState, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
+import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
+
 import { StateProvider } from './GameBoard.context.js';
 import usePrevious from '../../customhooks/usePrevious';
 
+const uuidv1 = require('uuid/v1');
 /**
  *
  * Handles previously stored actions(actionStack) as well as frontend generated events
  * contains unit itself in case its frontend generated event or unitID in case its backend event
+ * @param {Object} unitComponents previous state of components
  * @param {Object} action
- * @maybe its more performant to not use reducer hook here and hold unitComponents outside of react component like here in commit daa60d0e74d01d67232d70e69731e8c2e9e5f423
  * @returns
  */
 function dispatchUnitLifecycleReducer(unitComponents, action) {
+  if (action.type === 'BOARD_UPDATE') {
+    const _unitComponents = {};
+    const { board } = action;
+    for (const pos in board) {
+      if (board.hasOwnProperty(pos)) {
+        const unit = board[pos];
+        _unitComponents[pos] = {
+          ...unit,
+          key: uuidv1(),
+          component: null
+        }
+      }
+    }
+
+    return _unitComponents;
+  }
+
   switch (action.type) {
     // Lifecycle events which are being triggered by frontend events for Unit components
     case 'SPAWN': {
-      const { unit } = action;
-      unitComponents[unit.id] = unit;
+      const { component } = action;
+      console.log("TCL: SPAWN", component)
+      
+      if (unitComponents[component.id]) {
+        unitComponents[component.id].component = component;
+      } else {
+        window.todo('[P0] Investigate why mounted Units execute this even twise')
+      }
+
       return unitComponents;
     }
     case 'DESTROY': {
-      const { unit } = action;
-      delete unitComponents[unit.id];
+      const { component } = action;
+      console.log("TCL: DESTROY", component)
+
+      if (unitComponents[component.id]) {
+        delete unitComponents[component.id];
+      } else {
+        window.todo('[P0] Investigate why dismounted Units execute this even twise')
+      }
+
       return unitComponents;
     }
     // actionStack events which are being generated on backend
     default:
-      unitComponents[action.unitID].onAction(action);
+      if (unitComponents[action.unitID]) {
+        unitComponents[action.unitID].component.onAction(action);
+      }
+
       return unitComponents;
   }
 }
@@ -67,21 +104,16 @@ function GameBoardWrapper({ state }) {
     setBoard(_.merge(isActiveBattleGoing ? battleStartBoard : myBoard, myHand));
   }, [myHand, myBoard, battleStartBoard, isActiveBattleGoing]);
 
-  // When board is being updated, we update units [units is array of unit objects which will be later rendered into 'Unit' components]
-  const [units, setUnits] = useState([]);
-  // unitComponents stores children react components 'Unit' which are being rendered from 'units' array
-  const [unitComponents, dispatchUnitLifecycle] = useReducer(dispatchUnitLifecycleReducer, {}); // eslint-disable-line
+  // When board is being updated, we update units [units is object of unit objects which will be later rendered into 'Unit' components and saved into ref into that array, also processing unit actions and events by this ref]
+  const [unitComponents, dispatchUnitLifecycle] = useReducer(dispatchUnitLifecycleReducer, {});
 
-  // If board being updated, update units
+  // If board being updated, update units to re-render them
   useEffect(() => {
-    const units = Object.keys(board).map(key => {
-      return {
-        ...board[key],
-        id: key
-      };
+    console.log('%c use effect, dispatch units! ', 'background: #322222; color: #bada55', board);
+    dispatchUnitLifecycle({
+      type: 'BOARD_UPDATE',
+      board
     });
-
-    setUnits(units);
   }, [board]);
 
   /** Active battle controlling for component state */
@@ -139,14 +171,13 @@ function GameBoardWrapper({ state }) {
       }
     }
   }, [currentActionIndex, actionStack, prevActionIndex]);
-
   return (
     <StateProvider
       initialState={{
         ...state
       }}
     >
-      <GameBoard key={gameboardKey} units={units} onLifecycle={dispatchUnitLifecycle} />
+      <GameBoard key={gameboardKey} render={boardRef => (<UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />)} />
     </StateProvider>
   );
 }

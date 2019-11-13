@@ -1,5 +1,5 @@
 /* global describe, it */
-import Battle from '../src/objects/Battle';
+import Battle from '../src/objects/Battle.ts';
 import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import GameController from '../src/controllers/GameController';
 import BattleController from '../src/controllers/BattleController';
@@ -16,7 +16,7 @@ const SessionsStore = rewire('../src/models/SessionsStore.js');
 const Customer = rewire('../src/objects/Customer.js');
 const Session = rewire('../src/objects/Session.js');
 
-const { TEAM } = rewire('../../frontend/src/shared/constants');
+const { TEAM } = rewire('../../frontend/src/shared/constants.js');
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -78,14 +78,12 @@ describe('Core Modules', () => {
       const savedSession = sessionsStore.get(sessID);
       savedSession.ID.should.equal(sessID);
     });
-
   });
 
   describe('Game Mechanics', () => {
     it('can buy pawn', async () => {
       gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       gameState.should.be.an.Object();
-      console.log("TCL: gameState", gameState)
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
     });
@@ -107,6 +105,8 @@ describe('Core Modules', () => {
       gameState.players[MOCK_SOCKETID_1].gold = 1;
       gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 1);
       gameState.should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
       gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.have.property('lookType');
     });
@@ -119,11 +119,13 @@ describe('Core Modules', () => {
       should(gameState.players[MOCK_SOCKETID_2].hand[firstHandPosition]).Undefined();
     });
 
-    it('player 1 can move pawn to board', async () => {
+    it('move pawn to board', async () => {
       const toPosition = '0,2';
       await BoardController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, firstHandPosition, toPosition);
       should(gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition]).undefined();
       gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.have.property('lookType');
     });
 
     it('can setup whole round', async () => {
@@ -151,8 +153,8 @@ describe('Core Modules', () => {
         }
       ];
 
-      const combinedBoard = createBattleBoard({units: playerBoard}, {units:npcBoard});
-      battle = new Battle(combinedBoard);
+      const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
+      battle = new Battle({ board: combinedBoard });
       battle.should.be.ok();
       battle.actionStack.should.be.an.Array();
       battle.actionStack.length.should.be.above(0);
@@ -168,8 +170,8 @@ describe('Core Modules', () => {
       ];
       const npcBoard = [];
 
-      const combinedBoard = createBattleBoard({units:playerBoard}, {units:npcBoard});
-      battle = new Battle(combinedBoard);
+      const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
+      battle = new Battle({ board: combinedBoard });
       battle.should.be.ok();
       should.exist(battle.winner);
       battle.winner.should.equal(TEAM.A);

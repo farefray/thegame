@@ -1,11 +1,14 @@
 import React from 'react';
 
-import { DIRECTION, ACTION } from '../shared/constants';
+import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
 import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage.tsx';
 import Particle from './Unit/Particle';
 import IsDraggable from './Unit/IsDraggable';
+
+const gameBoardWidth = 8;
+const gameBoardHeight = 8;
 
 let particleUID = 0; // maybe stupied way, please review @Jacek
 export default class Unit extends React.Component {
@@ -13,16 +16,17 @@ export default class Unit extends React.Component {
     super(props);
 
     const { unit } = props;
-    const { x, y, id } = unit;
-    console.log("TCL: Unit -> constructor -> unit", unit)
+    const { x, y, id, key } = unit;
     const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
 
+    this.ref = React.createRef();
     this.state = {
       top,
       left,
       x: parseInt(x, 10),
       y: parseInt(y, 10),
       id,
+      key,
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
       attackRange: unit.attackRange, // maybe consider using 'stats': unit
@@ -34,24 +38,30 @@ export default class Unit extends React.Component {
       maxHealth: unit.maxHealth,
       health: unit.maxHealth
     };
+  }
 
-    props.onLifecycle({
+  componentDidMount() {
+    console.log('component mount', this.id, this.key);
+    this.props.onLifecycle({
       type: 'SPAWN',
-      unit: this
+      component: this
     });
   }
 
-  componentDidMount() {}
-
   componentWillUnmount() {
+    console.log('component destroy', this.id, this.key);
     this.props.onLifecycle({
       type: 'DESTROY',
-      unit: this
+      component: this
     });
   }
 
   get id() {
     return this.state.id;
+  }
+
+  get key() {
+    return this.state.key;
   }
 
   get startingPosition() {
@@ -74,15 +84,16 @@ export default class Unit extends React.Component {
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
   onAction(action) {
+    const { payload } = action;
     switch (action.type) {
       case ACTION.MOVE: {
-        if (action.to) {
-          this.move(action.to.x, action.to.y);
+        if (payload.to) {
+          this.move(payload.to.x, payload.to.y);
         }
         break;
       }
       case ACTION.ATTACK: {
-        action.to && this.attack(action.to.x, action.to.y, action.damage);
+        payload.to && this.attack(payload.to.x, payload.to.y);
         break;
       }
       case ACTION.CAST: {
@@ -92,8 +103,8 @@ export default class Unit extends React.Component {
       }
       case ACTION.HEALTH_CHANGE: {
         setTimeout(() => {
-          this.healthChange(action.value);
-        }, 500); // todo get rid of timeout
+          this.healthChange(payload.value);
+        }, 0); // todo get rid of timeout
         break;
       }
       case ACTION.MANA_CHANGE: {
@@ -111,7 +122,7 @@ export default class Unit extends React.Component {
   }
 
   getPositionFromCoordinates(x, y) {
-    const { getBoardBoundingClientRect, gameBoardWidth, gameBoardHeight } = this.props;
+    const { getBoardBoundingClientRect } = this.props;
     const boundingClientRec = getBoardBoundingClientRect();
     return {
       top: ((gameBoardHeight - y - 1) * boundingClientRec.height) / gameBoardHeight,
@@ -155,7 +166,7 @@ export default class Unit extends React.Component {
       y,
       top,
       left,
-      transition: !options.instant ? `transform ${unit.speed / 1000}s linear` : 'auto',
+      transition: !options.instant ? `transform ${unit.actionDelay / 1000}s linear` : 'auto',
       direction: options.direction || this.getDirectionToTarget(x, y),
       isMoving: !options.instant ? true : false
     });
@@ -214,7 +225,7 @@ export default class Unit extends React.Component {
 
   manaChange(value) {
     const { mana } = this.state;
-    this.setState({ mana: mana + value});
+    this.setState({ mana: mana + value });
   }
 
   healthChange(value) {
@@ -249,6 +260,7 @@ export default class Unit extends React.Component {
     const { unit } = this.props;
     return (
       <div
+        ref={this.ref}
         style={{
           // TODO pointerEvent:none when in battle
           height: '64px',
