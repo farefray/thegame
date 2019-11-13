@@ -95,7 +95,7 @@ export default class BattleUnit {
       let targetUnit = targetPairPool.findTargetByUnitId(this.id);
       const closestTarget = this.getClosestTarget(units);
       if (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit)) {
-        yield { actions: this.acquireTarget(closestTarget) };
+        yield { actions: closestTarget ? this.acquireTarget(closestTarget) : undefined }; // had to use those ? val : undefined in order to compile backend, however this has to be solved properly by typescript magic :)
         targetUnit = closestTarget;
       }
 
