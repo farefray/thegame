@@ -6,7 +6,7 @@ import TargetPairPool from './TargetPairPool.ts';
 import BattleUnit from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 
-const { ACTION } = require('../../../frontend/src/shared/constants');
+const { ACTION, TEAM } = require('../../../frontend/src/shared/constants');
 
 const BATTLE_TIME_LIMIT = 300 * 1000;
 
@@ -19,6 +19,8 @@ export interface Context {
 
 export default class Battle {
   public startBoard: Object;
+  public winner: number;
+  public playerDamage: number;
   private currentTimestamp: number;
   private readonly actionStack: Object[];
   private readonly pathfinder: Pathfinder;
@@ -29,6 +31,8 @@ export default class Battle {
 
   constructor({ board, gridWidth = 8, gridHeight = 8 }) {
     this.startBoard = cloneDeep(board);
+    this.winner = TEAM.NONE;
+    this.playerDamage = 0;
 
     this.currentTimestamp = 0;
     this.actionStack = [];
@@ -55,6 +59,7 @@ export default class Battle {
     while (!this.actionGenerator.next().done) {
       this.actionGenerator.next();
     }
+    this.setWinner();
   }
 
   *generateActions() {
@@ -134,5 +139,18 @@ export default class Battle {
   addToActionStack(action, type): void {
     const { unitId, payload } = action;
     this.actionStack.push({ type, unitID: unitId, payload, time: this.currentTimestamp });
+  }
+
+  setWinner() {
+    const aTeamUnits = this.units.filter(unit => unit.teamId === TEAM.A && unit.isAlive);
+    const bTeamUnits = this.units.filter(unit => unit.teamId === TEAM.B && unit.isAlive);
+
+    if (!aTeamUnits.length || !bTeamUnits.length) {
+      this.winner = aTeamUnits.length ? TEAM.A : TEAM.B;
+    }
+
+    if (bTeamUnits.length) {
+      this.playerDamage = 5; // todo count damage based on units left?
+    }
   }
 }
