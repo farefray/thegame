@@ -2,7 +2,8 @@ import React from 'react';
 import { useDrag, DragPreviewImage } from 'react-dnd';
 
 import ItemTypes from '../../App/ActiveGame/GameBoard/ItemTypes';
-import getPawnImageSrc from "../../helpers/pawnImage.helper";
+
+const image = require('@/assets/monsters/default.png');
 
 export default function IsDraggable({ cellPosition, children }) {
   const [{ isDragging }, drag, preview] = useDrag({
@@ -28,7 +29,7 @@ export default function IsDraggable({ cellPosition, children }) {
       }}
     >
       {children}
-      <DragPreviewImage connect={preview} src={getPawnImageSrc(1, 3, true)} />
+      <DragPreviewImage connect={preview} src={image} />
     </div>
   );
 }

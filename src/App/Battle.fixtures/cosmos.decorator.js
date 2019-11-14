@@ -35,7 +35,7 @@ const MyReduxContext = ({ children, deco }) => {
         actionStack: battleRoundResult.actionStack,
         startBoard: battleRoundResult.startBoard,
         winner: battleRoundResult.winner,
-        countdown: battleRoundResult.battleTime
+        countdown: battleRoundResult.time
       });
     });
   }, []);
