@@ -84,7 +84,7 @@ State.prototype.scheduleRoundStart = async function() {
 };
 
 State.prototype.scheduleRoundEnd = async function(battleRoundResult) {
-  await sleep(battleRoundResult.battleTime);
+  await sleep(battleRoundResult.time);
   this.endRound();
   this.damagePlayers(battleRoundResult.battles);
   this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
