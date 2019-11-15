@@ -4,7 +4,7 @@ import ShopController from './ShopController';
 import GameController from './GameController';
 import AppError from '../objects/AppError';
 import createBattleBoard from '../utils/createBattleBoard';
-
+import AiPlayer from '../models/AiPlayer';
 
 const Customer = require('../objects/Customer');
 const Session = require('../objects/Session');
@@ -179,7 +179,7 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
 
   // TODO TEST THIS [P0]
   console.log('for await')
-  for (uid in preBattleState.get('players')) {
+  for (let uid in preBattleState.get('players')) {
     const player = preBattleState.getIn(['players', uid]);
     console.log("TCL: forawait -> uid", uid)
     await player.preBattleCheck();
@@ -191,7 +191,7 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
     // todo update state for players?
 
     // todo PVP, create pairs
-    const AiPlayer = new AiPlayer(preBattleState.round);
+    const Ai = new AiPlayer(preBattleState.round);
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
     const board = createBattleBoard(
@@ -201,32 +201,15 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
       },
       {
         owner: '',
-        units: AiPlayer.battleBoard
+        units: Ai.battleBoard
       }
     );
     
     const battleResult = await BattleController.setupBattle(board);
-    
+    this.io.to(`${uid}`).emit('START_BATTLE', battleResult);
   }
 
-  console.log('after for awaitt')
-
-  
-  const countdown = battleResult.time;
-  const {
-    actionStack,
-    startBoard,
-    winner
-  } = battleResult.battles[socketID];
-
-  this.io.to(`${socketID}`).emit('START_BATTLE', {
-    actionStack,
-    startBoard,
-    winner,
-    countdown
-  });
-
-  await state.scheduleRoundEnd(battleResult);
+  await state.scheduleRoundEnd(15000); // todo
   ShopController.mutateStateByShopRefreshing(state);
   this.io.to(sessionID).emit('UPDATED_STATE', state);
 

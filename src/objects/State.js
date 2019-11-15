@@ -44,7 +44,7 @@ State.prototype.endRound = function() {
     const streak = player.streak || 0;
     const streakGold = Math.min(Math.floor(streak === 0 || Math.abs(streak) === 1 ? 0 : Math.abs(streak) / 5 + 1), 3);
     const newGold = gold + this.incomeBase + bonusGold + streakGold;
-    player.set('gold', newGold);
+    player.gold = newGold;
   }
 };
 
@@ -59,7 +59,7 @@ State.prototype.damagePlayers = function(battles) {
     if (battleResult.playerDamage) {
       const player = this.players[uid];
       const newHP = player.get('health') - battleResult.playerDamage;
-      player.set('health', newHP);
+      player.health = newHP;
 
       if (newHP <= 0) {
         // todo loss
@@ -83,10 +83,10 @@ State.prototype.scheduleRoundStart = async function() {
   return true;
 };
 
-State.prototype.scheduleRoundEnd = async function(battleRoundResult) {
-  await sleep(battleRoundResult.time);
+State.prototype.scheduleRoundEnd = async function(countdown = 15000) {
+  await sleep(countdown);
   this.endRound();
-  this.damagePlayers(battleRoundResult.battles);
+  // this.damagePlayers(battleRoundResult.battles); TODO
   this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 };
 
