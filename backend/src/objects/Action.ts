@@ -1,6 +1,5 @@
 import { Position } from './Position';
 import BattleUnit from './BattleUnit';
-import Battle from './Battle';
 
 export enum ACTION_TYPE {
   INIT,

@@ -3,6 +3,8 @@ import BoardController from './BoardController';
 import ShopController from './ShopController';
 import GameController from './GameController';
 import AppError from '../objects/AppError';
+import createBattleBoard from '../utils/createBattleBoard';
+import AiPlayer from '../models/AiPlayer';
 
 const Customer = require('../objects/Customer');
 const Session = require('../objects/Session');
@@ -172,22 +174,42 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
   await state.scheduleRoundStart();
 
   // do we need to update our session from storage?? TODO Test
-  const preBattleSession = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMEWHERE (!!URGENT)
-  const preBattleState = preBattleSession.get('state');
-  await BoardController.preBattleCheck(preBattleState);
-  const battleRoundResult = await BattleController.setup(preBattleState);
-  clients.forEach(socketID => {
-    const {
-      actionStack,
-      startBoard,
-      winner
-    } = battleRoundResult.battles[socketID];
+  const session = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMEWHERE (P1)
+  const preBattleState = session.get('state');
 
-    const countdown = battleRoundResult.battleTime;
-    this.io.to(`${socketID}`).emit('START_BATTLE', actionStack, startBoard, winner, countdown);
-  });
+  // TODO TEST THIS [P0]
+  //console.log('for await')
+  for (let uid in preBattleState.get('players')) {
+    const player = preBattleState.getIn(['players', uid]);
+    //console.log("TCL: forawait -> uid", uid)
+    await player.preBattleCheck();
+    //console.log('after await')
 
-  await state.scheduleRoundEnd(battleRoundResult);
+    const playerBoard = player.get('board');
+    // todo update preBattleState?
+
+    // todo update state for players?
+
+    // todo PVP, create pairs
+    const Ai = new AiPlayer(preBattleState.round);
+    // Check to see if a battle is required
+    // Lose when empty, even if enemy no units aswell (tie with no damage taken)
+    const board = createBattleBoard(
+      {
+        owner: uid,
+        units: playerBoard
+      },
+      {
+        owner: '',
+        units: Ai.battleBoard
+      }
+    );
+    
+    const battleResult = await BattleController.setupBattle(board);
+    this.io.to(`${uid}`).emit('START_BATTLE', battleResult);
+  }
+
+  await state.scheduleRoundEnd(15000); // todo
   ShopController.mutateStateByShopRefreshing(state);
   this.io.to(sessionID).emit('UPDATED_STATE', state);
 

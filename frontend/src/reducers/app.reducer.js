@@ -49,7 +49,7 @@ export function app(
     case 'START_BATTLE': {
       return {
         ...state,
-        countdown: action.countdown / 1000
+        countdown: Math.ceil(action.countdown / 1000)
       };
     }
     case 'INITIALIZE': {

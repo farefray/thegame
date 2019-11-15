@@ -21,6 +21,8 @@ function Position(firstParam, secondParam = -1) {
     this.x = Number(this.x);
     this.y = Number(this.y);
   } catch (e) {
+    console.warn(firstParam);
+    console.warn(secondParam);
     throw new Error('Position constructor is invalid!');
   }
 }
