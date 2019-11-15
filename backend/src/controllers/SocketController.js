@@ -178,12 +178,12 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
   const preBattleState = session.get('state');
 
   // TODO TEST THIS [P0]
-  console.log('for await')
+  //console.log('for await')
   for (let uid in preBattleState.get('players')) {
     const player = preBattleState.getIn(['players', uid]);
-    console.log("TCL: forawait -> uid", uid)
+    //console.log("TCL: forawait -> uid", uid)
     await player.preBattleCheck();
-    console.log('after await')
+    //console.log('after await')
 
     const playerBoard = player.get('board');
     // todo update preBattleState?
