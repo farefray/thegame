@@ -16,17 +16,24 @@ export interface Context {
   units: BattleUnit[];
 }
 
+interface UnitAction {
+  type: string,
+  unitID: string,
+  payload: object,
+  time: number
+}
+
 export default class Battle {
   public startBoard: Object;
   public winner: number;
   public playerDamage: number;
-  private currentTimestamp: number;
-  private readonly actionStack: Object[];
+  public readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
   private readonly actionGenerator: Generator;
   private readonly units: BattleUnit[];
   private readonly actorQueue: Actor[];
   private readonly targetPairPool: TargetPairPool;
+  private currentTimestamp: number;
 
   constructor({ board, gridWidth = 8, gridHeight = 8 }) {
     this.startBoard = cloneDeep(board);

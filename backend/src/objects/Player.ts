@@ -32,6 +32,10 @@ export default class Player {
 
     return null;
   }
+  
+  get(property: string) {
+    return this[property];
+  }
 
   async addToHand (unitName: string) {
     const availableHandPosition = this.availableHandPosition;
