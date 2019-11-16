@@ -124,6 +124,9 @@ export default class Battle {
       case ACTION_TYPE.HEALTH_CHANGE:
         this.addToActionStack(action, ACTION.HEALTH_CHANGE);
         break;
+      case ACTION_TYPE.MANA_CHANGE:
+        this.addToActionStack(action, ACTION.MANA_CHANGE);
+        break;
       case ACTION_TYPE.DEATH:
         const { unit } = action.payload;
         this.pathfinder.occupiedTileSet.delete(`${unit.x},${unit.y}`);

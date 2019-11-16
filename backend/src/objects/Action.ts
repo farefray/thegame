@@ -40,6 +40,13 @@ export interface HealthChangeAction extends ActionBase {
   };
 }
 
+export interface ManaChangeAction extends ActionBase {
+  type: ACTION_TYPE.MANA_CHANGE;
+  payload: {
+    value: number;
+  };
+}
+
 export interface DeathAction extends ActionBase {
   type: ACTION_TYPE.DEATH;
   payload: {
@@ -55,4 +62,4 @@ export interface AcquireTargetAction extends ActionBase {
   };
 }
 
-export type Action = MoveAction | AttackAction | HealthChangeAction | DeathAction | AcquireTargetAction;
+export type Action = MoveAction | AttackAction | HealthChangeAction | ManaChangeAction | DeathAction | AcquireTargetAction;
