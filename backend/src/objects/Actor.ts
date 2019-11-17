@@ -1,5 +1,5 @@
 import { Action } from './Action';
-import { Context } from './Battle';
+import { BattleContext } from './Battle';
 
 export interface ActionGeneratorValue {
   delay?: number;
@@ -9,7 +9,7 @@ export interface ActionGeneratorValue {
 export default class Actor {
   public id: string;
   public timestamp: number;
-  public actionGenerator: Generator<ActionGeneratorValue, ActionGeneratorValue, Context>;
+  public actionGenerator: Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext>;
 
   constructor({ id = '', actionGenerator, timestamp }) {
     this.id = id;

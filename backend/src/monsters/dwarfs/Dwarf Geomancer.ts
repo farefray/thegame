@@ -1,8 +1,8 @@
 import Monster from '../../abstract/Monster';
 import BattleUnit from '../../objects/BattleUnit';
-import { Context } from '../../objects/Battle';
+import { BattleContext } from '../../objects/Battle';
 
-function spell(unit: BattleUnit, battleContext: Context) {
+function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
   const ticks = 20;
   const tickValue = 2000;
@@ -20,7 +20,7 @@ function spell(unit: BattleUnit, battleContext: Context) {
 }
 
 function Dwarf_Geomancer() {
-  return new Monster({
+  return Monster({
     armor: 1,
     attack: 40,
     attackRange: 3,

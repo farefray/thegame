@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 
 function Baby_Beholder() {
-  return new Monster({
+  return Monster({
     armor: 1,
     attack: 45,
     attackRange: 2,
