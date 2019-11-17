@@ -1,5 +1,5 @@
 import Dwarf from './dwarfs/Dwarf';
-import Dwarf_Geomancer from './dwarfs/Dwarf Geomancer';
+import Dwarf_Geomancer from './dwarfs/Dwarf Geomancer.ts';
 import Dwarf_Guard from './dwarfs/Dwarf Guard';
 import Dwarf_Soldier from './dwarfs/Dwarf Soldier';
 
@@ -16,12 +16,22 @@ import Beholder from './beholders/Beholder';
 import Baby_Beholder from './beholders/Baby Beholder';
 import Elder_Beholder from './beholders/Elder Beholder';
 
-import BigBoy from './BigBoy';
+import BigBoy from './BigBoy.ts';
 
 export default {
   BigBoy,
-  Dwarf, Dwarf_Geomancer, Dwarf_Guard, Dwarf_Soldier,
-  Elf, Elf_Arcanist, Elf_Scout,
-  Minotaur, Minotaur_Archer, Minotaur_Guard, Minotaur_Mage,
-  Beholder, Baby_Beholder, Elder_Beholder
-}
+  Dwarf,
+  Dwarf_Geomancer,
+  Dwarf_Guard,
+  Dwarf_Soldier,
+  Elf,
+  Elf_Arcanist,
+  Elf_Scout,
+  Minotaur,
+  Minotaur_Archer,
+  Minotaur_Guard,
+  Minotaur_Mage,
+  Beholder,
+  Baby_Beholder,
+  Elder_Beholder
+};

@@ -9,7 +9,7 @@ import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
 
 const BATTLE_TIME_LIMIT = 300 * 1000;
 
-export interface Context {
+export interface BattleContext {
   currentTimestamp: number;
   pathfinder: Pathfinder;
   targetPairPool: TargetPairPool;
@@ -52,7 +52,7 @@ export default class Battle {
     this.consumeActionGenerator();
   }
 
-  get context(): Context {
+  get context(): BattleContext {
     return {
       currentTimestamp: this.currentTimestamp,
       pathfinder: this.pathfinder,
@@ -130,6 +130,9 @@ export default class Battle {
         break;
       case ACTION_TYPE.HEALTH_CHANGE:
         this.addToActionStack(action, ACTION.HEALTH_CHANGE);
+        break;
+      case ACTION_TYPE.MANA_CHANGE:
+        this.addToActionStack(action, ACTION.MANA_CHANGE);
         break;
       case ACTION_TYPE.DEATH:
         const { unit } = action.payload;

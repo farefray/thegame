@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 
 function Minotaur() {
-  return new Monster({
+  return Monster({
     armor: 5,
     attack: 50,
     attackRange: 1,

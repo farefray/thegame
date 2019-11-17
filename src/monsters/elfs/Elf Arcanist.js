@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 
 function Elf_Arcanist() {
-  return new Monster({
+  return Monster({
     armor: 1,
     attack: 85,
     attackRange: 3,
