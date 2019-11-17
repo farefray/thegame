@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 
 function Minotaur_Guard() {
-  return new Monster({
+  return Monster({
     armor: 10,
     attack: 60,
     attackRange: 1,

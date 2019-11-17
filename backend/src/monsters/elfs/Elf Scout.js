@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 
 function Elf_Scout() {
-  return new Monster({
+  return Monster({
     armor: 0,
     attack: 55,
     attackRange: 5,

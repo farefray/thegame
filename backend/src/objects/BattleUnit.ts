@@ -1,20 +1,19 @@
 import * as PathUtil from '../utils/pathUtils';
 import Pathfinder from './Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction } from './Action';
-import { MoveAction, AttackAction, HealthChangeAction, DeathAction } from './Action';
+import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction } from './Action';
 import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
-import { Context } from './Battle';
+import { BattleContext } from './Battle';
 import Monsters from '../utils/Monsters';
 
-
 interface SimpleUnit {
-  name: string,
+  name: string;
   position: {
-    x: number,
-    y: number
-  },
-  teamId: number
+    x: number;
+    y: number;
+  };
+  teamId: number;
 }
 
 export default class BattleUnit {
@@ -30,6 +29,7 @@ export default class BattleUnit {
   public maxMana: number;
   public armor: number;
   public actionDelay: number;
+  public spell?: Function;
 
   private _health: number;
   private _mana: number;
@@ -49,9 +49,10 @@ export default class BattleUnit {
     this.maxHealth = unitStats.maxHealth;
     this.maxMana = unitStats.maxMana;
     this.actionDelay = unitStats.speed;
+    this.spell = unitStats.spell;
 
     this._health = unitStats.maxHealth;
-    this._mana = 0;
+    this._mana = 100;
     this._attack = unitStats.attack;
   }
 
@@ -87,10 +88,21 @@ export default class BattleUnit {
     return this._health > 0;
   }
 
-  *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, Context> {
+  attemptSpellCast(battleContext: BattleContext) {
+    if (!this.spell) return {};
+    const spellGenerator = this.spell(this, battleContext);
+    if (!spellGenerator) return {};
+    const { currentTimestamp } = battleContext;
+    const actor = new Actor({ timestamp: currentTimestamp, actionGenerator: spellGenerator });
+    return { delay: this.actionDelay, actors: [actor] };
+  }
+
+  *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
     while (this.isAlive) {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
+
+      yield this.attemptSpellCast(battleContext);
 
       let targetUnit = targetPairPool.findTargetByUnitId(this.id);
       const closestTarget = this.getClosestTarget(units);
@@ -135,7 +147,7 @@ export default class BattleUnit {
     ];
   }
 
-  attack(targetUnit: BattleUnit, battleContext: Context): { actions: [AttackAction]; actors: Actor[] } {
+  attack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
     // this.actionLockTimestamp = this.currentTimestamp + 100;
     const from = this.position;
     const to = targetUnit.position;
@@ -186,6 +198,18 @@ export default class BattleUnit {
       return [healthChangeAction, deathAction];
     }
     return [healthChangeAction];
+  }
+
+  manaChange(value: number): [ManaChangeAction] {
+    this.mana += value;
+    const manaChangeAction: ManaChangeAction = {
+      unitId: this.id,
+      type: ACTION_TYPE.MANA_CHANGE,
+      payload: {
+        value
+      }
+    };
+    return [manaChangeAction];
   }
 
   acquireTarget(target: BattleUnit): [AcquireTargetAction] {
