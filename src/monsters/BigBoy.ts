@@ -1,8 +1,8 @@
 import Monster from '../abstract/Monster';
 import BattleUnit from '../objects/BattleUnit';
-import { Context } from '../objects/Battle';
+import { BattleContext } from '../objects/Battle';
 
-function spell(unit: BattleUnit, battleContext: Context) {
+function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
   const ticks = 20;
   const tickValue = 2000;
@@ -18,7 +18,7 @@ function spell(unit: BattleUnit, battleContext: Context) {
 }
 
 function BigBoy() {
-  return new Monster({
+  return Monster({
     armor: 5,
     attack: 50,
     attackRange: 1,

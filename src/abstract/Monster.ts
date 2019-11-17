@@ -1,20 +1,18 @@
-import SpellConfig from './SpellConfig';
-
 interface MonsterInterface {
   lookType: number,
   cost: number,
-  health: number,
-  mana: number,
+  maxHealth: number,
+  mana?: number,
   attack: number,
-  attackRange: number,
-  particle: number,
-  armor: number,
-  speed: number,
-  attackSpeed: number,
-  maxMana: number,
-  manaRegen: number,
-  healthRegen: number,
-  spellConfig: SpellConfig
+  attackRange?: number,
+  particle?: number,
+  armor?: number,
+  speed?: number,
+  attackSpeed?: number,
+  maxMana?: number,
+  manaRegen?: number,
+  healthRegen?: number,
+  spell?: Function
 }
 
 export default function Monster(monsterConfig: MonsterInterface): MonsterInterface {

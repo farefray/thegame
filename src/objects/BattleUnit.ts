@@ -4,7 +4,7 @@ import { ACTION_TYPE, AcquireTargetAction } from './Action';
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction } from './Action';
 import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
-import { Context } from './Battle';
+import { BattleContext } from './Battle';
 import Monsters from '../utils/Monsters';
 
 interface SimpleUnit {
@@ -88,7 +88,7 @@ export default class BattleUnit {
     return this._health > 0;
   }
 
-  attemptSpellCast(battleContext: Context) {
+  attemptSpellCast(battleContext: BattleContext) {
     if (!this.spell) return {};
     const spellGenerator = this.spell(this, battleContext);
     if (!spellGenerator) return {};
@@ -97,7 +97,7 @@ export default class BattleUnit {
     return { delay: this.actionDelay, actors: [actor] };
   }
 
-  *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, Context> {
+  *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
     while (this.isAlive) {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
@@ -147,7 +147,7 @@ export default class BattleUnit {
     ];
   }
 
-  attack(targetUnit: BattleUnit, battleContext: Context): { actions: [AttackAction]; actors: Actor[] } {
+  attack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
     // this.actionLockTimestamp = this.currentTimestamp + 100;
     const from = this.position;
     const to = targetUnit.position;

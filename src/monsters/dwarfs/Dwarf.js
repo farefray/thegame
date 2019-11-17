@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 
 function Dwarf() {
-  return new Monster({
+  return Monster({
     armor: 7,
     attack: 60,
     attackRange: 1,

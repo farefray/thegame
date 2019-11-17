@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 
 function Elder_Beholder() {
-  return new Monster({
+  return Monster({
     armor: 0,
     attack: 85,
     attackRange: 4,
