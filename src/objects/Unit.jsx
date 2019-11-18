@@ -68,16 +68,6 @@ export default class Unit extends React.Component {
     return new Position(this.state.id);
   }
 
-  regenerationTick(action) {
-    // we might generate it over time somehow?
-    const { mana, health } = this.state;
-
-    this.setState({
-      mana: mana + action.mana,
-      health: health + action.health
-    });
-  }
-
   /**
    *
    * @param {Object} action Action happened
@@ -98,7 +88,7 @@ export default class Unit extends React.Component {
       }
       case ACTION.CAST: {
         console.log('CAST!');
-        this.cast(action);
+        this.cast(payload);
         break;
       }
       case ACTION.HEALTH_CHANGE: {
@@ -109,10 +99,6 @@ export default class Unit extends React.Component {
       }
       case ACTION.MANA_CHANGE: {
         this.manaChange(payload.value);
-        break;
-      }
-      case ACTION.REGENERATION: {
-        this.regenerationTick(action);
         break;
       }
       default: {
