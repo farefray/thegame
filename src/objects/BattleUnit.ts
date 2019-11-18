@@ -52,7 +52,7 @@ export default class BattleUnit {
     this.spell = unitStats.spell;
 
     this._health = unitStats.maxHealth;
-    this._mana = 100;
+    this._mana = 0;
     this._attack = unitStats.attack;
   }
 
@@ -98,6 +98,7 @@ export default class BattleUnit {
   }
 
   *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
+    yield { actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: 0 })] };
     while (this.isAlive) {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
@@ -123,6 +124,13 @@ export default class BattleUnit {
         const step = pathfinder.findStepToTarget(this, targetUnit);
         yield { delay: this.actionDelay, actions: this.move(step) };
       }
+    }
+    return {};
+  }
+
+  *regeneration(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
+    while (this.isAlive) {
+      yield { delay: 1000, actions: this.manaChange(10) };
     }
     return {};
   }

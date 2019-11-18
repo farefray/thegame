@@ -1,4 +1,4 @@
-import Player from '../objects/Player';
+import Player from '../objects/Player.ts';
 import ShopController from './ShopController';
 import State from '../objects/State';
 import Monsters from '../utils/Monsters';
@@ -6,7 +6,7 @@ import AppError from '../objects/AppError';
 
 const HAND_UNITS_LIMIT = 9;
 
-const GameController = function () {
+const GameController = function() {
   return this;
 };
 
@@ -21,7 +21,7 @@ const GameController = function () {
 GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
   const player = state.getIn(['players', playerIndex]);
   if (player.isDead()) {
-    return new AppError('warning', 'Sorry, you\'re already dead');
+    return new AppError('warning', "Sorry, you're already dead");
   }
 
   /**
@@ -63,6 +63,5 @@ GameController.initialize = async clients => {
   ShopController.mutateStateByShopRefreshing(state);
   return state;
 };
-
 
 export default GameController;
