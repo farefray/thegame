@@ -86,11 +86,6 @@ export default class Unit extends React.Component {
         payload.to && this.attack(payload.to.x, payload.to.y);
         break;
       }
-      case ACTION.CAST: {
-        console.log('CAST!');
-        this.cast(payload);
-        break;
-      }
       case ACTION.HEALTH_CHANGE: {
         setTimeout(() => {
           this.healthChange(payload.value);
@@ -201,12 +196,6 @@ export default class Unit extends React.Component {
         });
       }
     }, 500); // todo better than constant delay
-  }
-
-  cast(spell) {
-    if (spell.manacost) {
-      this.manaChange(-spell.manacost);
-    }
   }
 
   manaChange(value) {
