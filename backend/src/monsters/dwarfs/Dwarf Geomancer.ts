@@ -30,6 +30,7 @@ function Dwarf_Geomancer() {
     mana: 0,
     manaRegen: 20,
     maxHealth: 550,
+    maxMana: 100,
     particle: 1,
     speed: 1400,
     spell

@@ -108,7 +108,7 @@ export default class Unit extends React.Component {
         break;
       }
       case ACTION.MANA_CHANGE: {
-        this.manaChange(action.value);
+        this.manaChange(payload.value);
         break;
       }
       case ACTION.REGENERATION: {
@@ -224,8 +224,10 @@ export default class Unit extends React.Component {
   }
 
   manaChange(value) {
-    const { mana } = this.state;
-    this.setState({ mana: mana + value });
+    let { mana } = this.state;
+    const { maxMana } = this.state;
+    mana = Math.max(0, Math.min(mana + value, maxMana));
+    this.setState({ mana });
   }
 
   healthChange(value) {
