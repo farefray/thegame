@@ -22,7 +22,7 @@ export default function Particle({ particle }) {
       ],
     }, {
       direction: 'normal',
-      duration: particle.duration,
+      duration: particle.speed,
       iterations: 1,
     }).onfinish = () => {
       particle.onDone(particle.id)
