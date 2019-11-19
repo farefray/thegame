@@ -27,7 +27,9 @@ function BigBoy() {
     },
     cost: 1,
     lookType: 25,
-    maxHealth: 3750,
+    health: {
+      max: 3550
+    },
     speed: 1000,
     spell
   });

@@ -14,7 +14,9 @@ function Elf_Scout() {
     },
     cost: 2,
     lookType: 64,
-    maxHealth: 350,
+    health: {
+      max: 350
+    },
     speed: 1000,
   });
 }

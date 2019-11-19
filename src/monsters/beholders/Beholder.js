@@ -5,7 +5,9 @@ function Beholder() {
     "armor": 2,
     "cost": 3,
     "lookType": 17,
-    "maxHealth": 750,
+    health: {
+      max: 750
+    },
     "speed": 800,
   });
 }

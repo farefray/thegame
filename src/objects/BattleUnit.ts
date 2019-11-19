@@ -33,12 +33,15 @@ export default class BattleUnit {
   public particle: number;
   public lookType: number;
   public previousStep?: Object;
-  public maxHealth: number;
   public armor: number;
   public actionDelay: number; // TODO[P0] - this is supposed to be different, based on speed or atk speed or exhaust after spellcast?
   public spell?: Function;
 
-  private _health: number;
+  private _health: {
+    now: number,
+    max: number
+  }
+
   private _mana: {
     now: number,
     max: number,
@@ -57,16 +60,18 @@ export default class BattleUnit {
     this.attack = unitStats.attack;
     this.armor = unitStats.armor;
     this.lookType = unitStats.lookType;
-    this.maxHealth = unitStats.maxHealth;
     this._mana = {
       now: 0,
-      max: unitStats.max,
+      max: unitStats.mana.max,
       regen: unitStats.mana.regen
     };
     this.actionDelay = unitStats.speed;
     this.spell = unitStats.spell;
 
-    this._health = unitStats.maxHealth;
+    this._health = {
+      now: unitStats.health.max,
+      max: unitStats.health.max
+    };
   }
 
   get position(): Position {
@@ -78,11 +83,11 @@ export default class BattleUnit {
   }
 
   get health() {
-    return this._health;
+    return this._health.now;
   }
 
   set health(value) {
-    this._health = Math.max(0, Math.min(value, this.maxHealth));
+    this._health.now = Math.max(0, Math.min(value, this._health.max));
   }
 
   get mana() {
@@ -102,7 +107,7 @@ export default class BattleUnit {
   }
 
   get isAlive() {
-    return this._health > 0;
+    return this._health.now > 0;
   }
 
   get attackRange() {

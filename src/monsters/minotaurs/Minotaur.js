@@ -4,9 +4,10 @@ function Minotaur() {
   return Monster({
     armor: 5,
     cost: 1,
-    healthRegen: 10,
     lookType: 25,
-    maxHealth: 375,
+    health: {
+      max: 375
+    },
     speed: 1000,
   });
 }

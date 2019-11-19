@@ -5,7 +5,9 @@ function Dwarf_Soldier() {
     armor: 8,
     cost: 2,
     lookType: 71,
-    maxHealth: 600,
+    health: {
+      max: 600
+    },
     speed: 800,
   });
 }

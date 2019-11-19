@@ -5,7 +5,9 @@ function Minotaur_Mage() {
     armor: 2,
     cost: 3,
     lookType: 23,
-    maxHealth: 650,
+    health: {
+      max: 650
+    },
     speed: 1200,
   });
 }

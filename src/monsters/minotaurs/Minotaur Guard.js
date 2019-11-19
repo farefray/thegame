@@ -4,9 +4,10 @@ function Minotaur_Guard() {
   return Monster({
     armor: 10,
     cost: 3,
-    healthRegen: 10,
     lookType: 29,
-    maxHealth: 875,
+    health: {
+      max: 875
+    },
     speed: 1000,
   });
 }
