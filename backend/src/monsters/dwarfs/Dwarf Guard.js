@@ -5,8 +5,6 @@ function Dwarf_Guard() {
     armor: 15,
     cost: 3,
     lookType: 70,
-    mana: 0,
-    manaRegen: 2,
     maxHealth: 800,
     speed: 700,
   });

@@ -5,8 +5,6 @@ function Elf_Arcanist() {
     armor: 1,
     cost: 3,
     lookType: 63,
-    mana: 0,
-    manaRegen: 20,
     maxHealth: 550,
     speed: 1400,
   });

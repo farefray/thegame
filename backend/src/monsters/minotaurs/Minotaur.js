@@ -6,8 +6,6 @@ function Minotaur() {
     cost: 1,
     healthRegen: 10,
     lookType: 25,
-    mana: 0,
-    manaRegen: 10,
     maxHealth: 375,
     speed: 1000,
   });

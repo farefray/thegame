@@ -27,10 +27,7 @@ function BigBoy() {
     },
     cost: 1,
     lookType: 25,
-    mana: 0,
-    manaRegen: 10,
     maxHealth: 3750,
-    maxMana: 100,
     speed: 1000,
     spell
   });

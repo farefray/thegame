@@ -6,8 +6,6 @@ function Minotaur_Guard() {
     cost: 3,
     healthRegen: 10,
     lookType: 29,
-    mana: 0,
-    manaRegen: 3,
     maxHealth: 875,
     speed: 1000,
   });

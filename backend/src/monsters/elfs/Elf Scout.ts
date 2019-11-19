@@ -14,8 +14,6 @@ function Elf_Scout() {
     },
     cost: 2,
     lookType: 64,
-    mana: 0,
-    manaRegen: 5,
     maxHealth: 350,
     speed: 1000,
   });

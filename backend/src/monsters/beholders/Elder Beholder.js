@@ -6,8 +6,6 @@ function Elder_Beholder() {
     attack: 85,
     cost: 4,
     lookType: 108,
-    mana: 0,
-    manaRegen: 10,
     maxHealth: 1050,
     speed: 800,
   });

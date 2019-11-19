@@ -5,8 +5,6 @@ function Beholder() {
     "armor": 2,
     "cost": 3,
     "lookType": 17,
-    "mana": 0,
-    "manaRegen": 10,
     "maxHealth": 750,
     "speed": 800,
   });
