@@ -39,7 +39,6 @@ function SocketController(socket, io) {
   this.socket = socket;
 
   socket.on('ON_CONNECTION', async () => {
-    console.log('@ON_CONNECTION', socket.id);
     connectedPlayers.set(socket.id, new Customer(socket.id));
     // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
   });
@@ -92,8 +91,6 @@ function SocketController(socket, io) {
   socket.on('START_GAME', async () => {
     // TODO multiplayer
     io.in('WAITING_ROOM').clients(async (err, clients) => {
-      console.log('setting session for waiting room', clients);
-
       if (err) {
         throw new Error(err);
       }
@@ -153,12 +150,11 @@ SocketController.prototype.initializeGameSessions = async function (clients) {
   clients.forEach(socketID => {
     connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
     this.io.to(socketID).emit('INITIALIZE', socketID);
-    console.log('Initializing player: ', socketID);
 
     // TODO
     this.socket.join(sessionID, () => {
       const rooms = Object.keys(this.socket.rooms);
-      console.log(rooms); // [ <socket.id>, 'room 237' ]
+      // console.log(rooms); // [ <socket.id>, 'room 237' ]
       this.io.to(sessionID).emit('UPDATED_STATE', state); // todo get rid of asNetwork
     });
   });
@@ -175,15 +171,19 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
 
   // do we need to update our session from storage?? TODO Test
   const session = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMEWHERE (P1)
+  if (!session) {
+    // user disconnected and no session exists
+    return sessionsStore.destroy(sessionID);
+  }
+
   const preBattleState = session.get('state');
 
-  // TODO TEST THIS [P0]
-  //console.log('for await')
+  // Count battles for all players, then send those battles
+  let countdown = Number.MIN_VALUE;
+  const playerBattleResults = [];
   for (let uid in preBattleState.get('players')) {
     const player = preBattleState.getIn(['players', uid]);
-    //console.log("TCL: forawait -> uid", uid)
     await player.preBattleCheck();
-    //console.log('after await')
 
     const playerBoard = player.get('board');
     // todo update preBattleState?
@@ -206,10 +206,19 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
     );
     
     const battleResult = await BattleController.setupBattle(board);
-    this.io.to(`${uid}`).emit('START_BATTLE', battleResult);
+    if (battleResult.battleTime > countdown) {
+      countdown = battleResult.battleTime;
+    }
+
+    playerBattleResults[uid] = battleResult;
   }
 
-  await state.scheduleRoundEnd(15000); // todo
+  for (let uid in preBattleState.get('players')) {
+    playerBattleResults[uid].countdown = countdown; // all players have the battle length of the longest battle
+    this.io.to(`${uid}`).emit('START_BATTLE', playerBattleResults[uid]);
+  }
+
+  await state.scheduleRoundEnd(countdown);
   ShopController.mutateStateByShopRefreshing(state);
   this.io.to(sessionID).emit('UPDATED_STATE', state);
 

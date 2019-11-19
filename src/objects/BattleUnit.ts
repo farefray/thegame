@@ -88,6 +88,16 @@ export default class BattleUnit {
     return this._health > 0;
   }
 
+  /**
+   * Moving battle unit starting position
+   * @param toPosition 
+   */
+  rearrange(toPosition: Position) {
+    this.y = toPosition.y;
+    this.x = toPosition.x;
+    this.id = this.stringifiedPosition; // we update id for this unit aswell
+  }
+
   attemptSpellCast(battleContext: BattleContext) {
     if (!this.spell) return {};
     const spellGenerator = this.spell(this, battleContext);

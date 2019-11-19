@@ -18,7 +18,6 @@ app.use(cors());
 router.all('*', cors());
 
 io.on('connection', socket => {
-  console.log('io on connection', socket.id);
   const socketController = new SocketController(socket, io);
   socketController.onConnection();
 });

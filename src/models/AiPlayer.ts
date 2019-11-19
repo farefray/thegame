@@ -14,6 +14,10 @@ export default class AiPlayer {
   public battleBoard:BattleUnit[] = [];
 
   constructor(round: number) {
+    if (round > 6) {
+      round = 6; // hardcode to cover rounds 6+ for now, until we have proper AI
+    }
+
     const npcBoard = AiPlayer.roundSetConfiguration[round];
     npcBoard.forEach(simpleUnit => {
       this.battleBoard.push(new BattleUnit({
