@@ -22,18 +22,25 @@ export default class BattleUnit {
   public x: number;
   public y: number;
   public teamId: number;
-  public attackRange: number;
+  public attack: {
+    value: number,
+    range: number,
+    effect: {
+      id: string,
+      duration: number
+    }
+  };
+  public particle: number;
   public lookType: number;
   public previousStep?: Object;
   public maxHealth: number;
   public maxMana: number;
   public armor: number;
-  public actionDelay: number;
+  public actionDelay: number; // TODO[P0] - this is supposed to be different, based on speed or atk speed or exhaust after spellcast?
   public spell?: Function;
 
   private _health: number;
   private _mana: number;
-  private _attack: number;
 
   constructor(simpleUnit: SimpleUnit) {
     this.x = +simpleUnit.position.x;
@@ -43,7 +50,8 @@ export default class BattleUnit {
 
     const unitStats = Monsters.getMonsterStats(simpleUnit.name);
     this.name = unitStats.name;
-    this.attackRange = unitStats.attackRange;
+    this.particle = unitStats.particle;
+    this.attack = unitStats.attack;
     this.armor = unitStats.armor;
     this.lookType = unitStats.lookType;
     this.maxHealth = unitStats.maxHealth;
@@ -53,7 +61,6 @@ export default class BattleUnit {
 
     this._health = unitStats.maxHealth;
     this._mana = 0;
-    this._attack = unitStats.attack;
   }
 
   get position(): Position {
@@ -86,6 +93,10 @@ export default class BattleUnit {
 
   get isAlive() {
     return this._health > 0;
+  }
+
+  get attackRange() {
+    return this.attack.range;
   }
 
   /**
@@ -128,7 +139,7 @@ export default class BattleUnit {
       }
       const distanceToTarget = Pathfinder.getDistanceBetweenUnits(this, targetUnit);
       if (distanceToTarget < this.attackRange) {
-        const { actions, actors } = this.attack(targetUnit, battleContext);
+        const { actions, actors } = this.doAttack(targetUnit, battleContext);
         yield { delay: this.actionDelay, actions, actors };
       } else {
         const step = pathfinder.findStepToTarget(this, targetUnit);
@@ -165,15 +176,21 @@ export default class BattleUnit {
     ];
   }
 
-  attack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
+  get attackValue() {
+    const value = this.attack.value;
+    const maximumRoll = Math.floor(value * 1.1);
+    const minimumRoll = Math.ceil(value * 0.9);
+    return Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll;
+  }
+
+  doAttack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
     // this.actionLockTimestamp = this.currentTimestamp + 100;
     const from = this.position;
     const to = targetUnit.position;
 
     const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
-    const maximumRoll = Math.floor(this._attack * 1.1);
-    const minimumRoll = Math.ceil(this._attack * 0.9);
-    const value = -Math.floor(multiplier * Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll);
+    
+    const value = -Math.floor(multiplier * this.attackValue);
 
     const attackAction: AttackAction = {
       unitId: this.id,

@@ -20,9 +20,11 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
 function BigBoy() {
   return Monster({
     armor: 5,
-    attack: 50,
-    attackRange: 1,
-    attackSpeed: 1000,
+    attack: {
+      value: 55,
+      range: 1,
+      speed: 1000
+    },
     cost: 1,
     lookType: 25,
     mana: 0,

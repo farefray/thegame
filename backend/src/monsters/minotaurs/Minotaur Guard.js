@@ -3,9 +3,6 @@ import Monster from '../../abstract/Monster';
 function Minotaur_Guard() {
   return Monster({
     armor: 10,
-    attack: 60,
-    attackRange: 1,
-    attackSpeed: 1000,
     cost: 3,
     healthRegen: 10,
     lookType: 29,

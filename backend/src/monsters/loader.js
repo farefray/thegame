@@ -5,7 +5,7 @@ import Dwarf_Soldier from './dwarfs/Dwarf Soldier';
 
 import Elf from './elfs/Elf';
 import Elf_Arcanist from './elfs/Elf Arcanist';
-import Elf_Scout from './elfs/Elf Scout';
+import Elf_Scout from './elfs/Elf Scout.ts';
 
 import Minotaur from './minotaurs/Minotaur';
 import Minotaur_Archer from './minotaurs/Minotaur Archer';

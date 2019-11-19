@@ -3,9 +3,6 @@ import Monster from '../../abstract/Monster';
 function Minotaur() {
   return Monster({
     armor: 5,
-    attack: 50,
-    attackRange: 1,
-    attackSpeed: 1000,
     cost: 1,
     healthRegen: 10,
     lookType: 25,
