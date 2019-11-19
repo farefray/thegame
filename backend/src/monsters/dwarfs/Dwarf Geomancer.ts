@@ -26,15 +26,12 @@ function Dwarf_Geomancer() {
       value: 40,
       range: 3,
       speed: 100,
-      effect: {
-        id: 'fireball',
-        duration: 250
-      }
+      particle: 'fireball'
     },
     cost: 3,
     lookType: 66,
     mana: {
-      regen: 20
+      regen: 5
     },
     health: {
       max: 550

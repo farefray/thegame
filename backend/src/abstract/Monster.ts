@@ -1,8 +1,3 @@
-interface Effect {
-  id: string,
-  duration: number
-}
-
 interface MonsterInterface {
   lookType: number,
   cost: number,
@@ -19,7 +14,7 @@ interface MonsterInterface {
     value: number,
     range: number,
     speed: number,
-    effect?: Effect,
+    particle?: string,
   }
   armor?: number,
   speed?: number,

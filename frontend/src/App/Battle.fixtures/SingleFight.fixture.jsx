@@ -6,7 +6,7 @@ const defaultBoard = {
     {
       name: 'dwarf_geomancer',
       x: 5,
-      y: 6
+      y: 1
     }
   ],
   B: [

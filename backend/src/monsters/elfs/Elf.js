@@ -5,12 +5,9 @@ function Elf() {
     armor: 2,
     attack: {
       value: 45,
-      range: 3,
+      range: 7,
       speed: 1000,
-      effect: {
-        id: 'arrow',
-        duration: 100
-      }
+      particle: 'arrow'
     },
     cost: 1,
     lookType: 62,

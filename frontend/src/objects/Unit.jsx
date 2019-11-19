@@ -161,45 +161,43 @@ export default class Unit extends React.Component {
       isMoving: false
     });
 
-    setTimeout(() => {
-      if (this.isMelee()) {
-        this.setState({
-          top: midpointTop,
-          left: midpointLeft,
-          transition: 'transform 0.1s ease'
-        });
-        setTimeout(() => {
-          this.setState({ top, left });
-        }, 100);
-      } else {
-        const { effect } = this.props.unit.attack;
-        if (!effect) {
-          window.warn('No effect for range attack', this.props.unit);
-          throw new Error('No effect for range attack');
-        }
-
-        particleUID += 1;
-        this.setState({
-          particles: [
-            ...this.state.particles,
-            {
-              id: particleUID,
-              lookType: effect.id,
-              duration: effect.duration,
-              to: {
-                top: midpointTop - top,
-                left: midpointLeft - left
-              },
-              onDone: unitsParticles => {
-                this.setState({
-                  particles: [...this.state.particles].filter(particle => particle.id !== unitsParticles)
-                });
-              }
-            }
-          ]
-        });
+    const { particle } = this.props.unit.attack;
+    if (this.isMelee()) {
+      this.setState({
+        top: midpointTop,
+        left: midpointLeft,
+        transition: 'transform 0.1s ease'
+      });
+      setTimeout(() => {
+        this.setState({ top, left });
+      }, particle.speed);
+    } else {
+      if (!particle) {
+        window.warn('No particle for range attack', this.props.unit);
+        throw new Error('No particle for range attack');
       }
-    }, 500); // todo better than constant delay
+
+      particleUID += 1;
+      this.setState({
+        particles: [
+          ...this.state.particles,
+          {
+            id: particleUID,
+            lookType: particle.id,
+            speed: particle.speed,
+            to: {
+              top: midpointTop - top,
+              left: midpointLeft - left
+            },
+            onDone: unitsParticles => {
+              this.setState({
+                particles: [...this.state.particles].filter(particle => particle.id !== unitsParticles)
+              });
+            }
+          }
+        ]
+      });
+    }
   }
 
   manaChange(value) {
