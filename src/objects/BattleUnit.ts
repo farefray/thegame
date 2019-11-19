@@ -86,6 +86,10 @@ export default class BattleUnit {
     return this._health.now;
   }
 
+  get maxHealth() {
+    return this._health.max;
+  }
+
   set health(value) {
     this._health.now = Math.max(0, Math.min(value, this._health.max));
   }
