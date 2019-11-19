@@ -42,44 +42,41 @@ BoardController.withdrawPiece = async (state, playerIndex, piecePosition) => {
  * @param {BoardPosition} toBoardPosition
  * @param {Boolean} shouldSwap @default true Swap functionality by default, if something is there already
  */
-BoardController.mutateStateByPawnPlacing = async (state, playerIndex, fromBoardPosition, toBoardPosition, shouldSwap = 'true') => {
+BoardController.mutateStateByPawnPlacing = async (state, playerIndex, fromBoardPosition, toBoardPosition, shouldSwap = true) => {
   const fromPosition = new Position(fromBoardPosition);
   const toPosition = new Position(toBoardPosition);
   const hand = state.getIn(['players', playerIndex, 'hand']);
   const board = state.getIn(['players', playerIndex, 'board']);
 
-  let piece;
-  // Update pawns positions and remove from old stores based on fromPosition
+  let battleUnit;
+  // remove from old position
   if (fromPosition.isMyHandPosition()) {
-    // TODO some unit.Move()
-    piece = hand[fromBoardPosition];
-    hand[fromBoardPosition].x = toPosition.x;
-    hand[fromBoardPosition].y = toPosition.y;
+    battleUnit = hand[fromBoardPosition];
     delete hand[fromBoardPosition];
   } else {
-    piece = board[fromBoardPosition];
-    board[fromBoardPosition].x = toPosition.x;
-    board[fromBoardPosition].y = toPosition.y;
+    battleUnit = board[fromBoardPosition];
     delete board[fromBoardPosition];
   }
 
-  let newPiece;
+  battleUnit.rearrange(toPosition)
+
+  let unitToSwap;
+  // place on new position
   if (toPosition.isMyHandPosition()) {
-    newPiece = hand[toBoardPosition];
-    hand[toBoardPosition] = piece;
+    unitToSwap = hand[toBoardPosition];
+    hand[toBoardPosition] = battleUnit;
   } else {
-    newPiece = board[toBoardPosition];
-    board[toBoardPosition] = piece;
+    unitToSwap = board[toBoardPosition];
+    board[toBoardPosition] = battleUnit;
   }
 
-  // TODO
-  if (shouldSwap && !!newPiece) {
-    newPiece.position = fromPosition;
+  if (shouldSwap && !!unitToSwap) {
+    unitToSwap.rearrange(fromPosition)
 
     if (fromPosition.isMyHandPosition()) {
-      hand[fromBoardPosition] = newPiece;
+      hand[fromBoardPosition] = unitToSwap;
     } else {
-      board[fromBoardPosition] = newPiece;
+      board[fromBoardPosition] = unitToSwap;
     }
   }
 
