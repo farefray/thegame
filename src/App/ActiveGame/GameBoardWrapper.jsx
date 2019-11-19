@@ -13,7 +13,6 @@ import usePrevious from '../../customhooks/usePrevious';
 
 const uuidv1 = require('uuid/v1');
 /**
- *
  * Handles previously stored actions(actionStack) as well as frontend generated events
  * contains unit itself in case its frontend generated event or unitID in case its backend event
  * @param {Object} unitComponents previous state of components
@@ -25,14 +24,12 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     const _unitComponents = {};
     const { board } = action;
     for (const pos in board) {
-      if (board.hasOwnProperty(pos)) {
-        const unit = board[pos];
-        _unitComponents[pos] = {
-          ...unit,
-          key: uuidv1(),
-          component: null
-        }
-      }
+      const unit = board[pos];
+      _unitComponents[pos] = {
+        ...unit,
+        key: uuidv1(),
+        component: null
+      };
     }
 
     return _unitComponents;
@@ -42,31 +39,20 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     // Lifecycle events which are being triggered by frontend events for Unit components
     case 'SPAWN': {
       const { component } = action;
-      console.log("TCL: SPAWN", component)
-      
-      if (unitComponents[component.id]) {
-        unitComponents[component.id].component = component;
-      } else {
-        window.todo('[P0] Investigate why mounted Units execute this even twise')
-      }
 
+      unitComponents[component.id].component = component;
       return unitComponents;
     }
     case 'DESTROY': {
       const { component } = action;
-      console.log("TCL: DESTROY", component)
 
-      if (unitComponents[component.id]) {
-        delete unitComponents[component.id];
-      } else {
-        window.todo('[P0] Investigate why dismounted Units execute this even twise')
-      }
-
+      delete unitComponents[component.id];
       return unitComponents;
     }
     // actionStack events which are being generated on backend
     default:
-      if (unitComponents[action.unitID]) {
+      // Since our frontend is animated with timeouts, there might be huge delays and battle could be already finished by backend, while its not yet rendered properly on frontend. Thats why we check if component is still exists :)
+      if (unitComponents[action.unitID] && unitComponents[action.unitID].component) {
         unitComponents[action.unitID].component.onAction(action);
       }
 
@@ -109,7 +95,7 @@ function GameBoardWrapper({ state }) {
 
   // If board being updated, update units to re-render them
   useEffect(() => {
-    console.log('%c use effect, dispatch units! ', 'background: #322222; color: #bada55', board);
+    window.info('Board update');
     dispatchUnitLifecycle({
       type: 'BOARD_UPDATE',
       board
@@ -177,7 +163,7 @@ function GameBoardWrapper({ state }) {
         ...state
       }}
     >
-      <GameBoard key={gameboardKey} render={boardRef => (<UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />)} />
+      <GameBoard key={gameboardKey} render={boardRef => <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />} />
     </StateProvider>
   );
 }
