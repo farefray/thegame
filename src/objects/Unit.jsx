@@ -173,7 +173,6 @@ export default class Unit extends React.Component {
         }, 100);
       } else {
         const { effect } = this.props.unit.attack;
-        console.log("TCL: attack -> effect", effect)
         if (!effect) {
           window.warn('No effect for range attack', this.props.unit);
           throw new Error('No effect for range attack');
