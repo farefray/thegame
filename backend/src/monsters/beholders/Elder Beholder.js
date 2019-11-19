@@ -6,7 +6,17 @@ function Elder_Beholder() {
     attack: 85,
     cost: 4,
     lookType: 108,
-    maxHealth: 1050,
+    attack: {
+      range: 5,
+      value: 60,
+      effect: {
+        id: 'fireball',
+        duration: 1000
+      }
+    },
+    health: {
+      max: 1050
+    },
     speed: 800,
   });
 }

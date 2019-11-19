@@ -30,19 +30,16 @@ export default class Unit extends React.Component {
       key,
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
-      attackRange: unit.attackRange, // maybe consider using 'stats': unit
+
+      stats: unit,
       particles: [],
 
-      maxMana: unit.maxMana,
       mana: 0,
-
-      maxHealth: unit.maxHealth,
-      health: unit.maxHealth
+      health: unit._health.max
     };
   }
 
   componentDidMount() {
-    console.log('component mount', this.id, this.key);
     this.props.onLifecycle({
       type: 'SPAWN',
       component: this
@@ -50,7 +47,6 @@ export default class Unit extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('component destroy', this.id, this.key);
     this.props.onLifecycle({
       type: 'DESTROY',
       component: this
@@ -177,6 +173,12 @@ export default class Unit extends React.Component {
         }, 100);
       } else {
         const { effect } = this.props.unit.attack;
+        console.log("TCL: attack -> effect", effect)
+        if (!effect) {
+          window.warn('No effect for range attack', this.props.unit);
+          throw new Error('No effect for range attack');
+        }
+
         particleUID += 1;
         this.setState({
           particles: [
@@ -203,23 +205,23 @@ export default class Unit extends React.Component {
 
   manaChange(value) {
     let { mana } = this.state;
-    const { maxMana } = this.state;
-    mana = Math.max(0, Math.min(mana + value, maxMana));
+    mana = Math.max(0, Math.min(mana + value, this.state.stats._mana.max));
     this.setState({ mana });
   }
 
   healthChange(value) {
-    let { health } = this.state;
-    const { maxHealth } = this.state;
-    health = Math.max(0, Math.min(health + value, maxHealth));
+    let { health, stats } = this.state;
     this.setState({
-      health,
-      isDead: health <= 0
+      health: Math.max(0, Math.min(health + value, stats._health.max))
     });
   }
 
   isMelee() {
-    return this.state.attackRange === 1;
+    return this.state.stats.attack.range === 1;
+  }
+
+  isDead() {
+    return this.state.health <= 0;
   }
 
   renderParticles() {
@@ -229,8 +231,9 @@ export default class Unit extends React.Component {
   }
 
   render() {
-    const { top, left, transition, health, maxHealth, mana, maxMana, isDead, direction, isMoving } = this.state;
-    if (isDead) return null;
+    const { top, left, transition, health, mana, direction, isMoving } = this.state;
+    const { stats } = this.state;
+    if (this.isDead()) return null;
 
     const { unit } = this.props;
     return (
@@ -267,11 +270,11 @@ export default class Unit extends React.Component {
             className="healthbar-fill"
             style={{
               position: 'absolute',
-              backgroundColor: getHealthColorByPercentage((health / maxHealth) * 100),
+              backgroundColor: getHealthColorByPercentage((health / stats._health.max) * 100),
               height: '2px',
               top: '1px',
               left: '1px',
-              right: `${21 - 20 * (health / maxHealth)}px`
+              right: `${21 - 20 * (health / stats._health.max)}px`
             }}
           />
         </div>
@@ -294,7 +297,7 @@ export default class Unit extends React.Component {
               height: '2px',
               top: '1px',
               left: '1px',
-              right: `${21 - 20 * (mana / maxMana)}px`
+              right: `${21 - 20 * (mana / stats._mana.max)}px`
             }}
           />
         </div>

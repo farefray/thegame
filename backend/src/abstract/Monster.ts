@@ -6,7 +6,11 @@ interface Effect {
 interface MonsterInterface {
   lookType: number,
   cost: number,
-  maxHealth: number,
+  health: {
+    now?: number,
+    max: number,
+    regen?: number // TODO if we need this
+  },
   mana?: {
     max?: number,
     regen?: number
@@ -19,7 +23,6 @@ interface MonsterInterface {
   }
   armor?: number,
   speed?: number,
-  healthRegen?: number,
   spell?: Function
 }
 
@@ -34,11 +37,17 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
     range: 1,
     speed: 1000
   };
+
   monster.speed = 1000;
   monster.mana = {
     max: 100,
     regen: 0
   }
-  monster.healthRegen = 2;
+
+  monster.health = {
+    max: 100,
+    now: 100
+  };
+
   return Object.assign({}, monster, monsterConfig); // todo deep assign
 };

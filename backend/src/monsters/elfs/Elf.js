@@ -14,7 +14,9 @@ function Elf() {
     },
     cost: 1,
     lookType: 62,
-    maxHealth: 150,
+    health: {
+      max: 150
+    },
     speed: 1200,
   });
 }

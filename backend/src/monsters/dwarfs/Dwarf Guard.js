@@ -5,7 +5,9 @@ function Dwarf_Guard() {
     armor: 15,
     cost: 3,
     lookType: 70,
-    maxHealth: 800,
+    health: {
+      max: 850
+    },
     speed: 700,
   });
 }

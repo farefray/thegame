@@ -5,7 +5,9 @@ function Minotaur_Archer() {
     armor: 4,
     cost: 2,
     lookType: 24,
-    maxHealth: 550,
+    health: {
+      max: 550
+    },
     speed: 1200,
   });
 }

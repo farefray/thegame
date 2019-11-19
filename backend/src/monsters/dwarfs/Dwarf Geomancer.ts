@@ -36,7 +36,9 @@ function Dwarf_Geomancer() {
     mana: {
       regen: 20
     },
-    maxHealth: 550,
+    health: {
+      max: 550
+    },
     speed: 1400,
     spell
   });

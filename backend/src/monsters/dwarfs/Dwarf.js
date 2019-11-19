@@ -5,7 +5,9 @@ function Dwarf() {
     armor: 7,
     cost: 1,
     lookType: 69,
-    maxHealth: 300,
+    health: {
+      max: 300
+    },
     speed: 1000,
   });
 }
