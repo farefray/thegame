@@ -176,14 +176,15 @@ export default class Unit extends React.Component {
           this.setState({ top, left });
         }, 100);
       } else {
+        const { effect } = this.props.unit.attack;
         particleUID += 1;
         this.setState({
           particles: [
             ...this.state.particles,
             {
               id: particleUID,
-              lookType: this.props.unit.particle,
-              duration: 100,
+              lookType: effect.id,
+              duration: effect.duration,
               to: {
                 top: midpointTop - top,
                 left: midpointLeft - left
@@ -223,12 +224,7 @@ export default class Unit extends React.Component {
 
   renderParticles() {
     return this.state.particles.map(particle => {
-      // const classes = classNames({
-      //   square: true,
-      //   red: square.red,
-      // });
-
-      return <Particle key={particle.id} className={'particle'} particle={particle} />;
+      return <Particle key={particle.id} particle={particle} />;
     });
   }
 

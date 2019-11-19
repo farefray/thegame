@@ -1,11 +1,8 @@
 import React from 'react';
 
-// TODO some better way
-const particlesMap = {
-  1: require('../../assets/particles/1.gif')
-}
-
 export default function Particle({ particle }) {
+  const [imageSrc] = React.useState(require(`../../assets/particles/${particle.lookType}.gif`));
+
   const ref = React.useRef(null);
 
   React.useEffect(() => {
@@ -32,16 +29,15 @@ export default function Particle({ particle }) {
     };
   }, [particle]);
 
+  
   return (
     <img
       ref={ref}
       style={{
-        position: 'absolute',
-        top: '32px',
-        left: '32px'
+        position: 'absolute'
       }}
       className={`particle`}
-      src={particlesMap[particle.lookType]}
+      src={imageSrc}
       alt="particle"
     />
   );
