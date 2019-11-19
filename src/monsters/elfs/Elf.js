@@ -14,8 +14,6 @@ function Elf() {
     },
     cost: 1,
     lookType: 62,
-    mana: 0,
-    manaRegen: 10,
     maxHealth: 150,
     speed: 1200,
   });

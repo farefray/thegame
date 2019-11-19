@@ -5,8 +5,6 @@ function Baby_Beholder() {
     armor: 1,
     cost: 2,
     lookType: 109,
-    mana: 0,
-    manaRegen: 10,
     maxHealth: 550,
     speed: 1200,
   });

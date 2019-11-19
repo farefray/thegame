@@ -5,8 +5,6 @@ function Dwarf() {
     armor: 7,
     cost: 1,
     lookType: 69,
-    mana: 0,
-    manaRegen: 10,
     maxHealth: 300,
     speed: 1000,
   });

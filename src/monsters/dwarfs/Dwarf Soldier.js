@@ -5,8 +5,6 @@ function Dwarf_Soldier() {
     armor: 8,
     cost: 2,
     lookType: 71,
-    mana: 0,
-    manaRegen: 6,
     maxHealth: 600,
     speed: 800,
   });

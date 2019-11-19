@@ -4,8 +4,8 @@ import { BattleContext } from '../../objects/Battle';
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
-  const ticks = 20;
-  const tickValue = 2000;
+  const ticks = 5;
+  const tickValue = 45;
   const tickDelay = 1000;
   const possibleTargets = battleContext.units.filter(u => u.teamId === unit.teamId && u.isAlive && u.health < u.maxHealth);
   const target = possibleTargets[0];
@@ -33,10 +33,10 @@ function Dwarf_Geomancer() {
     },
     cost: 3,
     lookType: 66,
-    mana: 0,
-    manaRegen: 50,
+    mana: {
+      regen: 20
+    },
     maxHealth: 550,
-    maxMana: 100,
     speed: 1400,
     spell
   });

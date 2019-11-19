@@ -7,7 +7,10 @@ interface MonsterInterface {
   lookType: number,
   cost: number,
   maxHealth: number,
-  mana?: number,
+  mana?: {
+    max?: number,
+    regen?: number
+  },
   attack: {
     value: number,
     range: number,
@@ -16,8 +19,6 @@ interface MonsterInterface {
   }
   armor?: number,
   speed?: number,
-  maxMana?: number,
-  manaRegen?: number,
   healthRegen?: number,
   spell?: Function
 }
@@ -34,8 +35,10 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
     speed: 1000
   };
   monster.speed = 1000;
-  monster.maxMana = 100;
-  monster.manaRegen = 5;
+  monster.mana = {
+    max: 100,
+    regen: 0
+  }
   monster.healthRegen = 2;
-  return Object.assign({}, monster, monsterConfig);
+  return Object.assign({}, monster, monsterConfig); // todo deep assign
 };

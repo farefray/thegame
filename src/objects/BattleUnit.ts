@@ -34,13 +34,16 @@ export default class BattleUnit {
   public lookType: number;
   public previousStep?: Object;
   public maxHealth: number;
-  public maxMana: number;
   public armor: number;
   public actionDelay: number; // TODO[P0] - this is supposed to be different, based on speed or atk speed or exhaust after spellcast?
   public spell?: Function;
 
   private _health: number;
-  private _mana: number;
+  private _mana: {
+    now: number,
+    max: number,
+    regen: number
+  };
 
   constructor(simpleUnit: SimpleUnit) {
     this.x = +simpleUnit.position.x;
@@ -55,12 +58,15 @@ export default class BattleUnit {
     this.armor = unitStats.armor;
     this.lookType = unitStats.lookType;
     this.maxHealth = unitStats.maxHealth;
-    this.maxMana = unitStats.maxMana;
+    this._mana = {
+      now: 0,
+      max: unitStats.max,
+      regen: unitStats.mana.regen
+    };
     this.actionDelay = unitStats.speed;
     this.spell = unitStats.spell;
 
     this._health = unitStats.maxHealth;
-    this._mana = 0;
   }
 
   get position(): Position {
@@ -80,11 +86,15 @@ export default class BattleUnit {
   }
 
   get mana() {
-    return this._mana;
+    return this._mana.now;
   }
 
   set mana(value) {
-    this._mana = Math.max(0, Math.min(value, this.maxMana));
+    this._mana.now = Math.max(0, Math.min(value, this._mana.max));
+  }
+
+  get manaRegen() {
+    return this._mana.regen;
   }
 
   get oppositeTeamId() {
@@ -151,7 +161,7 @@ export default class BattleUnit {
 
   *regeneration(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
     while (this.isAlive) {
-      yield { delay: 1000, actions: this.manaChange(10) };
+      yield { delay: 1000, actions: this.manaChange(this.manaRegen) };
     }
     return {};
   }
@@ -236,7 +246,7 @@ export default class BattleUnit {
   }
 
   manaChange(value: number): [ManaChangeAction] {
-    this.mana += value;
+    this._mana.now += value;
     const manaChangeAction: ManaChangeAction = {
       unitId: this.id,
       type: ACTION_TYPE.MANA_CHANGE,
