@@ -22,16 +22,21 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
 function Dwarf_Geomancer() {
   return Monster({
     armor: 1,
-    attack: 40,
-    attackRange: 3,
-    attackSpeed: 900,
+    attack: {
+      value: 40,
+      range: 3,
+      speed: 100,
+      effect: {
+        id: 'fireball',
+        duration: 250
+      }
+    },
     cost: 3,
     lookType: 66,
     mana: 0,
-    manaRegen: 20,
+    manaRegen: 50,
     maxHealth: 550,
     maxMana: 100,
-    particle: 1,
     speed: 1400,
     spell
   });
