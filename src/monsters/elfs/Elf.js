@@ -7,7 +7,7 @@ function Elf() {
       value: 45,
       range: 7,
       speed: 1000,
-      particle: 'arrow'
+      particleID: 'arrow'
     },
     cost: 1,
     lookType: 62,

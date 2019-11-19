@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 interface MonsterInterface {
   lookType: number,
   cost: number,
@@ -14,7 +16,7 @@ interface MonsterInterface {
     value: number,
     range: number,
     speed: number,
-    particle?: string,
+    particleID?: string,
   }
   armor?: number,
   speed?: number,
@@ -23,26 +25,26 @@ interface MonsterInterface {
 
 export default function Monster(monsterConfig: MonsterInterface): MonsterInterface {
   // exported instance
-  const monster = {} as MonsterInterface;
+  const monsterDefaults = {} as MonsterInterface;
 
   // default values via Lazy Object Literal Initialization pattern to define default values
-  monster.cost = 1;
-  monster.attack = {
+  monsterDefaults.cost = 1;
+  monsterDefaults.attack = {
     value: 50,
     range: 1,
     speed: 1000
   };
 
-  monster.speed = 1000;
-  monster.mana = {
+  monsterDefaults.speed = 1000;
+  monsterDefaults.mana = {
     max: 100,
     regen: 0
   }
 
-  monster.health = {
+  monsterDefaults.health = {
     max: 100,
     now: 100
   };
 
-  return Object.assign({}, monster, monsterConfig); // todo deep assign
+  return _.merge({}, monsterDefaults, monsterConfig);
 };
