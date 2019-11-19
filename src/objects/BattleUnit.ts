@@ -6,7 +6,12 @@ import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
 import Monsters from '../utils/Monsters';
+import { PARTICLES } from '../utils/effects';
 
+/**
+ * @description Describes base unit to be built into BattleUnit
+ * @interface SimpleUnit
+ */
 interface SimpleUnit {
   name: string;
   position: {
@@ -25,12 +30,11 @@ export default class BattleUnit {
   public attack: {
     value: number,
     range: number,
-    effect: {
-      id: string,
-      duration: number
+    particle: {
+      id: string | null, /** particle name in case of distant attack */
+      speed: number /** attack duration for both, melee and distant attacks */
     }
   };
-  public particle: number;
   public lookType: number;
   public previousStep?: Object;
   public armor: number;
@@ -55,9 +59,15 @@ export default class BattleUnit {
     this.teamId = simpleUnit.teamId;
 
     const unitStats = Monsters.getMonsterStats(simpleUnit.name);
+    const { attack } = unitStats;
     this.name = unitStats.name;
-    this.particle = unitStats.particle;
-    this.attack = unitStats.attack;
+    this.attack = {
+      ...attack,
+      particle: {
+        id: attack.particle || null,
+        speed: attack.particle ? PARTICLES[attack.particle].speed : Math.floor(attack.speed / 10)
+      }
+    };
     this.armor = unitStats.armor;
     this.lookType = unitStats.lookType;
     this._mana = {
@@ -72,6 +82,8 @@ export default class BattleUnit {
       now: unitStats.health.max,
       max: unitStats.health.max
     };
+
+    console.log(this);
   }
 
   get position(): Position {
@@ -143,7 +155,7 @@ export default class BattleUnit {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
 
-      yield this.attemptSpellCast(battleContext);
+      //yield this.attemptSpellCast(battleContext);
 
       let targetUnit = targetPairPool.findTargetByUnitId(this.id);
       const closestTarget = this.getClosestTarget(units);
@@ -156,6 +168,7 @@ export default class BattleUnit {
         yield { delay: this.actionDelay };
         continue;
       }
+
       const distanceToTarget = Pathfinder.getDistanceBetweenUnits(this, targetUnit);
       if (distanceToTarget < this.attackRange) {
         const { actions, actors } = this.doAttack(targetUnit, battleContext);
@@ -202,14 +215,20 @@ export default class BattleUnit {
     return Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll;
   }
 
+  /**
+   * @description Delay between attack start and damage apply
+   * @readonly
+   * @memberof BattleUnit
+   */
+  get attackDuration() {
+    return this.attack.particle.speed;
+  }
+
   doAttack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
     // this.actionLockTimestamp = this.currentTimestamp + 100;
     const from = this.position;
     const to = targetUnit.position;
-
     const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
-    
-    const value = -Math.floor(multiplier * this.attackValue);
 
     const attackAction: AttackAction = {
       unitId: this.id,
@@ -220,9 +239,10 @@ export default class BattleUnit {
       }
     };
 
+    const value = -Math.floor(multiplier * this.attackValue);
     const actors = [
       new Actor({
-        timestamp: battleContext.currentTimestamp + this.actionDelay / 2,
+        timestamp: battleContext.currentTimestamp + this.attackDuration,
         actionGenerator: (function*() {
           yield { actions: targetUnit.healthChange(value) };
         })()
