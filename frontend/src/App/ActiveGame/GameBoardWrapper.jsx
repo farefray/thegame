@@ -95,7 +95,6 @@ function GameBoardWrapper({ state }) {
 
   // If board being updated, update units to re-render them
   useEffect(() => {
-    window.info('Board update');
     dispatchUnitLifecycle({
       type: 'BOARD_UPDATE',
       board

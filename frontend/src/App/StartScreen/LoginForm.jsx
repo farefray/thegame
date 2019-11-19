@@ -36,7 +36,6 @@ class LoginForm extends Component {
     const isFormValid = this.form.check();
     if (isFormValid) {
       SocketConnector.login(customerData).then((result) => {
-        window.info("TCL: LoginForm -> handleSignIn -> result", result)
         if (!result) {
           this.setState({
             loginError: 'Sorry, your login or password is incorrect.'
