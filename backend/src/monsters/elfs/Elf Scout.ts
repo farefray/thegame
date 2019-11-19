@@ -7,7 +7,7 @@ function Elf_Scout() {
       value: 55,
       range: 5,
       speed: 1000,
-      particle: 'arrow'
+      particleID: 'arrow'
     },
     cost: 2,
     lookType: 64,

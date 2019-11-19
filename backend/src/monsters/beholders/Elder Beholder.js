@@ -9,7 +9,7 @@ function Elder_Beholder() {
     attack: {
       range: 5,
       value: 60,
-      particle: 'fireball'
+      particleID: 'fireball'
     },
     health: {
       max: 1050

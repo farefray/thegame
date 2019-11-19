@@ -4,14 +4,14 @@ import ActiveGame from '../ActiveGame';
 const defaultBoard = {
   A: [
     {
-      name: 'dwarf_geomancer',
-      x: 5,
+      name: 'minotaur',
+      x: 1,
       y: 1
     }
   ],
   B: [
     {
-      name: 'dwarf_geomancer',
+      name: 'dwarf',
       x: 2,
       y: 1
     }

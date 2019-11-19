@@ -26,7 +26,7 @@ function Dwarf_Geomancer() {
       value: 40,
       range: 3,
       speed: 100,
-      particle: 'fireball'
+      particleID: 'fireball'
     },
     cost: 3,
     lookType: 66,

@@ -6,7 +6,7 @@ function Dwarf() {
     cost: 1,
     lookType: 69,
     attack: {
-      value: 20,
+      value: 15,
       speed: 500
     },
     health: {
