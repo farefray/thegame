@@ -16,12 +16,13 @@ class BattleController {
     // todo async maybe and some good syntax
     const _battleResult = new Battle({ board: battleBoard });
     const { actionStack, startBoard, winner, playerDamage } = _battleResult;
+    const lastAction = actionStack[actionStack.length - 1];
     const battleResult: BattleResult = {
       actionStack: actionStack,
       startBoard: startBoard,
       winner: winner,
       playerDamage: playerDamage,
-      battleTime: actionStack[actionStack.length - 1].time + 5000 // extra 5 seconds for network
+      battleTime: lastAction ? lastAction.time : 0 + 5000 // extra 5 seconds for network issues
     };
 
     return battleResult;

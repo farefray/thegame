@@ -7,8 +7,9 @@ import UnitImage from './Unit/UnitImage.tsx';
 import Particle from './Unit/Particle';
 import IsDraggable from './Unit/IsDraggable';
 
-const gameBoardWidth = 8;
-const gameBoardHeight = 8;
+const GAMEBOARD_HEIGHT = 8;
+const GAMEBOARD_WIDTH = 8;
+const ONE_CELL_HEIGHT = 64;
 
 let particleUID = 0; // maybe stupied way, please review @Jacek
 export default class Unit extends React.Component {
@@ -65,7 +66,8 @@ export default class Unit extends React.Component {
   }
 
   get startingPosition() {
-    return new Position(this.state.id);
+    const { unit } = this.props;
+    return new Position(unit.x, unit.y);
   }
 
   /**
@@ -106,8 +108,8 @@ export default class Unit extends React.Component {
     const { getBoardBoundingClientRect } = this.props;
     const boundingClientRec = getBoardBoundingClientRect();
     return {
-      top: ((gameBoardHeight - y - 1) * boundingClientRec.height) / gameBoardHeight,
-      left: (x * boundingClientRec.width) / gameBoardWidth
+      top: (boundingClientRec.height - ONE_CELL_HEIGHT) - ((y * boundingClientRec.height) / GAMEBOARD_HEIGHT) - ONE_CELL_HEIGHT,
+      left: (x * boundingClientRec.width) / GAMEBOARD_WIDTH
     };
   }
 

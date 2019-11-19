@@ -35,6 +35,10 @@ class UnitsWrapper extends Component {
     return this.state.boardRef.current && this.state.boardRef.current.getBoundingClientRect();
   }
 
+  onUnitLifecycle(event) {
+    this.props.onLifecycle(event);
+  }
+
   render() {
     const { unitComponents, boardRef } = this.state;
 
@@ -45,7 +49,7 @@ class UnitsWrapper extends Component {
           key={unit.key}
           unit={unit}
           getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
-          onLifecycle={this.props.onLifecycle}
+          onLifecycle={this.onUnitLifecycle.bind(this)}
         />
       );
     });
