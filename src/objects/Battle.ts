@@ -63,7 +63,7 @@ export default class Battle {
     };
   }
 
-  updateState() {
+  updateUnits() {
     this.units = this.units.filter(unit => unit.isAlive);
     
     if (!this.unitsFromTeam(TEAM.A).length || !this.unitsFromTeam(TEAM.B).length) {
@@ -72,7 +72,7 @@ export default class Battle {
   }
 
   consumeActionGenerator() {
-    while (!this.isOver && !this.actionGeneratorInstance.next().done) {
+    while (!this.actionGeneratorInstance.next().done) {
       // action was generated already, so we dont need to execute another next() here
     }
 
@@ -80,7 +80,7 @@ export default class Battle {
   }
 
   *generateActions() {
-    while (this.actorQueue.length && this.currentTimestamp <= BATTLE_TIME_LIMIT) {
+    while (!this.isOver && this.actorQueue.length && this.currentTimestamp <= BATTLE_TIME_LIMIT) {
       const actor = this.actorQueue.shift();
       if (!actor) continue;
 
@@ -152,7 +152,7 @@ export default class Battle {
         const { unit } = action.payload;
         this.pathfinder.occupiedTileSet.delete(`${unit.x},${unit.y}`);
         this.targetPairPool.removeByUnitId(unit.id);
-        this.updateState();
+        this.updateUnits();
         break;
       case ACTION_TYPE.ACQUIRE_TARGET:
         const { attacker, target } = action.payload;
