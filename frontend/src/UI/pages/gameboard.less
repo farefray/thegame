@@ -28,17 +28,22 @@
             display: flex;
         }
     }
+
+    .particle {
+        position: absolute;
+    }
 }
 
 .cell {
-    border-bottom: 1px dashed #00000030;
+    border-bottom: 1px solid #00000030;
+    border-style: inset;
     background-color: rgba(0, 0, 0, 0);
     width: 64px;
     height: 64px;
     position: relative;
 
     &:not(:last-child) {
-        border-right: 1px dashed #00000030;
+        border-right: 1px solid #00000030;
     }
 
     &__green {

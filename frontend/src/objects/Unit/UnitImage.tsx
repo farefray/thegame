@@ -3,11 +3,19 @@ import classNames from 'classnames';
 
 import fallbackImage from '../../assets/monsters/default.png';
 
-export default function UnitImage({ lookType, direction, isMoving, extraClass = '' } : { lookType: number, direction: number, isMoving: boolean, extraClass: string}) {
+/**
+ * 
+ * @todo refactor this
+ * preload and cache images somehow
+ * once fire onUnitSpriteLoaded to determine unit dimensions
+ */
+export default function UnitImage({ lookType, direction, isMoving, extraClass = '', onUnitSpriteLoaded } : { lookType: number, direction: number, isMoving: boolean, extraClass: string}) {
 
   if (!lookType) {
     throw new Error('Looktype for monsters is missing');
   }
+
+  const [dimensions, setDimensions] = React.useState(null);
 
   // Load all images which will be required for this unit
   const [sprites] = React.useState({
@@ -43,14 +51,22 @@ export default function UnitImage({ lookType, direction, isMoving, extraClass = 
   const [sprite, setSprite] = React.useState(sprites[isMoving ? 'animated' : 'idle'][direction]);
 
   React.useEffect(() => {
+    onUnitSpriteLoaded(dimensions);
+  }, [dimensions]);
+
+  React.useEffect(() => {
     setSprite(sprites[isMoving ? 'animated' : 'idle'][direction]);
   }, [direction, isMoving, sprites]);
+
+  const onImgLoad = ({target:img}) => {
+    setDimensions(img.width);
+  };
 
   const classes = classNames({
     'unit-image': true
   }, extraClass);
 
   return (
-    <img src={sprite} onError={() => setSprite(fallbackImage)} alt="Unit" className={classes} style={{ bottom: 0, right: 0 }} />
+    <img onLoad={onImgLoad} src={sprite} onError={() => setSprite(fallbackImage)} alt="Unit" className={classes} style={{ bottom: 0, right: 0 }} />
   );
 }

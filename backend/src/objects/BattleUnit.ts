@@ -65,7 +65,7 @@ export default class BattleUnit {
       ...attack,
       particle: {
         id: attack.particleID || null,
-        speed: attack.particle ? PARTICLES[attack.particleID].speed : Math.floor(attack.speed / 10)
+        speed: attack.particleID ? PARTICLES[attack.particleID].speed : Math.floor(attack.speed / 10)
       }
     };
     this.armor = unitStats.armor;
