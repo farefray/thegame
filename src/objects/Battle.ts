@@ -29,15 +29,16 @@ export default class Battle {
   public playerDamage: number;
   public readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
-  private readonly actionGenerator: Generator;
-  private readonly units: BattleUnit[];
+  private units: BattleUnit[];
   private readonly actorQueue: Actor[];
   private readonly targetPairPool: TargetPairPool;
   private currentTimestamp: number;
+  private isOver: boolean;
 
   constructor({ board, gridWidth = 8, gridHeight = 8 }) {
     this.startBoard = cloneDeep(board);
     this.winner = TEAM.NONE;
+    this.isOver = false;
     this.playerDamage = 0;
 
     this.currentTimestamp = 0;
@@ -48,7 +49,6 @@ export default class Battle {
     this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
     this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
 
-    this.actionGenerator = this.generateActions();
     this.consumeActionGenerator();
   }
 
@@ -61,17 +61,33 @@ export default class Battle {
     };
   }
 
-  consumeActionGenerator() {
-    while (!this.actionGenerator.next().done) {
-      this.actionGenerator.next();
+  updateState() {
+    this.units = this.units.filter(unit => unit.isAlive);
+    
+    if (!this.unitsFromTeam(TEAM.A).length || !this.unitsFromTeam(TEAM.B).length) {
+      this.isOver = true;
     }
+  }
+
+  consumeActionGenerator() {
+    let genResult;
+    while (!this.isOver && (genResult = this.generateActions().next()) && !genResult.done){
+      // action was generated already, so we dont need to execute another next() here
+      // this.actionGenerator.next();
+      if (genResult.value.shouldUpdate) {
+        this.updateState();
+      }
+    }
+
     this.setWinner();
   }
 
   *generateActions() {
+    let shouldUpdate = false;
     while (this.actorQueue.length && this.currentTimestamp <= BATTLE_TIME_LIMIT) {
       const actor = this.actorQueue.shift();
       if (!actor) continue;
+
       this.currentTimestamp = actor.timestamp;
       let fullyDone = false;
       let delay = 0;
@@ -83,6 +99,10 @@ export default class Battle {
         if (value.actions) {
           for (const action of value.actions || []) {
             this.processAction(action);
+
+            if (action.type === ACTION_TYPE.DEATH) {
+              shouldUpdate = true;
+            }
           }
         }
 
@@ -95,11 +115,15 @@ export default class Battle {
         delay = value.delay || 0;
         if (delay) break;
       }
+
       if (!fullyDone) {
         actor.timestamp = this.currentTimestamp + delay;
         this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor);
       }
-      yield true;
+
+      yield {
+        shouldUpdate
+      };
     }
   }
 
@@ -155,9 +179,13 @@ export default class Battle {
     this.actionStack.push({ type, unitID: unitId, payload, time: this.currentTimestamp });
   }
 
+  unitsFromTeam(teamId: number) {
+    return this.units.filter(unit => unit.teamId === teamId && unit.isAlive);
+  }
+
   setWinner() {
-    const aTeamUnits = this.units.filter(unit => unit.teamId === TEAM.A && unit.isAlive);
-    const bTeamUnits = this.units.filter(unit => unit.teamId === TEAM.B && unit.isAlive);
+    const aTeamUnits = this.unitsFromTeam(TEAM.A);
+    const bTeamUnits = this.unitsFromTeam(TEAM.B);
 
     if (!aTeamUnits.length || !bTeamUnits.length) {
       this.winner = aTeamUnits.length ? TEAM.A : TEAM.B;
