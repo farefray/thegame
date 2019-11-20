@@ -34,6 +34,7 @@ export default class Battle {
   private readonly targetPairPool: TargetPairPool;
   private currentTimestamp: number;
   private isOver: boolean;
+  private actionGeneratorInstance: Generator;
 
   constructor({ board, gridWidth = 8, gridHeight = 8 }) {
     this.startBoard = cloneDeep(board);
@@ -49,6 +50,7 @@ export default class Battle {
     this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
     this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
 
+    this.actionGeneratorInstance = this.generateActions();
     this.consumeActionGenerator();
   }
 
@@ -70,20 +72,14 @@ export default class Battle {
   }
 
   consumeActionGenerator() {
-    let genResult;
-    while (!this.isOver && (genResult = this.generateActions().next()) && !genResult.done){
+    while (!this.isOver && !this.actionGeneratorInstance.next().done) {
       // action was generated already, so we dont need to execute another next() here
-      // this.actionGenerator.next();
-      if (genResult.value.shouldUpdate) {
-        this.updateState();
-      }
     }
 
     this.setWinner();
   }
 
   *generateActions() {
-    let shouldUpdate = false;
     while (this.actorQueue.length && this.currentTimestamp <= BATTLE_TIME_LIMIT) {
       const actor = this.actorQueue.shift();
       if (!actor) continue;
@@ -99,10 +95,6 @@ export default class Battle {
         if (value.actions) {
           for (const action of value.actions || []) {
             this.processAction(action);
-
-            if (action.type === ACTION_TYPE.DEATH) {
-              shouldUpdate = true;
-            }
           }
         }
 
@@ -121,9 +113,7 @@ export default class Battle {
         this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor);
       }
 
-      yield {
-        shouldUpdate
-      };
+      yield true;
     }
   }
 
@@ -162,6 +152,7 @@ export default class Battle {
         const { unit } = action.payload;
         this.pathfinder.occupiedTileSet.delete(`${unit.x},${unit.y}`);
         this.targetPairPool.removeByUnitId(unit.id);
+        this.updateState();
         break;
       case ACTION_TYPE.ACQUIRE_TARGET:
         const { attacker, target } = action.payload;
