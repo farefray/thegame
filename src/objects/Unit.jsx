@@ -18,7 +18,8 @@ export default class Unit extends React.Component {
 
     const { unit } = props;
     const { x, y, id, key } = unit;
-    const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
+    const boundingClientRec = props.getBoardBoundingClientRect();
+    const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10), boundingClientRec);
 
     this.ref = React.createRef();
     this.state = {
@@ -35,7 +36,10 @@ export default class Unit extends React.Component {
       particles: [],
 
       mana: 0,
-      health: unit._health.max
+      health: unit._health.max,
+
+      boundingClientRec: boundingClientRec,
+      unitSpriteDimensions: ONE_CELL_HEIGHT // we will update it later after image will be loaded
     };
   }
 
@@ -101,11 +105,13 @@ export default class Unit extends React.Component {
     }
   }
 
-  getPositionFromCoordinates(x, y) {
-    const { getBoardBoundingClientRect } = this.props;
-    const boundingClientRec = getBoardBoundingClientRect();
+  getPositionFromCoordinates(x, y, boundingClientRec) {
+    if (!boundingClientRec) {
+      boundingClientRec = this.state.boundingClientRec;
+    }
+
     return {
-      top: (boundingClientRec.height - ONE_CELL_HEIGHT) - ((y * boundingClientRec.height) / GAMEBOARD_HEIGHT) - ONE_CELL_HEIGHT,
+      top: ((boundingClientRec.height - ONE_CELL_HEIGHT) - ((y * boundingClientRec.height) / GAMEBOARD_HEIGHT) - ONE_CELL_HEIGHT) + ONE_CELL_HEIGHT / 2,
       left: (x * boundingClientRec.width) / GAMEBOARD_WIDTH
     };
   }
@@ -222,6 +228,12 @@ export default class Unit extends React.Component {
     return this.state.health <= 0;
   }
 
+  onUnitSpriteLoaded(unitSpriteDimensions) {
+    this.setState({
+      unitSpriteDimensions
+    });
+  }
+
   renderParticles() {
     return this.state.particles.map(particle => {
       return <Particle key={particle.id} particle={particle} />;
@@ -250,7 +262,7 @@ export default class Unit extends React.Component {
         }}
       >
         <IsDraggable cellPosition={this.startingPosition}>
-          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
+          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)}/>
         </IsDraggable>
         {this.renderParticles()}
         <div
