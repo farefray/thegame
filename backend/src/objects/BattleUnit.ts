@@ -82,8 +82,6 @@ export default class BattleUnit {
       now: unitStats.health.max,
       max: unitStats.health.max
     };
-
-    console.log(this);
   }
 
   get position(): Position {
@@ -151,6 +149,7 @@ export default class BattleUnit {
 
   *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
     yield { actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: 0 })] };
+
     while (this.isAlive) {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
@@ -185,6 +184,7 @@ export default class BattleUnit {
     while (this.isAlive) {
       yield { delay: 1000, actions: this.manaChange(this.manaRegen) };
     }
+
     return {};
   }
 
@@ -269,8 +269,10 @@ export default class BattleUnit {
         type: ACTION_TYPE.DEATH,
         payload: { unit: this }
       };
+
       return [healthChangeAction, deathAction];
     }
+
     return [healthChangeAction];
   }
 

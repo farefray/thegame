@@ -95,7 +95,8 @@ export default class Unit extends React.Component {
         break;
       }
       default: {
-        break;
+        console.warn('Unhandled action!', action)
+        throw new Error('Unhandled action for Unit!');
       }
     }
   }
