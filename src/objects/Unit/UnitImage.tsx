@@ -9,7 +9,9 @@ import fallbackImage from '../../assets/monsters/default.png';
  * preload and cache images somehow
  * once fire onUnitSpriteLoaded to determine unit dimensions
  */
-export default function UnitImage({ lookType, direction, isMoving, extraClass = '', onUnitSpriteLoaded } : { lookType: number, direction: number, isMoving: boolean, extraClass: string}) {
+export default function UnitImage({ lookType, direction, isMoving, extraClass = '', onUnitSpriteLoaded } : {
+  lookType: number, direction: number, isMoving: boolean, extraClass: string, onUnitSpriteLoaded: Function 
+}) {
 
   if (!lookType) {
     throw new Error('Looktype for monsters is missing');
