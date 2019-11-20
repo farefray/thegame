@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
@@ -18,13 +19,9 @@ export default class Unit extends React.Component {
 
     const { unit } = props;
     const { x, y, id, key } = unit;
-    const boundingClientRec = props.getBoardBoundingClientRect();
-    const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10), boundingClientRec);
 
     this.ref = React.createRef();
     this.state = {
-      top,
-      left,
       x: parseInt(x, 10),
       y: parseInt(y, 10),
       id,
@@ -38,15 +35,21 @@ export default class Unit extends React.Component {
       mana: 0,
       health: unit._health.max,
 
-      boundingClientRec: boundingClientRec,
-      unitSpriteDimensions: ONE_CELL_HEIGHT // we will update it later after image will be loaded
+      boundingClientRec: props.getBoardBoundingClientRect(),
+      unitSpriteDimensions: 0, // we will update it later after image will be loaded
+      isSpawned: false
     };
   }
 
   componentDidMount() {
-    this.props.onLifecycle({
-      type: 'SPAWN',
-      component: this
+    this.setState({
+      isSpawned: true
+    }, () => {
+      this.move();
+      this.props.onLifecycle({
+        type: 'SPAWN',
+        component: this
+      });
     });
   }
 
@@ -105,14 +108,13 @@ export default class Unit extends React.Component {
     }
   }
 
-  getPositionFromCoordinates(x, y, boundingClientRec) {
-    if (!boundingClientRec) {
-      boundingClientRec = this.state.boundingClientRec;
-    }
+  getPositionFromCoordinates(x, y) {
+    const unitDimsCorrection = (ONE_CELL_HEIGHT - this.state.unitSpriteDimensions) / 2;
+    const boundingClientRec = this.state.boundingClientRec;
 
     return {
-      top: ((boundingClientRec.height - ONE_CELL_HEIGHT) - ((y * boundingClientRec.height) / GAMEBOARD_HEIGHT) - ONE_CELL_HEIGHT) + ONE_CELL_HEIGHT / 2,
-      left: (x * boundingClientRec.width) / GAMEBOARD_WIDTH
+      top: Math.abs(y - GAMEBOARD_HEIGHT + 1) * ONE_CELL_HEIGHT - unitDimsCorrection,
+      left: (x * boundingClientRec.width) / GAMEBOARD_WIDTH - unitDimsCorrection
     };
   }
 
@@ -144,6 +146,9 @@ export default class Unit extends React.Component {
    * @memberof Unit
    */
   move(x, y, options = {}) {
+    if (!x) { x = this.state.x; }
+    if (!y) { y = this.state.y; }
+
     const { top, left } = this.getPositionFromCoordinates(x, y);
     const { unit } = this.props;
 
@@ -241,14 +246,20 @@ export default class Unit extends React.Component {
   }
 
   render() {
-    const { top, left, transition, health, mana, direction, isMoving } = this.state;
-    const { stats } = this.state;
+    const { top, left, transition, health, mana, direction, isMoving, stats, isSpawned } = this.state;
+
     if (this.isDead()) return null;
+
+    const classes = classNames({
+      'unit': true,
+      'm-loading': !isSpawned
+    });
 
     const { unit } = this.props;
     return (
       <div
         ref={this.ref}
+        className={classes}
         style={{
           // TODO pointerEvent:none when in battle
           height: '64px',
@@ -262,20 +273,15 @@ export default class Unit extends React.Component {
         }}
       >
         <IsDraggable cellPosition={this.startingPosition}>
-          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)}/>
+          <UnitImage
+            lookType={unit.lookType}
+            direction={direction}
+            isMoving={isMoving}
+            onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)}
+            />
         </IsDraggable>
         {this.renderParticles()}
-        <div
-          className="healthbar"
-          style={{
-            position: 'absolute',
-            backgroundColor: '#000000',
-            height: '4px',
-            width: '22px',
-            bottom: '35px',
-            right: '5px'
-          }}
-        >
+        <div className="unit-healthbar">
           <div
             className="healthbar-fill"
             style={{
