@@ -13,14 +13,53 @@ const GAMEBOARD_WIDTH = 8;
 const ONE_CELL_HEIGHT = 64;
 
 let particleUID = 0; // maybe stupied way, please review @Jacek
-export default class Unit extends React.Component {
-  constructor(props) {
+
+interface IProps {
+  unit: any;
+  onLifecycle: Function;
+}
+
+interface IParticle {
+  speed: number,
+  id: number,
+  lookType: string
+  to?: {
+    top: number,
+    left: number
+  },
+  onDone: Function
+}
+
+interface IState {
+  x: number;
+  y: number;
+  id: string;
+  key: string;
+  direction: number;
+  isMoving: boolean;
+  stats: any;
+  particles: Array<IParticle>;
+  mana: number;
+  health: number;
+  unitSpriteDimensions: number;
+  isLoaded: boolean;
+  top: number;
+  left: number;
+  transition: string;
+}
+
+interface MoveOptions {
+  instant?: boolean;
+  direction?: number
+}
+
+export default class Unit extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
 
     const { unit } = props;
     const { x, y, id, key } = unit;
-
-    this.ref = React.createRef();
+    const position = this.getPositionFromCoordinates(x, y);
     this.state = {
       x: parseInt(x, 10),
       y: parseInt(y, 10),
@@ -35,21 +74,19 @@ export default class Unit extends React.Component {
       mana: 0,
       health: unit._health.max,
 
-      boundingClientRec: props.getBoardBoundingClientRect(),
-      unitSpriteDimensions: 0, // we will update it later after image will be loaded
-      isSpawned: false
+      unitSpriteDimensions: 64, // we will update it later after image will be loaded
+      isLoaded: false,
+
+      top: position.top,
+      left: position.left,
+      transition: ''
     };
   }
 
   componentDidMount() {
-    this.setState({
-      isSpawned: true
-    }, () => {
-      this.move();
-      this.props.onLifecycle({
-        type: 'SPAWN',
-        component: this
-      });
+    this.props.onLifecycle({
+      type: 'SPAWN',
+      component: this
     });
   }
 
@@ -101,6 +138,10 @@ export default class Unit extends React.Component {
         this.manaChange(payload.value);
         break;
       }
+      case ACTION.SPAWN: {
+        this.manaChange(payload.value);
+        break;
+      }
       default: {
         console.warn('Unhandled action!', action)
         throw new Error('Unhandled action for Unit!');
@@ -109,12 +150,14 @@ export default class Unit extends React.Component {
   }
 
   getPositionFromCoordinates(x, y) {
-    const unitDimsCorrection = (ONE_CELL_HEIGHT - this.state.unitSpriteDimensions) / 2;
-    const boundingClientRec = this.state.boundingClientRec;
+    const spriteDims = (this.state ? this.state.unitSpriteDimensions : 64);
+    const unitDimsCorrection = (ONE_CELL_HEIGHT - spriteDims) / 2;
+    const top = (Math.abs(y - GAMEBOARD_HEIGHT + 1) * ONE_CELL_HEIGHT) - unitDimsCorrection;
+    const left = (x * 512) / GAMEBOARD_WIDTH - unitDimsCorrection;
 
     return {
-      top: Math.abs(y - GAMEBOARD_HEIGHT + 1) * ONE_CELL_HEIGHT - unitDimsCorrection,
-      left: (x * boundingClientRec.width) / GAMEBOARD_WIDTH - unitDimsCorrection
+      top: top,
+      left: left
     };
   }
 
@@ -133,19 +176,7 @@ export default class Unit extends React.Component {
     return direction;
   }
 
-  /**
-   * @class MoveOptions
-   * @typedef {Object} MoveOptions
-   * @property {Boolean} instant
-   * @property {Direction} direction
-   */
-  /**
-   * @param {Integer} x
-   * @param {Integer} y
-   * @param {MoveOptions} options
-   * @memberof Unit
-   */
-  move(x, y, options = {}) {
+  move(x, y, options: MoveOptions = {}) {
     if (!x) { x = this.state.x; }
     if (!y) { y = this.state.y; }
 
@@ -185,7 +216,7 @@ export default class Unit extends React.Component {
       }, particle.speed);
     } else {
       if (!particle) {
-        window.warn('No particle for range attack', this.props.unit);
+        console.warn('No particle for range attack', this.props.unit);
         throw new Error('No particle for range attack');
       }
 
@@ -234,8 +265,13 @@ export default class Unit extends React.Component {
   }
 
   onUnitSpriteLoaded(unitSpriteDimensions) {
+    const { x, y } = this.state;
     this.setState({
-      unitSpriteDimensions
+      unitSpriteDimensions,
+      isLoaded: true
+    }, () => {
+      const { top, left } = this.getPositionFromCoordinates(x, y);
+      this.setState({ top, left });
     });
   }
 
@@ -246,19 +282,18 @@ export default class Unit extends React.Component {
   }
 
   render() {
-    const { top, left, transition, health, mana, direction, isMoving, stats, isSpawned } = this.state;
+    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded } = this.state;
 
     if (this.isDead()) return null;
 
     const classes = classNames({
       'unit': true,
-      'm-loading': !isSpawned
+      'm-loading': !isLoaded
     });
 
     const { unit } = this.props;
     return (
       <div
-        ref={this.ref}
         className={classes}
         style={{
           // TODO pointerEvent:none when in battle
