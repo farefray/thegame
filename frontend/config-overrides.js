@@ -2,7 +2,7 @@
  * Used for react cosmos, in order to include backend files from directories of backend
  * Also used for frontend to customize webpack config and use 'rsuite'
  */
-const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader } = require('customize-cra');
+const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader, addWebpackModuleRule } = require('customize-cra');
 const path = require('path');
 
 const rewiredMap = () => config => {
@@ -31,6 +31,7 @@ const enchantBabelForTypescript = () => config => {
 
 const config = override(
   removeModuleScopePlugin(),
+  addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: '@lesechos/image-size-loader' }),
   addLessLoader({
     modifyVars: require('./src/UI/ui-overrides.js'),
     async: true,
