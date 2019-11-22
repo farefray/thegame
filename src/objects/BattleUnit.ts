@@ -8,7 +8,8 @@ import { BattleContext } from './Battle';
 import Monsters from '../utils/Monsters';
 import { PARTICLES } from '../utils/effects';
 
-const STARTING_DELAY = 2000;
+const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
+
 /**
  * @description Describes base unit to be built into BattleUnit
  * @interface SimpleUnit
@@ -151,7 +152,8 @@ export default class BattleUnit {
   }
 
   *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    yield { actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: STARTING_DELAY })] };
+    yield { actors: [new Actor({ actionGenerator: this.doSpawn(), timestamp: 0 })] };
+    yield { delay: STARTING_DELAY, actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: STARTING_DELAY })] };
 
     while (this.isAlive) {
       const battleContext = yield {};
@@ -192,17 +194,10 @@ export default class BattleUnit {
     return {};
   }
 
-  *doSpawn (): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    if (!this.spawned) {
-      yield {
-        delay: 0, actions: this.spawn(), actors: [new Actor({
-          timestamp: STARTING_DELAY,
-          actionGenerator: this.actionGenerator()
-        })]
-      };
-    }
-
-    return {};
+  *doSpawn () {
+    yield {
+      delay: 0, actions: this.spawn()
+    };
   }
 
   spawn(): [SpawnAction] {
