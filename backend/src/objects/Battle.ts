@@ -47,7 +47,7 @@ export default class Battle {
     this.units = shuffle(Object.keys(board).map(key => board[key]));
     this.actorQueue = this.units.map(unit => new Actor({
       id: unit.id,
-      actionGenerator: unit.doSpawn(),
+      actionGenerator: unit.actionGenerator(),
       timestamp: 0
     }));
     this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
