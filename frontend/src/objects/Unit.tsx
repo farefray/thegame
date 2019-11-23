@@ -23,6 +23,10 @@ interface IParticle {
   speed: number,
   id: number,
   lookType: string
+  from?: {
+    top: number,
+    left: number
+  },
   to?: {
     top: number,
     left: number
@@ -228,6 +232,10 @@ export default class Unit extends React.Component<IProps, IState> {
             id: particleUID,
             lookType: particle.id,
             speed: particle.speed,
+            from: {
+              top: top,
+              left: left
+            },
             to: {
               top: midpointTop - top,
               left: midpointLeft - left
