@@ -30,12 +30,12 @@ export default class BattleUnit {
   public y: number;
   public teamId: number;
   public attack: {
-    value: number,
-    range: number,
+    value: number;
+    range: number;
     particle: {
-      id: string | null, /** particle name in case of distant attack */
-      speed: number /** attack duration for both, melee and distant attacks */
-    }
+      id: string | null /** particle name in case of distant attack */;
+      speed: number /** attack duration for both, melee and distant attacks */;
+    };
   };
   public lookType: number;
   public previousStep?: Object;
@@ -44,14 +44,14 @@ export default class BattleUnit {
   public spell?: Function;
 
   private _health: {
-    now: number,
-    max: number
-  }
+    now: number;
+    max: number;
+  };
 
   private _mana: {
-    now: number,
-    max: number,
-    regen: number
+    now: number;
+    max: number;
+    regen: number;
   };
 
   private spawned: boolean = false;
@@ -134,7 +134,7 @@ export default class BattleUnit {
 
   /**
    * Moving battle unit starting position
-   * @param toPosition 
+   * @param toPosition
    */
   rearrange(toPosition: Position) {
     this.y = toPosition.y;
@@ -152,8 +152,8 @@ export default class BattleUnit {
   }
 
   *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    yield { actors: [new Actor({ actionGenerator: this.doSpawn(), timestamp: 0 })] };
-    yield { delay: STARTING_DELAY, actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: STARTING_DELAY })] };
+    yield { delay: STARTING_DELAY, actions: this.spawn() };
+    yield { actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: STARTING_DELAY })] };
 
     while (this.isAlive) {
       const battleContext = yield {};
@@ -194,12 +194,6 @@ export default class BattleUnit {
     return {};
   }
 
-  *doSpawn () {
-    yield {
-      delay: 0, actions: this.spawn()
-    };
-  }
-
   spawn(): [SpawnAction] {
     const spawnAction: SpawnAction = {
       unitId: this.id,
@@ -207,7 +201,7 @@ export default class BattleUnit {
       payload: { unit: this }
     };
 
-    return [ spawnAction ];
+    return [spawnAction];
   }
 
   move(step: Position): [MoveAction] {
