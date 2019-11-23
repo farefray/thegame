@@ -5,6 +5,11 @@ function Beholder() {
     "armor": 2,
     "cost": 3,
     "lookType": 17,
+    attack: {
+      range: 2,
+      value: 60,
+      particleID: 'fireball'
+    },
     health: {
       max: 750
     },

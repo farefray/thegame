@@ -10,6 +10,7 @@ export enum ACTION_TYPE {
   MANA_CHANGE,
   REGENERATION,
   DEATH,
+  SPAWN,
   ACQUIRE_TARGET
 }
 
@@ -53,6 +54,13 @@ export interface DeathAction extends ActionBase {
   };
 }
 
+export interface SpawnAction extends ActionBase {
+  type: ACTION_TYPE.SPAWN;
+  payload: {
+    unit: BattleUnit;
+  }
+}
+
 export interface AcquireTargetAction extends ActionBase {
   type: ACTION_TYPE.ACQUIRE_TARGET;
   payload: {
@@ -61,4 +69,4 @@ export interface AcquireTargetAction extends ActionBase {
   };
 }
 
-export type Action = MoveAction | AttackAction | HealthChangeAction | ManaChangeAction | DeathAction | AcquireTargetAction;
+export type Action = MoveAction | AttackAction | HealthChangeAction | ManaChangeAction | DeathAction | AcquireTargetAction | SpawnAction;

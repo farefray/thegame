@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import Unit from '@/objects/Unit.jsx';
+import Unit from '@/objects/Unit.tsx';
 
 class UnitsWrapper extends Component {
   constructor(props) {
@@ -31,10 +31,6 @@ class UnitsWrapper extends Component {
     this.setState({ isMounted: true });
   }
 
-  getBoardBoundingClientRect() {
-    return this.state.boardRef.current && this.state.boardRef.current.getBoundingClientRect();
-  }
-
   onUnitLifecycle(event) {
     this.props.onLifecycle(event);
   }
@@ -48,7 +44,6 @@ class UnitsWrapper extends Component {
         <Unit
           key={unit.key}
           unit={unit}
-          getBoardBoundingClientRect={this.getBoardBoundingClientRect.bind(this)}
           onLifecycle={this.onUnitLifecycle.bind(this)}
         />
       );

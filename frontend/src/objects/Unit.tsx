@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
@@ -12,18 +13,58 @@ const GAMEBOARD_WIDTH = 8;
 const ONE_CELL_HEIGHT = 64;
 
 let particleUID = 0; // maybe stupied way, please review @Jacek
-export default class Unit extends React.Component {
-  constructor(props) {
+
+interface IProps {
+  unit: any;
+  onLifecycle: Function;
+}
+
+interface IParticle {
+  speed: number,
+  id: number,
+  lookType: string
+  from?: {
+    top: number,
+    left: number
+  },
+  to?: {
+    top: number,
+    left: number
+  },
+  onDone: Function
+}
+
+interface IState {
+  x: number;
+  y: number;
+  id: string;
+  key: string;
+  direction: number;
+  isMoving: boolean;
+  stats: any;
+  particles: Array<IParticle>;
+  mana: number;
+  health: number;
+  unitSpriteDimensions: number;
+  isLoaded: boolean;
+  top: number;
+  left: number;
+  transition: string;
+}
+
+interface MoveOptions {
+  instant?: boolean;
+  direction?: number
+}
+
+export default class Unit extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
 
     const { unit } = props;
     const { x, y, id, key } = unit;
-    const { top, left } = this.getPositionFromCoordinates(parseInt(x, 10), parseInt(y, 10));
-
-    this.ref = React.createRef();
+    const position = this.getPositionFromCoordinates(x, y);
     this.state = {
-      top,
-      left,
       x: parseInt(x, 10),
       y: parseInt(y, 10),
       id,
@@ -35,7 +76,14 @@ export default class Unit extends React.Component {
       particles: [],
 
       mana: 0,
-      health: unit._health.max
+      health: unit._health.max,
+
+      unitSpriteDimensions: 64, // we will update it later after image will be loaded
+      isLoaded: false,
+
+      top: position.top,
+      left: position.left,
+      transition: ''
     };
   }
 
@@ -94,6 +142,10 @@ export default class Unit extends React.Component {
         this.manaChange(payload.value);
         break;
       }
+      case ACTION.SPAWN: {
+        this.manaChange(payload.value);
+        break;
+      }
       default: {
         console.warn('Unhandled action!', action)
         throw new Error('Unhandled action for Unit!');
@@ -102,11 +154,14 @@ export default class Unit extends React.Component {
   }
 
   getPositionFromCoordinates(x, y) {
-    const { getBoardBoundingClientRect } = this.props;
-    const boundingClientRec = getBoardBoundingClientRect();
+    const spriteDims = (this.state ? this.state.unitSpriteDimensions : 64);
+    const unitDimsCorrection = (ONE_CELL_HEIGHT - spriteDims) / 2;
+    const top = (Math.abs(y - GAMEBOARD_HEIGHT + 1) * ONE_CELL_HEIGHT) - unitDimsCorrection;
+    const left = (x * 512) / GAMEBOARD_WIDTH - unitDimsCorrection;
+
     return {
-      top: (boundingClientRec.height - ONE_CELL_HEIGHT) - ((y * boundingClientRec.height) / GAMEBOARD_HEIGHT) - ONE_CELL_HEIGHT,
-      left: (x * boundingClientRec.width) / GAMEBOARD_WIDTH
+      top: top,
+      left: left
     };
   }
 
@@ -125,19 +180,10 @@ export default class Unit extends React.Component {
     return direction;
   }
 
-  /**
-   * @class MoveOptions
-   * @typedef {Object} MoveOptions
-   * @property {Boolean} instant
-   * @property {Direction} direction
-   */
-  /**
-   * @param {Integer} x
-   * @param {Integer} y
-   * @param {MoveOptions} options
-   * @memberof Unit
-   */
-  move(x, y, options = {}) {
+  move(x, y, options: MoveOptions = {}) {
+    if (!x) { x = this.state.x; }
+    if (!y) { y = this.state.y; }
+
     const { top, left } = this.getPositionFromCoordinates(x, y);
     const { unit } = this.props;
 
@@ -174,7 +220,7 @@ export default class Unit extends React.Component {
       }, particle.speed);
     } else {
       if (!particle) {
-        window.warn('No particle for range attack', this.props.unit);
+        console.warn('No particle for range attack', this.props.unit);
         throw new Error('No particle for range attack');
       }
 
@@ -186,6 +232,10 @@ export default class Unit extends React.Component {
             id: particleUID,
             lookType: particle.id,
             speed: particle.speed,
+            from: {
+              top: top,
+              left: left
+            },
             to: {
               top: midpointTop - top,
               left: midpointLeft - left
@@ -222,6 +272,17 @@ export default class Unit extends React.Component {
     return this.state.health <= 0;
   }
 
+  onUnitSpriteLoaded(unitSpriteDimensions) {
+    const { x, y } = this.state;
+    this.setState({
+      unitSpriteDimensions,
+      isLoaded: true
+    }, () => {
+      const { top, left } = this.getPositionFromCoordinates(x, y);
+      this.setState({ top, left });
+    });
+  }
+
   renderParticles() {
     return this.state.particles.map(particle => {
       return <Particle key={particle.id} particle={particle} />;
@@ -229,14 +290,19 @@ export default class Unit extends React.Component {
   }
 
   render() {
-    const { top, left, transition, health, mana, direction, isMoving } = this.state;
-    const { stats } = this.state;
+    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded } = this.state;
+
     if (this.isDead()) return null;
+
+    const classes = classNames({
+      'unit': true,
+      'm-loading': !isLoaded
+    });
 
     const { unit } = this.props;
     return (
       <div
-        ref={this.ref}
+        className={classes}
         style={{
           // TODO pointerEvent:none when in battle
           height: '64px',
@@ -250,20 +316,15 @@ export default class Unit extends React.Component {
         }}
       >
         <IsDraggable cellPosition={this.startingPosition}>
-          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} />
+          <UnitImage
+            lookType={unit.lookType}
+            direction={direction}
+            isMoving={isMoving}
+            onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)}
+            />
         </IsDraggable>
         {this.renderParticles()}
-        <div
-          className="healthbar"
-          style={{
-            position: 'absolute',
-            backgroundColor: '#000000',
-            height: '4px',
-            width: '22px',
-            bottom: '35px',
-            right: '5px'
-          }}
-        >
+        <div className="unit-healthbar">
           <div
             className="healthbar-fill"
             style={{

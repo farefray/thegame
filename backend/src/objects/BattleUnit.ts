@@ -1,12 +1,14 @@
 import * as PathUtil from '../utils/pathUtils';
 import Pathfinder from './Pathfinder';
-import { ACTION_TYPE, AcquireTargetAction } from './Action';
+import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from './Action';
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction } from './Action';
 import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
 import Monsters from '../utils/Monsters';
 import { PARTICLES } from '../utils/effects';
+
+const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
 
 /**
  * @description Describes base unit to be built into BattleUnit
@@ -52,6 +54,8 @@ export default class BattleUnit {
     regen: number
   };
 
+  private spawned: boolean = false;
+
   constructor(simpleUnit: SimpleUnit) {
     this.x = +simpleUnit.position.x;
     this.y = +simpleUnit.position.y;
@@ -65,7 +69,7 @@ export default class BattleUnit {
       ...attack,
       particle: {
         id: attack.particleID || null,
-        speed: attack.particle ? PARTICLES[attack.particleID].speed : Math.floor(attack.speed / 10)
+        speed: attack.particleID ? PARTICLES[attack.particleID].speed : Math.floor(attack.speed / 10)
       }
     };
     this.armor = unitStats.armor;
@@ -148,7 +152,8 @@ export default class BattleUnit {
   }
 
   *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    yield { actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: 0 })] };
+    yield { actors: [new Actor({ actionGenerator: this.doSpawn(), timestamp: 0 })] };
+    yield { delay: STARTING_DELAY, actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: STARTING_DELAY })] };
 
     while (this.isAlive) {
       const battleContext = yield {};
@@ -177,6 +182,7 @@ export default class BattleUnit {
         yield { delay: this.actionDelay, actions: this.move(step) };
       }
     }
+
     return {};
   }
 
@@ -186,6 +192,22 @@ export default class BattleUnit {
     }
 
     return {};
+  }
+
+  *doSpawn () {
+    yield {
+      delay: 0, actions: this.spawn()
+    };
+  }
+
+  spawn(): [SpawnAction] {
+    const spawnAction: SpawnAction = {
+      unitId: this.id,
+      type: ACTION_TYPE.SPAWN,
+      payload: { unit: this }
+    };
+
+    return [ spawnAction ];
   }
 
   move(step: Position): [MoveAction] {
