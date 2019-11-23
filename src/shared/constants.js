@@ -17,6 +17,7 @@ module.exports = {
     CAST: 'cast', // maybe not needed
     HEALTH_CHANGE: 'healthchange',
     MANA_CHANGE: 'manachange',
+    SPAWN: 'spawn',
     REGENERATION: 'regen'
   },
   STATE: {
