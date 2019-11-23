@@ -46,7 +46,11 @@ export default class Battle {
     this.actionStack = [];
     this.targetPairPool = new TargetPairPool();
     this.units = shuffle(Object.keys(board).map(key => board[key]));
-    this.actorQueue = this.units.map(unit => new Actor({ id: unit.id, actionGenerator: unit.actionGenerator(), timestamp: 0 }));
+    this.actorQueue = this.units.map(unit => new Actor({
+      id: unit.id,
+      actionGenerator: unit.actionGenerator(),
+      timestamp: 0
+    }));
     this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
     this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
 
@@ -147,6 +151,9 @@ export default class Battle {
         break;
       case ACTION_TYPE.MANA_CHANGE:
         this.addToActionStack(action, ACTION.MANA_CHANGE);
+        break;
+      case ACTION_TYPE.SPAWN:
+        this.addToActionStack(action, ACTION.SPAWN);
         break;
       case ACTION_TYPE.DEATH:
         const { unit } = action.payload;

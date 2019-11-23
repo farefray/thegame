@@ -3,7 +3,7 @@ export const PARTICLES = {
     speed: 250
   },
   fireball: {
-    speed: 600
+    speed: 750
   }
 }
 
