@@ -1,3 +1,8 @@
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
 .gameboard {
     position: relative;
     display: flex;
@@ -31,6 +36,7 @@
 
     .particle {
         position: absolute;
+        animation: fadein 0.75s;
     }
 }
 

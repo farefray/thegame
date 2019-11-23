@@ -5,15 +5,15 @@ const defaultBoard = {
   A: [
     {
       name: 'elf_scout',
-      x: 0,
+      x: 3,
       y: 3
     },
   ],
   B: [
     {
-      name: 'elf_scout',
-      x: 0,
-      y: 7
+      name: 'beholder',
+      x: 6,
+      y: 0
     }
   ]
 };

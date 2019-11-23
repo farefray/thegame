@@ -36,7 +36,6 @@ export default function UnitImage ({ lookType, direction, isMoving, extraClass =
   // we make assumption that sprite size is same for all sprites of this monster.
   React.useEffect(() => {
     const firstSpriteDimension = sprites.idle[1].height;
-    console.log("TCL: firstSpriteDimension", firstSpriteDimension)
     onUnitSpriteLoaded(firstSpriteDimension);
   }, []);
 
