@@ -133,7 +133,9 @@ export default class Unit extends React.Component<IProps, IState> {
         break;
       }
       case ACTION.HEALTH_CHANGE: {
-        this.healthChange(payload.value);
+        setTimeout(() => {
+          this.healthChange(payload.value);
+        }, 0); // todo get rid of timeout
         break;
       }
       case ACTION.MANA_CHANGE: {
