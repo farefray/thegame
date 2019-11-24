@@ -296,7 +296,8 @@ export default class Unit extends React.Component<IProps, IState> {
 
     const classes = classNames({
       'unit': true,
-      'm-loading': !isLoaded
+      'm-loading': !isLoaded,
+      'm-in-battle': false // todo
     });
 
     const { unit } = this.props;
@@ -304,15 +305,10 @@ export default class Unit extends React.Component<IProps, IState> {
       <div
         className={classes}
         style={{
-          // TODO pointerEvent:none when in battle
-          height: '64px',
           left: 0,
-          position: 'absolute',
           top: 0,
           transform: `translate3d(${left}px, ${top}px, 0px)`,
           transition,
-          width: '64px',
-          zIndex: 9999
         }}
       >
         <IsDraggable cellPosition={this.startingPosition}>
@@ -326,36 +322,19 @@ export default class Unit extends React.Component<IProps, IState> {
         {this.renderParticles()}
         <div className="unit-healthbar">
           <div
-            className="healthbar-fill"
+            className="unit-healthbar-fill"
             style={{
-              position: 'absolute',
               backgroundColor: getHealthColorByPercentage((health / stats._health.max) * 100),
-              height: '2px',
-              top: '1px',
-              left: '1px',
               right: `${21 - 20 * (health / stats._health.max)}px`
             }}
           />
         </div>
         <div
-          className="manabar"
-          style={{
-            position: 'absolute',
-            backgroundColor: '#000000',
-            height: '4px',
-            width: '22px',
-            bottom: '32px',
-            right: '5px'
-          }}
+          className="unit-manabar"
         >
           <div
-            className="manabar-fill"
+            className="unit-manabar-fill"
             style={{
-              position: 'absolute',
-              backgroundColor: '#1b30cf',
-              height: '2px',
-              top: '1px',
-              left: '1px',
               right: `${21 - 20 * (mana / stats._mana.max)}px`
             }}
           />
