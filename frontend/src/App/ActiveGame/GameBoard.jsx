@@ -49,7 +49,6 @@ class GameBoard extends React.Component {
                     <div className="gameboard-board-row" key={index}>
                       {boardRow.map(cellPosition => {
                         return <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                        {cellPosition.toBoardPosition()}
                         </BoardSquare>;
                       })}
                     </div>
