@@ -32,6 +32,7 @@ export default class BattleUnit {
   public attack: {
     value: number;
     range: number;
+    speed: number;
     particle: {
       id: string | null /** particle name in case of distant attack */;
       speed: number /** attack duration for both, melee and distant attacks */;
@@ -231,13 +232,27 @@ export default class BattleUnit {
     return Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll;
   }
 
+  isMelee() {
+    return this.attackRange === 1;
+  }
+
   /**
    * @description Delay between attack start and damage apply
    * @readonly
    * @memberof BattleUnit
    */
-  get attackDuration() {
-    return this.attack.particle.speed;
+  attackDuration(from: Position, to: Position) {
+    if (this.isMelee()) {
+      return Math.round(Math.floor(this.attack.speed / 10) / 10) * 10; // based on attack speed, rounding to .*0
+    }
+
+    const speedByTile = (this.attack.particle.speed / this.attackRange);
+    return Math.floor(PathUtil.getDistanceBetweenCoordinates({
+      x: from.x,
+      y: from.y,
+      targetX: to.x,
+      targetY: to.y
+    }) * speedByTile);
   }
 
   doAttack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
@@ -246,19 +261,21 @@ export default class BattleUnit {
     const to = targetUnit.position;
     const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
 
+    const attackDuration = this.attackDuration(from, to);
     const attackAction: AttackAction = {
       unitId: this.id,
       type: ACTION_TYPE.ATTACK,
       payload: {
         from,
-        to
+        to,
+        duration: attackDuration
       }
     };
 
     const value = -Math.floor(multiplier * this.attackValue);
     const actors = [
       new Actor({
-        timestamp: battleContext.currentTimestamp + this.attackDuration,
+        timestamp: battleContext.currentTimestamp + attackDuration,
         actionGenerator: (function*() {
           yield { actions: targetUnit.healthChange(value) };
         })()
