@@ -30,6 +30,7 @@ export interface AttackAction extends ActionBase {
   payload: {
     from: Position;
     to: Position;
+    duration: number;
   };
 }
 

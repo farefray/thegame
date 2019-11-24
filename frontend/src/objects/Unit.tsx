@@ -129,13 +129,11 @@ export default class Unit extends React.Component<IProps, IState> {
         break;
       }
       case ACTION.ATTACK: {
-        payload.to && this.attack(payload.to.x, payload.to.y);
+        payload.to && this.attack(payload.to.x, payload.to.y, payload.duration);
         break;
       }
       case ACTION.HEALTH_CHANGE: {
-        setTimeout(() => {
-          this.healthChange(payload.value);
-        }, 0); // todo get rid of timeout
+        this.healthChange(payload.value);
         break;
       }
       case ACTION.MANA_CHANGE: {
@@ -198,7 +196,7 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
-  attack(x, y) {
+  attack(x:number, y:number, duration:number) {
     const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
     const { top, left } = this.state;
     const midpointTop = (targetTop + top) / 2;
@@ -208,17 +206,19 @@ export default class Unit extends React.Component<IProps, IState> {
       isMoving: false
     });
 
-    const { particle } = this.props.unit.attack;
     if (this.isMelee()) {
       this.setState({
         top: midpointTop,
         left: midpointLeft,
-        transition: 'transform 0.1s ease'
+        transition: `transform ${duration}ms ease`
       });
+
       setTimeout(() => {
         this.setState({ top, left });
-      }, particle.speed);
+      }, duration);
     } else {
+      const { particle } = this.props.unit.attack;
+
       if (!particle) {
         console.warn('No particle for range attack', this.props.unit);
         throw new Error('No particle for range attack');
@@ -231,7 +231,7 @@ export default class Unit extends React.Component<IProps, IState> {
           {
             id: particleUID,
             lookType: particle.id,
-            speed: particle.speed,
+            speed: duration,
             from: {
               top: top,
               left: left
