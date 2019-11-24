@@ -7,8 +7,6 @@ import BattleUnit from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
 
-const BATTLE_TIME_LIMIT = 300 * 1000;
-
 export interface BattleContext {
   currentTimestamp: number;
   pathfinder: Pathfinder;
@@ -35,12 +33,14 @@ export default class Battle {
   private currentTimestamp: number;
   private isOver: boolean;
   private actionGeneratorInstance: Generator;
+  private battleTimeEndTime: number; // timeout for battle to be finished
 
   constructor({ board, gridWidth = 8, gridHeight = 8 }) {
     this.startBoard = cloneDeep(board);
     this.winner = TEAM.NONE;
     this.isOver = false;
     this.playerDamage = 0;
+    this.battleTimeEndTime = 300 * 1000;
 
     this.currentTimestamp = 0;
     this.actionStack = [];
@@ -72,6 +72,7 @@ export default class Battle {
     
     if (!this.unitsFromTeam(TEAM.A).length || !this.unitsFromTeam(TEAM.B).length) {
       this.isOver = true;
+      this.battleTimeEndTime = this.currentTimestamp + 2500; // we ends battle in 2.5 seconds, in order to finish attacks, particles, animations
     }
   }
 
@@ -84,7 +85,7 @@ export default class Battle {
   }
 
   *generateActions() {
-    while (!this.isOver && this.actorQueue.length && this.currentTimestamp <= BATTLE_TIME_LIMIT) {
+    while (this.actorQueue.length && this.currentTimestamp <= this.battleTimeEndTime) {
       const actor = this.actorQueue.shift();
       if (!actor) continue;
 
@@ -136,6 +137,13 @@ export default class Battle {
   }
 
   processAction(action: Action) {
+    if (this.isOver
+      && action.type !== ACTION_TYPE.HEALTH_CHANGE
+      && action.type !== ACTION_TYPE.DEATH) {
+      // dont proceed new actions if battle is finished, we only need old queued damage actors to finish
+      return;
+    }
+
     switch (action.type) {
       case ACTION_TYPE.MOVE:
         const { from, to } = action.payload;
