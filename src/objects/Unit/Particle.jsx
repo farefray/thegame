@@ -9,7 +9,7 @@ export default function Particle({ particle }) {
   const radians = Math.atan2(particle.to.top, particle.to.left); // angle between 2 poi ts
   const degrees = (radians * 180 / Math.PI) + 90; // + 90 because all particles are N oriented by default
 
-  // destination
+  // destination [TODO better way to make particle coming INTO unit]
   let top = particle.to.top * 1.5; // >0 = moving down
   let left = particle.to.left * 1.5; // >0 = moving right
 
@@ -23,7 +23,7 @@ export default function Particle({ particle }) {
       ],
     }, {
       direction: 'normal',
-      duration: speed * 2, // todo decide on distance
+      duration: speed,
       iterations: 1,
     }).onfinish = () => {
       particle.onDone(id)
