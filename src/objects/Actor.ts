@@ -7,7 +7,7 @@ export interface ActionGeneratorValue {
   actors?: Actor[];
 }
 export default class Actor {
-  public id: string; // todo rename to unitID or what?
+  public id: string;
   public timestamp: number;
   public actionGenerator: Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext>;
 
