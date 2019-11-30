@@ -247,12 +247,12 @@ export default class BattleUnit {
     }
 
     const speedByTile = (this.attack.particle.speed / this.attackRange);
-    return Math.floor(PathUtil.getDistanceBetweenCoordinates({
+    return Math.max(100, Math.floor(PathUtil.getDistanceBetweenCoordinates({
       x: from.x,
       y: from.y,
       targetX: to.x,
       targetY: to.y
-    }) * speedByTile);
+    }) * speedByTile));
   }
 
   doAttack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {

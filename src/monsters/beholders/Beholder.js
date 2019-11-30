@@ -7,7 +7,7 @@ function Beholder() {
     "lookType": 17,
     attack: {
       range: 2,
-      value: 60,
+      value: 90,
       particleID: 'fireball'
     },
     health: {
