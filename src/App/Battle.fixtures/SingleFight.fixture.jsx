@@ -4,7 +4,7 @@ import ActiveGame from '../ActiveGame';
 const defaultBoard = {
   A: [
     {
-      name: 'elf_scout',
+      name: 'elder_beholder',
       x: 3,
       y: 3
     },

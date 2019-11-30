@@ -5,34 +5,13 @@ import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
 import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage.tsx';
-import Particle from './Unit/Particle';
 import IsDraggable from './Unit/IsDraggable';
+import EffectsWrapper from './Unit/EffectsWrapper';
+import Effect_C from './Unit/Effect_C';
 
 const GAMEBOARD_HEIGHT = 8;
 const GAMEBOARD_WIDTH = 8;
 const ONE_CELL_HEIGHT = 64;
-
-let particleUID = 0; // maybe stupied way, please review @Jacek
-
-interface IProps {
-  unit: any;
-  onLifecycle: Function;
-}
-
-interface IParticle {
-  speed: number,
-  id: number,
-  lookType: string
-  from?: {
-    top: number,
-    left: number
-  },
-  to?: {
-    top: number,
-    left: number
-  },
-  onDone: Function
-}
 
 interface IState {
   x: number;
@@ -42,7 +21,7 @@ interface IState {
   direction: number;
   isMoving: boolean;
   stats: any;
-  particles: Array<IParticle>;
+  effects: Array<Effect_C>;
   mana: number;
   health: number;
   unitSpriteDimensions: number;
@@ -50,6 +29,11 @@ interface IState {
   top: number;
   left: number;
   transition: string;
+}
+
+interface IProps {
+  unit: any;
+  onLifecycle: Function;
 }
 
 interface MoveOptions {
@@ -73,12 +57,12 @@ export default class Unit extends React.Component<IProps, IState> {
       isMoving: false,
 
       stats: unit,
-      particles: [],
+      effects: [],
 
       mana: 0,
       health: unit._health.max,
 
-      unitSpriteDimensions: 64, // we will update it later after image will be loaded
+      unitSpriteDimensions: 64, // we will update it later after image will be loaded (todo check, we seems alrdy got this instantly)
       isLoaded: false,
 
       top: position.top,
@@ -166,7 +150,7 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   getDirectionToTarget(x, y) {
-    //Will need changing once creatures have more complex moves
+    // Will need changing once creatures have more complex moves
     const { x: currentX, y: currentY, direction } = this.state;
     if (x > currentX) {
       return DIRECTION.WEST;
@@ -198,6 +182,12 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
+  onEffectDone(effectID) {
+    this.setState({
+      effects: [...this.state.effects].filter(effect => effect.id !== effectID)
+    });
+  }
+
   attack(x:number, y:number, duration:number) {
     const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
     const { top, left } = this.state;
@@ -226,31 +216,28 @@ export default class Unit extends React.Component<IProps, IState> {
         throw new Error('No particle for range attack');
       }
 
-      particleUID += 1;
-      this.setState({
-        particles: [
-          ...this.state.particles,
-          {
-            id: particleUID,
-            lookType: particle.id,
-            speed: duration,
-            from: {
-              top: top,
-              left: left
-            },
-            to: {
-              top: midpointTop - top,
-              left: midpointLeft - left
-            },
-            onDone: unitsParticles => {
-              this.setState({
-                particles: [...this.state.particles].filter(particle => particle.id !== unitsParticles)
-              });
-            }
-          }
-        ]
-      });
+      this.addEffect(new Effect_C({
+        lookType: particle.id,
+        speed: duration,
+        from: {
+          top: top,
+          left: left
+        },
+        to: {
+          top: midpointTop - top,
+          left: midpointLeft - left
+        }
+      }));
     }
+  }
+
+  addEffect(effect: Effect_C) {
+    this.setState({
+      effects: [
+        ...this.state.effects,
+        effect
+      ]
+    });
   }
 
   manaChange(value) {
@@ -285,12 +272,6 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
-  renderParticles() {
-    return this.state.particles.map(particle => {
-      return <Particle key={particle.id} particle={particle} />;
-    });
-  }
-
   render() {
     const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded } = this.state;
 
@@ -321,7 +302,7 @@ export default class Unit extends React.Component<IProps, IState> {
             onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)}
             />
         </IsDraggable>
-        {this.renderParticles()}
+        <EffectsWrapper effects={this.state.effects} onEffectDone={this.onEffectDone.bind(this)}/>
         <div className="unit-healthbar">
           <div
             className="unit-healthbar-fill"

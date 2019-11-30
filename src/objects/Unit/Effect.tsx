@@ -1,20 +1,20 @@
 import React from 'react';
 
-export default function Particle({ particle }) {
-  const [imageSrc] = React.useState(require(`../../assets/particles/${particle.lookType}.gif`));
+export default function Effect({ instance, onDone }) {
+  const [imageSrc] = React.useState(require(`../../assets/particles/${instance.lookType}.gif`));
   const { height:dims } = imageSrc;
   const ref = React.useRef(null);
 
   // rotation
-  const radians = Math.atan2(particle.to.top, particle.to.left); // angle between 2 poi ts
+  const radians = Math.atan2(instance.to.top, instance.to.left); // angle between 2 poi ts
   const degrees = (radians * 180 / Math.PI) + 90; // + 90 because all particles are N oriented by default
 
   // destination [TODO better way to make particle coming INTO unit]
-  let top = particle.to.top * 1.5; // >0 = moving down
-  let left = particle.to.left * 1.5; // >0 = moving right
+  let top = instance.to.top * 1.5; // >0 = moving down
+  let left = instance.to.left * 1.5; // >0 = moving right
 
-  const { id } = particle;
-  const speed = particle.speed; // calc by distance to target
+  const { id } = instance;
+  const speed = instance.speed; // calc by distance to target
   React.useEffect(() => {
     ref.current.animate({
       transform: [
@@ -26,9 +26,9 @@ export default function Particle({ particle }) {
       duration: speed,
       iterations: 1,
     }).onfinish = () => {
-      particle.onDone(id)
+      onDone(id)
     };
-  }, [degrees, top, left, speed, id]);
+  }, []);
 
   // we need to absolutely place our particles based on their dims if its too small
   const posCorrection = {
