@@ -1,5 +1,6 @@
 import { Position } from './Position';
 import BattleUnit from './BattleUnit';
+import { IEffect } from '../utils/effects';
 
 export enum ACTION_TYPE {
   INIT,
@@ -16,6 +17,7 @@ export enum ACTION_TYPE {
 
 interface ActionBase {
   unitId: string;
+  effects?: Array<IEffect>
 }
 
 export interface MoveAction extends ActionBase {

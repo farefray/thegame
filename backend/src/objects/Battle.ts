@@ -18,7 +18,8 @@ interface UnitAction {
   type: string,
   unitID: string,
   payload: object,
-  time: number
+  time: number,
+  effects: []
 }
 
 export default class Battle {
@@ -181,8 +182,8 @@ export default class Battle {
   }
 
   addToActionStack(action, type): void {
-    const { unitId, payload } = action;
-    this.actionStack.push({ type, unitID: unitId, payload, time: this.currentTimestamp });
+    const { unitId, payload, effects } = action;
+    this.actionStack.push({ type, unitID: unitId, payload, effects, time: this.currentTimestamp });
   }
 
   unitsFromTeam(teamId: number) {

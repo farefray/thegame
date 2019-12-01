@@ -104,7 +104,22 @@ export default class Unit extends React.Component<IProps, IState> {
    * @param {Boolean} isTarget Is current unit being a target for this action?
    */
   onAction(action) {
-    const { payload } = action;
+    const { payload, effects } = action;
+
+    if (effects && effects.length) {
+      effects.forEach(e => {
+        const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
+        this.addEffect(new Effect_C({
+          lookType: e.id,
+          speed: e.duration,
+          from: {
+            top: top,
+            left: left
+          }
+        }));
+      });
+    }
+    
     switch (action.type) {
       case ACTION.MOVE: {
         if (payload.to) {
@@ -117,6 +132,9 @@ export default class Unit extends React.Component<IProps, IState> {
         break;
       }
       case ACTION.HEALTH_CHANGE: {
+        if (payload.value > 0) {
+          // console.log(action);
+        }
         setTimeout(() => {
           this.healthChange(payload.value);
         }, 0); // todo get rid of timeout
@@ -127,7 +145,6 @@ export default class Unit extends React.Component<IProps, IState> {
         break;
       }
       case ACTION.SPAWN: {
-        this.manaChange(payload.value);
         break;
       }
       default: {
@@ -241,9 +258,10 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   manaChange(value) {
-    let { mana } = this.state;
-    mana = Math.max(0, Math.min(mana + value, this.state.stats._mana.max));
-    this.setState({ mana });
+    let { mana, stats } = this.state;
+    this.setState({ 
+      mana: Math.max(0, Math.min(mana + value, stats._mana.max))
+    });
   }
 
   healthChange(value) {
@@ -274,7 +292,6 @@ export default class Unit extends React.Component<IProps, IState> {
 
   render() {
     const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded } = this.state;
-
     if (this.isDead()) return null;
 
     const classes = classNames({

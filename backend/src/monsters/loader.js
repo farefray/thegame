@@ -10,7 +10,7 @@ import Elf_Scout from './elfs/Elf Scout.ts';
 import Minotaur from './minotaurs/Minotaur';
 import Minotaur_Archer from './minotaurs/Minotaur Archer';
 import Minotaur_Guard from './minotaurs/Minotaur Guard';
-import Minotaur_Mage from './minotaurs/Minotaur Mage';
+import Minotaur_Mage from './minotaurs/Minotaur Mage.ts';
 
 import Beholder from './beholders/Beholder';
 import Baby_Beholder from './beholders/Baby Beholder';
