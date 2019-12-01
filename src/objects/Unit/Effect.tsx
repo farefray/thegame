@@ -5,17 +5,19 @@ export default function Effect({ instance, onDone }) {
   const isParticle = !!instance.to;
   const [imageSrc] = React.useState(require(`../../assets/${isParticle ? 'particles' : 'effects'}/${instance.lookType}.gif`));
   const { height:dims } = imageSrc;
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLImageElement>(null);
 
   const { id } = instance;
   const duration = instance.speed;
 
   let degrees; // rotation for particles
-  React.useEffect(() => {
-    if (isParticle) {
-      const radians = Math.atan2(instance.to.top, instance.to.left); // angle between 2 poi ts
-      degrees = (radians * 180 / Math.PI) + 90; // + 90 because all particles are N oriented by default
+  if (isParticle) {
+    const radians = Math.atan2(instance.to.top, instance.to.left); // angle between 2 poi ts
+    degrees = (radians * 180 / Math.PI) + 90; // + 90 because all particles are N oriented by default
+  }
 
+  React.useEffect(() => {
+    if (isParticle && ref && ref.current) {
       // destination [TODO better way to make particle coming INTO unit]
       const top = instance.to.top * 1.5; // >0 = moving down
       const left = instance.to.left * 1.5; // >0 = moving right
@@ -60,6 +62,7 @@ export default function Effect({ instance, onDone }) {
       }}
       className={classes}
       src={imageSrc}
+      alt=""
     />
   );
 }

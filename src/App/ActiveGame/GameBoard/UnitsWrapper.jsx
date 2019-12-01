@@ -14,17 +14,11 @@ class UnitsWrapper extends Component {
   }
 
   static getDerivedStateFromProps(props, current_state) {
-    if (
-      !_.isEqualWith(current_state.unitComponents, props.unitComponents, (fUnit, sUnit) => {
-        return fUnit.key && sUnit.key && fUnit.key === sUnit.key && fUnit.id === sUnit.id;
-      }) // todo test this, maybe fUnit is not even a unit representation
-    ) {
+    if (!_.isEqual(current_state.unitComponents, props.unitComponents)) {
       return {
         unitComponents: props.unitComponents
       };
     }
-
-    console.log('eq');
 
     return null;
   }
