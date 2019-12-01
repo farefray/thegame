@@ -1,18 +1,48 @@
 import Monster from '../../abstract/Monster';
 import BattleUnit from '../../objects/BattleUnit';
 import { BattleContext } from '../../objects/Battle';
+import { getSuitableTargets } from '../../utils/pathUtils';
+import Actor from '../../objects/Actor';
 
+// Example of AOE spell which hits target and neaby targets
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
-  const tickValue = -150;
+  if (unit.mana < manaCost) return null;
 
-  const possibleTargets = battleContext.units.filter(u => u.teamId !== unit.teamId && u.isAlive && u.health < u.maxHealth);
-  const target = possibleTargets.length && possibleTargets[0];
-  if (unit.mana < manaCost || !target) return null;
+  const targetEnemy = <BattleUnit>getSuitableTargets(unit, battleContext.units, {
+    amount: 1,
+    enemy: true
+  });
 
+  if (!targetEnemy) {
+    return null;
+  }
+
+  const affectedUnits:BattleUnit[] = [targetEnemy];
+  const nearbyEnemies = <BattleUnit[]>getSuitableTargets(targetEnemy, battleContext.units, { enemy: false, maxDistance: 1, amount: Infinity})
+
+  if (nearbyEnemies) {
+    affectedUnits.push(...nearbyEnemies);
+  }
+
+  const damageDealt = -100;
   return (function*() {
     yield { actions: unit.manaChange(-manaCost) };
-    yield { delay: 0, actions: target.healthChange(tickValue, { id: 'thunderstorm' }) };
+    yield { delay: 0, actors: [
+        new Actor({
+          timestamp: battleContext.currentTimestamp,
+          actionGenerator: (function*() {
+            yield { actions: affectedUnits[0].healthChange(2 * damageDealt, { id: 'thunderstorm' }) }
+            
+            if(affectedUnits[1]) {
+              for (let index = 1; index < affectedUnits.length; index++) {
+                yield { actions: affectedUnits[index].healthChange(damageDealt, { id: 'blue_chain' }) }
+              }
+            }
+          })()
+        })
+      ]
+    }
   })();
 }
 
@@ -28,10 +58,10 @@ function Minotaur_Mage() {
     cost: 3,
     lookType: 23,
     health: {
-      max: 650
+      max: 6500
     },
     mana: {
-      regen: 7
+      regen: 25
     },
     speed: 1200,
     spell
