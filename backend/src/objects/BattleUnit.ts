@@ -348,6 +348,11 @@ export default class BattleUnit {
   }
 
   getClosestTarget(units) {
-    return PathUtil.getClosestTarget({ x: this.x, y: this.y, targets: units.filter(u => u.teamId === this.oppositeTeamId && u.isAlive) });
+    return <BattleUnit>PathUtil.getClosestTargets({
+      x: this.x,
+      y: this.y,
+      targets: units.filter(u => u.teamId === this.oppositeTeamId && u.isAlive),
+      amount: 1
+    });
   }
 }

@@ -7,9 +7,13 @@ export const PARTICLES = {
   }
 }
 
+// todo review format for those, as its ugly and too big
 export const EFFECTS = {
   thunderstorm: {
     duration: 1000
+  },
+  blue_chain: {
+    duration: 500
   },
   green_sparkles: {
     duration: 500
