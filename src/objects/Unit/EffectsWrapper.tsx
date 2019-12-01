@@ -32,8 +32,6 @@ class EffectsWrapper extends React.Component<IProps, IState> {
       return effectIsStilActive;
     })
 
-    console.log(_.cloneDeep(effects));
-
     props.effects.forEach(effect => {
       // no effect wit this id was rendered yet, so lets add to state
       if (!effects.find((e => e.id === effect.id))) {
