@@ -6,7 +6,7 @@ import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
 import Monsters from '../utils/Monsters';
-import { PARTICLES } from '../utils/effects';
+import { PARTICLES, IEffect, EFFECTS } from '../utils/effects';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
 
@@ -160,7 +160,7 @@ export default class BattleUnit {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
 
-      //yield this.attemptSpellCast(battleContext);
+      yield this.attemptSpellCast(battleContext);
 
       let targetUnit = targetPairPool.findTargetByUnitId(this.id);
       const closestTarget = this.getClosestTarget(units);
@@ -285,7 +285,7 @@ export default class BattleUnit {
     return { actions: [attackAction], actors };
   }
 
-  healthChange(value: number): [HealthChangeAction] | [HealthChangeAction, DeathAction] {
+  healthChange(value: number, effect?: IEffect | undefined): [HealthChangeAction] | [HealthChangeAction, DeathAction] {
     this.health += value;
 
     const healthChangeAction: HealthChangeAction = {
@@ -295,6 +295,19 @@ export default class BattleUnit {
         value
       }
     };
+
+    if (effect) {
+      healthChangeAction.effects = [
+        {
+          ...effect,
+          duration: effect.duration || EFFECTS[effect.id].duration,
+          from: {
+            x: this.x,
+            y: this.y
+          }
+        }
+      ];
+    }
 
     if (!this.isAlive) {
       const deathAction: DeathAction = {

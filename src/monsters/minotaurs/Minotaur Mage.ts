@@ -4,41 +4,38 @@ import { BattleContext } from '../../objects/Battle';
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
-  const ticks = 5;
-  const tickValue = 45;
-  const tickDelay = 1000;
-  const possibleTargets = battleContext.units.filter(u => u.teamId === unit.teamId && u.isAlive && u.health < u.maxHealth);
-  const target = possibleTargets[0];
+  const tickValue = -150;
+
+  const possibleTargets = battleContext.units.filter(u => u.teamId !== unit.teamId && u.isAlive && u.health < u.maxHealth);
+  const target = possibleTargets.length && possibleTargets[0];
   if (unit.mana < manaCost || !target) return null;
+
   return (function*() {
-    let counter = 0;
     yield { actions: unit.manaChange(-manaCost) };
-    while (ticks > counter++) {
-      yield { delay: tickDelay, actions: target.healthChange(tickValue, { id: 'green_sparkles' }) };
-    }
+    yield { delay: 0, actions: target.healthChange(tickValue, { id: 'thunderstorm' }) };
   })();
 }
 
-function Dwarf_Geomancer() {
+function Minotaur_Mage() {
   return Monster({
-    armor: 1,
     attack: {
       value: 40,
       range: 3,
       speed: 100,
       particleID: 'fireball'
     },
+    armor: 2,
     cost: 3,
-    lookType: 66,
-    mana: {
-      regen: 10
-    },
+    lookType: 23,
     health: {
-      max: 550
+      max: 650
     },
-    speed: 1400,
+    mana: {
+      regen: 7
+    },
+    speed: 1200,
     spell
   });
 }
 
-export default Dwarf_Geomancer;
+export default Minotaur_Mage;
