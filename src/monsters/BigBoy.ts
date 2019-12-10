@@ -1,6 +1,7 @@
 import Monster from '../abstract/Monster';
 import BattleUnit from '../objects/BattleUnit';
 import { BattleContext } from '../objects/Battle';
+import { RescheduleActorAction, ACTION_TYPE, Action } from '../objects/Action';
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
@@ -10,7 +11,22 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
   if (unit.mana < manaCost) return null;
   return (function*() {
     let counter = 0;
-    yield { actions: unit.manaChange(-manaCost) };
+    const actions: Action[] = [];
+    actions.push(unit.manaChange(-manaCost)[0]);
+    const target = battleContext.targetPairPool.findTargetByUnitId(unit.id);
+    if (target) {
+      //Stun
+      const rescheduleActorAction: RescheduleActorAction = {
+        unitId: unit.id,
+        type: ACTION_TYPE.RESCHEDULE_ACTOR,
+        payload: {
+          actorId: target.id,
+          timestamp: battleContext.currentTimestamp + 3000
+        }
+      };
+      actions.push(rescheduleActorAction);
+    }
+    yield { actions };
     while (ticks > counter++) {
       yield { delay: tickDelay, actions: unit.healthChange(tickValue) };
     }
@@ -29,6 +45,9 @@ function BigBoy() {
     lookType: 25,
     health: {
       max: 3550
+    },
+    mana: {
+      regen: 10
     },
     speed: 1000,
     spell
