@@ -15,11 +15,11 @@ export interface BattleContext {
 }
 
 interface UnitAction {
-  type: string,
-  unitID: string,
-  payload: object,
-  time: number,
-  effects: []
+  type: string;
+  unitID: string;
+  payload: object;
+  time: number;
+  effects: [];
 }
 
 export default class Battle {
@@ -47,11 +47,14 @@ export default class Battle {
     this.actionStack = [];
     this.targetPairPool = new TargetPairPool();
     this.units = shuffle(Object.keys(board).map(key => board[key]));
-    this.actorQueue = this.units.map(unit => new Actor({
-      id: unit.id,
-      actionGenerator: unit.actionGenerator(),
-      timestamp: 0
-    }));
+    this.actorQueue = this.units.map(
+      unit =>
+        new Actor({
+          id: unit.id,
+          actionGenerator: unit.actionGenerator(),
+          timestamp: 0
+        })
+    );
     this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
     this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
 
@@ -70,7 +73,7 @@ export default class Battle {
 
   updateUnits() {
     this.units = this.units.filter(unit => unit.isAlive);
-    
+
     if (!this.unitsFromTeam(TEAM.A).length || !this.unitsFromTeam(TEAM.B).length) {
       this.isOver = true;
       this.battleTimeEndTime = this.currentTimestamp + 2500; // we ends battle in 2.5 seconds, in order to finish attacks, particles, animations
@@ -138,9 +141,7 @@ export default class Battle {
   }
 
   processAction(action: Action) {
-    if (this.isOver
-      && action.type !== ACTION_TYPE.HEALTH_CHANGE
-      && action.type !== ACTION_TYPE.DEATH) {
+    if (this.isOver && action.type !== ACTION_TYPE.HEALTH_CHANGE && action.type !== ACTION_TYPE.DEATH) {
       // dont proceed new actions if battle is finished, we only need old queued damage actors to finish
       return;
     }
@@ -174,6 +175,14 @@ export default class Battle {
         const { attacker, target } = action.payload;
         this.targetPairPool.removeByAttackerId(attacker.id);
         this.targetPairPool.add({ attacker, target });
+        break;
+      case ACTION_TYPE.RESCHEDULE_ACTOR:
+        const { actorId, timestamp } = action.payload;
+        const actor = this.actorQueue.find(actor => actor.id === actorId);
+        if (actor) {
+          console.log(actor.timestamp, timestamp);
+          actor.timestamp = timestamp;
+        }
         break;
       default:
         console.log(action, 'default');

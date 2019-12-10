@@ -12,12 +12,13 @@ export enum ACTION_TYPE {
   REGENERATION,
   DEATH,
   SPAWN,
-  ACQUIRE_TARGET
+  ACQUIRE_TARGET,
+  RESCHEDULE_ACTOR
 }
 
 interface ActionBase {
   unitId: string;
-  effects?: Array<IEffect>
+  effects?: Array<IEffect>;
 }
 
 export interface MoveAction extends ActionBase {
@@ -61,7 +62,7 @@ export interface SpawnAction extends ActionBase {
   type: ACTION_TYPE.SPAWN;
   payload: {
     unit: BattleUnit;
-  }
+  };
 }
 
 export interface AcquireTargetAction extends ActionBase {
@@ -72,4 +73,12 @@ export interface AcquireTargetAction extends ActionBase {
   };
 }
 
-export type Action = MoveAction | AttackAction | HealthChangeAction | ManaChangeAction | DeathAction | AcquireTargetAction | SpawnAction;
+export interface RescheduleActorAction extends ActionBase {
+  type: ACTION_TYPE.RESCHEDULE_ACTOR;
+  payload: {
+    actorId: string;
+    timestamp: number;
+  };
+}
+
+export type Action = MoveAction | AttackAction | HealthChangeAction | ManaChangeAction | DeathAction | AcquireTargetAction | SpawnAction | RescheduleActorAction;
