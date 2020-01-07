@@ -38,7 +38,7 @@ interface IProps {
 
 interface MoveOptions {
   instant?: boolean;
-  direction?: number
+  direction?: number;
 }
 
 export default class Unit extends React.Component<IProps, IState> {
@@ -109,17 +109,19 @@ export default class Unit extends React.Component<IProps, IState> {
     if (effects && effects.length) {
       effects.forEach(e => {
         const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
-        this.addEffect(new Effect_C({
-          lookType: e.id,
-          speed: e.duration,
-          from: {
-            top: top,
-            left: left
-          }
-        }));
+        this.addEffect(
+          new Effect_C({
+            lookType: e.id,
+            speed: e.duration,
+            from: {
+              top: top,
+              left: left
+            }
+          })
+        );
       });
     }
-    
+
     switch (action.type) {
       case ACTION.MOVE: {
         if (payload.to) {
@@ -145,16 +147,16 @@ export default class Unit extends React.Component<IProps, IState> {
         break;
       }
       default: {
-        console.warn('Unhandled action!', action)
+        console.warn('Unhandled action!', action);
         throw new Error('Unhandled action for Unit!');
       }
     }
   }
 
   getPositionFromCoordinates(x, y) {
-    const spriteDims = (this.state ? this.state.unitSpriteDimensions : 64);
+    const spriteDims = this.state ? this.state.unitSpriteDimensions : 64;
     const unitDimsCorrection = (ONE_CELL_HEIGHT - spriteDims) / 2;
-    const top = (Math.abs(y - GAMEBOARD_HEIGHT + 1) * ONE_CELL_HEIGHT) - unitDimsCorrection;
+    const top = Math.abs(y - GAMEBOARD_HEIGHT + 1) * ONE_CELL_HEIGHT - unitDimsCorrection;
     const left = (x * 512) / GAMEBOARD_WIDTH - unitDimsCorrection;
 
     return {
@@ -179,8 +181,12 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   move(x, y, options: MoveOptions = {}) {
-    if (!x) { x = this.state.x; }
-    if (!y) { y = this.state.y; }
+    if (!x) {
+      x = this.state.x;
+    }
+    if (!y) {
+      y = this.state.y;
+    }
 
     const { top, left } = this.getPositionFromCoordinates(x, y);
     const { unit } = this.props;
@@ -202,7 +208,7 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
-  attack(x:number, y:number, duration:number) {
+  attack(x: number, y: number, duration: number) {
     const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
     const { top, left } = this.state;
     const midpointTop = (targetTop + top) / 2;
@@ -220,7 +226,8 @@ export default class Unit extends React.Component<IProps, IState> {
       });
 
       setTimeout(() => {
-        this.setState({ top, left });
+        //Recalculate position instead of passing {top, left} since there is a possibility unit should not return to the same position it started the attack from due to ongoing animations and whatnot
+        this.setState({ ...this.getPositionFromCoordinates(this.state.x, this.state.y) });
       }, duration);
     } else {
       const { particle } = this.props.unit.attack;
@@ -230,33 +237,32 @@ export default class Unit extends React.Component<IProps, IState> {
         throw new Error('No particle for range attack');
       }
 
-      this.addEffect(new Effect_C({
-        lookType: particle.id,
-        speed: duration,
-        from: {
-          top: top,
-          left: left
-        },
-        to: {
-          top: midpointTop - top,
-          left: midpointLeft - left
-        }
-      }));
+      this.addEffect(
+        new Effect_C({
+          lookType: particle.id,
+          speed: duration,
+          from: {
+            top: top,
+            left: left
+          },
+          to: {
+            top: midpointTop - top,
+            left: midpointLeft - left
+          }
+        })
+      );
     }
   }
 
   addEffect(effect: Effect_C) {
     this.setState({
-      effects: [
-        ...this.state.effects,
-        effect
-      ]
+      effects: [...this.state.effects, effect]
     });
   }
 
   manaChange(value) {
     let { mana, stats } = this.state;
-    this.setState({ 
+    this.setState({
       mana: Math.max(0, Math.min(mana + value, stats._mana.max))
     });
   }
@@ -278,13 +284,16 @@ export default class Unit extends React.Component<IProps, IState> {
 
   onUnitSpriteLoaded(unitSpriteDimensions) {
     const { x, y } = this.state;
-    this.setState({
-      unitSpriteDimensions,
-      isLoaded: true
-    }, () => {
-      const { top, left } = this.getPositionFromCoordinates(x, y);
-      this.setState({ top, left });
-    });
+    this.setState(
+      {
+        unitSpriteDimensions,
+        isLoaded: true
+      },
+      () => {
+        const { top, left } = this.getPositionFromCoordinates(x, y);
+        this.setState({ top, left });
+      }
+    );
   }
 
   render() {
@@ -292,7 +301,7 @@ export default class Unit extends React.Component<IProps, IState> {
     if (this.isDead()) return null;
 
     const classes = classNames({
-      'unit': true,
+      unit: true,
       'm-loading': !isLoaded,
       'm-in-battle': false // todo
     });
@@ -305,18 +314,13 @@ export default class Unit extends React.Component<IProps, IState> {
           left: 0,
           top: 0,
           transform: `translate3d(${left}px, ${top}px, 0px)`,
-          transition,
+          transition
         }}
       >
         <IsDraggable cellPosition={this.startingPosition}>
-          <UnitImage
-            lookType={unit.lookType}
-            direction={direction}
-            isMoving={isMoving}
-            onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)}
-            />
+          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />
         </IsDraggable>
-        <EffectsWrapper effects={this.state.effects} onEffectDone={this.onEffectDone.bind(this)}/>
+        <EffectsWrapper effects={this.state.effects} onEffectDone={this.onEffectDone.bind(this)} />
         <div className="unit-healthbar">
           <div
             className="unit-healthbar-fill"
@@ -326,9 +330,7 @@ export default class Unit extends React.Component<IProps, IState> {
             }}
           />
         </div>
-        <div
-          className="unit-manabar"
-        >
+        <div className="unit-manabar">
           <div
             className="unit-manabar-fill"
             style={{
