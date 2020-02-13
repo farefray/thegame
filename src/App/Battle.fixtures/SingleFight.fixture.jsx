@@ -14,41 +14,6 @@ const defaultBoard = {
       name: 'minotaur',
       x: 6,
       y: 0
-    },
-    {
-      name: 'minotaur',
-      x: 5,
-      y: 0
-    },
-    {
-      name: 'minotaur',
-      x: 6,
-      y: 1
-    },
-    {
-      name: 'minotaur',
-      x: 5,
-      y: 1
-    },
-    {
-      name: 'minotaur',
-      x: 4,
-      y: 1
-    },
-    {
-      name: 'minotaur',
-      x: 4,
-      y: 2
-    },
-    {
-      name: 'minotaur',
-      x: 4,
-      y: 3
-    },
-    {
-      name: 'minotaur',
-      x: 4,
-      y: 4
     }
   ]
 };

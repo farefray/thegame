@@ -34,12 +34,22 @@
         }
     }
 
-    .particle, .effect {
+    .particle, .effect, .animated-text {
         position: absolute;
     }
 
     .particle {
         animation: fadein 0.25s;
+    }
+
+    .animated-text {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        color: #ef0000;
+        text-shadow: 1px 1px 1px black;
+        font-size: 13px;
+        z-index: 9999;
     }
 }
 

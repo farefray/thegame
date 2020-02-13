@@ -8,6 +8,7 @@ import UnitImage from './Unit/UnitImage.tsx';
 import IsDraggable from './Unit/IsDraggable';
 import EffectsWrapper from './Unit/EffectsWrapper';
 import Effect_C from './Unit/Effect_C';
+import Text_C from './Unit/Text_C';
 
 const GAMEBOARD_HEIGHT = 8;
 const GAMEBOARD_WIDTH = 8;
@@ -21,7 +22,7 @@ interface IState {
   direction: number;
   isMoving: boolean;
   stats: any;
-  effects: Array<Effect_C>;
+  effects: Array<Effect_C|Text_C>;
   mana: number;
   health: number;
   unitSpriteDimensions: number;
@@ -254,7 +255,7 @@ export default class Unit extends React.Component<IProps, IState> {
     }
   }
 
-  addEffect(effect: Effect_C) {
+  addEffect(effect: Effect_C | Text_C) {
     this.setState({
       effects: [...this.state.effects, effect]
     });
@@ -271,7 +272,11 @@ export default class Unit extends React.Component<IProps, IState> {
     let { health, stats } = this.state;
     this.setState({
       health: Math.max(0, Math.min(health + value, stats._health.max))
-    });
+    }, () => this.addEffect(
+      new Text_C({
+        text: value
+      })
+    ));
   }
 
   isMelee() {

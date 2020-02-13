@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+
+// This has to be hightly optimized :)
 export default function Effect({ instance, onDone }) {
   const isParticle = !!instance.to;
   const [imageSrc] = React.useState(require(`../../assets/${isParticle ? 'particles' : 'effects'}/${instance.lookType}.gif`));
@@ -39,7 +41,7 @@ export default function Effect({ instance, onDone }) {
         onDone(id);
       }, duration)
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // we need to absolutely place our particles based on their dims if its too small
   const posCorrection = {

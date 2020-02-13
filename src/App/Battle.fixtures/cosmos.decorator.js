@@ -38,7 +38,7 @@ const MyReduxContext = ({ children, deco }) => {
         countdown: battleRoundResult.battleTime
       });
     });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return children;
 };
