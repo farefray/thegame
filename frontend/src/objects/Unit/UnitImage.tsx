@@ -37,7 +37,7 @@ export default function UnitImage ({ lookType, direction, isMoving, extraClass =
   React.useEffect(() => {
     const firstSpriteDimension = sprites.idle[1].height;
     onUnitSpriteLoaded(firstSpriteDimension);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [sprite, setSprite] = React.useState(sprites[isMoving ? 'animated' : 'idle'][direction]);
 

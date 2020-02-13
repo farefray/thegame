@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import Effect from './Effect';
+import Text from './Text';
 import Effect_C from './Effect_C';
 
 interface IProps {
@@ -46,7 +47,9 @@ class EffectsWrapper extends React.Component<IProps, IState> {
 
   render() {
     return this.state.effects.map(effect => {
-      return <Effect key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
+      return effect.lookType ? // bad way to determine type
+        <Effect key={effect.id} instance={effect} onDone={this.props.onEffectDone}/> :
+        <Text key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
     });
   }
 }
