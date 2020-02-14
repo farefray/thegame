@@ -18,6 +18,7 @@ export default class Effect_C {
     // public pos: EffectPosition;
     public speed?: number;
     public classes?: string;
+    public __proto__: any; 
 
     constructor (config: EffectConfig) {
         this.id = uuidv1();

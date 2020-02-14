@@ -30,13 +30,13 @@ const MyReduxContext = ({ children, deco }) => {
   const board = deco.children.props.props; // I have no idea why its like that, but it works
   React.useEffect(() => {
     generateGameState(board).then(battleRoundResult => {
-      dispatch({
+      dispatch(JSON.parse(JSON.stringify({
         type: 'START_BATTLE',
         actionStack: battleRoundResult.actionStack,
         startBoard: battleRoundResult.startBoard,
         winner: battleRoundResult.winner,
         countdown: battleRoundResult.battleTime
-      });
+      })));
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

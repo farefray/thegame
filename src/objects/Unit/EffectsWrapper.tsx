@@ -3,14 +3,15 @@ import _ from 'lodash';
 import Effect from './Effect';
 import Text from './Text';
 import Effect_C from './Effect_C';
+import Text_C from './Text_C';
 
 interface IProps {
-  effects: Array<Effect_C>;
+  effects: Array<Effect_C|Text_C>;
   onEffectDone: Function;
 }
 
 interface IState {
-  effects: Array<Effect_C>
+  effects: Array<Effect_C|Text_C>
 }
 
 class EffectsWrapper extends React.Component<IProps, IState> {
@@ -47,7 +48,7 @@ class EffectsWrapper extends React.Component<IProps, IState> {
 
   render() {
     return this.state.effects.map(effect => {
-      return effect.lookType ? // bad way to determine type
+      return effect.__proto__.constructor.name === 'Effect_C' ?
         <Effect key={effect.id} instance={effect} onDone={this.props.onEffectDone}/> :
         <Text key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
     });

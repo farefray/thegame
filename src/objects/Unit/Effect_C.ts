@@ -18,7 +18,8 @@ export default class Effect_C {
     public speed: number;
     public from: EffectPosition;
     public to: EffectPosition | undefined;
-  
+    public __proto__: any; 
+
     constructor (econfig: EffectConfig) {
         this.id = uuidv1();
         this.lookType = econfig.lookType;
