@@ -25,7 +25,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
     affectedUnits.push(...nearbyEnemies);
   }
 
-  const damageDealt = -100;
+  const damageDealt = -75;
   return (function*() {
     yield { actions: unit.manaChange(-manaCost) };
     yield { delay: 0, actors: [
