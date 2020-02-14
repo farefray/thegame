@@ -11,7 +11,7 @@ const defaultBoard = {
   ],
   B: [
     {
-      name: 'minotaur',
+      name: 'dwarf_geomancer',
       x: 6,
       y: 0
     }

@@ -9,6 +9,7 @@ interface EffectConfig {
     text: string;
     // pos: EffectPosition;
     speed?: number;
+    classes?: string;
 }
 
 export default class Effect_C {
@@ -16,6 +17,7 @@ export default class Effect_C {
     public text: string;
     // public pos: EffectPosition;
     public speed?: number;
+    public classes?: string;
 
     constructor (config: EffectConfig) {
         this.id = uuidv1();
@@ -23,5 +25,6 @@ export default class Effect_C {
         // this.pos = config.pos;
 
         this.speed = config.speed || 750;
+        this.classes = config.classes;
     }
 }

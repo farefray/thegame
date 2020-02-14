@@ -274,7 +274,8 @@ export default class Unit extends React.Component<IProps, IState> {
       health: Math.max(0, Math.min(health + value, stats._health.max))
     }, () => this.addEffect(
       new Text_C({
-        text: value
+        text: value,
+        classes: value > 0 ? 'green' : 'red'
       })
     ));
   }
@@ -339,7 +340,7 @@ export default class Unit extends React.Component<IProps, IState> {
           <div
             className="unit-manabar-fill"
             style={{
-              right: `${21 - 20 * (mana / stats._mana.max)}px`
+              right: `${21.5 - 20 * (mana / stats._mana.max)}px`
             }}
           />
         </div>
