@@ -12,7 +12,7 @@ interface EffectConfig {
     classes?: string;
 }
 
-export default class Effect_C {
+export default class Text_C {
     public id: string;
     public text: string;
     // public pos: EffectPosition;
