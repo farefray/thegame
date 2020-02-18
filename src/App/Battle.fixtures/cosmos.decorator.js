@@ -1,3 +1,6 @@
+/**
+ * Decorator to imitate battle for Cosmos. Purely for testing, so dont mind code quality :)
+ */
 import React from 'react';
 import _ from 'lodash';
 import { ReduxMock } from 'react-cosmos-redux';
@@ -27,21 +30,25 @@ const MyReduxMock = ({ children }) => {
 
 const MyReduxContext = ({ children, deco }) => {
   const dispatch = useDispatch();
-  const board = deco.children.props.props; // I have no idea why its like that, but it works
+  const board = deco.children.props.props; // I have no idea why its like that, but it works (thats props passed to fixture)
   React.useEffect(() => {
-    generateGameState(board).then(battleRoundResult => {
-      dispatch(JSON.parse(JSON.stringify({
-        type: 'START_BATTLE',
-        actionStack: battleRoundResult.actionStack,
-        startBoard: battleRoundResult.startBoard,
-        winner: battleRoundResult.winner,
-        countdown: battleRoundResult.battleTime
-      })));
-    });
+    if (board.type && board.type === 'START_BATTLE') { // if whole state is already sent as prop
+      dispatch(board);
+    } else {
+      // generate state for battle
+      generateGameState(board).then(battleRoundResult => {
+        const state = JSON.stringify({
+          type: 'START_BATTLE',
+          ...battleRoundResult
+        });
+        dispatch(JSON.parse(state));
+      });
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return children;
 };
+
 export default ({ children }) => (
   <MyReduxMock>
     <MyReduxContext deco={children.props}>{children}</MyReduxContext>
