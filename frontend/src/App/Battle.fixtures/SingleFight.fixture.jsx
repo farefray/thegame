@@ -13,7 +13,17 @@ const defaultBoard = {
     {
       name: 'dwarf_geomancer',
       x: 6,
-      y: 0
+      y: 6
+    },
+    {
+      name: 'dwarf',
+      x: 5,
+      y: 6
+    },
+    {
+      name: 'dwarf',
+      x: 1,
+      y: 1
     }
   ]
 };

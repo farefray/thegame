@@ -68,20 +68,15 @@ export default class Unit extends React.Component<IProps, IState> {
 
       top: position.top,
       left: position.left,
-      transition: ''
+      transition: '',
+
+      isDead: false
     };
   }
 
   componentDidMount() {
     this.props.onLifecycle({
       type: 'SPAWN',
-      component: this
-    });
-  }
-
-  componentWillUnmount() {
-    this.props.onLifecycle({
-      type: 'DESTROY',
       component: this
     });
   }
@@ -206,7 +201,7 @@ export default class Unit extends React.Component<IProps, IState> {
   onEffectDone(effectID) {
     this.setState({
       effects: [...this.state.effects].filter(effect => effect.id !== effectID)
-    });
+    }, () => this.updateStatus());
   }
 
   attack(x: number, y: number, duration: number) {
@@ -272,20 +267,35 @@ export default class Unit extends React.Component<IProps, IState> {
     let { health, stats } = this.state;
     this.setState({
       health: Math.max(0, Math.min(health + value, stats._health.max))
-    }, () => this.addEffect(
-      new Text_C({
-        text: value,
-        classes: value > 0 ? 'green' : 'red'
-      })
-    ));
+    }, () => {
+      this.addEffect(
+        new Text_C({
+          text: value,
+          classes: value > 0 ? 'green' : 'red'
+        })
+      );
+
+      this.updateStatus();
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.onLifecycle({
+      type: 'DESTROY',
+      component: this
+    });
+  }
+
+  updateStatus() {
+    if (this.state.health <= 0 && this.state.effects.length === 0) {
+      this.setState({
+        isDead: true
+      });
+    }
   }
 
   isMelee() {
     return this.state.stats.attack.range === 1;
-  }
-
-  isDead() {
-    return this.state.health <= 0;
   }
 
   onUnitSpriteLoaded(unitSpriteDimensions) {
@@ -303,8 +313,11 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded } = this.state;
-    if (this.isDead()) return null;
+    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead } = this.state;
+
+    if (isDead) {
+      return null;
+    }
 
     const classes = classNames({
       unit: true,

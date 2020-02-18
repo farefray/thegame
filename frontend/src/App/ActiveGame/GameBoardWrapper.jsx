@@ -46,6 +46,7 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     case 'DESTROY': {
       const { component } = action;
 
+      unitComponents[component.id].component = null;
       delete unitComponents[component.id];
       return unitComponents;
     }
@@ -90,7 +91,7 @@ function GameBoardWrapper({ state }) {
     setBoard(_.merge(isActiveBattleGoing ? battleStartBoard : myBoard, myHand));
   }, [myHand, myBoard, battleStartBoard, isActiveBattleGoing]);
 
-  // When board is being updated, we update units [units is object of unit objects which will be later rendered into 'Unit' components and saved into ref into that array, also processing unit actions and events by this ref]
+  // When board is being updated, we update units [units is object which will be later rendered into 'Unit' components and saved into ref into that array, also processing unit actions and events by this ref]
   const [unitComponents, dispatchUnitLifecycle] = useReducer(dispatchUnitLifecycleReducer, {});
 
   // If board being updated, update units to re-render them
@@ -156,13 +157,17 @@ function GameBoardWrapper({ state }) {
       }
     }
   }, [currentActionIndex, actionStack, prevActionIndex]);
+
   return (
     <StateProvider
       initialState={{
         ...state
       }}
     >
-      <GameBoard key={gameboardKey} render={boardRef => <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />} />
+      <GameBoard key={gameboardKey} render={
+        boardRef => 
+          <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />
+      } />
     </StateProvider>
   );
 }

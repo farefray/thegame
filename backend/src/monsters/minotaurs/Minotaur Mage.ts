@@ -58,7 +58,7 @@ function Minotaur_Mage() {
     cost: 3,
     lookType: 23,
     health: {
-      max: 6500
+      max: 650
     },
     mana: {
       regen: 25
