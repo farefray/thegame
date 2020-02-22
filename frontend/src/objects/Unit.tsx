@@ -1,46 +1,20 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { IState, IProps, MoveOptions } from './Unit.interface';
+
 import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
 import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage.tsx';
 import IsDraggable from './Unit/IsDraggable';
 import EffectsWrapper from './Unit/EffectsWrapper';
-import Effect_C from './Unit/Effect_C';
-import Text_C from './Unit/Text_C';
+import EffectsFactory from './Unit/EffectsFactory';
+import BaseEffect from './Unit/EffectsWrapper/BaseEffect';
 
 const GAMEBOARD_HEIGHT = 8;
 const GAMEBOARD_WIDTH = 8;
 const ONE_CELL_HEIGHT = 64;
-
-interface IState {
-  x: number;
-  y: number;
-  id: string;
-  key: string;
-  direction: number;
-  isMoving: boolean;
-  stats: any;
-  effects: Array<Effect_C|Text_C>;
-  mana: number;
-  health: number;
-  unitSpriteDimensions: number;
-  isLoaded: boolean;
-  top: number;
-  left: number;
-  transition: string;
-}
-
-interface IProps {
-  unit: any;
-  onLifecycle: Function;
-}
-
-interface MoveOptions {
-  instant?: boolean;
-  direction?: number;
-}
 
 export default class Unit extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -105,16 +79,13 @@ export default class Unit extends React.Component<IProps, IState> {
     if (effects && effects.length) {
       effects.forEach(e => {
         const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
-        this.addEffect(
-          new Effect_C({
-            lookType: e.id,
-            speed: e.duration,
-            from: {
-              top: top,
-              left: left
-            }
-          })
-        );
+        this.addEffect(EffectsFactory.create('effect', {
+          ...e,
+          from: {
+            top,
+            left
+          }
+        }));
       });
     }
 
@@ -199,9 +170,21 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   onEffectDone(effectID) {
+    const currentEffect = this.state.effects.filter(effect => effect.id === effectID); // todo object and get by key
+
     this.setState({
       effects: [...this.state.effects].filter(effect => effect.id !== effectID)
-    }, () => this.updateStatus());
+    }, () => {
+      if(currentEffect.lookType === 'death_effect') {
+        console.log(currentEffect);
+      }
+      if (currentEffect.callback) {
+        console.log("TCL: onEffectDone -> effect", effect)
+        currentEffect.callback();
+      }
+
+      this.updateStatus()
+    });
   }
 
   attack(x: number, y: number, duration: number) {
@@ -226,31 +209,29 @@ export default class Unit extends React.Component<IProps, IState> {
         this.setState({ ...this.getPositionFromCoordinates(this.state.x, this.state.y) });
       }, duration);
     } else {
-      const { particle } = this.props.unit.attack;
+      const { particle } = this.props.unit.attack; // has id and duration(?)
 
       if (!particle) {
         console.warn('No particle for range attack', this.props.unit);
         throw new Error('No particle for range attack');
       }
 
-      this.addEffect(
-        new Effect_C({
-          lookType: particle.id,
-          speed: duration,
-          from: {
-            top: top,
-            left: left
-          },
-          to: {
-            top: midpointTop - top,
-            left: midpointLeft - left
-          }
-        })
-      );
+      this.addEffect(EffectsFactory.create('particle', {
+        lookType: particle.id,
+        duration,
+        from: {
+          top: top,
+          left: left
+        },
+        to: {
+          top: midpointTop - top,
+          left: midpointLeft - left
+        }
+      }));
     }
   }
 
-  addEffect(effect: Effect_C | Text_C) {
+  addEffect(effect: BaseEffect) {
     this.setState({
       effects: [...this.state.effects, effect]
     });
@@ -268,14 +249,10 @@ export default class Unit extends React.Component<IProps, IState> {
     this.setState({
       health: Math.max(0, Math.min(health + value, stats._health.max))
     }, () => {
-      this.addEffect(
-        new Text_C({
-          text: value,
-          classes: value > 0 ? 'green' : 'red'
-        })
-      );
-
-      this.updateStatus();
+      this.addEffect(EffectsFactory.create('text', {
+        text: value,
+        classes: value > 0 ? 'green' : 'red'
+      }));
     });
   }
 
@@ -287,10 +264,23 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   updateStatus() {
-    if (this.state.health <= 0 && this.state.effects.length === 0) {
-      this.setState({
-        isDead: true
-      });
+    if (!this.state.isDead && this.state.health <= 0 && this.state.effects.length === 0) {
+      const { top, left } = this.state;
+
+      this.addEffect(EffectsFactory.create('effect', {
+        lookType: 'death_effect',
+        duration: 500,
+        from: {
+          top: top,
+          left: left
+        },
+        callback: () => {
+          console.log('dead callback');
+          this.setState({
+            isDead: true
+          })
+        }
+      }));
     }
   }
 
