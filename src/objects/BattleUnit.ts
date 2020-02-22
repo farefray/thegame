@@ -35,7 +35,7 @@ export default class BattleUnit {
     speed: number;
     particle: {
       id: string | null /** particle name in case of distant attack */;
-      speed: number /** attack duration for both, melee and distant attacks */;
+      duration: number /** attack duration for both, melee and distant attacks */;
     };
   };
   public lookType: number;
@@ -70,7 +70,7 @@ export default class BattleUnit {
       ...attack,
       particle: {
         id: attack.particleID || null,
-        speed: attack.particleID ? PARTICLES[attack.particleID].speed : Math.floor(attack.speed / 10)
+        duration: attack.particleID ? PARTICLES[attack.particleID].speed : Math.floor(attack.speed / 10)
       }
     };
     this.armor = unitStats.armor;
@@ -246,7 +246,7 @@ export default class BattleUnit {
       return Math.round(Math.floor(this.attack.speed / 10) / 10) * 10; // based on attack speed, rounding to .*0
     }
 
-    const speedByTile = this.attack.particle.speed / this.attackRange;
+    const speedByTile = this.attack.particle.duration / this.attackRange;
     return Math.max(
       100,
       Math.floor(
@@ -304,7 +304,7 @@ export default class BattleUnit {
     if (effect) {
       healthChangeAction.effects = [
         {
-          ...effect,
+          lookType: effect.id,
           duration: effect.duration || EFFECTS[effect.id].duration,
           from: {
             x: this.x,
