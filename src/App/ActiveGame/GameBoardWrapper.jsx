@@ -12,6 +12,9 @@ import { StateProvider } from './GameBoard.context.js';
 import usePrevious from '../../customhooks/usePrevious';
 
 const uuidv1 = require('uuid/v1');
+
+const DEBUG_MODE = false;
+
 /**
  * Handles previously stored actions(actionStack) as well as frontend generated events
  * contains unit itself in case its frontend generated event or unitID in case its backend event
@@ -129,6 +132,14 @@ function GameBoardWrapper({ state }) {
   // Internal counters in order to go past actionStack and execute units behaviors one by one
   const [currentActionIndex, setCurrentActionIndex] = useState(-1);
   const [prevActionIndex, setPrevActionIndex] = useState(-1);
+
+  // function to run next units action from stack(for debugger and for usual flow)
+  const nextAction = function () {
+    const actionTime = actionStack[currentActionIndex].time;
+    const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
+    setCurrentActionIndex(currentActionIndex + boardActions.length);
+  }
+
   useEffect(() => {
     if (
       actionStack.length > 0 && // we got actions to execute
@@ -137,7 +148,7 @@ function GameBoardWrapper({ state }) {
     ) {
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
       setPrevActionIndex(currentActionIndex);
-
+      
       const actionTime = actionStack[currentActionIndex].time;
       const boardActions = actionStack.filter(action => action.time === actionTime);
       for (const action of boardActions) {
@@ -147,16 +158,16 @@ function GameBoardWrapper({ state }) {
 
       if (currentActionIndex + boardActions.length >= actionStack.length) {
         // no more actions, we could trigger winning/losing animation here
-      } else {
+      } else if (!DEBUG_MODE) {
         // Scheduling next action
         const timeoutLength = actionStack[currentActionIndex + boardActions.length].time - actionTime;
 
         setTimeout(() => {
-          setCurrentActionIndex(currentActionIndex + boardActions.length);
+          nextAction()
         }, timeoutLength);
       }
     }
-  }, [currentActionIndex, actionStack, prevActionIndex]);
+  }, [currentActionIndex, actionStack, prevActionIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StateProvider
@@ -164,6 +175,7 @@ function GameBoardWrapper({ state }) {
         ...state
       }}
     >
+      {DEBUG_MODE && <a href="#0" onClick={nextAction}> Debug next action </a>}
       <GameBoard key={gameboardKey} render={
         boardRef => 
           <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />
