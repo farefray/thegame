@@ -170,13 +170,13 @@ export default class Unit extends React.Component<IProps, IState> {
 
   onEffectDone(effectID) {
     const currentEffect = this.state.effects.filter(effect => effect.id === effectID)[0]; // todo object and get by key
+    const effectCallback = currentEffect && currentEffect.callback;
 
     this.setState({
       effects: [...this.state.effects].filter(effect => effect.id !== effectID)
     }, () => {
-      if (currentEffect.callback) {
-        console.log("TCL: onEffectDone -> effect", currentEffect)
-        currentEffect.callback();
+      if (effectCallback) {
+        effectCallback();
       }
 
       this.updateStatus()
@@ -271,7 +271,6 @@ export default class Unit extends React.Component<IProps, IState> {
           left: left
         },
         callback: () => {
-          console.log('dead callback');
           this.setState({
             isDead: true
           })

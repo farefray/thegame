@@ -20,12 +20,12 @@ export interface BaseEffectType extends BaseEffectConfig {
 
 export class BaseEffect implements BaseEffectType {
     public id: string;
-    public callback?: Function;
     public __proto__: any;
     public duration: string;
     public effect: number;
     public from: EffectPosition;
     public lookType: string;
+    public callback?: Function;
 
     constructor (conf: BaseEffectConfig) {
         this.id = hyperid().uuid;
@@ -35,5 +35,9 @@ export class BaseEffect implements BaseEffectType {
         this.effect = effect;
         this.from = from;
         this.lookType = lookType;
+
+        if (conf.callback) {
+            this.callback = conf.callback;
+        }
     }
 }
