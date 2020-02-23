@@ -1,6 +1,6 @@
 const hyperid = require('hyperid');
 
-interface EffectPosition {
+export interface EffectPosition {
     top: number;
     left: number;
 }
@@ -9,18 +9,31 @@ interface BaseEffectConfig {
     duration: string;
     effect: number;
     from: EffectPosition;
+    lookType: string;
+}
+
+export interface BaseEffectType extends BaseEffectConfig {
+    id: string;
+    __proto__: any;
     callback?: Function;
 }
 
-export default class BaseEffect {
+export class BaseEffect implements BaseEffectType {
     public id: string;
-    public duration: number;
-    public from: EffectPosition;
+    public callback?: Function;
     public __proto__: any;
-    public callback: Function;
+    public duration: string;
+    public effect: number;
+    public from: EffectPosition;
+    public lookType: string;
 
-    constructor (econfig: BaseEffectConfig) {
+    constructor (conf: BaseEffectConfig) {
         this.id = hyperid().uuid;
-        Object.assign(this, econfig);
+
+        const { duration, effect, from, lookType } = conf;
+        this.duration = duration;
+        this.effect = effect;
+        this.from = from;
+        this.lookType = lookType;
     }
 }
