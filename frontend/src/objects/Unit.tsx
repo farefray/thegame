@@ -1,16 +1,15 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IState, IProps, MoveOptions } from './Unit.interface';
+import { IState, IProps, MoveOptions } from './Unit';
 
 import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';
 import Position from '../shared/Position';
-import UnitImage from './Unit/UnitImage.tsx';
+import UnitImage from './Unit/UnitImage';
 import IsDraggable from './Unit/IsDraggable';
 import EffectsWrapper from './Unit/EffectsWrapper';
 import EffectsFactory from './Unit/EffectsFactory';
-import BaseEffect from './Unit/EffectsWrapper/BaseEffect';
 
 const GAMEBOARD_HEIGHT = 8;
 const GAMEBOARD_WIDTH = 8;
@@ -170,16 +169,13 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   onEffectDone(effectID) {
-    const currentEffect = this.state.effects.filter(effect => effect.id === effectID); // todo object and get by key
+    const currentEffect = this.state.effects.filter(effect => effect.id === effectID)[0]; // todo object and get by key
 
     this.setState({
       effects: [...this.state.effects].filter(effect => effect.id !== effectID)
     }, () => {
-      if(currentEffect.lookType === 'death_effect') {
-        console.log(currentEffect);
-      }
       if (currentEffect.callback) {
-        console.log("TCL: onEffectDone -> effect", effect)
+        console.log("TCL: onEffectDone -> effect", currentEffect)
         currentEffect.callback();
       }
 
@@ -231,7 +227,7 @@ export default class Unit extends React.Component<IProps, IState> {
     }
   }
 
-  addEffect(effect: BaseEffect) {
+  addEffect(effect) {
     this.setState({
       effects: [...this.state.effects, effect]
     });
@@ -327,7 +323,7 @@ export default class Unit extends React.Component<IProps, IState> {
         }}
       >
         <IsDraggable cellPosition={this.startingPosition}>
-          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />
+          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />
         </IsDraggable>
         <EffectsWrapper effects={this.state.effects} onEffectDone={this.onEffectDone.bind(this)} />
         <div className="unit-healthbar">

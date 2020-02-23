@@ -1,4 +1,6 @@
-import BaseEffect_T from './Unit/EffectsWrapper/BaseEffect_T';
+import { Text } from './Unit/EffectsWrapper/Text';
+import { Effect } from './Unit/EffectsWrapper/Effect';
+import { Particle } from './Unit/EffectsWrapper/Particle';
 
 export interface IState {
   x: number;
@@ -8,7 +10,7 @@ export interface IState {
   direction: number;
   isMoving: boolean;
   stats: any;
-  effects: Array<BaseEffect_T>;
+  effects: Array<Effect | Text | Particle>;
   mana: number;
   health: number;
   unitSpriteDimensions: number;

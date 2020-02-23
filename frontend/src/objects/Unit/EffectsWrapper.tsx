@@ -1,8 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
-import Effect from './EffectsWrapper/Effect.tsx';
-import Text from './EffectsWrapper/Text.tsx';
-import Particle from './EffectsWrapper/Particle.tsx';
+import { EffectComponent } from './EffectsWrapper/Effect';
+import { TextComponent } from './EffectsWrapper/Text';
+import { ParticleComponent } from './EffectsWrapper/Particle';
+import { BaseEffect } from './EffectsWrapper/BaseEffect';
 
 interface IProps {
   effects: Array<BaseEffect>;
@@ -47,20 +48,20 @@ class EffectsWrapper extends React.Component<IProps, IState> {
 
   render() {
     return this.state.effects.map(effect => {
-      let component = null;
+      let component;
       switch (effect.__proto__.constructor.name) {
         case 'Effect': {
-          component = <Effect key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
+          component = <EffectComponent key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
           break;
         }
 
         case 'Particle': {
-          component = <Particle key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
+          component = <ParticleComponent key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
           break;
         }
 
         case 'Text': {
-          component = <Text key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
+          component = <TextComponent key={effect.id} instance={effect} onDone={this.props.onEffectDone}/>;
           break
         }
       }

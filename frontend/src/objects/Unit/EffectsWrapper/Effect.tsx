@@ -1,6 +1,21 @@
 import React from 'react';
+import { BaseEffect, BaseEffectType } from './BaseEffect';
 
-export default function Effect({ instance, onDone }) {
+type EffectType = BaseEffectType & {
+    lookType: string;
+}
+
+export class Effect extends BaseEffect implements EffectType {
+    public lookType: string;
+
+    constructor (econfig: EffectType) {
+        super(econfig);
+
+        this.lookType = econfig.lookType;
+    }
+}
+
+export function EffectComponent({ instance, onDone }) {
   const [imageSrc] = React.useState(require(`../../../assets/effects/${instance.lookType}.gif`));
   const { height:dims } = imageSrc;
   const ref = React.useRef<HTMLImageElement>(null);
