@@ -3,12 +3,18 @@
  * It's quite complex, but I cannot find any more suitable way to make it simplier
  */
 import _ from 'lodash';
-import React, { useEffect, useState, useReducer } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useReducer
+} from 'react';
 import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
 import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
 
-import { StateProvider } from './GameBoard.context.js';
+import {
+  StateProvider
+} from './GameBoard.context.js';
 import usePrevious from '../../customhooks/usePrevious';
 
 const uuidv1 = require('uuid/v1');
@@ -25,7 +31,9 @@ const DEBUG_MODE = false;
 function dispatchUnitLifecycleReducer(unitComponents, action) {
   if (action.type === 'BOARD_UPDATE') {
     const _unitComponents = {};
-    const { board } = action;
+    const {
+      board
+    } = action;
     for (const pos in board) {
       const unit = board[pos];
       _unitComponents[pos] = {
@@ -41,13 +49,17 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
   switch (action.type) {
     // Lifecycle events which are being triggered by frontend events for Unit components
     case 'SPAWN': {
-      const { component } = action;
+      const {
+        component
+      } = action;
 
       unitComponents[component.id].component = component;
       return unitComponents;
     }
     case 'DESTROY': {
-      const { component } = action;
+      const {
+        component
+      } = action;
 
       unitComponents[component.id].component = null;
       delete unitComponents[component.id];
@@ -79,12 +91,20 @@ GameBoardWrapper.propTypes = {
  * @param {gameboard.reducer} state
  * @returns
  */
-function GameBoardWrapper({ state }) {
+function GameBoardWrapper({
+  state
+}) {
   /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   const [gameboardKey, setGameboardKey] = useState(1);
 
   // Get all passed down props which we will use, from gameboard state
-  const { myHand, myBoard, battleStartBoard, isActiveBattleGoing, actionStack } = state;
+  const {
+    myHand,
+    myBoard,
+    battleStartBoard,
+    isActiveBattleGoing,
+    actionStack
+  } = state;
 
   // Contains current board units(if thats battle, then battleStartBoard, else combination of myBoard && myHand)
   const [board, setBoard] = useState({});
@@ -148,7 +168,7 @@ function GameBoardWrapper({ state }) {
     ) {
       // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
       setPrevActionIndex(currentActionIndex);
-      
+
       const actionTime = actionStack[currentActionIndex].time;
       const boardActions = actionStack.filter(action => action.time === actionTime);
       for (const action of boardActions) {
@@ -158,9 +178,11 @@ function GameBoardWrapper({ state }) {
 
       if (currentActionIndex + boardActions.length >= actionStack.length) {
         // no more actions, we could trigger winning/losing animation here
+        console.info('Battle is done');
       } else if (!DEBUG_MODE) {
         // Scheduling next action
         const timeoutLength = actionStack[currentActionIndex + boardActions.length].time - actionTime;
+        console.log("TCL: timeoutLength", timeoutLength)
 
         setTimeout(() => {
           nextAction()
@@ -169,19 +191,12 @@ function GameBoardWrapper({ state }) {
     }
   }, [currentActionIndex, actionStack, prevActionIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <StateProvider
-      initialState={{
-        ...state
-      }}
-    >
-      {DEBUG_MODE && <a href="#0" onClick={nextAction}> Debug next action </a>}
-      <GameBoard key={gameboardKey} render={
-        boardRef => 
-          <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />
-      } />
-    </StateProvider>
-  );
-}
+  return ( <StateProvider initialState={{...state}}>
+    {DEBUG_MODE && <a href="#0" onClick={ nextAction }>Debug next action</a>} 
+    <GameBoard key={ gameboardKey } render={ boardRef =>
+        <UnitsWrapper unitComponents={ unitComponents } onLifecycle={ dispatchUnitLifecycle } boardRef={ boardRef } />
+      }
+    /></StateProvider>);
+  }
 
-export default GameBoardWrapper;
+  export default GameBoardWrapper;

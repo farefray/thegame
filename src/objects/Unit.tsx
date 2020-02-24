@@ -329,7 +329,7 @@ export default class Unit extends React.Component<IProps, IState> {
           <div
             className="unit-healthbar-fill"
             style={{
-              backgroundColor: getHealthColorByPercentage((health / stats._health.max) * 100),
+              backgroundColor: getHealthColorByPercentage(((health / stats._health.max) * 100), stats.teamId),
               right: `${21 - 20 * (health / stats._health.max)}px`
             }}
           />
