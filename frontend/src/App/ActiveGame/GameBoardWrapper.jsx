@@ -91,11 +91,11 @@ GameBoardWrapper.propTypes = {
  * @param {gameboard.reducer} state
  * @returns
  */
-function GameBoardWrapper({
-  state
-}) {
+function GameBoardWrapper({ state }) {
   /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   const [gameboardKey, setGameboardKey] = useState(1);
+  const [timestamp] = React.useState(Date.now());
+  const [count, setCount] = React.useState(0.0)
 
   // Get all passed down props which we will use, from gameboard state
   const {
@@ -153,46 +153,47 @@ function GameBoardWrapper({
   const [currentActionIndex, setCurrentActionIndex] = useState(-1);
   const [prevActionIndex, setPrevActionIndex] = useState(-1);
 
-  // function to run next units action from stack(for debugger and for usual flow)
-  const nextAction = function () {
-    const actionTime = actionStack[currentActionIndex].time;
-    const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
-    setCurrentActionIndex(currentActionIndex + boardActions.length);
-  }
+  // Use useRef for mutable variables that we want to persist
+  // without triggering a re-render on their change
+  const requestRef = React.useRef();
+  const previousTimeRef = React.useRef();
+  
+  const animate = time => {
+    if (previousTimeRef.current != undefined) {
+      const deltaTime = time - previousTimeRef.current;
+      // Pass on a function to the setter of the state
+      // to make sure we always have the latest state
+      setCount(prevCount => {
+        console.log("TCL: GameBoardWrapper -> prevCount1", prevCount)
+        let possibleNextAction = actionStack[0];
+        console.log("TCL: GameBoardWrapper -> possibleNextAction", possibleNextAction)
+        const timePassed = Date.now() - timestamp;
+        console.log("TCL: GameBoardWrapper -> timePassed", timePassed)
+        if (possibleNextAction && possibleNextAction.time <= timePassed) {
+          console.warn("jajaja")
+          // its time for executing
+          const currentAction = actionStack.shift();
+          dispatchUnitLifecycle(currentAction);
 
-  useEffect(() => {
-    if (
-      actionStack.length > 0 && // we got actions to execute
-      currentActionIndex > -1 && // current action index is not initial
-      currentActionIndex !== prevActionIndex // we are not yet finished
-    ) {
-      // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
-      setPrevActionIndex(currentActionIndex);
+          if (actionStack.length === 0) {
+            console.info('Battle is done');
+          }
+        }
 
-      const actionTime = actionStack[currentActionIndex].time;
-      const boardActions = actionStack.filter(action => action.time === actionTime);
-      for (const action of boardActions) {
-        // reducer which executes action from stack for child Unit component
-        dispatchUnitLifecycle(action);
-      }
-
-      if (currentActionIndex + boardActions.length >= actionStack.length) {
-        // no more actions, we could trigger winning/losing animation here
-        console.info('Battle is done');
-      } else if (!DEBUG_MODE) {
-        // Scheduling next action
-        const timeoutLength = actionStack[currentActionIndex + boardActions.length].time - actionTime;
-        console.log("TCL: timeoutLength", timeoutLength)
-
-        setTimeout(() => {
-          nextAction()
-        }, timeoutLength);
-      }
+        return (prevCount + deltaTime * 0.01)
+      })
     }
-  }, [currentActionIndex, actionStack, prevActionIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    previousTimeRef.current = time;
+    requestRef.current = requestAnimationFrame(animate);
+  }
+  
+  React.useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []); // Make sure the effect runs only once when battle started or ended
 
   return ( <StateProvider initialState={{...state}}>
-    {DEBUG_MODE && <a href="#0" onClick={ nextAction }>Debug next action</a>} 
     <GameBoard key={ gameboardKey } render={ boardRef =>
         <UnitsWrapper unitComponents={ unitComponents } onLifecycle={ dispatchUnitLifecycle } boardRef={ boardRef } />
       }
