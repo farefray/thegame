@@ -95,7 +95,7 @@ function GameBoardWrapper({ state }) {
   /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   const [gameboardKey, setGameboardKey] = useState(1);
   const [timestamp] = React.useState(Date.now());
-  const [count, setCount] = React.useState(0.0)
+  const [count, setCount] = React.useState(0.0); // eslint-disable-line
 
   // Get all passed down props which we will use, from gameboard state
   const {
@@ -141,7 +141,6 @@ function GameBoardWrapper({ state }) {
       setGameboardKey(gameboardKey + 1);
     } else if (isActiveBattleGoing && isBattleLaunched && !wasBattleLaunched) {
       // reset internal counter, effect on this will trigger battle actions animating start
-      setCurrentActionIndex(isActiveBattleGoing ? 0 : -1);
     } else if (!isActiveBattleGoing && isBattleLaunched && wasBattleLaunched) {
       // Finished battle (isActiveBattleGoing via redux is false, while battle is running in component yet)
       setBattleLaunched(false);
@@ -149,49 +148,48 @@ function GameBoardWrapper({ state }) {
     }
   }, [isActiveBattleGoing, isBattleLaunched, gameboardKey, wasBattleLaunched]);
 
-  // Internal counters in order to go past actionStack and execute units behaviors one by one
-  const [currentActionIndex, setCurrentActionIndex] = useState(-1);
-  const [prevActionIndex, setPrevActionIndex] = useState(-1);
-
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
-  const requestRef = React.useRef();
+  const animationRef = React.useRef();
   const previousTimeRef = React.useRef();
   
   const animate = time => {
-    if (previousTimeRef.current != undefined) {
+    if (previousTimeRef.current !== undefined) {
       const deltaTime = time - previousTimeRef.current;
+
       // Pass on a function to the setter of the state
       // to make sure we always have the latest state
       setCount(prevCount => {
-        console.log("TCL: GameBoardWrapper -> prevCount1", prevCount)
         let possibleNextAction = actionStack[0];
-        console.log("TCL: GameBoardWrapper -> possibleNextAction", possibleNextAction)
         const timePassed = Date.now() - timestamp;
-        console.log("TCL: GameBoardWrapper -> timePassed", timePassed)
         if (possibleNextAction && possibleNextAction.time <= timePassed) {
-          console.warn("jajaja")
-          // its time for executing
           const currentAction = actionStack.shift();
           dispatchUnitLifecycle(currentAction);
-
-          if (actionStack.length === 0) {
-            console.info('Battle is done');
-          }
         }
 
         return (prevCount + deltaTime * 0.01)
       })
     }
 
-    previousTimeRef.current = time;
-    requestRef.current = requestAnimationFrame(animate);
+    if (actionStack.length === 0) {
+      // Battle is done on frontend. It's supposed to be finished nearly that time by backend also. 
+      // TODO: test state change here from backend.
+      console.info('Battle is done on frontend');
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    } else {
+      previousTimeRef.current = time;
+      animationRef.current = requestAnimationFrame(animate);
+    }
   }
   
   React.useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []); // Make sure the effect runs only once when battle started or ended
+    if (isBattleLaunched) {
+      animationRef.current = requestAnimationFrame(animate);
+    }
+
+    return () => cancelAnimationFrame(animationRef.current);
+  }, [isBattleLaunched, animate]); // Make sure the effect runs only once when battle started or ended
 
   return ( <StateProvider initialState={{...state}}>
     <GameBoard key={ gameboardKey } render={ boardRef =>
