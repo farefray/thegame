@@ -180,7 +180,6 @@ export default class Battle {
         const { actorId, timestamp } = action.payload;
         const actor = this.actorQueue.find(actor => actor.id === actorId);
         if (actor) {
-          console.log(actor.timestamp, timestamp);
           actor.timestamp = timestamp;
         }
         break;
