@@ -11,7 +11,7 @@ export class Effect extends BaseEffect implements EffectType {
     constructor (econfig: EffectType) {
         super(econfig);
 
-        this.lookType = econfig.lookType;
+        this.lookType = econfig.id;
     }
 }
 

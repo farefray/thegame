@@ -10,7 +10,7 @@ import fallbackImage from '../../assets/monsters/default.png';
  * once fire onUnitSpriteLoaded to determine unit dimensions
  */
 export default function UnitImage ({ lookType, direction, isMoving, extraClass = '', onUnitSpriteLoaded }: {
-  lookType: number, direction: number, isMoving: boolean, extraClass: string, onUnitSpriteLoaded: Function
+  lookType: number, direction: number, isMoving: boolean, extraClass: string, onUnitSpriteLoaded?: Function
 }) {
 
   if (!lookType) {
@@ -36,7 +36,7 @@ export default function UnitImage ({ lookType, direction, isMoving, extraClass =
   // we make assumption that sprite size is same for all sprites of this monster.
   React.useEffect(() => {
     const firstSpriteDimension = sprites.idle[1].height;
-    onUnitSpriteLoaded(firstSpriteDimension);
+    onUnitSpriteLoaded && onUnitSpriteLoaded(firstSpriteDimension);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [sprite, setSprite] = React.useState(sprites[isMoving ? 'animated' : 'idle'][direction]);
