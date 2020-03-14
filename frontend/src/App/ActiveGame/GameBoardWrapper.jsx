@@ -6,7 +6,8 @@ import _ from 'lodash';
 import React, {
   useEffect,
   useState,
-  useReducer
+  useReducer,
+  useRef
 } from 'react';
 import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
@@ -61,8 +62,13 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
         component
       } = action;
 
-      unitComponents[component.id].component = null;
-      delete unitComponents[component.id];
+      // his one is a quick hotfix
+      // Todo: Investigate why there's cases when no component exist.
+      if (unitComponents[component.id]) {
+        unitComponents[component.id].component = null;
+        delete unitComponents[component.id];
+      }
+
       return unitComponents;
     }
     // actionStack events which are being generated on backend
@@ -91,11 +97,10 @@ GameBoardWrapper.propTypes = {
  * @param {gameboard.reducer} state
  * @returns
  */
-function GameBoardWrapper({
-  state
-}) {
+function GameBoardWrapper({ state }) {
   /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   const [gameboardKey, setGameboardKey] = useState(1);
+  const [count, setCount] = useState(0.0); // eslint-disable-line
 
   // Get all passed down props which we will use, from gameboard state
   const {
@@ -131,6 +136,47 @@ function GameBoardWrapper({
   /** We use usePrevious hook in order to get previous state value for isBattleLaunched, to know when its changed */
   const wasBattleLaunched = usePrevious(isBattleLaunched);
 
+  // Use useRef for mutable variables that we want to persist
+  // without triggering a re-render on their change
+  const animationRef = useRef();
+  const previousTimeRef = useRef();
+  const animationCleanup = () => {
+    cancelAnimationFrame(animationRef.current);
+    animationRef.current = null;
+    setCount((prevCount) => {
+      // reset timer for animations
+      return 0;
+    });
+  };
+
+  const animate = time => {
+    if (previousTimeRef.current !== undefined) {
+      const deltaTime = time - previousTimeRef.current;
+
+      // Pass on a function to the setter of the state
+      // to make sure we always have the latest state
+      setCount(timePassed => {
+        let possibleNextAction = actionStack[0];
+        if (possibleNextAction && possibleNextAction.time <= timePassed) {
+          const currentAction = actionStack.shift();
+          dispatchUnitLifecycle(currentAction);
+        }
+
+        return (timePassed + deltaTime)
+      })
+    }
+
+    if (actionStack.length === 0) {
+      // Battle is done on frontend. It's supposed to be finished nearly that time by backend also. 
+      // TODO: test state change here from backend.
+      console.info('Battle is done on frontend');
+      return animationCleanup();
+    } else {
+      previousTimeRef.current = time;
+      animationRef.current = requestAnimationFrame(animate);
+    }
+  }
+
   useEffect(() => {
     /** isActiveBattleGoing is redux state from backend, isBattleLaunched is internal state for this component
      * we devide those two values, because we cannot start battle immediatly when redux updated, as not all Unit components yet mounted and registered here.
@@ -139,9 +185,10 @@ function GameBoardWrapper({
       // Launch battle and update gameboard key in order to re-render units
       setBattleLaunched(true);
       setGameboardKey(gameboardKey + 1);
-    } else if (isActiveBattleGoing && isBattleLaunched && !wasBattleLaunched) {
-      // reset internal counter, effect on this will trigger battle actions animating start
-      setCurrentActionIndex(isActiveBattleGoing ? 0 : -1);
+    } else if (isActiveBattleGoing && isBattleLaunched && !wasBattleLaunched
+      && !animationRef.current) {
+      // starting battle animations on frontend
+      animationRef.current = requestAnimationFrame(animate);
     } else if (!isActiveBattleGoing && isBattleLaunched && wasBattleLaunched) {
       // Finished battle (isActiveBattleGoing via redux is false, while battle is running in component yet)
       setBattleLaunched(false);
@@ -149,50 +196,14 @@ function GameBoardWrapper({
     }
   }, [isActiveBattleGoing, isBattleLaunched, gameboardKey, wasBattleLaunched]);
 
-  // Internal counters in order to go past actionStack and execute units behaviors one by one
-  const [currentActionIndex, setCurrentActionIndex] = useState(-1);
-  const [prevActionIndex, setPrevActionIndex] = useState(-1);
-
-  // function to run next units action from stack(for debugger and for usual flow)
-  const nextAction = function () {
-    const actionTime = actionStack[currentActionIndex].time;
-    const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
-    setCurrentActionIndex(currentActionIndex + boardActions.length);
-  }
-
+  // stop any animations on unmount
   useEffect(() => {
-    if (
-      actionStack.length > 0 && // we got actions to execute
-      currentActionIndex > -1 && // current action index is not initial
-      currentActionIndex !== prevActionIndex // we are not yet finished
-    ) {
-      // we actually have battle going and gameBoard was modified by dispatchGameBoard, so we execute another actionStack action
-      setPrevActionIndex(currentActionIndex);
-
-      const actionTime = actionStack[currentActionIndex].time;
-      const boardActions = actionStack.filter(action => action.time === actionTime);
-      for (const action of boardActions) {
-        // reducer which executes action from stack for child Unit component
-        dispatchUnitLifecycle(action);
-      }
-
-      if (currentActionIndex + boardActions.length >= actionStack.length) {
-        // no more actions, we could trigger winning/losing animation here
-        console.info('Battle is done');
-      } else if (!DEBUG_MODE) {
-        // Scheduling next action
-        const timeoutLength = actionStack[currentActionIndex + boardActions.length].time - actionTime;
-        console.log("TCL: timeoutLength", timeoutLength)
-
-        setTimeout(() => {
-          nextAction()
-        }, timeoutLength);
-      }
+    return () => {
+      animationCleanup();
     }
-  }, [currentActionIndex, actionStack, prevActionIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   return ( <StateProvider initialState={{...state}}>
-    {DEBUG_MODE && <a href="#0" onClick={ nextAction }>Debug next action</a>} 
     <GameBoard key={ gameboardKey } render={ boardRef =>
         <UnitsWrapper unitComponents={ unitComponents } onLifecycle={ dispatchUnitLifecycle } boardRef={ boardRef } />
       }

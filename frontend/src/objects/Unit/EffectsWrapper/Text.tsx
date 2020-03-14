@@ -29,7 +29,7 @@ export function TextComponent({ instance, onDone }) {
   React.useEffect(() => {
     setTimeout(() => {
       if (!ref || !ref.current) {
-        return;
+        return onDone(id);
       }
 
       ref.current.animate({
