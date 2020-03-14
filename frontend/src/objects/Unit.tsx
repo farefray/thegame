@@ -213,7 +213,7 @@ export default class Unit extends React.Component<IProps, IState> {
       }
 
       this.addEffect(EffectsFactory.create('particle', {
-        lookType: particle.id,
+        id: particle.id,
         duration,
         from: {
           top: top,
@@ -264,7 +264,7 @@ export default class Unit extends React.Component<IProps, IState> {
       const { top, left } = this.state;
 
       this.addEffect(EffectsFactory.create('effect', {
-        lookType: 'death_effect',
+        id: 'death_effect',
         duration: 500,
         from: {
           top: top,

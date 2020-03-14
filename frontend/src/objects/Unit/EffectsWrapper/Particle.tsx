@@ -14,7 +14,7 @@ export class Particle extends BaseEffect implements ParticleType {
         super(econfig);
 
         this.to = econfig.to;
-        this.lookType = econfig.lookType;
+        this.lookType = econfig.id;
     }
 }
 

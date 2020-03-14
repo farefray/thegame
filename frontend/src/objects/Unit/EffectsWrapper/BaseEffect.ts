@@ -9,7 +9,8 @@ interface BaseEffectConfig {
     duration: string;
     effect: number;
     from: EffectPosition;
-    lookType: string;
+    id: string;
+    callback?: Function;
 }
 
 export interface BaseEffectType extends BaseEffectConfig {
@@ -30,11 +31,11 @@ export class BaseEffect implements BaseEffectType {
     constructor (conf: BaseEffectConfig) {
         this.id = hyperid().uuid;
 
-        const { duration, effect, from, lookType } = conf;
+        const { duration, effect, from, id } = conf;
         this.duration = duration;
         this.effect = effect;
         this.from = from;
-        this.lookType = lookType;
+        this.lookType = id;
 
         if (conf.callback) {
             this.callback = conf.callback;

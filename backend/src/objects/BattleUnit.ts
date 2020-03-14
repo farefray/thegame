@@ -304,7 +304,7 @@ export default class BattleUnit {
     if (effect) {
       healthChangeAction.effects = [
         {
-          lookType: effect.id,
+          id: effect.id,
           duration: effect.duration || EFFECTS[effect.id].duration,
           from: {
             x: this.x,
