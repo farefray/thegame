@@ -7,7 +7,7 @@ const generateBoard = () => {
   const board = [];
   while (board.length < unitCount) {
     const x = Math.floor(Math.random() * 8);
-    const y = Math.floor(Math.random() * 4);
+    const y = 4;
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
     board.push({
       name: Monsters.getRandomUnit().name,

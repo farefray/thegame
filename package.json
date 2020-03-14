@@ -60,10 +60,10 @@
     "react-cosmos-redux": "^1.1.0",
     "react-mock": "^6.0.1",
     "typescript": "^3.7.2",
-    "webpack-visualizer-plugin": "^0.1.11",
-    "webpack": "4.41.5"
+    "webpack": "4.41.5",
+    "webpack-visualizer-plugin": "^0.1.11"
   },
   "engines": {
-    "node": "10.x"
+    "node": "8.x"
   }
 }
