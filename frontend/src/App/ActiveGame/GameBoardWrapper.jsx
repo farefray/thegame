@@ -20,8 +20,8 @@ import usePrevious from '../../customhooks/usePrevious';
 
 const uuidv1 = require('uuid/v1');
 
-const DEBUG_MODE = false;
-
+const DEBUG_MODE = process.env.REACT_APP_GAMEMODE === 'debug';
+let nextActionReady = null;
 /**
  * Handles previously stored actions(actionStack) as well as frontend generated events
  * contains unit itself in case its frontend generated event or unitID in case its backend event
@@ -157,9 +157,19 @@ function GameBoardWrapper({ state }) {
       // to make sure we always have the latest state
       setCount(timePassed => {
         let possibleNextAction = actionStack[0];
-        if (possibleNextAction && possibleNextAction.time <= timePassed) {
-          const currentAction = actionStack.shift();
-          dispatchUnitLifecycle(currentAction);
+        if (possibleNextAction) {
+          const action = () => {
+            const currentAction = actionStack.shift();
+            DEBUG_MODE && console.log(currentAction);
+            dispatchUnitLifecycle(currentAction);
+          }
+
+          if (DEBUG_MODE) {
+            nextActionReady && action();
+            nextActionReady = false;
+          } else if (possibleNextAction.time <= timePassed) {
+            action();
+          }
         }
 
         return (timePassed + deltaTime)
@@ -204,7 +214,8 @@ function GameBoardWrapper({ state }) {
   }, [])
 
   return ( <StateProvider initialState={{...state}}>
-    <GameBoard key={ gameboardKey } render={ boardRef =>
+      {DEBUG_MODE && <a href="#0" onClick={ () => nextActionReady = true }>Debug next action</a>} 
+      <GameBoard key={ gameboardKey } render={ boardRef =>
         <UnitsWrapper unitComponents={ unitComponents } onLifecycle={ dispatchUnitLifecycle } boardRef={ boardRef } />
       }
     /></StateProvider>);
