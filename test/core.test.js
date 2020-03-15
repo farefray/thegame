@@ -2,7 +2,6 @@
 import Battle from '../src/objects/Battle.ts';
 import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import GameController from '../src/controllers/GameController';
-import BattleController from '../src/controllers/BattleController';
 import BoardController from '../src/controllers/BoardController';
 import ShopController from '../src/controllers/ShopController';
 import AppError from '../src/objects/AppError';
@@ -112,7 +111,7 @@ describe('Core Modules', () => {
     });
 
     it('can sell pawn', async () => {
-      await GameController.purchasePawn(gameState, MOCK_SOCKETID_2, 0);
+      gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_2, 0);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(0);
       await BoardController.mutateStateByPawnSelling(gameState, MOCK_SOCKETID_2, firstHandPosition);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(1);
@@ -128,11 +127,6 @@ describe('Core Modules', () => {
       gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.have.property('lookType');
     });
 
-    it('can setup whole round', async () => {
-      const battleRoundResult = await BattleController.setup(gameState);
-      battleRoundResult.should.be.ok();
-      battleRoundResult.battles[MOCK_SOCKETID_1].winner.should.be.above(TEAM.NONE);
-    });
   });
 
   describe('Battle', () => {

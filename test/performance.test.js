@@ -17,6 +17,7 @@ benchtest(null, {
   off: false,
   only: false
 });
+
 beforeEach(benchtest.test);
 after(benchtest.report);
 
@@ -36,7 +37,7 @@ if (typeof module !== 'undefined' && typeof window === 'undefined') {
 
 [1].forEach(num => {
   describe('Test Suite ' + num, function() {
-    it('Full sized battle execution #', function test(done) {
+    it('Full sized battle execution #', (done) => {
       const npcBoard = [];
 
       for (let x = 0; x < 8; x++) {
@@ -64,7 +65,8 @@ if (typeof module !== 'undefined' && typeof window === 'undefined') {
       battle.actionStack.should.be.an.Array();
       battle.actionStack.length.should.be.above(0);
 
-      this.performance.duration.should.be.below(75);
+      this.performance.duration.should.be.below(10);
+      console.log("test -> this.performance.duration", this.performance.duration)
       done();
     });
   });
