@@ -14,7 +14,8 @@ const generateGameState = async function(board) {
   const combinedBoard = createBattleBoard({ units: board.A }, { units: board.B });
   const battleResult = new Battle({ board: combinedBoard });
   const result = _.cloneDeep(battleResult);
-  console.table(battleResult.actionStack);
+  console.log(_.cloneDeep(battleResult.actionStack));
+
   return { ...result, actionStack: battleResult.actionStack };
 };
 
