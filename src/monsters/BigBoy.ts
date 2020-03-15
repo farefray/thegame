@@ -17,7 +17,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
     if (target) {
       //Stun
       const rescheduleActorAction: RescheduleActorAction = {
-        unitId: unit.id,
+        unitID: unit.id,
         type: ACTION_TYPE.RESCHEDULE_ACTOR,
         payload: {
           actorId: target.id,

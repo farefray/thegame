@@ -139,8 +139,8 @@ export default class Pathfinder {
     return getDistanceBetweenCoordinates({
       x: unit1.x,
       y: unit1.y,
-      targetX: unit2.x,
-      targetY: unit2.y
+      x2: unit2.x,
+      y2: unit2.y
     });
   }
 

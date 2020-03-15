@@ -17,7 +17,7 @@ export enum ACTION_TYPE {
 }
 
 interface ActionBase {
-  unitId: string;
+  unitID: string;
   effects?: Array<IEffect>;
 }
 
