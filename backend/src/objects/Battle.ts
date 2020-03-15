@@ -19,7 +19,7 @@ interface UnitAction {
   unitID: string;
   payload: object;
   time: number;
-  effects: [];
+  effects?: [];
 }
 
 export default class Battle {
@@ -53,7 +53,7 @@ export default class Battle {
           id: unit.id,
           actionGenerator: unit.actionGenerator(),
           timestamp: 0
-        })
+        }) // adding first run of actionGenerator for every unit in order to spawn
     );
     this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
     this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
@@ -101,12 +101,14 @@ export default class Battle {
         fullyDone = !!done;
         if (!value) continue;
 
+        // processed action spawning more actions to be executed
         if (value.actions) {
           for (const action of value.actions || []) {
             this.processAction(action);
           }
         }
 
+        // processed action spawned actors to be placed into queue
         if (value.actors) {
           for (const actor of value.actors) {
             this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor);
@@ -141,7 +143,8 @@ export default class Battle {
   }
 
   processAction(action: Action) {
-    if (this.isOver && action.type !== ACTION_TYPE.HEALTH_CHANGE && action.type !== ACTION_TYPE.DEATH) {
+    if (!action ||
+      (this.isOver && action.type !== ACTION_TYPE.HEALTH_CHANGE && action.type !== ACTION_TYPE.DEATH)) {
       // dont proceed new actions if battle is finished, we only need old queued damage actors to finish
       return;
     }
@@ -190,8 +193,10 @@ export default class Battle {
   }
 
   addToActionStack(action, type): void {
-    const { unitId, payload, effects } = action;
-    this.actionStack.push({ type, unitID: unitId, payload, effects, time: this.currentTimestamp });
+    const { unitID, payload, effects } = action;
+    const actionStackItem = { type, unitID, payload, time: this.currentTimestamp };
+    effects && (actionStackItem.effects = effects);
+    this.actionStack.push(actionStackItem);
   }
 
   unitsFromTeam(teamId: number) {

@@ -43,6 +43,7 @@ export default class BattleUnit {
   public armor: number;
   public actionDelay: number; // TODO[P0] - this is supposed to be different, based on speed or atk speed or exhaust after spellcast?
   public spell?: Function;
+  public cost: number;
 
   private _health: {
     now: number;
@@ -66,6 +67,7 @@ export default class BattleUnit {
     const unitStats = Monsters.getMonsterStats(simpleUnit.name);
     const { attack } = unitStats;
     this.name = unitStats.name;
+    this.cost = unitStats.cost;
     this.attack = {
       ...attack,
       particle: {
@@ -164,8 +166,8 @@ export default class BattleUnit {
 
       let targetUnit = targetPairPool.findTargetByUnitId(this.id);
       const closestTarget = this.getClosestTarget(units);
-      if (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit)) {
-        yield { actions: closestTarget ? this.acquireTarget(closestTarget) : undefined }; // had to use those ? val : undefined in order to compile backend, however this has to be solved properly by typescript magic :)
+      if (closestTarget && (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit))) {
+        yield { actions: this.acquireTarget(closestTarget)};
         targetUnit = closestTarget;
       }
 
@@ -197,7 +199,7 @@ export default class BattleUnit {
 
   spawn(): [SpawnAction] {
     const spawnAction: SpawnAction = {
-      unitId: this.id,
+      unitID: this.id,
       type: ACTION_TYPE.SPAWN,
       payload: { unit: this }
     };
@@ -215,7 +217,7 @@ export default class BattleUnit {
     const to = this.position;
     return [
       {
-        unitId: this.id,
+        unitID: this.id,
         type: ACTION_TYPE.MOVE,
         payload: {
           from,
@@ -253,8 +255,8 @@ export default class BattleUnit {
         PathUtil.getDistanceBetweenCoordinates({
           x: from.x,
           y: from.y,
-          targetX: to.x,
-          targetY: to.y
+          x2: to.x,
+          y2: to.y
         }) * speedByTile
       )
     );
@@ -268,7 +270,7 @@ export default class BattleUnit {
 
     const attackDuration = this.attackDuration(from, to);
     const attackAction: AttackAction = {
-      unitId: this.id,
+      unitID: this.id,
       type: ACTION_TYPE.ATTACK,
       payload: {
         from,
@@ -278,23 +280,23 @@ export default class BattleUnit {
     };
 
     const value = -Math.floor(multiplier * this.attackValue);
-    const actors = [
-      new Actor({
-        timestamp: battleContext.currentTimestamp + attackDuration,
-        actionGenerator: (function*() {
-          yield { actions: targetUnit.healthChange(value) };
-        })()
-      })
-    ];
-
-    return { actions: [attackAction], actors };
+    return {
+      actions: [attackAction], actors: [
+        new Actor({
+          timestamp: battleContext.currentTimestamp + attackDuration,
+          actionGenerator: (function*() {
+            yield { actions: targetUnit.healthChange(value) };
+          })()
+        })
+      ]
+    };
   }
 
   healthChange(value: number, effect?: IEffect | undefined): [HealthChangeAction] | [HealthChangeAction, DeathAction] {
     this.health += value;
 
     const healthChangeAction: HealthChangeAction = {
-      unitId: this.id,
+      unitID: this.id,
       type: ACTION_TYPE.HEALTH_CHANGE,
       payload: {
         value
@@ -316,7 +318,7 @@ export default class BattleUnit {
 
     if (!this.isAlive) {
       const deathAction: DeathAction = {
-        unitId: this.id,
+        unitID: this.id,
         type: ACTION_TYPE.DEATH,
         payload: { unit: this }
       };
@@ -327,10 +329,14 @@ export default class BattleUnit {
     return [healthChangeAction];
   }
 
-  manaChange(value: number): [ManaChangeAction] {
-    this._mana.now += value;
+  manaChange(value: number): Array<ManaChangeAction> {
+    if (+value === 0 || this._mana.max === this.mana) {
+      return [];
+    }
+
+    this.mana += value;
     const manaChangeAction: ManaChangeAction = {
-      unitId: this.id,
+      unitID: this.id,
       type: ACTION_TYPE.MANA_CHANGE,
       payload: {
         value
@@ -342,7 +348,7 @@ export default class BattleUnit {
   acquireTarget(target: BattleUnit): [AcquireTargetAction] {
     return [
       {
-        unitId: this.id,
+        unitID: this.id,
         type: ACTION_TYPE.ACQUIRE_TARGET,
         payload: {
           attacker: this,
@@ -353,11 +359,13 @@ export default class BattleUnit {
   }
 
   getClosestTarget(units) {
-    return <BattleUnit>PathUtil.getClosestTargets({
+    const closestTarget = <BattleUnit>PathUtil.getClosestTargets({
       x: this.x,
       y: this.y,
       targets: units.filter(u => u.teamId === this.oppositeTeamId && u.isAlive),
       amount: 1
     });
+
+    return closestTarget.length > 0 ? closestTarget[0]: null;
   }
 }

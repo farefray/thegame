@@ -54,7 +54,7 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
         component
       } = action;
 
-      unitComponents[component.id].component = component;
+      unitComponents[component.id] && (unitComponents[component.id].component = component);
       return unitComponents;
     }
     case 'DESTROY': {

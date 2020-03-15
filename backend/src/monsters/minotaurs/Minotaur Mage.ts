@@ -32,11 +32,13 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
         new Actor({
           timestamp: battleContext.currentTimestamp,
           actionGenerator: (function*() {
-            yield { actions: affectedUnits[0].healthChange(2 * damageDealt, { id: 'thunderstorm' }) }
+            if (affectedUnits.length > 0) {
+              yield { actions: affectedUnits[0].healthChange(2 * damageDealt, { id: 'thunderstorm' }) }
             
-            if(affectedUnits[1]) {
-              for (let index = 1; index < affectedUnits.length; index++) {
-                yield { actions: affectedUnits[index].healthChange(damageDealt, { id: 'blue_chain' }) }
+              if(affectedUnits.length > 1) {
+                for (let index = 1; index < affectedUnits.length; index++) {
+                  yield { actions: affectedUnits[index].healthChange(damageDealt, { id: 'blue_chain' }) }
+                }
               }
             }
           })()

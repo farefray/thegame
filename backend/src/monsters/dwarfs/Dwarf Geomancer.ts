@@ -12,7 +12,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
   if (unit.mana < manaCost || !target) return null;
   return (function*() {
     let counter = 0;
-    yield { actions: unit.manaChange(-manaCost) };
+    yield { actions: unit.manaChange(-manaCost) }; // todo fix manacost for this spell
     while (ticks > counter++) {
       yield { delay: tickDelay, actions: target.healthChange(tickValue, { id: 'green_sparkles' }) };
     }
