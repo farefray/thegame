@@ -143,51 +143,53 @@ function GameBoardWrapper({ state }) {
   const animationCleanup = () => {
     cancelAnimationFrame(animationRef.current);
     animationRef.current = null;
-    setCount((prevCount) => {
-      // reset timer for animations
-      return 0;
-    });
+    previousTimeRef.current = null;
   };
 
-  const animate = time => {
-    if (previousTimeRef.current !== undefined) {
-      const deltaTime = time - previousTimeRef.current;
-
+  useEffect(() => {
+    const animate = time => {
       // Pass on a function to the setter of the state
       // to make sure we always have the latest state
-      setCount(timePassed => {
-        let possibleNextAction = actionStack[0];
-        if (possibleNextAction) {
-          const action = () => {
-            const currentAction = actionStack.shift();
-            DEBUG_MODE && console.log(currentAction);
-            dispatchUnitLifecycle(currentAction);
+      setCount((timePassed) => {
+        if (!!previousTimeRef.current) {
+          const deltaTime = time - previousTimeRef.current;
+          let possibleNextAction = actionStack[0];
+          if (possibleNextAction) {
+            const action = () => {
+              const currentAction = actionStack.shift();
+              DEBUG_MODE && console.log(currentAction);
+              dispatchUnitLifecycle(currentAction);
+            }
+
+            if (DEBUG_MODE) {
+              nextActionReady && action();
+              nextActionReady = false;
+            } else if (possibleNextAction.time <= timePassed) {
+              action();
+            }
           }
 
-          if (DEBUG_MODE) {
-            nextActionReady && action();
-            nextActionReady = false;
-          } else if (possibleNextAction.time <= timePassed) {
-            action();
-          }
+          return (timePassed + deltaTime)
+        } else {
+          // Nulled time in order for next round to use timePassed correctly
+          return 0.0;
         }
-
-        return (timePassed + deltaTime)
       })
-    }
+  
+      if (actionStack.length === 0 && previousTimeRef.current) {
+        // last iteration to null out time
+        previousTimeRef.current = null;
+      } else if (actionStack.length === 0 && !previousTimeRef.current) {
+        // Battle is done on frontend. It's supposed to be finished nearly that time by backend also. 
+        // TODO: test state change here from backend.
+        return animationCleanup();
+      } else {
+        previousTimeRef.current = time;
+      }
 
-    if (actionStack.length === 0) {
-      // Battle is done on frontend. It's supposed to be finished nearly that time by backend also. 
-      // TODO: test state change here from backend.
-      console.info('Battle is done on frontend');
-      return animationCleanup();
-    } else {
-      previousTimeRef.current = time;
       animationRef.current = requestAnimationFrame(animate);
     }
-  }
 
-  useEffect(() => {
     /** isActiveBattleGoing is redux state from backend, isBattleLaunched is internal state for this component
      * we devide those two values, because we cannot start battle immediatly when redux updated, as not all Unit components yet mounted and registered here.
      */
@@ -204,7 +206,7 @@ function GameBoardWrapper({ state }) {
       setBattleLaunched(false);
       setGameboardKey(gameboardKey + 1);
     }
-  }, [isActiveBattleGoing, isBattleLaunched, gameboardKey, wasBattleLaunched]);
+  }, [isActiveBattleGoing, isBattleLaunched, gameboardKey, wasBattleLaunched]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // stop any animations on unmount
   useEffect(() => {
