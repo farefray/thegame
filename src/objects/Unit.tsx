@@ -114,12 +114,32 @@ export default class Unit extends React.Component<IProps, IState> {
           resolve(action);
           break;
         }
+        case ACTION.DEATH: {
+          this.death(() => resolve(action));
+          break;
+        }
         default: {
           console.warn('Unhandled action!', action);
           throw new Error('Unhandled action for Unit!');
         }
       }
     });
+  }
+
+  death(callback) {
+    const { top, left } = this.state;
+
+    this.addEffect(EffectsFactory.create('effect', {
+      id: 'death_effect',
+      duration: 500,
+      from: {
+        top: top,
+        left: left
+      },
+      callback: () => this.setState({
+        isDead: true
+      }, () => callback())
+    }));
   }
 
   getPositionFromCoordinates(x, y) {
@@ -182,8 +202,6 @@ export default class Unit extends React.Component<IProps, IState> {
       if (effectCallback) {
         effectCallback();
       }
-
-      this.updateStatus()
     });
   }
 
@@ -267,27 +285,6 @@ export default class Unit extends React.Component<IProps, IState> {
       type: 'DESTROY',
       component: this
     });
-  }
-
-  updateStatus() {
-    if (!this.state.isDead && this.state.health <= 0 && this.state.effects.length === 0) {
-      const { top, left } = this.state;
-
-      // todo death must be moved to chainedActions
-      this.addEffect(EffectsFactory.create('effect', {
-        id: 'death_effect',
-        duration: 500,
-        from: {
-          top: top,
-          left: left
-        },
-        callback: () => {
-          this.setState({
-            isDead: true
-          })
-        }
-      }));
-    }
   }
 
   isMelee() {

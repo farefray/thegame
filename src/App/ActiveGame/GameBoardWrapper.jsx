@@ -74,12 +74,13 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     // actionStack events which are being generated on backend
     default:
       // Since our frontend is animated with timeouts, there might be huge delays and battle could be already finished by backend, while its not yet rendered properly on frontend. Thats why we check if component is still exists :)
-      if (unitComponents[action.unitID] && unitComponents[action.unitID].component) {
-        unitComponents[action.unitID].component.onAction(action).then((resolvedAction) => {
-          const { chainedAction } = resolvedAction;
-          chainedAction && (unitComponents[chainedAction.unitID].component.onAction(chainedAction));
-        });
-      }
+      const proceedActionForUnit = (action) => {
+        if (action && unitComponents[action.unitID] && unitComponents[action.unitID].component) {
+          unitComponents[action.unitID].component.onAction(action).then((resolvedAction) => proceedActionForUnit(resolvedAction?.chainedAction));
+        }
+      };
+
+      proceedActionForUnit(action);
 
       return unitComponents;
   }
