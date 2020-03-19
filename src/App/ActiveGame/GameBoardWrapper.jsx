@@ -62,7 +62,7 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
         component
       } = action;
 
-      // his one is a quick hotfix
+      // this one is a quick hotfix
       // Todo: Investigate why there's cases when no component exist.
       if (unitComponents[component.id]) {
         unitComponents[component.id].component = null;
@@ -75,7 +75,10 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     default:
       // Since our frontend is animated with timeouts, there might be huge delays and battle could be already finished by backend, while its not yet rendered properly on frontend. Thats why we check if component is still exists :)
       if (unitComponents[action.unitID] && unitComponents[action.unitID].component) {
-        unitComponents[action.unitID].component.onAction(action);
+        unitComponents[action.unitID].component.onAction(action).then((resolvedAction) => {
+          const { chainedAction } = resolvedAction;
+          chainedAction && (unitComponents[chainedAction.unitID].component.onAction(chainedAction));
+        });
       }
 
       return unitComponents;
