@@ -1,3 +1,4 @@
+import hyperid from 'hyperid';
 import * as PathUtil from '../utils/pathUtils';
 import Pathfinder from './Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from './Action';
@@ -21,6 +22,11 @@ interface SimpleUnit {
     y: number;
   };
   teamId: number;
+}
+
+interface HealthChangeOptions {
+  effect?: IEffect | undefined;
+  parent?: string;
 }
 
 export default class BattleUnit {
@@ -269,8 +275,10 @@ export default class BattleUnit {
     const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
 
     const attackDuration = this.attackDuration(from, to);
+    const uid = hyperid().uuid;
     const attackAction: AttackAction = {
       unitID: this.id,
+      uid: uid,
       type: ACTION_TYPE.ATTACK,
       payload: {
         from,
@@ -285,14 +293,18 @@ export default class BattleUnit {
         new Actor({
           timestamp: battleContext.currentTimestamp + attackDuration,
           actionGenerator: (function*() {
-            yield { actions: targetUnit.healthChange(value) };
+            yield {
+              actions: targetUnit.healthChange(value, {
+                parent: uid
+              })
+            };
           })()
         })
       ]
     };
   }
 
-  healthChange(value: number, effect?: IEffect | undefined): [HealthChangeAction] | [HealthChangeAction, DeathAction] {
+  healthChange(value: number, opts?: HealthChangeOptions ): [HealthChangeAction] | [HealthChangeAction, DeathAction] {
     this.health += value;
 
     const healthChangeAction: HealthChangeAction = {
@@ -303,17 +315,21 @@ export default class BattleUnit {
       }
     };
 
-    if (effect) {
+    if (opts?.effect) {
       healthChangeAction.effects = [
         {
-          id: effect.id,
-          duration: effect.duration || EFFECTS[effect.id].duration,
+          id: opts.effect.id,
+          duration: opts.effect.duration || EFFECTS[opts.effect.id].duration,
           from: {
             x: this.x,
             y: this.y
           }
         }
       ];
+    }
+
+    if (opts?.parent) {
+      healthChangeAction.parent = opts.parent;
     }
 
     if (!this.isAlive) {
