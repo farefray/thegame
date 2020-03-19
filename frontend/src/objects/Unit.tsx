@@ -71,52 +71,55 @@ export default class Unit extends React.Component<IProps, IState> {
    *
    * @param {Object} action Action happened
    * @param {Boolean} isTarget Is current unit being a target for this action?
+   * @returns {Promise}
    */
   onAction(action) {
-    const { payload, effects } = action;
-
-    if (effects && effects.length) {
-      effects.forEach(e => {
-        const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
-        this.addEffect(EffectsFactory.create('effect', {
-          ...e,
-          from: {
-            top,
-            left
+    return new Promise((resolve) => {
+      const { payload, effects } = action;
+  
+      if (effects && effects.length) {
+        effects.forEach(e => {
+          const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
+          this.addEffect(EffectsFactory.create('effect', {
+            ...e,
+            from: {
+              top,
+              left
+            }
+          }));
+        });
+      }
+  
+      switch (action.type) {
+        case ACTION.MOVE: {
+          if (payload.to) {
+            this.move(payload.to.x, payload.to.y, () => resolve(action));
           }
-        }));
-      });
-    }
-
-    switch (action.type) {
-      case ACTION.MOVE: {
-        if (payload.to) {
-          this.move(payload.to.x, payload.to.y);
+          break;
         }
-        break;
+        case ACTION.ATTACK: {
+          this.attack(payload.to?.x, payload.to?.y, payload.duration, () => resolve(action));
+          break;
+        }
+        case ACTION.HEALTH_CHANGE: {
+          this.healthChange(payload.value, () => resolve(action));
+          break;
+        }
+        case ACTION.MANA_CHANGE: {
+          this.manaChange(payload.value);
+          resolve(action);
+          break;
+        }
+        case ACTION.SPAWN: {
+          resolve(action);
+          break;
+        }
+        default: {
+          console.warn('Unhandled action!', action);
+          throw new Error('Unhandled action for Unit!');
+        }
       }
-      case ACTION.ATTACK: {
-        payload.to && this.attack(payload.to.x, payload.to.y, payload.duration);
-        break;
-      }
-      case ACTION.HEALTH_CHANGE: {
-        setTimeout(() => {
-          this.healthChange(payload.value);
-        }, 0); // todo get rid of timeout
-        break;
-      }
-      case ACTION.MANA_CHANGE: {
-        this.manaChange(payload.value);
-        break;
-      }
-      case ACTION.SPAWN: {
-        break;
-      }
-      default: {
-        console.warn('Unhandled action!', action);
-        throw new Error('Unhandled action for Unit!');
-      }
-    }
+    });
   }
 
   getPositionFromCoordinates(x, y) {
@@ -146,7 +149,8 @@ export default class Unit extends React.Component<IProps, IState> {
     return direction;
   }
 
-  move(x, y, options: MoveOptions = {}) {
+  // todo options is not used? investigate
+  move(x, y, callback, options: MoveOptions = {}) {
     if (!x) {
       x = this.state.x;
     }
@@ -165,7 +169,7 @@ export default class Unit extends React.Component<IProps, IState> {
       transition: !options.instant ? `transform ${unit.actionDelay / 1000}s linear` : 'auto',
       direction: options.direction || this.getDirectionToTarget(x, y),
       isMoving: !options.instant ? true : false
-    });
+    }, () => callback());
   }
 
   onEffectDone(effectID) {
@@ -183,7 +187,7 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
-  attack(x: number, y: number, duration: number) {
+  attack(x: number, y: number, duration: number, callback: Function) {
     const { top: targetTop, left: targetLeft } = this.getPositionFromCoordinates(x, y);
     const { top, left } = this.state;
     const midpointTop = (targetTop + top) / 2;
@@ -198,10 +202,10 @@ export default class Unit extends React.Component<IProps, IState> {
         top: midpointTop,
         left: midpointLeft,
         transition: `transform ${duration}ms ease`
-      });
+      }, () => callback());
 
       setTimeout(() => {
-        //Recalculate position instead of passing {top, left} since there is a possibility unit should not return to the same position it started the attack from due to ongoing animations and whatnot
+        // Recalculate position instead of passing {top, left} since there is a possibility unit should not return to the same position it started the attack from due to ongoing animations and whatnot
         this.setState({ ...this.getPositionFromCoordinates(this.state.x, this.state.y) });
       }, duration);
     } else {
@@ -212,18 +216,22 @@ export default class Unit extends React.Component<IProps, IState> {
         throw new Error('No particle for range attack');
       }
 
-      this.addEffect(EffectsFactory.create('particle', {
-        id: particle.id,
-        duration,
-        from: {
-          top: top,
-          left: left
-        },
-        to: {
-          top: midpointTop - top,
-          left: midpointLeft - left
-        }
-      }));
+      this.addEffect(
+        EffectsFactory.create('particle', {
+          id: particle.id,
+          duration,
+          from: {
+            top: top,
+            left: left
+          },
+          to: {
+            top: midpointTop - top,
+            left: midpointLeft - left
+          }
+        })
+      );
+
+      callback(); // todo this callback should be actually linked to created particle (:
     }
   }
 
@@ -240,7 +248,7 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
-  healthChange(value) {
+  healthChange(value, callback) {
     let { health, stats } = this.state;
     this.setState({
       health: Math.max(0, Math.min(health + value, stats._health.max))
@@ -249,6 +257,8 @@ export default class Unit extends React.Component<IProps, IState> {
         text: value,
         classes: value > 0 ? 'green' : 'red'
       }));
+
+      callback();
     });
   }
 
@@ -263,6 +273,7 @@ export default class Unit extends React.Component<IProps, IState> {
     if (!this.state.isDead && this.state.health <= 0 && this.state.effects.length === 0) {
       const { top, left } = this.state;
 
+      // todo death must be moved to chainedActions
       this.addEffect(EffectsFactory.create('effect', {
         id: 'death_effect',
         duration: 500,

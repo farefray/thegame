@@ -193,9 +193,12 @@ export default class Battle {
   }
 
   addToActionStack(action, type): void {
-    const { unitID, payload, effects } = action;
+    const { unitID, payload } = action;
     const actionStackItem:any = { type, unitID, payload, time: this.currentTimestamp };
-    effects && (actionStackItem.effects = effects);
+    action.effects && (actionStackItem.effects = action.effects);
+    action.uid && (actionStackItem.uid = action.uid);
+    action.parent && (actionStackItem.parent = action.parent);
+
     this.actionStack.push(actionStackItem);
   }
 

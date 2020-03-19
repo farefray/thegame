@@ -27,6 +27,11 @@ const defaultBoard = {
       name: 'dwarf',
       x: 7,
       y: 3
+    },
+    {
+      name: 'elf',
+      x: 1,
+      y: 2
     }
   ],
   B: [
@@ -37,7 +42,7 @@ const defaultBoard = {
     },
     {
       name: 'minotaur',
-      x: 1,
+      x: 2,
       y: 4
     },
     {

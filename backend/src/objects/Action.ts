@@ -19,6 +19,7 @@ export enum ACTION_TYPE {
 interface ActionBase {
   unitID: string;
   effects?: Array<IEffect>;
+  uid?: string; // in order to create relationships between actions, we may use uids
 }
 
 export interface MoveAction extends ActionBase {
@@ -39,6 +40,7 @@ export interface AttackAction extends ActionBase {
 
 export interface HealthChangeAction extends ActionBase {
   type: ACTION_TYPE.HEALTH_CHANGE;
+  parent?: string; // another action uid which is used as relation
   payload: {
     value: number;
   };
