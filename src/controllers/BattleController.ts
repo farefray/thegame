@@ -29,9 +29,11 @@ class BattleController {
       }
     })
     
-    return actionStack.filter(action => {
+    let filteredActions = actionStack.filter(action => {
       return !action.parent;
     });
+
+    return filteredActions.sort((a, b) => ((a.time > b.time) ? 1 : -1) );
   }
 
   static async setupBattle (battleBoard: Object): Promise<BattleResult> {
