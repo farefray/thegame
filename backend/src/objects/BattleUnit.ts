@@ -333,11 +333,15 @@ export default class BattleUnit {
     }
 
     if (!this.isAlive) {
+      healthChangeAction.uid = hyperid().uuid;
+
       const deathAction: DeathAction = {
         unitID: this.id,
         type: ACTION_TYPE.DEATH,
-        payload: { unit: this }
+        payload: { unit: this },
+        parent: healthChangeAction.uid
       };
+
 
       return [healthChangeAction, deathAction];
     }

@@ -18,7 +18,8 @@ module.exports = {
     HEALTH_CHANGE: 'healthchange',
     MANA_CHANGE: 'manachange',
     SPAWN: 'spawn',
-    REGENERATION: 'regen'
+    REGENERATION: 'regen',
+    DEATH: 'death'
   },
   STATE: {
     COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000
