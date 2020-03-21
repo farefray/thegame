@@ -1,20 +1,8 @@
 import Monster from '../../abstract/Monster';
+import config from 'Beholder.json';
 
 function Beholder() {
-  return Monster({
-    "armor": 2,
-    "cost": 3,
-    "lookType": 17,
-    attack: {
-      range: 2,
-      value: 90,
-      particleID: 'fireball'
-    },
-    health: {
-      max: 750
-    },
-    "speed": 800,
-  });
+  return Monster(config);
 }
 
 export default Beholder;

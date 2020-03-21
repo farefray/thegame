@@ -1,21 +1,8 @@
 import Monster from '../../abstract/Monster';
+import config from './Minotaur Archer.json';
 
 function Minotaur_Archer() {
-  return Monster({
-    armor: 4,
-    attack: {
-      value: 65,
-      range: 3,
-      speed: 1000,
-      particleID: 'arrow'
-    },
-    cost: 2,
-    lookType: 24,
-    health: {
-      max: 550
-    },
-    speed: 1200,
-  });
+  return Monster(config);
 }
 
 export default Minotaur_Archer;

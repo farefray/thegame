@@ -1,5 +1,7 @@
 import Monster from '../../abstract/Monster';
 import BattleUnit from '../../objects/BattleUnit';
+import config from './Minotaur Mage.json';
+
 import { BattleContext } from '../../objects/Battle';
 import { getSuitableTargets } from '../../utils/pathUtils';
 import Actor from '../../objects/Actor';
@@ -57,25 +59,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
 }
 
 function Minotaur_Mage() {
-  return Monster({
-    attack: {
-      value: 40,
-      range: 3,
-      speed: 100,
-      particleID: 'fireball'
-    },
-    armor: 2,
-    cost: 3,
-    lookType: 23,
-    health: {
-      max: 650
-    },
-    mana: {
-      regen: 25
-    },
-    speed: 1200,
-    spell
-  });
+  return Monster({...config, spell});
 }
 
 export default Minotaur_Mage;

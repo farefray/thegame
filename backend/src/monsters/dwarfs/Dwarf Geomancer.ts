@@ -1,6 +1,7 @@
 import Monster from '../../abstract/Monster';
 import BattleUnit from '../../objects/BattleUnit';
 import { BattleContext } from '../../objects/Battle';
+import config from './Dwarf Geomancer.json';
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
@@ -23,22 +24,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
 
 function Dwarf_Geomancer() {
   return Monster({
-    armor: 1,
-    attack: {
-      value: 40,
-      range: 3,
-      speed: 100,
-      particleID: 'fireball'
-    },
-    cost: 3,
-    lookType: 66,
-    mana: {
-      regen: 10
-    },
-    health: {
-      max: 550
-    },
-    speed: 1400,
+    ...config,
     spell
   });
 }
