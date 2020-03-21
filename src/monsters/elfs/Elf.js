@@ -5,7 +5,7 @@ function Elf() {
     armor: 2,
     attack: {
       value: 45,
-      range: 7,
+      range: 5,
       speed: 1000,
       particleID: 'arrow'
     },

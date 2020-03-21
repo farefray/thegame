@@ -14,18 +14,26 @@ export interface BattleContext {
   units: BattleUnit[];
 }
 
-interface UnitAction {
+export interface BattleResult {
+  battleTime: number,
+  actionStack: Array<Object>,
+  startBoard: Object,
+  winner: number
+}
+
+export interface UnitAction {
   type: string;
   unitID: string;
   payload: object;
   time: number;
   effects?: [];
+  uid?: string;
+  parent?: string;
 }
 
 export default class Battle {
   public startBoard: Object;
   public winner: number;
-  public playerDamage: number;
   public readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
   private units: BattleUnit[];
@@ -40,7 +48,6 @@ export default class Battle {
     this.startBoard = cloneDeep(board);
     this.winner = TEAM.NONE;
     this.isOver = false;
-    this.playerDamage = 0;
     this.battleTimeEndTime = 300 * 1000;
 
     this.currentTimestamp = 0;
@@ -213,10 +220,6 @@ export default class Battle {
 
     if (!aTeamUnits.length || !bTeamUnits.length) {
       this.winner = aTeamUnits.length ? TEAM.A : TEAM.B;
-    }
-
-    if (bTeamUnits.length) {
-      this.playerDamage = 5; // todo count damage based on units left?
     }
   }
 }

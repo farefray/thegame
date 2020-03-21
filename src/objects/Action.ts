@@ -20,6 +20,7 @@ interface ActionBase {
   unitID: string;
   effects?: Array<IEffect>;
   uid?: string; // in order to create relationships between actions, we may use uids
+  parent?: string;
 }
 
 export interface MoveAction extends ActionBase {
