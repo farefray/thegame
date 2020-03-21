@@ -329,7 +329,7 @@ export default class Unit extends React.Component<IProps, IState> {
           transition
         }}
       >
-        <IsDraggable cellPosition={this.startingPosition}>
+        <IsDraggable cellPosition={this.startingPosition} lookType={unit.lookType}>
           <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />
         </IsDraggable>
         <EffectsWrapper effects={this.state.effects} onEffectDone={this.onEffectDone.bind(this)} />
