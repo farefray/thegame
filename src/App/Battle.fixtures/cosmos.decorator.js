@@ -13,6 +13,7 @@ import createBattleBoard from '../../../../backend/src/utils/createBattleBoard.t
 const generateGameState = async function(board) {
   const combinedBoard = createBattleBoard({ units: board.A }, { units: board.B });
   const battleResult = await BattleController.setupBattle(combinedBoard);
+  console.log("battleResult", battleResult)
   const result = _.cloneDeep(battleResult);
   console.log(_.cloneDeep(battleResult.actionStack));
 

@@ -66,7 +66,6 @@ const defaultState = {
     }
   },
   "winner": 0,
-  "playerDamage": 0,
   "actionStack": [{
     "type": "spawn",
     "unitID": "3,3",
