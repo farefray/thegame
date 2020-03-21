@@ -30,7 +30,7 @@ class BattleController {
     return filteredActions.sort((a, b) => ((a.time > b.time) ? 1 : -1) );
   }
 
-  static async setupBattle (battleBoard: Object): Promise<BattleResult> {
+  static async setupBattle(battleBoard: Object): Promise<BattleResult> {
     // TODO: Future: All battles calculate concurrently, structurize this object maybe
     // todo battle bonuses and so on here
     // Both players have units, battle required

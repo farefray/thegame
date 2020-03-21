@@ -25,6 +25,7 @@
   "author": "Maksym Fedan&&Jacek Kizinski",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^13.9.2",
     "babel-node-ts": "^1.0.3",
     "benchtest": "^2.0.2",
     "cors": "^2.8.5",
