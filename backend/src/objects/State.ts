@@ -1,4 +1,5 @@
 import MutableObject from '../abstract/MutableObject';
+import { BattleResult } from '../objects/Battle';
 
 const sleep = require('util').promisify(setTimeout);
 const { STATE } = require('../../../frontend/src/shared/constants.js');
@@ -27,10 +28,9 @@ State.prototype = Object.create(MutableObject.prototype);
  * Gold:
  *  Interest for 10 gold
  *  Increasing throughout the game basic income
- *  Win streak / lose streak
  */
 const MAX_ROUND_FOR_INCOME_INC = 5;
-State.prototype.endRound = function() {
+State.prototype.endRound = function(battleResult: BattleResult) {
   if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
     this.incomeBase = this.incomeBase + 1;
   }
@@ -41,32 +41,15 @@ State.prototype.endRound = function() {
     const player = this.players[uid];
     const gold = player.get('gold');
     const bonusGold = Math.min(Math.floor(gold / 10), 5);
-    const streak = player.streak || 0;
-    const streakGold = Math.min(Math.floor(streak === 0 || Math.abs(streak) === 1 ? 0 : Math.abs(streak) / 5 + 1), 3);
     const newGold = gold + this.incomeBase + bonusGold + streakGold;
     player.gold = newGold;
   }
+
+  console.log("State.prototype.endRound -> battleResult", battleResult)
+
+  // todo use battleResult for player data
 };
 
-/**
- * @param {Object} battles Battle results for all the players in state
- */
-State.prototype.damagePlayers = function(battles) {
-  for (const uid in this.players) {
-    const battleResult = battles[uid];
-
-    // actually now there will be always damage, need to finish :D
-    if (battleResult.playerDamage) {
-      const player = this.players[uid];
-      const newHP = player.get('health') - battleResult.playerDamage;
-      player.health = newHP;
-
-      if (newHP <= 0) {
-        // todo loss
-      }
-    }
-  }
-};
 
 State.prototype.dropPlayer = playerID => {
   for (const uid in this.players) {
@@ -78,15 +61,9 @@ State.prototype.dropPlayer = playerID => {
 };
 
 /** Lifecycle methods */
-State.prototype.scheduleRoundStart = async function() {
-  await sleep(this.countdown);
-  return true;
-};
-
-State.prototype.scheduleRoundEnd = async function(countdown = 15000) {
+State.prototype.roundEnd = async function(battleResult: BattleResult, countdown: number) {
   await sleep(countdown);
-  this.endRound();
-  // this.damagePlayers(battleRoundResult.battles); TODO
+  this.endRound(battleResult);
   this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 };
 

@@ -1,7 +1,6 @@
 import Player from '../objects/Player.ts';
 import ShopController from './ShopController';
 import State from '../objects/State';
-import Monsters from '../utils/Monsters';
 import AppError from '../objects/AppError';
 
 const HAND_UNITS_LIMIT = 9;

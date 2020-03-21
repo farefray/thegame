@@ -256,7 +256,7 @@ export default class BattleUnit {
 
     const speedByTile = this.attack.particle.duration / this.attackRange;
     return Math.max(
-      100,
+      250,
       Math.floor(
         PathUtil.getDistanceBetweenCoordinates({
           x: from.x,

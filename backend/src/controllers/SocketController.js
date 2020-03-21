@@ -26,6 +26,7 @@ const sessionsStore = new SessionsStore();
   });
 */
 
+const ADDITIONAL_ROUND_TIME = 5000;
 /**
  * @instance
  * @returns {SocketController}
@@ -159,6 +160,8 @@ SocketController.prototype.initializeGameSessions = async function (clients) {
     });
   });
 
+  await state.scheduleNextRound();
+
   this.round(state, clients, sessionID);
 };
 
@@ -166,11 +169,8 @@ SocketController.prototype.initializeGameSessions = async function (clients) {
  * @todo this maybe should be moved to gamecontroller
  */
 SocketController.prototype.round = async function (state, clients, sessionID) {
-  // start round when its time
-  await state.scheduleRoundStart();
-
   // do we need to update our session from storage?? TODO Test
-  const session = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMEWHERE (P1)
+  const session = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMETIMES (P1)
   if (!session) {
     // user disconnected and no session exists
     return sessionsStore.destroy(sessionID);
@@ -213,16 +213,19 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
     playerBattleResults[uid] = battleResult;
   }
 
+  countdown += ADDITIONAL_ROUND_TIME;
   for (let uid in preBattleState.get('players')) {
     playerBattleResults[uid].countdown = countdown; // all players have the battle length of the longest battle
     this.io.to(`${uid}`).emit('START_BATTLE', playerBattleResults[uid]);
   }
 
-  await state.scheduleRoundEnd(countdown);
+  await state.roundEnd(battleResult, countdown);
+
   ShopController.mutateStateByShopRefreshing(state);
   this.io.to(sessionID).emit('UPDATED_STATE', state);
 
   await state.scheduleNextRound();
+
   this.round(state, clients, sessionID);
 };
 

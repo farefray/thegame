@@ -43,7 +43,7 @@ export function app(
         ...state,
         players: action.newState.players,
         round: action.newState.round,
-        countdown: action.newState.countdown / 1000
+        countdown: Math.ceil(action.newState.countdown / 1000.)
       };
     }
     case 'START_BATTLE': {
