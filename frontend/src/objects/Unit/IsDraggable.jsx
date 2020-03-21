@@ -3,9 +3,7 @@ import { useDrag, DragPreviewImage } from 'react-dnd';
 
 import ItemTypes from '../../App/ActiveGame/GameBoard/ItemTypes';
 
-const image = require('@/assets/monsters/default.png');
-
-export default function IsDraggable({ cellPosition, children }) {
+export default function IsDraggable({ lookType, cellPosition, children }) {
   const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.PAWN,
@@ -16,6 +14,7 @@ export default function IsDraggable({ cellPosition, children }) {
     })
   });
 
+  const image = require(`../../assets/monsters/${lookType}/1.png`);
   return (
     <div
       ref={drag}
