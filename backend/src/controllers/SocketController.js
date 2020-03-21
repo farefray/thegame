@@ -180,7 +180,7 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
 
   // Count battles for all players, then send those battles
   let countdown = Number.MIN_VALUE;
-  const playerBattleResults = [];
+  const playersBattleResults = [];
   for (let uid in preBattleState.get('players')) {
     const player = preBattleState.getIn(['players', uid]);
     await player.preBattleCheck();
@@ -210,16 +210,16 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
       countdown = battleResult.battleTime;
     }
 
-    playerBattleResults[uid] = battleResult;
+    playersBattleResults[uid] = battleResult;
   }
 
   countdown += ADDITIONAL_ROUND_TIME;
   for (let uid in preBattleState.get('players')) {
-    playerBattleResults[uid].countdown = countdown; // all players have the battle length of the longest battle
-    this.io.to(`${uid}`).emit('START_BATTLE', playerBattleResults[uid]);
+    playersBattleResults[uid].countdown = countdown; // all players have the battle length of the longest battle
+    this.io.to(`${uid}`).emit('START_BATTLE', playersBattleResults[uid]);
   }
 
-  await state.roundEnd(battleResult, countdown);
+  await state.roundEnd(playersBattleResults, countdown);
 
   ShopController.mutateStateByShopRefreshing(state);
   this.io.to(sessionID).emit('UPDATED_STATE', state);

@@ -47,6 +47,9 @@ export default class Battle {
   constructor({ board, gridWidth = 8, gridHeight = 8 }) {
     this.startBoard = cloneDeep(board);
     this.winner = TEAM.NONE;
+    this.firstTeamOwner = board[Symbol.for('_firstOwner')];
+    this.secondTeamOwner = board[Symbol.for('_secondOwner')];
+
     this.isOver = false;
     this.battleTimeEndTime = 300 * 1000;
 
@@ -219,7 +222,7 @@ export default class Battle {
     const bTeamUnits = this.unitsFromTeam(TEAM.B);
 
     if (!aTeamUnits.length || !bTeamUnits.length) {
-      this.winner = aTeamUnits.length ? TEAM.A : TEAM.B;
+      this.winner = aTeamUnits.length ? this.firstTeamOwner : this.secondTeamOwner;
     }
   }
 }
