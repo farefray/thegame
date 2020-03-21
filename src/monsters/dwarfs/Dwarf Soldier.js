@@ -1,15 +1,8 @@
 import Monster from '../../abstract/Monster';
+import config from './Dwarf Soldier.json';
 
 function Dwarf_Soldier() {
-  return Monster({
-    armor: 8,
-    cost: 2,
-    lookType: 71,
-    health: {
-      max: 600
-    },
-    speed: 800,
-  });
+  return Monster(config);
 }
 
 export default Dwarf_Soldier;

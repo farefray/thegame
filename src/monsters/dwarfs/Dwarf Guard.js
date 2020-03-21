@@ -1,15 +1,8 @@
 import Monster from '../../abstract/Monster';
+import config from './Dwarf Guard.json';
 
 function Dwarf_Guard() {
-  return Monster({
-    armor: 15,
-    cost: 3,
-    lookType: 70,
-    health: {
-      max: 850
-    },
-    speed: 700,
-  });
+  return Monster({...config});
 }
 
 export default Dwarf_Guard;

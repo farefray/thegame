@@ -1,15 +1,8 @@
 import Monster from '../../abstract/Monster';
+import config from './Baby Beholder.json';
 
 function Baby_Beholder() {
-  return Monster({
-    armor: 1,
-    cost: 2,
-    lookType: 109,
-    health: {
-      max: 550
-    },
-    speed: 1200,
-  });
+  return Monster(config);
 }
 
 export default Baby_Beholder;

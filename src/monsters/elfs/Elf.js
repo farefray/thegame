@@ -1,21 +1,8 @@
 import Monster from '../../abstract/Monster';
+import config from './Elf.json';
 
 function Elf() {
-  return Monster({
-    armor: 2,
-    attack: {
-      value: 45,
-      range: 5,
-      speed: 1000,
-      particleID: 'arrow'
-    },
-    cost: 1,
-    lookType: 62,
-    health: {
-      max: 150
-    },
-    speed: 1200,
-  });
+  return Monster(config);
 }
 
 export default Elf;

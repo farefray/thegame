@@ -1,0 +1,13 @@
+{
+  "armor": 10,
+  "cost": 1,
+  "lookType": 69,
+  "attack": {
+    "value": 35,
+    "speed": 1500
+  },
+  "health": {
+    "max": 300
+  },
+  "speed": 1000
+}
