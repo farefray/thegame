@@ -6,7 +6,7 @@ module.exports = {
     EAST: 4
   },
   TEAM: {
-    NONE: -1,
+    NONE: '-1',
     A: 0,
     B: 1
   },
