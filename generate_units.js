@@ -77,27 +77,27 @@ function generateUnits(auth) {
     const rows = res.data.values;
     if (rows.length) {
       rows.map((row) => {
-      console.log("generateUnits -> row", row)
         if (row[0] && row[1]) {
           const path = `./src/monsters/${row[0]}/${row[1]}.json`
 
           const unitData = {
-            armor: row[2],
-            cost: row[3],
-            lookType: row[4],
+            armor: +row[2],
+            cost: +row[3],
+            lookType: +row[4],
             attack: {
-              value: row[5],
-              speed: row[6],
-              range: row[7] || 1,
+              value: +row[5],
+              speed: +row[6],
+              range: +row[7] || 1,
               particleID: row[8] || ''
             },
             health: {
-              max: row[9]
+              max: +row[9]
             },
-            speed: row[10]
+            speed: +row[10]
           };
 
           fs.writeFileSync(path, JSON.stringify(unitData, null, 4));
+          console.log(`${row[1]} generated!`)
         }
       });
     } else {

@@ -18,7 +18,7 @@ export interface BattleResult {
   battleTime: number,
   actionStack: Array<Object>,
   startBoard: Object,
-  winner: number
+  winner: string
 }
 
 export interface UnitAction {
@@ -33,8 +33,10 @@ export interface UnitAction {
 
 export default class Battle {
   public startBoard: Object;
-  public winner: number;
+  public winner: string;
   public readonly actionStack: UnitAction[];
+  public firstTeamOwner: string;
+  public secondTeamOwner: string;
   private readonly pathfinder: Pathfinder;
   private units: BattleUnit[];
   private readonly actorQueue: Actor[];
