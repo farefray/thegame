@@ -1,15 +1,15 @@
 {
     "armor": "10",
     "cost": "1",
-    "lookType": "69",
+    "lookType": "25",
     "attack": {
-        "value": "35",
+        "value": "40",
         "speed": "2000",
         "range": "1",
         "particleID": ""
     },
     "health": {
-        "max": "400"
+        "max": "450"
     },
     "speed": "1000"
 }
