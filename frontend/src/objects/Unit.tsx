@@ -130,7 +130,7 @@ export default class Unit extends React.Component<IProps, IState> {
     const { top, left } = this.state;
 
     this.addEffect(EffectsFactory.create('effect', {
-      id: 'death_effect',
+      id: 'ghost',
       duration: 500,
       from: {
         top: top,

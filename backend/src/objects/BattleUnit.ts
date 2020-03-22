@@ -7,7 +7,7 @@ import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
 import Monsters from '../utils/Monsters';
-import { PARTICLES, IEffect, EFFECTS } from '../utils/effects';
+import { IEffect, EFFECTS } from '../utils/effects';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
 
@@ -78,7 +78,7 @@ export default class BattleUnit {
       ...attack,
       particle: {
         id: attack.particleID || null,
-        duration: attack.particleID ? PARTICLES[attack.particleID].speed : Math.floor(attack.speed / 10)
+        duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
       }
     };
     this.armor = unitStats.armor;
@@ -275,10 +275,9 @@ export default class BattleUnit {
     const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
 
     const attackDuration = this.attackDuration(from, to);
-    const uid = hyperid().uuid;
     const attackAction: AttackAction = {
       unitID: this.id,
-      uid: uid,
+      uid: hyperid().uuid,
       type: ACTION_TYPE.ATTACK,
       payload: {
         from,
@@ -295,7 +294,7 @@ export default class BattleUnit {
           actionGenerator: (function*() {
             yield {
               actions: targetUnit.healthChange(value, {
-                parent: uid
+                parent: attackAction.uid
               })
             };
           })()
