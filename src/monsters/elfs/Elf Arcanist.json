@@ -1,0 +1,15 @@
+{
+    "armor": "10",
+    "cost": "4",
+    "lookType": "63",
+    "attack": {
+        "value": "60",
+        "speed": "2000",
+        "range": "4",
+        "particleID": "fireball"
+    },
+    "health": {
+        "max": "650"
+    },
+    "speed": "1000"
+}

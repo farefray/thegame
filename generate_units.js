@@ -79,7 +79,7 @@ function generateUnits(auth) {
       rows.map((row) => {
       console.log("generateUnits -> row", row)
         if (row[0] && row[1]) {
-          const path = `./monsters/${row[0]}/${row[1]}.json`
+          const path = `./src/monsters/${row[0]}/${row[1]}.json`
 
           const unitData = {
             armor: row[2],
@@ -97,7 +97,7 @@ function generateUnits(auth) {
             speed: row[10]
           };
 
-          fs.writeFileSync(path, unitData);
+          fs.writeFileSync(path, JSON.stringify(unitData, null, 4));
         }
       });
     } else {
