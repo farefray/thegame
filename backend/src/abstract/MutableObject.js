@@ -49,7 +49,7 @@ MutableObject.prototype.delete = function(field) {
  * @description Returns value any-depth value from current instance
  * var test = {1: {value: {res: 'test}}}
  * test.getIn([1, 'value', 'res']) === 'test' // true
- * @param {Array[]} path
+ * @param {Array[any]} path
  * @returns {Any}
  */
 MutableObject.prototype.getIn = function (path) {

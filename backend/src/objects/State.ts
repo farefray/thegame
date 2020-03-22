@@ -37,14 +37,14 @@ export default class State extends MutableObject {
     this.round = this.round + 1;
   
     for (const uid in this.players) {
-      const gold = this.getIn(['players', uid, 'gold']);
-      const bonusGold = Math.min(Math.floor(gold / 10), 5);
-      this.setIn(['players', uid, 'gold'], gold + this.incomeBase + bonusGold);
+      const gold: number = this.getIn(['players', uid, 'gold']);
+      const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
+      this.setIn(['players', uid, 'gold'], (gold + this.incomeBase + bonusGold));
 
       const playerBattle = playersBattleResults[uid];
       if (playerBattle.winner !== uid) {
         // player lost battle, remove health
-        const newHealth = (this.getIn(['players', uid, 'health']) - this.round);
+        const newHealth: number = (this.getIn(['players', uid, 'health']) - this.round);
         this.setIn(['players', uid, 'health'], newHealth);
       }
     }
@@ -59,7 +59,7 @@ export default class State extends MutableObject {
     }
   }
 
-  async roundEnd(battleResult: BattleResult, countdown: number) {
+  async roundEnd(battleResult: Array<BattleResult>, countdown: number) {
     await sleep(countdown);
 
     this.endRound(battleResult);

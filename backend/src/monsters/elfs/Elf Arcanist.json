@@ -1,15 +1,15 @@
 {
-    "armor": "10",
-    "cost": "4",
-    "lookType": "63",
+    "armor": 10,
+    "cost": 4,
+    "lookType": 63,
     "attack": {
-        "value": "60",
-        "speed": "2000",
-        "range": "4",
-        "particleID": "fireball"
+        "value": 60,
+        "speed": 2000,
+        "range": 4,
+        "particleID": "holy_missile"
     },
     "health": {
-        "max": "650"
+        "max": 650
     },
-    "speed": "1000"
+    "speed": 1000
 }
