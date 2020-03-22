@@ -1,12 +1,3 @@
-export const PARTICLES = {
-  arrow: {
-    speed: 250
-  },
-  fireball: {
-    speed: 750
-  }
-}
-
 // todo review format for those, as its ugly and too big
 export const EFFECTS = {
   thunderstorm: {

@@ -5,8 +5,8 @@ import { RescheduleActorAction, ACTION_TYPE, Action } from '../objects/Action';
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
-  const ticks = 20;
-  const tickValue = 2000;
+  const ticks = 2;
+  const tickValue = 100;
   const tickDelay = 1000;
   if (unit.mana < manaCost) return null;
   return (function*() {

@@ -1,6 +1,5 @@
 import Battle, { UnitAction, BattleResult } from '../objects/Battle';
-
-
+import * as cloneDeep from 'lodash/cloneDeep';
 
 class BattleController {
   /**
@@ -10,16 +9,29 @@ class BattleController {
    */
   static optimizeActionStack(actionStack: Array<UnitAction>) {
     const uidMap = {};
+    // building uidMap first
     actionStack.forEach((action, index) => {
       if (action.uid) {
         uidMap[action.uid] = action;
-        delete action.uid;
+        // delete action.uid;
       }
-    
+    })
+
+    actionStack.forEach((action, index) => {
       if (action.parent) {
         // We are chaining actions in order to execute them immediatly(after/in the middle) on frontend, instead of trusting our schedule
-        uidMap[action.parent].chainedAction = action;
-        // delete action.parent;
+        try {
+          if (!uidMap[action.parent]) {
+            // TODO avoid such issues
+            throw new Error('Stack optimization failed'); 
+          }
+  
+          uidMap[action.parent].chainedAction = action;
+        } catch (e) {
+          // in case error happened, we remove parent reference (this is very bad, we need to fix this)
+          console.warn('Wrong action parent during optimization!', cloneDeep(action));
+          delete action.parent;
+        }
       }
     })
     
@@ -38,9 +50,10 @@ class BattleController {
     const _battleResult = new Battle({ board: battleBoard });
     const { actionStack, startBoard, winner } = _battleResult;
 
+    const optimizedActionStack = BattleController.optimizeActionStack(actionStack);
     const lastAction = actionStack[actionStack.length - 1];
     const battleResult: BattleResult = {
-      actionStack: BattleController.optimizeActionStack(actionStack),
+      actionStack: optimizedActionStack,
       startBoard: startBoard,
       winner: winner,
       battleTime: lastAction ? lastAction.time : 0
