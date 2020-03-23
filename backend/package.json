@@ -4,7 +4,7 @@
   "description": "Pixel Champions",
   "main": "src/index.js",
   "scripts": {
-    "start": "babel-node src/index.js",
+    "start": "babel-node-ts src/index.js",
     "dev": "tsc && nodemon --exec babel-node-ts src/index.js",
     "units:generate": "node ./generate_units.js",
     "check-types": "tsc",
