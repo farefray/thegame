@@ -1,15 +1,15 @@
 {
-    "armor": 10,
-    "cost": 2,
+    "armor": 4,
+    "cost": 4,
     "lookType": 64,
     "attack": {
-        "value": 50,
+        "value": 60,
         "speed": 2000,
         "range": 5,
         "particleID": "diamond_arrow"
     },
     "health": {
-        "max": 450
+        "max": 550
     },
     "speed": 1000
 }

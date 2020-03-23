@@ -1,9 +1,9 @@
 {
-    "armor": 10,
-    "cost": 1,
+    "armor": 2,
+    "cost": 2,
     "lookType": 62,
     "attack": {
-        "value": 30,
+        "value": 40,
         "speed": 2000,
         "range": 3,
         "particleID": "arrow"

@@ -1,6 +1,6 @@
 {
-    "armor": 10,
-    "cost": 4,
+    "armor": 6,
+    "cost": 6,
     "lookType": 63,
     "attack": {
         "value": 60,
