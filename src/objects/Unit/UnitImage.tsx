@@ -18,7 +18,7 @@ export default function UnitImage ({ lookType, direction, isMoving, extraClass =
   }
 
   // Load all images which will be required for this unit
-  const [sprites] = React.useState({
+  const [sprites, updateSprites] = React.useState({
     idle: {
       1: require(`../../assets/monsters/${lookType}/1.png`),
       2: require(`../../assets/monsters/${lookType}/2.png`),
@@ -33,11 +33,28 @@ export default function UnitImage ({ lookType, direction, isMoving, extraClass =
     }
   });
 
+  React.useEffect(() => {
+    updateSprites({
+      idle: {
+        1: require(`../../assets/monsters/${lookType}/1.png`),
+        2: require(`../../assets/monsters/${lookType}/2.png`),
+        3: require(`../../assets/monsters/${lookType}/3.png`),
+        4: require(`../../assets/monsters/${lookType}/4.png`)
+      },
+      animated: {
+        1: require(`../../assets/monsters/${lookType}/1.gif`),
+        2: require(`../../assets/monsters/${lookType}/2.gif`),
+        3: require(`../../assets/monsters/${lookType}/3.gif`),
+        4: require(`../../assets/monsters/${lookType}/4.gif`)
+      }
+    });
+  }, [lookType])
+
   // we make assumption that sprite size is same for all sprites of this monster.
   React.useEffect(() => {
     const firstSpriteDimension = sprites.idle[1].height;
     onUnitSpriteLoaded && onUnitSpriteLoaded(firstSpriteDimension);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sprites]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [sprite, setSprite] = React.useState(sprites[isMoving ? 'animated' : 'idle'][direction]);
 
