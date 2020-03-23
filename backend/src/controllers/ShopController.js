@@ -25,11 +25,9 @@ ShopController.mutateStateByShopRefreshing = (state, playerIndex) => {
     const player = state.getIn(['players', playerIndex]);
     const shop = player.get('shopUnits');
     for (let i = 0; i <= SHOP_UNITS; i++) {
-      if (!shop[i]) {
-        state.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit({
-          cost: player.get('level')
-        }));
-      }
+      state.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit({
+        cost: state.get('round')
+      }));
     }
   }
 };

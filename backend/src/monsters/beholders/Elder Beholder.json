@@ -1,15 +1,15 @@
 {
-    "armor": 10,
-    "cost": 5,
+    "armor": 8,
+    "cost": 8,
     "lookType": 108,
     "attack": {
-        "value": 100,
+        "value": 95,
         "speed": 2000,
         "range": 3,
         "particleID": "large_death_missile"
     },
     "health": {
-        "max": 900
+        "max": 1100
     },
     "speed": 1000
 }

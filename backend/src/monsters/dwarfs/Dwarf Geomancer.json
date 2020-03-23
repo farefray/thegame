@@ -1,6 +1,6 @@
 {
-    "armor": 10,
-    "cost": 4,
+    "armor": 5,
+    "cost": 7,
     "lookType": 66,
     "attack": {
         "value": 40,
@@ -9,7 +9,7 @@
         "particleID": "earth_missile"
     },
     "health": {
-        "max": 750
+        "max": 900
     },
     "speed": 1000
 }
