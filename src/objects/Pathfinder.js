@@ -1,7 +1,13 @@
-import { getDistanceBetweenCoordinates } from '../utils/pathUtils.ts';
+import {
+  getDistanceBetweenCoordinates
+} from '../utils/pathUtils.ts';
 
 class Step {
-  constructor({ x, y, resistance } = {}) {
+  constructor({
+    x,
+    y,
+    resistance
+  } = {}) {
     this.x = x || 0;
     this.y = y || 0;
     this.resistance = resistance || 0;
@@ -32,7 +38,10 @@ const normalize = number => {
 };
 
 export default class Pathfinder {
-  constructor({ gridWidth, gridHeight }) {
+  constructor({
+    gridWidth,
+    gridHeight
+  }) {
     this._occupiedTileSet = new Set();
     this.gridWidth = gridWidth;
     this.gridHeight = gridHeight;
@@ -65,8 +74,12 @@ export default class Pathfinder {
 
   findStepToTarget(unit, targetUnit) {
     const aStarStep = this.getFirstStepInValidPath(unit, targetUnit);
+    console.log("findStepToTarget -> aStarStep", aStarStep)
     if (aStarStep) {
-      return { x: aStarStep.x, y: aStarStep.y };
+      return {
+        x: aStarStep.x,
+        y: aStarStep.y
+      };
     }
     const possibleSteps = this.getUnitPossibleSteps(unit);
     if (!possibleSteps.length) return new Step();
@@ -82,13 +95,26 @@ export default class Pathfinder {
     const preferredAxis = distance.x > distance.y ? 'x' : 'y';
     const secondaryAxis = preferredAxis === 'x' ? 'y' : 'x';
 
-    const modifiers = [
-      { [preferredAxis]: normalizedDistance[preferredAxis], resistance: -20 },
-      { [preferredAxis]: normalizedDistance[preferredAxis] * -1, resistance: 20 },
-      { [secondaryAxis]: normalizedDistance[secondaryAxis], resistance: -10 },
-      { [secondaryAxis]: normalizedDistance[secondaryAxis] * -1, resistance: 10 }
+    const modifiers = [{
+        [preferredAxis]: normalizedDistance[preferredAxis],
+        resistance: -20
+      },
+      {
+        [preferredAxis]: normalizedDistance[preferredAxis] * -1,
+        resistance: 20
+      },
+      {
+        [secondaryAxis]: normalizedDistance[secondaryAxis],
+        resistance: -10
+      },
+      {
+        [secondaryAxis]: normalizedDistance[secondaryAxis] * -1,
+        resistance: 10
+      }
     ];
-    const { previousStep } = unit;
+    const {
+      previousStep
+    } = unit;
     if (previousStep) {
       modifiers.push({
         x: previousStep.x,
@@ -100,16 +126,34 @@ export default class Pathfinder {
     const lowestResistance = Math.min(...possibleSteps.map(step => step.resistance));
     const optimalSteps = possibleSteps.filter(step => step.resistance === lowestResistance);
     if (optimalSteps.length === 1) {
-      return new Step({ x: optimalSteps[0].x, y: optimalSteps[0].y });
+      return new Step({
+        x: optimalSteps[0].x,
+        y: optimalSteps[0].y
+      });
     }
 
     const optimalStep = possibleSteps.reduce((previous, current) => (previous.resistance > current.resistance ? current : previous));
 
-    return { x: optimalStep.x, y: optimalStep.y };
+    return {
+      x: optimalStep.x,
+      y: optimalStep.y
+    };
   }
 
   getUnitPossibleSteps(unit) {
-    return [new Step({ x: 0, y: -1 }), new Step({ x: 0, y: 1 }), new Step({ x: -1, y: 0 }), new Step({ x: 1, y: 0 })].filter(step => {
+    return [new Step({
+      x: 0,
+      y: -1
+    }), new Step({
+      x: 0,
+      y: 1
+    }), new Step({
+      x: -1,
+      y: 0
+    }), new Step({
+      x: 1,
+      y: 0
+    })].filter(step => {
       const isOutOfBounds = unit.x + step.x < 0 || unit.x + step.x >= this.gridWidth || unit.y + step.y < 0 || unit.y + step.y >= this.gridHeight;
       if (isOutOfBounds) return false;
       const isOccupied = this.occupiedTileSet.has(`${unit.x + step.x},${unit.y + step.y}`);
@@ -118,8 +162,23 @@ export default class Pathfinder {
     });
   }
 
-  getGridNeighbours({ x, y }) {
-    return [{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -0, y: 1 }]
+  getGridNeighbours({
+    x,
+    y
+  }) {
+    return [{
+        x: -1,
+        y: 0
+      }, {
+        x: 1,
+        y: 0
+      }, {
+        x: 0,
+        y: -1
+      }, {
+        x: -0,
+        y: 1
+      }]
       .filter(step => {
         const isOutOfBounds = x + step.x < 0 || x + step.x >= this.gridWidth || y + step.y < 0 || y + step.y >= this.gridHeight;
         if (isOutOfBounds) return false;
@@ -171,15 +230,23 @@ export default class Pathfinder {
           node = node.parent;
         }
         const step = stepArray[stepArray.length - 1];
-        return new Step({ x: step.x - unit.x, y: step.y - unit.y });
+        return new Step({
+          x: step.x - unit.x,
+          y: step.y - unit.y
+        });
       }
 
       currentNode.closed = true;
-      for (const possibleStep of this.getGridNeighbours({ x: currentNode.x, y: currentNode.y })) {
+      for (const possibleStep of this.getGridNeighbours({
+          x: currentNode.x,
+          y: currentNode.y
+        })) {
         if (possibleStep.closed) continue;
 
         const gScore = possibleStep.score + 1;
-        const { visited } = possibleStep;
+        const {
+          visited
+        } = possibleStep;
         if (!visited || gScore < possibleStep.g) {
           // Found an optimal (so far) path to this node.  Take score for node to see how good it is.
           possibleStep.visited = true;
