@@ -74,13 +74,13 @@ export default class Pathfinder {
 
   findStepToTarget(unit, targetUnit) {
     const aStarStep = this.getFirstStepInValidPath(unit, targetUnit);
-    console.log("findStepToTarget -> aStarStep", aStarStep)
     if (aStarStep) {
       return {
         x: aStarStep.x,
         y: aStarStep.y
       };
     }
+
     const possibleSteps = this.getUnitPossibleSteps(unit);
     if (!possibleSteps.length) return new Step();
 
@@ -88,10 +88,12 @@ export default class Pathfinder {
       x: Math.abs(targetUnit.x - unit.x),
       y: Math.abs(targetUnit.y - unit.y)
     };
+
     const normalizedDistance = {
       x: normalize(targetUnit.x - unit.x),
       y: normalize(targetUnit.y - unit.y)
     };
+
     const preferredAxis = distance.x > distance.y ? 'x' : 'y';
     const secondaryAxis = preferredAxis === 'x' ? 'y' : 'x';
 
@@ -112,6 +114,7 @@ export default class Pathfinder {
         resistance: 10
       }
     ];
+
     const {
       previousStep
     } = unit;
@@ -218,11 +221,10 @@ export default class Pathfinder {
   }
 
   getFirstStepInValidPath(unit, target) {
-    this.initializeGrid();
     const openSet = [this.grid[unit.x][unit.y]];
     while (openSet.length) {
       const currentNode = openSet.shift();
-      if (this.constructor.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) {
+      if (this.constructor.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) { // ?? why unit ever should go if he can atk?
         let node = currentNode;
         const stepArray = [];
         while (node.parent) {
@@ -247,7 +249,7 @@ export default class Pathfinder {
         const {
           visited
         } = possibleStep;
-        if (!visited || gScore < possibleStep.g) {
+        if (!visited && gScore < possibleStep.g) {
           // Found an optimal (so far) path to this node.  Take score for node to see how good it is.
           possibleStep.visited = true;
           possibleStep.parent = currentNode;
