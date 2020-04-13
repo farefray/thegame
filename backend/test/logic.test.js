@@ -89,4 +89,47 @@ describe.only('Battle logic tests', () => {
       distanceToTarget.should.be.equal(1);
     })
   });
+
+  it('Can finish battle with neutral blocking units', async () => {
+    const combinedBoard = createBattleBoard(
+      {
+        owner: 'first_player',
+        units: [
+          {
+            name: 'dwarf',
+            x: 4,
+            y: 3
+          }
+        ]
+      },
+      {
+        owner: 'second_player',
+        units: [
+          {
+            name: 'minotaur',
+            x: 4,
+            y: 5
+          }
+        ]
+      }
+    );
+    
+    const battle = await BattleController.setupBattle(combinedBoard);
+
+    battle.should.be.ok();
+    battle.actionStack.should.be.an.Array();
+    battle.actionStack.length.should.be.above(0);
+    battle.actionStack.length.should.be.below(100);
+
+    // we should detect that no moves was done into barrier
+    const moveActions = battle.actionStack.filter((a) => a.type === 'move');
+    moveActions.length.should.be.below(5);
+    moveActions.forEach((action) => {
+      action.type.should.be.equal('move');
+      action.payload.to.should.not.deepEqual({
+        x: 4,
+        y: 4
+      });
+    })
+  });
 });
