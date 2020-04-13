@@ -14,7 +14,6 @@ module.exports = {
           return '#ff001d';
         }
       }
-      default:
       case 1: {
         if (healthPercentage >= 90) {
           return 'green';
@@ -26,6 +25,20 @@ module.exports = {
           return 'red';
         } else {
           return '#800000';
+        }
+      }
+      default:
+      case 3: {
+        if (healthPercentage >= 90) {
+          return '#808080';
+        } else if (healthPercentage >= 75 && healthPercentage < 90) {
+          return '#909090';
+        } else if (healthPercentage >= 25 && healthPercentage < 75) {
+          return '#A0A0A0';
+        } else if (healthPercentage >= 10 && healthPercentage < 25) {
+          return '#CFCFCF';
+        } else {
+          return '#EFEFEF';
         }
       }
     }

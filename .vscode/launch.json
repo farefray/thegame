@@ -37,13 +37,19 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug mocha",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run-script",
-        "mocha:debug"
+      "name": "Mocha logic",
+      "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--opts", 
+        "${workspaceFolder}/backend/test/mocha.opts",
+        "{,!(node_modules)/}*/logic.test.js"
       ],
-      "port": 9229,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
       "cwd":"${workspaceFolder}/backend"
     }
   ]

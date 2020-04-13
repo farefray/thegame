@@ -71,7 +71,7 @@ describe.only('Battle logic tests', () => {
         ]
       }
     );
-    
+
     const battleResult = await BattleController.setupBattle(battleBoard);  // assuming all units are melee
     battleResult.should.be.ok();
 
@@ -90,7 +90,7 @@ describe.only('Battle logic tests', () => {
     })
   });
 
-  it('Can finish battle with neutral blocking units', async () => {
+  it.only('Can finish battle with neutral blocking units', async () => {
     const combinedBoard = createBattleBoard(
       {
         owner: 'first_player',
@@ -111,9 +111,18 @@ describe.only('Battle logic tests', () => {
             y: 5
           }
         ]
+      },
+      {
+        units: [
+          {
+            name: 'barrier',
+            x: 4,
+            y: 4
+          }
+        ]
       }
     );
-    
+
     const battle = await BattleController.setupBattle(combinedBoard);
 
     battle.should.be.ok();

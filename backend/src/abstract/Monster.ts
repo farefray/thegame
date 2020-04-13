@@ -12,7 +12,7 @@ interface MonsterInterface {
     max?: number,
     regen?: number
   },
-  attack: {
+  attack?: {
     value: number,
     range: number,
     speed: number,
@@ -20,7 +20,10 @@ interface MonsterInterface {
   }
   armor?: number,
   speed?: number,
-  spell?: Function
+  spell?: Function,
+  specialty?: {
+    targetable?: boolean,
+  }
 }
 
 export default function Monster(monsterConfig: MonsterInterface): MonsterInterface {
@@ -44,6 +47,12 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
   monsterDefaults.health = {
     max: 100,
     now: 100
+  };
+
+  monsterDefaults.attack = {
+    value: 0,
+    range: 0,
+    speed: 0
   };
 
   return _.merge({}, monsterDefaults, monsterConfig);

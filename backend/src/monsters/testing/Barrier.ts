@@ -1,5 +1,4 @@
 import Monster from '../../abstract/Monster';
-import BattleUnit from '../../objects/BattleUnit';
 
 function Barrier() {
   return Monster({
@@ -11,8 +10,7 @@ function Barrier() {
     },
     speed: 0,
     specialty: {
-      targetable: 0,
-      walkable: 0
+      targetable: false
     }
   });
 }

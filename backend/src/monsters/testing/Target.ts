@@ -1,5 +1,4 @@
 import Monster from '../../abstract/Monster';
-import BattleUnit from '../../objects/BattleUnit';
 
 function Target() {
   return Monster({

@@ -36,10 +36,10 @@ export default class BattleUnit {
   public y: number;
   public teamId: number;
   public attack: {
-    value: number;
-    range: number;
-    speed: number;
-    particle: {
+    value?: number;
+    range?: number;
+    speed?: number;
+    particle?: {
       id: string | null /** particle name in case of distant attack */;
       duration: number /** attack duration for both, melee and distant attacks */;
     };
@@ -47,22 +47,20 @@ export default class BattleUnit {
   public lookType: number;
   public previousStep?: Object;
   public armor: number;
-  public actionDelay: number; // TODO[P0] - this is supposed to be different, based on speed or atk speed or exhaust after spellcast?
   public spell?: Function;
   public cost: number;
+  public isTargetable: boolean;
 
   private _health: {
     now: number;
     max: number;
   };
 
-  private _mana: {
+  private _mana?: {
     now: number;
     max: number;
     regen: number;
   };
-
-  private spawned: boolean = false;
 
   constructor(simpleUnit: SimpleUnit) {
     this.x = +simpleUnit.position.x;
@@ -71,30 +69,42 @@ export default class BattleUnit {
     this.teamId = simpleUnit.teamId;
 
     const unitStats = Monsters.getMonsterStats(simpleUnit.name);
-    const { attack } = unitStats;
+
     this.name = unitStats.name;
     this.cost = unitStats.cost;
+
+    const { attack } = unitStats;
+
     this.attack = {
-      ...attack,
-      particle: {
+      ...attack
+    };
+
+    if (attack.particleID) {
+      attack.particle = {
         id: attack.particleID || null,
         duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
-      }
-    };
+      };
+    }
+
     this.armor = unitStats.armor;
     this.lookType = unitStats.lookType;
-    this._mana = {
-      now: 0,
-      max: unitStats.mana.?max || 0,
-      regen: unitStats.mana.?regen || 0
-    };
-    this.actionDelay = unitStats.speed;
+
+    if (unitStats.mana) {
+      this._mana = {
+        now: 0,
+        max: unitStats.mana.max || 0,
+        regen: unitStats.mana.regen || 0
+      };
+    }
+
     this.spell = unitStats.spell;
 
     this._health = {
       now: unitStats.health.max,
       max: unitStats.health.max
     };
+
+    this.isTargetable = unitStats?.specialty?.targetable !== undefined ? unitStats.specialty.targetable : true;
   }
 
   get position(): Position {
@@ -114,27 +124,40 @@ export default class BattleUnit {
   }
 
   get maxMana() {
-    return this._mana.max;
+    return this._mana?.max ? this._mana.max : 0;
   }
 
   set health(value) {
     this._health.now = Math.max(0, Math.min(value, this._health.max));
   }
 
-  get mana() {
-    return this._mana.now;
+  get mana(): number {
+    return this._mana?.now || 0;
   }
 
-  set mana(value) {
-    this._mana.now = Math.max(0, Math.min(value, this._mana.max));
+  set mana(value: number) {
+    if (this._mana) {
+      this._mana.now = Math.max(0, Math.min((value || 0), this._mana.max));
+    }
   }
 
   get manaRegen() {
-    return this._mana.regen;
+    return this._mana?.regen ? this._mana.regen : 0;
   }
 
   get oppositeTeamId() {
-    return 1 - this.teamId;
+    switch (this.teamId) {
+      case 0: {
+        return 1;
+      }
+      case 1: {
+        return 0;
+      }
+      case 3:
+      default: {
+        return null;
+      }
+    }
   }
 
   get isAlive() {
@@ -142,7 +165,7 @@ export default class BattleUnit {
   }
 
   get attackRange() {
-    return this.attack.range;
+    return this.attack?.range;
   }
 
   /**
@@ -161,7 +184,10 @@ export default class BattleUnit {
     if (!spellGenerator) return {};
     const { currentTimestamp } = battleContext;
     const actor = new Actor({ timestamp: currentTimestamp, actionGenerator: spellGenerator });
-    return { delay: this.actionDelay, actors: [actor] };
+    return {
+      delay: 1000, // [TODO] check if thats fine to have 1s delay after spellcast
+      actors: [actor]
+    };
   }
 
   *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
@@ -172,9 +198,9 @@ export default class BattleUnit {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
 
-      yield this.attemptSpellCast(battleContext);
+      yield this.attemptSpellCast(battleContext); // maybe we need to acquire target before spell cast?
 
-      let targetUnit = targetPairPool.findTargetByUnitId(this.id);
+      let targetUnit = targetPairPool.findTargetByUnitId(this.id); // ? :)
       const closestTarget = this.getClosestTarget(units);
       if (closestTarget && (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit))) {
         yield { actions: this.acquireTarget(closestTarget)};
@@ -182,17 +208,25 @@ export default class BattleUnit {
       }
 
       if (!targetUnit) {
-        yield { delay: this.actionDelay };
+        // Unit has no target to attack, try again in next tick with delay
+        yield { delay: 1000 };
         continue;
       }
 
       const distanceToTarget = Pathfinder.getDistanceBetweenUnits(this, targetUnit);
-      if (distanceToTarget < this.attackRange) {
+      if (this.attackRange && distanceToTarget < this.attackRange) {
         const { actions, actors } = this.doAttack(targetUnit, battleContext);
-        yield { delay: this.actionDelay, actions, actors };
+        yield {
+          delay: actions[0].payload.duration, // [TODO] check if thats fine to have this delay after attack?
+          actions,
+          actors
+        };
       } else {
         const step = pathfinder.findStepToTarget(this, targetUnit);
-        yield { delay: this.actionDelay, actions: this.move(step) };
+        yield {
+          delay: 1000, // TODO figure out delay
+          actions: this.move(step)
+        };
       }
     }
 
@@ -239,9 +273,12 @@ export default class BattleUnit {
 
   get attackValue() {
     const value = this.attack.value;
-    const maximumRoll = Math.floor(value * 1.1);
-    const minimumRoll = Math.ceil(value * 0.9);
-    return Math.floor(Math.random() * (maximumRoll - minimumRoll + 1)) + minimumRoll;
+    if (value && value > 0) {
+      const minRoll = Math.ceil(value * 0.9);
+      return Math.floor(Math.random() * (Math.floor(value * 1.1) - minRoll + 1)) + minRoll;
+    }
+
+    return 0;
   }
 
   isMelee() {
@@ -254,22 +291,26 @@ export default class BattleUnit {
    * @memberof BattleUnit
    */
   attackDuration(from: Position, to: Position) {
-    if (this.isMelee()) {
+    if (this.isMelee() && this.attack.speed) {
       return Math.round(Math.floor(this.attack.speed / 10) / 10) * 10; // based on attack speed, rounding to .*0
     }
 
-    const speedByTile = this.attack.particle.duration / this.attackRange;
-    return Math.max(
-      250,
-      Math.floor(
-        PathUtil.getDistanceBetweenCoordinates({
-          x: from.x,
-          y: from.y,
-          x2: to.x,
-          y2: to.y
-        }) * speedByTile
-      )
-    );
+    if (this.attack.particle?.duration && this.attackRange) {
+      const speedByTile = this.attack.particle.duration / this.attackRange;
+      return Math.max(
+        250,
+        Math.floor(
+          PathUtil.getDistanceBetweenCoordinates({
+            x: from.x,
+            y: from.y,
+            x2: to.x,
+            y2: to.y
+          }) * speedByTile
+        )
+      );
+    }
+
+    return 0;
   }
 
   doAttack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
@@ -353,7 +394,7 @@ export default class BattleUnit {
   }
 
   manaChange(value: number): Array<ManaChangeAction> {
-    if (+value === 0 || this._mana.max === this.mana) {
+    if (!this.mana || +value === 0 || this._mana?.max === this.mana) {
       return [];
     }
 
@@ -385,7 +426,7 @@ export default class BattleUnit {
     const closestTarget = <BattleUnit[]>PathUtil.getClosestTargets({
       x: this.x,
       y: this.y,
-      targets: units.filter(u => u.teamId === this.oppositeTeamId && u.isAlive),
+      targets: units.filter(u => u.teamId !== this.teamId && u.isAlive && u.isTargetable),
       amount: 1
     });
 
