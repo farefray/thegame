@@ -37,7 +37,7 @@ if (typeof module !== 'undefined' && typeof window === 'undefined') {
 
 [1].forEach(num => {
   describe('Test Suite ' + num, function() {
-    it('Full sized battle execution #', (done) => {
+    it('Full sized battle execution #', async (done) => {
       const npcBoard = [];
 
       for (let x = 0; x < 8; x++) {

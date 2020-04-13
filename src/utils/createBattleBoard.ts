@@ -22,7 +22,7 @@ interface Board {
  * Reverses position for enemy units
  * @TODO can be omitted P0!
  */
-export default function createBattleBoard(firstBoard: Board, secondBoard: Board): object {
+export default function createBattleBoard(firstBoard: Board, secondBoard: Board, specialBoard: Board): object {
   const board = {};
 
   // hidden properties to identify board owners
@@ -53,6 +53,21 @@ export default function createBattleBoard(firstBoard: Board, secondBoard: Board)
       },
       teamId: 1
     });
+  }
+
+  if (specialBoard && specialBoard.units) {
+    for (const index in specialBoard.units) {
+      const simpleUnit = specialBoard.units[index];
+      const unitPos = new Position(simpleUnit.x, simpleUnit.y);
+      board[unitPos.toString()] = new BattleUnit({
+        name: simpleUnit.name,
+        position: {
+          x: unitPos.x,
+          y: unitPos.y
+        },
+        teamId: 3
+      });
+    }
   }
 
   return board;

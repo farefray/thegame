@@ -16,10 +16,17 @@ import Beholder from './beholders/Beholder';
 import Baby_Beholder from './beholders/Baby Beholder';
 import Elder_Beholder from './beholders/Elder Beholder';
 
-import BigBoy from './BigBoy.ts';
+import BigBoy from './testing/BigBoy.ts';
+import Target from './testing/Target.ts';
+import Barrier from './testing/Barrier.ts';
 
 export default {
+  // testing purposes
   BigBoy,
+  Target,
+  Barrier,
+
+  // real
   Dwarf,
   Dwarf_Geomancer,
   Dwarf_Guard,

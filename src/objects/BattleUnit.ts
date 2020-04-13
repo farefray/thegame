@@ -85,8 +85,8 @@ export default class BattleUnit {
     this.lookType = unitStats.lookType;
     this._mana = {
       now: 0,
-      max: unitStats.mana.max,
-      regen: unitStats.mana.regen
+      max: unitStats.mana.?max || 0,
+      regen: unitStats.mana.?regen || 0
     };
     this.actionDelay = unitStats.speed;
     this.spell = unitStats.spell;
@@ -111,6 +111,10 @@ export default class BattleUnit {
 
   get maxHealth() {
     return this._health.max;
+  }
+
+  get maxMana() {
+    return this._mana.max;
   }
 
   set health(value) {
@@ -196,7 +200,7 @@ export default class BattleUnit {
   }
 
   *regeneration(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    while (this.isAlive) {
+    while (this.isAlive && this.maxMana > 0 && this.mana !== this.maxMana) {
       yield { delay: 1000, actions: this.manaChange(this.manaRegen) };
     }
 
