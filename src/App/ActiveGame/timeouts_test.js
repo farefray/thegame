@@ -24,7 +24,6 @@ var actionStack = [{
         "y": 1
       },
       "armor": 2,
-      "actionDelay": 1200,
       "_health": {
         "now": 6323,
         "max": 6500
@@ -64,7 +63,6 @@ var actionStack = [{
         "y": -1
       },
       "armor": 1,
-      "actionDelay": 1400,
       "_health": {
         "now": 0,
         "max": 550
