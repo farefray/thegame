@@ -7,57 +7,17 @@ const defaultBoard = {
       name: 'dwarf',
       x: 0,
       y: 3
-    },
-    {
-      name: 'dwarf',
-      x: 2,
-      y: 3
-    },
-    {
-      name: 'dwarf',
-      x: 4,
-      y: 3
-    },
-    {
-      name: 'dwarf',
-      x: 6,
-      y: 3
-    },
-    {
-      name: 'dwarf',
-      x: 7,
-      y: 3
-    },
-    {
-      name: 'elf',
-      x: 1,
-      y: 2
     }
   ],
   B: [
     {
       name: 'minotaur',
-      x: 0,
+      x: 1,
       y: 4
     },
     {
       name: 'minotaur',
       x: 2,
-      y: 4
-    },
-    {
-      name: 'minotaur',
-      x: 3,
-      y: 4
-    },
-    {
-      name: 'minotaur',
-      x: 5,
-      y: 4
-    },
-    {
-      name: 'minotaur',
-      x: 6,
       y: 4
     }
   ]
