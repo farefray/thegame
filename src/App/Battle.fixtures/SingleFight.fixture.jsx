@@ -5,7 +5,7 @@ const defaultBoard = [{
   owner: 'first_player',
   units: [
     {
-      name: 'dwarf',
+      name: 'dwarf_guard',
       x: 4,
       y: 3
     }
@@ -18,13 +18,23 @@ const defaultBoard = [{
       name: 'minotaur',
       x: 4,
       y: 5
+    },
+    {
+      name: 'minotaur',
+      x: 3,
+      y: 5
+    },
+    {
+      name: 'minotaur',
+      x: 5,
+      y: 5
     }
   ]
 },
 {
   units: [
     {
-      name: 'stone',
+      name: 'target_melee',
       x: 4,
       y: 4
     }
