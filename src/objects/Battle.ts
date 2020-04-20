@@ -46,7 +46,7 @@ export default class Battle {
   private actionGeneratorInstance: Generator;
   private battleTimeEndTime: number; // timeout for battle to be finished
 
-  constructor({ board, gridWidth = 8, gridHeight = 8 }) {
+  constructor({ board }) {
     this.startBoard = cloneDeep(board);
     this.winner = TEAM.NONE;
     this.firstTeamOwner = board[Symbol.for('_firstOwner')];
@@ -67,7 +67,8 @@ export default class Battle {
           timestamp: 0
         }) // adding first run of actionGenerator for every unit in order to spawn
     );
-    this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
+
+    this.pathfinder = new Pathfinder();
     this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
 
     this.actionGeneratorInstance = this.generateActions();
