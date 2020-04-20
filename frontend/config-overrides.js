@@ -29,7 +29,7 @@ const enchantBabelForTypescript = () => config => {
   return config;
 };
 
-const config = override(
+module.exports = override(
   removeModuleScopePlugin(),
   addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: '@lesechos/image-size-loader' }),
   addLessLoader({
@@ -50,4 +50,3 @@ const config = override(
   })
 );
 
-module.exports = config;

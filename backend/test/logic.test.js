@@ -90,7 +90,7 @@ describe.only('Battle logic tests', () => {
     })
   });
 
-  it.only('Can finish battle with neutral blocking units', async () => {
+  it('Can finish battle with neutral blocking units', async () => {
     const combinedBoard = createBattleBoard(
       {
         owner: 'first_player',
@@ -115,7 +115,7 @@ describe.only('Battle logic tests', () => {
       {
         units: [
           {
-            name: 'barrier',
+            name: 'stone',
             x: 4,
             y: 4
           }
@@ -130,9 +130,9 @@ describe.only('Battle logic tests', () => {
     battle.actionStack.length.should.be.above(0);
     battle.actionStack.length.should.be.below(100);
 
-    // we should detect that no moves was done into barrier
+    // we should detect that no moves was done into stone
     const moveActions = battle.actionStack.filter((a) => a.type === 'move');
-    moveActions.length.should.be.below(5);
+    moveActions.length.should.be.equal(3);
     moveActions.forEach((action) => {
       action.type.should.be.equal('move');
       action.payload.to.should.not.deepEqual({

@@ -50,6 +50,7 @@ export default class BattleUnit {
   public spell?: Function;
   public cost: number;
   public isTargetable: boolean;
+  public walkingSpeed: number;
 
   private _health: {
     now: number;
@@ -103,6 +104,8 @@ export default class BattleUnit {
       now: unitStats.health.max,
       max: unitStats.health.max
     };
+
+    this.walkingSpeed = unitStats.speed;
 
     this.isTargetable = unitStats?.specialty?.targetable !== undefined ? unitStats.specialty.targetable : true;
   }
@@ -168,6 +171,10 @@ export default class BattleUnit {
     return this.attack?.range;
   }
 
+  get canMove() {
+    return this.walkingSpeed > 0; // todo figure out stuns maybe here?
+  }
+
   /**
    * Moving battle unit starting position
    * @param toPosition
@@ -221,13 +228,17 @@ export default class BattleUnit {
           actions,
           actors
         };
-      } else {
+      } else if (this.canMove) {
         const step = pathfinder.findStepToTarget(this, targetUnit);
         yield {
           delay: 1000, // TODO figure out delay
           actions: this.move(step)
         };
       }
+
+      // Unit is just idling on the field(f.e. stone?) [I guess thats not okay here. Rewise plx]
+      console.log(this.name);
+      yield { delay: 100 };
     }
 
     return {};
@@ -253,7 +264,7 @@ export default class BattleUnit {
 
   move(step: Position): [MoveAction] {
     this.previousStep = step;
-    // this.actionLockTimestamp = this.proxied('actionQueue').currentTimestamp + this.speed;
+    // this.actionLockTimestamp = this.proxied('actionQueue').currentTimestamp + this.speed; // todo this makes sence?
 
     const from = this.position;
     this.x += step.x;
