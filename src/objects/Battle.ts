@@ -1,9 +1,9 @@
 import Pathfinder from './Pathfinder';
 import shuffle from 'lodash/shuffle';
-import cloneDeep from 'lodash/cloneDeep';
 import Actor from './Actor';
 import TargetPairPool from './TargetPairPool';
 import BattleUnit from './BattleUnit';
+import Position from '../../../frontend/src/shared/Position';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
 
@@ -33,32 +33,44 @@ export interface UnitAction {
 
 export default class Battle {
   public startBoard: Object;
-  public winner: string;
+  public winner = TEAM.NONE;
   public readonly actionStack: UnitAction[];
-  public firstTeamOwner: string;
-  public secondTeamOwner: string;
   private readonly pathfinder: Pathfinder;
   private units: BattleUnit[];
   private readonly actorQueue: Actor[];
   private readonly targetPairPool: TargetPairPool;
   private currentTimestamp: number;
-  private isOver: boolean;
+  private isOver = false;
   private actionGeneratorInstance: Generator;
-  private battleTimeEndTime: number; // timeout for battle to be finished
+  private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
-  constructor({ board }) {
-    this.startBoard = cloneDeep(board);
-    this.winner = TEAM.NONE;
-    this.firstTeamOwner = board[Symbol.for('_firstOwner')];
-    this.secondTeamOwner = board[Symbol.for('_secondOwner')];
+  constructor(...unitBoards) {
+    this.startBoard = {};
+    this.startBoard[Symbol.for('owners')] = {};
 
-    this.isOver = false;
-    this.battleTimeEndTime = 300 * 1000;
+    unitBoards.forEach((board, teamId) => {
+      if (board.owner) {
+        this.startBoard[Symbol.for('owners')][teamId] = board.owner;
+      }
+
+      board.units.forEach(simpleUnit => {
+        const unitPos = new Position(simpleUnit.x, simpleUnit.y);
+
+        this.startBoard[unitPos.toString()] = new BattleUnit({
+          name: simpleUnit.name,
+          position: {
+            x: unitPos.x,
+            y: unitPos.y
+          },
+          teamId
+        });
+      });
+    })
 
     this.currentTimestamp = 0;
     this.actionStack = [];
     this.targetPairPool = new TargetPairPool();
-    this.units = shuffle(Object.keys(board).map(key => board[key]));
+    this.units = shuffle(Object.keys(this.startBoard).map(key => this.startBoard[key]));
     this.actorQueue = this.units.map(
       unit =>
         new Actor({
@@ -225,7 +237,9 @@ export default class Battle {
     const bTeamUnits = this.unitsFromTeam(TEAM.B);
 
     if (!aTeamUnits.length || !bTeamUnits.length) {
-      this.winner = aTeamUnits.length ? this.firstTeamOwner : this.secondTeamOwner;
+      this.winner = aTeamUnits.length ? this.startBoard[Symbol.for('owners')][0] : this.startBoard[Symbol.for('owners')][1]; // todo support for more board owners?
+    } else {
+      this.winner = '';
     }
   }
 }
