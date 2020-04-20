@@ -16,15 +16,15 @@ import Beholder from './beholders/Beholder';
 import Baby_Beholder from './beholders/Baby Beholder';
 import Elder_Beholder from './beholders/Elder Beholder';
 
+import Stone from './neutrals/Stone';
+
 import BigBoy from './testing/BigBoy.ts';
 import Target from './testing/Target.ts';
-import Barrier from './testing/Barrier.ts';
 
 export default {
   // testing purposes
   BigBoy,
   Target,
-  Barrier,
 
   // real
   Dwarf,
@@ -40,5 +40,8 @@ export default {
   Minotaur_Mage,
   Beholder,
   Baby_Beholder,
-  Elder_Beholder
+  Elder_Beholder,
+
+  // neutrals
+  Stone,
 };

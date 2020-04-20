@@ -71,7 +71,7 @@ export default class Battle {
     this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
 
     this.actionGeneratorInstance = this.generateActions();
-    this.run(); // this is sync call. We can consider using node 10+ and async generators here
+    this.proceedBattle(); // this is sync call. We can consider using node 10+ and async generators here
   }
 
   get context(): BattleContext {
@@ -92,7 +92,7 @@ export default class Battle {
     }
   }
 
-  run() {
+  proceedBattle() {
     while (!this.actionGeneratorInstance.next().done) {
       // action was generated already, so we dont need to execute another next() here
     }

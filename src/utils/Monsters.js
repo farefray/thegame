@@ -1,5 +1,7 @@
 import * as monsters from '../monsters/loader';
 
+// Refactor this to TS please
+
 const Monsters = {
   units: {}
 };
