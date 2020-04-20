@@ -25,7 +25,16 @@ const defaultBoard = [{
   units: [
     {
       name: 'minotaur',
-      x: 4,
+      x: 3,
+      y: 4
+    }
+  ]
+},
+{
+  units: [
+    {
+      name: 'dwarf',
+      x: 7,
       y: 4
     }
   ]
