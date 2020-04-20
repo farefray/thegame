@@ -1,6 +1,5 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle.ts';
-import createBattleBoard from '../src/utils/createBattleBoard.ts';
 
 const should = require('should');
 const rewire = require('rewire');
@@ -12,14 +11,14 @@ describe('Refactoring testsuite', async function() {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    console.log('tick');
+    // console.log('tick');
     await sleep(1);
 
     if (runTicks) {
       tick()
     }
   }
-  
+
   tick();
 
   const npcBoard = [{
@@ -35,16 +34,14 @@ describe('Refactoring testsuite', async function() {
   }];
 
 
-  const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
-
   it('Single battle can be run', async (done) => {
     this.timeout(2);
 
-    const battle = new Battle({ board: combinedBoard });
+    const battle = new Battle({ units: playerBoard }, { units: npcBoard });
     battle.should.be.ok();
     battle.actionStack.should.be.an.Array();
     battle.actionStack.length.should.be.above(0);
-  
+
     runTicks = false;
     console.log('no tick')
     done();

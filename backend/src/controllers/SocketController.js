@@ -3,7 +3,6 @@ import BoardController from './BoardController';
 import ShopController from './ShopController';
 import GameController from './GameController';
 import AppError from '../objects/AppError';
-import createBattleBoard from '../utils/createBattleBoard';
 import AiPlayer from '../models/AiPlayer';
 
 const Customer = require('../objects/Customer');
@@ -194,7 +193,8 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
     const Ai = new AiPlayer(preBattleState.round);
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
-    const board = createBattleBoard(
+
+    const battleResult = await BattleController.setupBattle({ boards: [
       {
         owner: uid,
         units: playerBoard
@@ -203,9 +203,8 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
         owner: '',
         units: Ai.battleBoard
       }
-    );
-    
-    const battleResult = await BattleController.setupBattle(board);
+    ]});
+
     if (battleResult.battleTime > countdown) {
       countdown = battleResult.battleTime;
     }

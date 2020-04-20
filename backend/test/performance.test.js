@@ -1,25 +1,9 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle.ts';
-import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import Monsters from '../src/utils/Monsters';
 
 const should = require('should');
 const rewire = require('rewire');
-
-const benchtest = require('benchtest');
-benchtest(null, {
-  minCycles: 10,
-  maxCycles: 100,
-  sensitivity: 0.01,
-  log: 'json',
-  logStream: console,
-  all: true,
-  off: false,
-  only: false
-});
-
-beforeEach(benchtest.test);
-after(benchtest.report);
 
 let perf = typeof performance !== 'undefined' ? performance : null;
 if (typeof module !== 'undefined' && typeof window === 'undefined') {
@@ -35,39 +19,36 @@ if (typeof module !== 'undefined' && typeof window === 'undefined') {
   });
 }
 
-[1].forEach(num => {
-  describe('Test Suite ' + num, function() {
-    it('Full sized battle execution #', async (done) => {
-      const npcBoard = [];
+describe('Perf test', async () => {
+  it('Full sized battle execution #', async (done) => {
+    const npcBoard = [];
 
-      for (let x = 0; x < 8; x++) {
-        const monster = Monsters.getRandomUnit();
-        npcBoard.push({
-          name: monster.name,
-          x: x,
-          y: 7
-        });
-      }
+    for (let x = 0; x < 8; x++) {
+      const monster = Monsters.getRandomUnit();
+      npcBoard.push({
+        name: monster.name,
+        x: x,
+        y: 7
+      });
+    }
 
-      const playerBoard = [];
-      for (let x = 0; x < 8; x++) {
-        const monster = Monsters.getRandomUnit();
-        playerBoard.push({
-          name: monster.name,
-          x: x,
-          y: 0
-        });
-      }
+    const playerBoard = [];
+    for (let x = 0; x < 8; x++) {
+      const monster = Monsters.getRandomUnit();
+      playerBoard.push({
+        name: monster.name,
+        x: x,
+        y: 0
+      });
+    }
 
-      const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
-      const battle = new Battle({ board: combinedBoard });
-      battle.should.be.ok();
-      battle.actionStack.should.be.an.Array();
-      battle.actionStack.length.should.be.above(0);
+    const battle = new Battle({ units: playerBoard }, { units: npcBoard });
+    battle.should.be.ok();
+    battle.actionStack.should.be.an.Array();
+    battle.actionStack.length.should.be.above(0);
 
-      this.performance.duration.should.be.below(10);
-      console.log("test -> this.performance.duration", this.performance.duration)
-      done();
-    });
+    this.performance.duration.should.be.below(10);
+    console.log("test -> this.performance.duration", this.performance.duration)
+    done();
   });
 });

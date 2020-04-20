@@ -1,6 +1,5 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle.ts';
-import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import GameController from '../src/controllers/GameController';
 import BoardController from '../src/controllers/BoardController';
 import ShopController from '../src/controllers/ShopController';
@@ -147,8 +146,7 @@ describe('Core Modules', () => {
         }
       ];
 
-      const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
-      battle = new Battle({ board: combinedBoard });
+      battle = new Battle({ units: playerBoard }, { units: npcBoard });
       battle.should.be.ok();
       battle.actionStack.should.be.an.Array();
       battle.actionStack.length.should.be.above(0);
@@ -164,8 +162,7 @@ describe('Core Modules', () => {
       ];
       const npcBoard = [];
 
-      const combinedBoard = createBattleBoard({ units: playerBoard }, { units: npcBoard });
-      battle = new Battle({ board: combinedBoard });
+      battle = new Battle({ units: playerBoard }, { units: npcBoard });
       battle.should.be.ok();
       should.exist(battle.winner);
       battle.winner.should.equal(TEAM.A);

@@ -1,5 +1,4 @@
 /* global describe, it */
-import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import BattleController from '../src/controllers/BattleController';
 
 import Position from '../../frontend/src/shared/Position';
@@ -7,10 +6,11 @@ import Position from '../../frontend/src/shared/Position';
 const should = require('should');
 const rewire = require('rewire');
 
-describe.only('Battle logic tests', () => {
+describe('Battle logic tests', () => {
   it('Closest target being selected', async () => {
-    const battleBoard = createBattleBoard(
-      {
+
+    const battleResult = await BattleController.setupBattle({
+      boards: [{
         owner: 'first_player',
         units: [
           {
@@ -69,10 +69,8 @@ describe.only('Battle logic tests', () => {
             y: 4
           }
         ]
-      }
-    );
-
-    const battleResult = await BattleController.setupBattle(battleBoard);  // assuming all units are melee
+      }]
+    });  // assuming all units are melee
     battleResult.should.be.ok();
 
     // supposed that first action in such case will be melee attack, not a move
@@ -91,7 +89,7 @@ describe.only('Battle logic tests', () => {
   });
 
   it('Can handle battle with neutral "stone" unit', async () => {
-    const combinedBoard = createBattleBoard(
+    const battle = await BattleController.setupBattle({ boards: [
       {
         owner: 'first_player',
         units: [
@@ -121,9 +119,7 @@ describe.only('Battle logic tests', () => {
           }
         ]
       }
-    );
-
-    const battle = await BattleController.setupBattle(combinedBoard);
+    ]});
 
     battle.should.be.ok();
     battle.actionStack.should.be.an.Array();
@@ -143,7 +139,7 @@ describe.only('Battle logic tests', () => {
   });
 
   it('Can handle battle with neutral "target" unit', async () => {
-    const combinedBoard = createBattleBoard(
+    const battle = await BattleController.setupBattle({ boards: [
       {
         owner: 'first_player',
         units: [
@@ -173,9 +169,7 @@ describe.only('Battle logic tests', () => {
           }
         ]
       }
-    );
-
-    const battle = await BattleController.setupBattle(combinedBoard);
+    ]});
 
     battle.should.be.ok();
     battle.actionStack.should.be.an.Array();
