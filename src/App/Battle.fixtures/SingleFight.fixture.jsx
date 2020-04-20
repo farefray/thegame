@@ -6,8 +6,8 @@ const defaultBoard = [{
   units: [
     {
       name: 'dwarf_guard',
-      x: 4,
-      y: 3
+      x: 5,
+      y: 0
     }
   ]
 },
@@ -16,27 +16,18 @@ const defaultBoard = [{
   units: [
     {
       name: 'minotaur',
-      x: 4,
-      y: 5
+      x: 5,
+      y: 7
     },
     {
       name: 'minotaur',
-      x: 3,
-      y: 5
+      x: 5,
+      y: 6
     },
     {
       name: 'minotaur',
       x: 5,
       y: 5
-    }
-  ]
-},
-{
-  units: [
-    {
-      name: 'target_melee',
-      x: 4,
-      y: 4
     }
   ]
 }];

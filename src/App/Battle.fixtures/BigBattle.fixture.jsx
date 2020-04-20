@@ -27,9 +27,13 @@ const flipBoard = board => {
   return board;
 };
 
-const combinedBoard = {
-  A: generateBoard(),
-  B: flipBoard(generateBoard())
-};
+const combinedBoard = [{
+  owner: 'first_player',
+  units: generateBoard()
+},
+{
+  owner: 'second_player',
+  units: flipBoard(generateBoard())
+}];
 
 export default <ActiveGame props={combinedBoard} />;
