@@ -1,6 +1,6 @@
 import Monster from '../../abstract/Monster';
 
-function Target() {
+export default function Target_Melee() {
   return Monster({
     armor: 0,
     cost: 1,
@@ -10,6 +10,4 @@ function Target() {
     },
     speed: 0
   });
-}
-
-export default Target;
+};
