@@ -1,21 +1,34 @@
 import React from 'react';
 import ActiveGame from '../ActiveGame';
 
-const defaultBoard = {
-  A: [
+const defaultBoard = [{
+  owner: 'first_player',
+  units: [
     {
-      name: 'target',
+      name: 'dwarf',
+      x: 4,
+      y: 3
+    }
+  ]
+},
+{
+  owner: 'second_player',
+  units: [
+    {
+      name: 'minotaur',
+      x: 4,
+      y: 5
+    }
+  ]
+},
+{
+  units: [
+    {
+      name: 'minotaur',
       x: 4,
       y: 4
     }
-  ],
-  B: [
-    {
-      name: 'minotaur',
-      x: 3,
-      y: 7
-    }
   ]
-};
+}];
 
 export default <ActiveGame props={defaultBoard}/>;
