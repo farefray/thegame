@@ -90,7 +90,7 @@ describe.only('Battle logic tests', () => {
     })
   });
 
-  it('Can finish battle with neutral blocking units', async () => {
+  it('Can handle battle with neutral "stone" unit', async () => {
     const combinedBoard = createBattleBoard(
       {
         owner: 'first_player',
@@ -128,7 +128,7 @@ describe.only('Battle logic tests', () => {
     battle.should.be.ok();
     battle.actionStack.should.be.an.Array();
     battle.actionStack.length.should.be.above(0);
-    battle.actionStack.length.should.be.below(100);
+    battle.actionStack.length.should.be.below(40);
 
     // we should detect that no moves was done into stone
     const moveActions = battle.actionStack.filter((a) => a.type === 'move');
@@ -139,6 +139,58 @@ describe.only('Battle logic tests', () => {
         x: 4,
         y: 4
       });
+    })
+  });
+
+  it('Can handle battle with neutral "target" unit', async () => {
+    const combinedBoard = createBattleBoard(
+      {
+        owner: 'first_player',
+        units: [
+          {
+            name: 'dwarf',
+            x: 4,
+            y: 3
+          }
+        ]
+      },
+      {
+        owner: 'second_player',
+        units: [
+          {
+            name: 'minotaur',
+            x: 4,
+            y: 5
+          }
+        ]
+      },
+      {
+        units: [
+          {
+            name: 'target_melee',
+            x: 4,
+            y: 4
+          }
+        ]
+      }
+    );
+
+    const battle = await BattleController.setupBattle(combinedBoard);
+
+    battle.should.be.ok();
+    battle.actionStack.should.be.an.Array();
+    battle.actionStack.length.should.be.above(0);
+    battle.actionStack.length.should.be.below(100);
+
+    // we should detect that no moves was done into stone
+    const attackActions = battle.actionStack.filter((a) => a.type === 'attack').splice(2, 2);
+    attackActions.forEach((action) => {
+      action.type.should.be.equal('attack');
+
+      // checking that first actions will be into target unit
+      let { to } = action.payload;
+      (to.x).should.be.equal(4);
+      (to.y).should.be.equal(4);
     })
   });
 });

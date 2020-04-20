@@ -237,7 +237,6 @@ export default class BattleUnit {
       }
 
       // Unit is just idling on the field(f.e. stone?) [I guess thats not okay here. Rewise plx]
-      console.log(this.name);
       yield { delay: 100 };
     }
 
