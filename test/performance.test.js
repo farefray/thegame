@@ -2,24 +2,16 @@
 import Battle from '../src/objects/Battle.ts';
 import Monsters from '../src/utils/Monsters';
 
+const {
+  performance
+} = require('perf_hooks');
+
 const should = require('should');
 const rewire = require('rewire');
 
-let perf = typeof performance !== 'undefined' ? performance : null;
-if (typeof module !== 'undefined' && typeof window === 'undefined') {
-  perf = {
-    now: require('performance-now'),
-    memory: {}
-  };
-  Object.defineProperty(perf.memory, 'usedJSHeapSize', {
-    enumerable: true,
-    configurable: true,
-    writable: true,
-    value: 0
-  });
-}
 
 describe('Perf test', async () => {
+  var t0 = performance.now();
   it('Full sized battle execution #', async (done) => {
     const npcBoard = [];
 
@@ -47,8 +39,9 @@ describe('Perf test', async () => {
     battle.actionStack.should.be.an.Array();
     battle.actionStack.length.should.be.above(0);
 
-    this.performance.duration.should.be.below(10);
-    console.log("test -> this.performance.duration", this.performance.duration)
+    const duration = performance.now() - t0;
+    console.log("Full sized battle execution took " + (duration) + " milliseconds.");
+    duration.should.be.below(300);
     done();
   });
 });
