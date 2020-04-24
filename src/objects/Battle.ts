@@ -3,9 +3,9 @@ import shuffle from 'lodash/shuffle';
 import Actor from './Actor';
 import TargetPairPool from './TargetPairPool';
 import BattleUnit from './BattleUnit';
-import Position from '../../../frontend/src/shared/Position';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
+import _ from 'lodash';
 
 export interface BattleContext {
   currentTimestamp: number;
@@ -53,24 +53,30 @@ export default class Battle {
         this.startBoard[Symbol.for('owners')][teamId] = board.owner;
       }
 
-      board.units.forEach(simpleUnit => {
-        const unitPos = new Position(simpleUnit.x, simpleUnit.y);
-
-        this.startBoard[unitPos.toString()] = new BattleUnit({
-          name: simpleUnit.name,
+      board.units.forEach(unitConfig => {
+        const battleUnit = new BattleUnit({
+          name: unitConfig.name,
           position: {
-            x: unitPos.x,
-            y: unitPos.y
+            x: unitConfig.x,
+            y: unitConfig.y
           },
           teamId
         });
+
+        this.startBoard[battleUnit.id] = battleUnit;
       });
     })
 
     this.currentTimestamp = 0;
     this.actionStack = [];
     this.targetPairPool = new TargetPairPool();
-    this.units = shuffle(Object.keys(this.startBoard).map(key => this.startBoard[key]));
+
+    /**
+     * Actually object with units to calculate battle
+     * clone is needed here in order to remove symlinks to our startBoard battle units and they can be passed normally
+     */
+    this.units = _.cloneDeep(shuffle(Object.keys(this.startBoard).map(key => this.startBoard[key])));
+
     this.actorQueue = this.units.map(
       unit =>
         new Actor({
@@ -81,7 +87,7 @@ export default class Battle {
     );
 
     this.pathfinder = new Pathfinder();
-    this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
+    this.units.forEach(unit => this.pathfinder.taken(unit.position));
 
     this.actionGeneratorInstance = this.generateActions();
     this.proceedBattle(); // this is sync call. We can consider using node 10+ and async generators here
@@ -177,8 +183,8 @@ export default class Battle {
     switch (action.type) {
       case ACTION_TYPE.MOVE:
         const { from, to } = action.payload;
-        this.pathfinder.occupiedTileSet.delete(`${from.x},${from.y}`);
-        this.pathfinder.occupiedTileSet.add(`${to.x},${to.y}`);
+        this.pathfinder.free(from);
+        this.pathfinder.taken(to);
         this.addToActionStack(action, ACTION.MOVE);
         break;
       case ACTION_TYPE.ATTACK:
@@ -195,7 +201,7 @@ export default class Battle {
         break;
       case ACTION_TYPE.DEATH:
         const { unit } = action.payload;
-        this.pathfinder.occupiedTileSet.delete(`${unit.x},${unit.y}`);
+        this.pathfinder.free(unit.position);
         this.targetPairPool.removeByUnitId(unit.id);
         this.updateUnits();
         this.addToActionStack(action, ACTION.DEATH);
