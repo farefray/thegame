@@ -227,16 +227,16 @@ export default class Unit extends React.Component<IProps, IState> {
         this.setState({ ...this.getPositionFromCoordinates(this.state.x, this.state.y) });
       }, duration);
     } else {
-      const { particle } = this.props.unit.attack; // has id and duration(?)
+      const { particleID } = this.props.unit.attack; // has id and duration(?)
 
-      if (!particle) {
+      if (!particleID) {
         console.warn('No particle for range attack', this.props.unit);
         throw new Error('No particle for range attack');
       }
 
       this.addEffect(
         EffectsFactory.create('particle', {
-          id: particle.id,
+          id: particleID,
           duration,
           from: {
             top: top,
