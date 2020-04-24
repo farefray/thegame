@@ -13,9 +13,9 @@ const STARTING_DELAY = 2000; // delaying all the starting actions for frontend n
 
 /**
  * @description Describes base unit to be built into BattleUnit
- * @interface SimpleUnit
+ * @interface UnitConfig
  */
-interface SimpleUnit {
+interface UnitConfig {
   name: string;
   position: {
     x: number;
@@ -63,13 +63,13 @@ export default class BattleUnit {
     regen: number;
   };
 
-  constructor(simpleUnit: SimpleUnit) {
-    this.x = +simpleUnit.position.x;
-    this.y = +simpleUnit.position.y;
+  constructor(unitConfig: UnitConfig) {
+    this.x = +unitConfig.position.x;
+    this.y = +unitConfig.position.y;
     this.id = this.stringifiedPosition; // id = is also a starting position for mob
-    this.teamId = simpleUnit.teamId;
+    this.teamId = unitConfig.teamId;
 
-    const unitStats = Monsters.getMonsterStats(simpleUnit.name);
+    const unitStats = Monsters.getMonsterStats(unitConfig.name);
 
     this.name = unitStats.name;
     this.cost = unitStats.cost;
