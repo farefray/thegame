@@ -28,6 +28,7 @@ export interface MoveAction extends ActionBase {
   payload: {
     from: Position;
     to: Position;
+    stepDuration: number;
   };
 }
 export interface AttackAction extends ActionBase {

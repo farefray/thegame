@@ -11,5 +11,5 @@
     "health": {
         "max": 1100
     },
-    "speed": 1000
+    "walkingSpeed": 2500
 }

@@ -19,7 +19,7 @@ interface MonsterInterface {
     particleID?: string,
   }
   armor?: number,
-  speed?: number,
+  walkingSpeed?: number,
   spell?: Function,
   specialty?: {
     targetable?: boolean,
@@ -38,7 +38,7 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
     speed: 1000
   };
 
-  monsterDefaults.speed = 1000;
+  monsterDefaults.walkingSpeed = 1000;
   monsterDefaults.mana = {
     max: 100,
     regen: 0

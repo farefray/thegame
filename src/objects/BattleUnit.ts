@@ -105,7 +105,7 @@ export default class BattleUnit {
       max: unitStats.health.max
     };
 
-    this.walkingSpeed = unitStats.speed;
+    this.walkingSpeed = unitStats.walkingSpeed;
 
     this.isTargetable = unitStats?.specialty?.targetable !== undefined ? unitStats.specialty.targetable : true;
   }
@@ -231,7 +231,7 @@ export default class BattleUnit {
       } else if (this.canMove) {
         const step = pathfinder.findStepToTarget(this, targetUnit);
         yield {
-          delay: 1000, // TODO figure out delay
+          delay: this.stepDuration,
           actions: this.move(step)
         };
       }
@@ -261,9 +261,13 @@ export default class BattleUnit {
     return [spawnAction];
   }
 
+  get stepDuration() {
+    // slow and root conditions may be introduced here
+    return this.walkingSpeed;
+  }
+
   move(step: Position): [MoveAction] {
     this.previousStep = step;
-    // this.actionLockTimestamp = this.proxied('actionQueue').currentTimestamp + this.speed; // todo this makes sence?
 
     const from = this.position;
     this.x += step.x;
@@ -275,7 +279,8 @@ export default class BattleUnit {
         type: ACTION_TYPE.MOVE,
         payload: {
           from,
-          to
+          to,
+          stepDuration: this.stepDuration
         }
       }
     ];
