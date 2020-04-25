@@ -81,7 +81,7 @@ export default class Battle {
       unit =>
         new Actor({
           id: unit.id,
-          actionGenerator: unit.actionGenerator(),
+          actionGenerator: unit.unitLifeCycleGenerator(),
           timestamp: 0
         }) // adding first run of actionGenerator for every unit in order to spawn
     );
@@ -141,8 +141,8 @@ export default class Battle {
 
         // processed action spawned actors to be placed into queue
         if (value.actors) {
-          for (const actor of value.actors) {
-            this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor);
+          for (const sideActor of value.actors) {
+            this.actorQueue.splice(this.findInsertionIndex(sideActor.timestamp), 0, sideActor);
           }
         }
 
@@ -152,7 +152,7 @@ export default class Battle {
 
       if (!fullyDone) {
         actor.timestamp = this.currentTimestamp + delay;
-        this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor);
+        this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor); // maybe binary heap will be better solution to this
       }
 
       yield true;
