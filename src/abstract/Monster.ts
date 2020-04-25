@@ -22,7 +22,8 @@ interface MonsterInterface {
   walkingSpeed?: number,
   spell?: Function,
   specialty?: {
-    targetable?: boolean,
+    targetable?: boolean, // can be taken as a target by other units
+    passive?: boolean, // ignores lifecycle loop targeting/moving actions
   }
 }
 

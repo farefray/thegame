@@ -10,7 +10,8 @@ export default function Stone() {
     },
     walkingSpeed: 0,
     specialty: {
-      targetable: false
+      targetable: false,
+      passive: true
     }
   });
 };

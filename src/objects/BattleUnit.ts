@@ -50,6 +50,7 @@ export default class BattleUnit {
   public spell?: Function;
   public cost: number;
   public isTargetable: boolean;
+  public isPassive: boolean;
   public walkingSpeed: number;
 
   private _health: {
@@ -108,6 +109,7 @@ export default class BattleUnit {
     this.walkingSpeed = unitStats.walkingSpeed;
 
     this.isTargetable = unitStats?.specialty?.targetable !== undefined ? unitStats.specialty.targetable : true;
+    this.isPassive = unitStats?.specialty?.passive !== undefined ? unitStats.specialty.passive : false;
   }
 
   get position(): Position {
@@ -207,6 +209,10 @@ export default class BattleUnit {
 
       yield this.attemptSpellCast(battleContext); // maybe we need to acquire target before spell cast?
 
+      if (this.isPassive) {
+        return {};
+      }
+
       let targetUnit = targetPairPool.findTargetByUnitId(this.id); // ? :)
       const closestTarget = this.getClosestTarget(units);
       if (closestTarget && (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit))) {
@@ -236,10 +242,14 @@ export default class BattleUnit {
         };
       }
 
-      // Unit is just idling on the field(f.e. stone?) [I guess thats not okay here. Rewise plx]
-      // this actually works as lifecycle delay for neuthral units and those who dont have anything to do
-      // its very performance hungry and has to be rewored.
-      return {};
+      /**
+       * Unit is just idling on the field(f.e. stone?)
+       * this actually works as lifecycle delay for neuthral units and those who dont have anything to do
+       * its very performance hungry and may be a threat.
+       * If unit is actually stuck or somehow bypassed 'isPassive' property, then this gonna ruin battle generation
+       * [P1] should be rewised
+       */
+      yield { delay: 0 };
     }
 
     return {};
