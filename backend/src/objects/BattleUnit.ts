@@ -227,10 +227,10 @@ export default class BattleUnit {
       }
 
       const distanceToTarget = Pathfinder.getDistanceBetweenUnits(this, targetUnit);
-      if (this.attackRange && distanceToTarget < this.attackRange) {
+      if (this.attackRange && distanceToTarget < this.attackRange && this?.attack?.speed) {
         const { actions, actors } = this.doAttack(targetUnit, battleContext);
         yield {
-          delay: actions[0].payload.duration, // [TODO] check if thats fine to have this delay after attack?
+          delay: this.attack.speed,
           actions,
           actors
         };
@@ -238,7 +238,7 @@ export default class BattleUnit {
         const step = pathfinder.findStepToTarget(this, targetUnit);
         yield {
           delay: this.stepDuration,
-          actions: this.move(step)
+          actions: this.doMove(step)
         };
       }
 
@@ -249,6 +249,7 @@ export default class BattleUnit {
        * If unit is actually stuck or somehow bypassed 'isPassive' property, then this gonna ruin battle generation
        * [P1] should be rewised
        */
+      console.log(`${this.name} has nothing to do`) // FIXME
       yield { delay: 0 };
     }
 
@@ -278,7 +279,7 @@ export default class BattleUnit {
     return this.walkingSpeed;
   }
 
-  move(step: Position): [MoveAction] {
+  doMove(step: Position): [MoveAction] {
     this.previousStep = step;
 
     const from = this.position;
@@ -341,7 +342,6 @@ export default class BattleUnit {
   }
 
   doAttack(targetUnit: BattleUnit, battleContext: BattleContext): { actions: [AttackAction]; actors: Actor[] } {
-    // this.actionLockTimestamp = this.currentTimestamp + 100;
     const from = this.position;
     const to = targetUnit.position;
     const multiplier = 1 - (0.052 * targetUnit.armor) / (0.9 + 0.048 * targetUnit.armor);
