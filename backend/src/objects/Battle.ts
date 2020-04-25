@@ -1,11 +1,11 @@
 import Pathfinder from './Pathfinder';
 import shuffle from 'lodash/shuffle';
-import cloneDeep from 'lodash/cloneDeep';
 import Actor from './Actor';
 import TargetPairPool from './TargetPairPool';
 import BattleUnit from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
+import _ from 'lodash';
 
 export interface BattleContext {
   currentTimestamp: number;
@@ -33,45 +33,64 @@ export interface UnitAction {
 
 export default class Battle {
   public startBoard: Object;
-  public winner: string;
+  public winner = TEAM.NONE;
   public readonly actionStack: UnitAction[];
-  public firstTeamOwner: string;
-  public secondTeamOwner: string;
   private readonly pathfinder: Pathfinder;
   private units: BattleUnit[];
   private readonly actorQueue: Actor[];
   private readonly targetPairPool: TargetPairPool;
   private currentTimestamp: number;
-  private isOver: boolean;
+  private isOver = false;
   private actionGeneratorInstance: Generator;
-  private battleTimeEndTime: number; // timeout for battle to be finished
+  private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
-  constructor({ board, gridWidth = 8, gridHeight = 8 }) {
-    this.startBoard = cloneDeep(board);
-    this.winner = TEAM.NONE;
-    this.firstTeamOwner = board[Symbol.for('_firstOwner')];
-    this.secondTeamOwner = board[Symbol.for('_secondOwner')];
+  constructor(...unitBoards) {
+    this.startBoard = {};
+    this.startBoard[Symbol.for('owners')] = {};
 
-    this.isOver = false;
-    this.battleTimeEndTime = 300 * 1000;
+    unitBoards.forEach((board, teamId) => {
+      if (board.owner) {
+        this.startBoard[Symbol.for('owners')][teamId] = board.owner;
+      }
+
+      board.units.forEach(unitConfig => {
+        const battleUnit = new BattleUnit({
+          name: unitConfig.name,
+          position: {
+            x: unitConfig.x,
+            y: unitConfig.y
+          },
+          teamId
+        });
+
+        this.startBoard[battleUnit.id] = battleUnit;
+      });
+    })
 
     this.currentTimestamp = 0;
     this.actionStack = [];
     this.targetPairPool = new TargetPairPool();
-    this.units = shuffle(Object.keys(board).map(key => board[key]));
+
+    /**
+     * Actually object with units to calculate battle
+     * clone is needed here in order to remove symlinks to our startBoard battle units and they can be passed normally
+     */
+    this.units = _.cloneDeep(shuffle(Object.keys(this.startBoard).map(key => this.startBoard[key])));
+
     this.actorQueue = this.units.map(
       unit =>
         new Actor({
           id: unit.id,
-          actionGenerator: unit.actionGenerator(),
+          actionGenerator: unit.unitLifeCycleGenerator(),
           timestamp: 0
         }) // adding first run of actionGenerator for every unit in order to spawn
     );
-    this.pathfinder = new Pathfinder({ gridWidth, gridHeight });
-    this.units.forEach(unit => this.pathfinder.occupiedTileSet.add(`${unit.x},${unit.y}`));
+
+    this.pathfinder = new Pathfinder();
+    this.units.forEach(unit => this.pathfinder.taken(unit.position));
 
     this.actionGeneratorInstance = this.generateActions();
-    this.consumeActionGenerator();
+    this.proceedBattle(); // this is sync call. We can consider using node 10+ and async generators here
   }
 
   get context(): BattleContext {
@@ -92,7 +111,7 @@ export default class Battle {
     }
   }
 
-  consumeActionGenerator() {
+  proceedBattle() {
     while (!this.actionGeneratorInstance.next().done) {
       // action was generated already, so we dont need to execute another next() here
     }
@@ -122,18 +141,18 @@ export default class Battle {
 
         // processed action spawned actors to be placed into queue
         if (value.actors) {
-          for (const actor of value.actors) {
-            this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor);
+          for (const sideActor of value.actors) {
+            this.actorQueue.splice(this.findInsertionIndex(sideActor.timestamp), 0, sideActor);
           }
         }
 
-        delay = value.delay || 0;
+        delay = value.actionDelay || 0;
         if (delay) break;
       }
 
       if (!fullyDone) {
         actor.timestamp = this.currentTimestamp + delay;
-        this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor);
+        this.actorQueue.splice(this.findInsertionIndex(actor.timestamp), 0, actor); // maybe binary heap will be better solution to this
       }
 
       yield true;
@@ -164,8 +183,8 @@ export default class Battle {
     switch (action.type) {
       case ACTION_TYPE.MOVE:
         const { from, to } = action.payload;
-        this.pathfinder.occupiedTileSet.delete(`${from.x},${from.y}`);
-        this.pathfinder.occupiedTileSet.add(`${to.x},${to.y}`);
+        this.pathfinder.free(from);
+        this.pathfinder.taken(to);
         this.addToActionStack(action, ACTION.MOVE);
         break;
       case ACTION_TYPE.ATTACK:
@@ -182,7 +201,7 @@ export default class Battle {
         break;
       case ACTION_TYPE.DEATH:
         const { unit } = action.payload;
-        this.pathfinder.occupiedTileSet.delete(`${unit.x},${unit.y}`);
+        this.pathfinder.free(unit.position);
         this.targetPairPool.removeByUnitId(unit.id);
         this.updateUnits();
         this.addToActionStack(action, ACTION.DEATH);
@@ -224,7 +243,9 @@ export default class Battle {
     const bTeamUnits = this.unitsFromTeam(TEAM.B);
 
     if (!aTeamUnits.length || !bTeamUnits.length) {
-      this.winner = aTeamUnits.length ? this.firstTeamOwner : this.secondTeamOwner;
+      this.winner = aTeamUnits.length ? this.startBoard[Symbol.for('owners')][0] : this.startBoard[Symbol.for('owners')][1]; // todo support for more board owners?
+    } else {
+      this.winner = '';
     }
   }
 }

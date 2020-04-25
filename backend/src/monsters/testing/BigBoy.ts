@@ -1,7 +1,7 @@
-import Monster from '../abstract/Monster';
-import BattleUnit from '../objects/BattleUnit';
-import { BattleContext } from '../objects/Battle';
-import { RescheduleActorAction, ACTION_TYPE, Action } from '../objects/Action';
+import Monster from '../../abstract/Monster';
+import BattleUnit from '../../objects/BattleUnit';
+import { BattleContext } from '../../objects/Battle';
+import { RescheduleActorAction, ACTION_TYPE, Action } from '../../objects/Action';
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
@@ -28,7 +28,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
     }
     yield { actions };
     while (ticks > counter++) {
-      yield { delay: tickDelay, actions: unit.healthChange(tickValue) };
+      yield { actionDelay: tickDelay, actions: unit.healthChange(tickValue) };
     }
   })();
 }
@@ -44,12 +44,12 @@ function BigBoy() {
     cost: 1,
     lookType: 25,
     health: {
-      max: 3550
+      max: 1700
     },
     mana: {
       regen: 10
     },
-    speed: 1000,
+    walkingSpeed: 1000,
     spell
   });
 }

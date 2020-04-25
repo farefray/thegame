@@ -1,5 +1,4 @@
 /* global describe, it */
-import createBattleBoard from '../src/utils/createBattleBoard.ts';
 import BattleController from '../src/controllers/BattleController';
 
 import Position from '../../frontend/src/shared/Position';
@@ -7,10 +6,11 @@ import Position from '../../frontend/src/shared/Position';
 const should = require('should');
 const rewire = require('rewire');
 
-describe.only('Battle logic tests', () => {
-  it('Closest target being selected', async () => {
-    const battleBoard = createBattleBoard(
-      {
+describe('Battle logic tests', () => {
+  it('Can handle battle and closest target being selected', async () => {
+
+    const battleResult = await BattleController.setupBattle({
+      boards: [{
         owner: 'first_player',
         units: [
           {
@@ -69,10 +69,8 @@ describe.only('Battle logic tests', () => {
             y: 4
           }
         ]
-      }
-    );
-    
-    const battleResult = await BattleController.setupBattle(battleBoard);  // assuming all units are melee
+      }]
+    });  // assuming all units are melee
     battleResult.should.be.ok();
 
     // supposed that first action in such case will be melee attack, not a move
@@ -87,6 +85,106 @@ describe.only('Battle logic tests', () => {
 
       const distanceToTarget = Math.max(Math.abs(from.x - to.x), Math.abs(from.y - to.y));
       distanceToTarget.should.be.equal(1);
+    })
+  });
+
+  it('Can handle battle with neutral "stone" unit', async () => {
+    const battle = await BattleController.setupBattle({ boards: [
+      {
+        owner: 'first_player',
+        units: [
+          {
+            name: 'dwarf',
+            x: 4,
+            y: 3
+          }
+        ]
+      },
+      {
+        owner: 'second_player',
+        units: [
+          {
+            name: 'minotaur',
+            x: 4,
+            y: 5
+          }
+        ]
+      },
+      {
+        units: [
+          {
+            name: 'stone',
+            x: 4,
+            y: 4
+          }
+        ]
+      }
+    ]});
+
+    battle.should.be.ok();
+    battle.actionStack.should.be.an.Array();
+    battle.actionStack.length.should.be.above(0);
+    battle.actionStack.length.should.be.below(40);
+
+    // we should detect that no moves was done into stone
+    const moveActions = battle.actionStack.filter((a) => a.type === 'move');
+    moveActions.length.should.be.equal(3);
+    moveActions.forEach((action) => {
+      action.type.should.be.equal('move');
+      action.payload.to.should.not.deepEqual({
+        x: 4,
+        y: 4
+      });
+    })
+  });
+
+  it('Can handle battle with neutral "target" unit', async () => {
+    const battle = await BattleController.setupBattle({ boards: [
+      {
+        owner: 'first_player',
+        units: [
+          {
+            name: 'dwarf',
+            x: 4,
+            y: 3
+          }
+        ]
+      },
+      {
+        owner: 'second_player',
+        units: [
+          {
+            name: 'minotaur',
+            x: 4,
+            y: 5
+          }
+        ]
+      },
+      {
+        units: [
+          {
+            name: 'target_melee',
+            x: 4,
+            y: 4
+          }
+        ]
+      }
+    ]});
+
+    battle.should.be.ok();
+    battle.actionStack.should.be.an.Array();
+    battle.actionStack.length.should.be.above(0);
+    battle.actionStack.length.should.be.below(100);
+
+    // we should detect that no moves was done into stone
+    const attackActions = battle.actionStack.filter((a) => a.type === 'attack').splice(2, 2);
+    attackActions.forEach((action) => {
+      action.type.should.be.equal('attack');
+
+      // checking that first actions will be into target unit
+      let { to } = action.payload;
+      (to.x).should.be.equal(4);
+      (to.y).should.be.equal(4);
     })
   });
 });

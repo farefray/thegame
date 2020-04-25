@@ -12,15 +12,19 @@ interface MonsterInterface {
     max?: number,
     regen?: number
   },
-  attack: {
+  attack?: {
     value: number,
     range: number,
     speed: number,
     particleID?: string,
   }
   armor?: number,
-  speed?: number,
-  spell?: Function
+  walkingSpeed?: number,
+  spell?: Function,
+  specialty?: {
+    targetable?: boolean, // can be taken as a target by other units
+    passive?: boolean, // ignores lifecycle loop targeting/moving actions
+  }
 }
 
 export default function Monster(monsterConfig: MonsterInterface): MonsterInterface {
@@ -35,7 +39,7 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
     speed: 1000
   };
 
-  monsterDefaults.speed = 1000;
+  monsterDefaults.walkingSpeed = 1000;
   monsterDefaults.mana = {
     max: 100,
     regen: 0
@@ -44,6 +48,12 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
   monsterDefaults.health = {
     max: 100,
     now: 100
+  };
+
+  monsterDefaults.attack = {
+    value: 0,
+    range: 0,
+    speed: 0
   };
 
   return _.merge({}, monsterDefaults, monsterConfig);

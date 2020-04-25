@@ -16,10 +16,17 @@ import Beholder from './beholders/Beholder';
 import Baby_Beholder from './beholders/Baby Beholder';
 import Elder_Beholder from './beholders/Elder Beholder';
 
-import BigBoy from './BigBoy.ts';
+import Stone from './neutrals/Stone';
+import Target_Melee from './neutrals/Target Melee';
+import Target_Ranged from './neutrals/Target Ranged';
+
+import BigBoy from './testing/BigBoy.ts';
 
 export default {
+  // testing purposes
   BigBoy,
+
+  // real
   Dwarf,
   Dwarf_Geomancer,
   Dwarf_Guard,
@@ -33,5 +40,10 @@ export default {
   Minotaur_Mage,
   Beholder,
   Baby_Beholder,
-  Elder_Beholder
+  Elder_Beholder,
+
+  // neutrals
+  Stone,
+  Target_Melee,
+  Target_Ranged,
 };

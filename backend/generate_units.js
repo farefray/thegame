@@ -1,3 +1,7 @@
+/**
+ * Utility script to generate units stats from google spreadsheet:
+ * @url https://docs.google.com/spreadsheets/d/1iJL-p0L21tXqeKM4ham-vvbXrNiK7aWDEIMgM_fJzAo/edit?ouid=110277767471714269610&usp=sheets_home&ths=true
+ */
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
@@ -93,7 +97,7 @@ function generateUnits(auth) {
             health: {
               max: +row[9]
             },
-            speed: +row[10]
+            walkingSpeed: +row[10]
           };
 
           fs.writeFileSync(path, JSON.stringify(unitData, null, 4));

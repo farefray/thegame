@@ -23,9 +23,9 @@ class BattleController {
         try {
           if (!uidMap[action.parent]) {
             // TODO avoid such issues
-            throw new Error('Stack optimization failed'); 
+            throw new Error('Stack optimization failed');
           }
-  
+
           uidMap[action.parent].chainedAction = action;
         } catch (e) {
           // in case error happened, we remove parent reference (this is very bad, we need to fix this)
@@ -34,32 +34,38 @@ class BattleController {
         }
       }
     })
-    
+
     let filteredActions = actionStack.filter(action => {
       return !action.parent;
     });
 
-    return filteredActions.sort((a, b) => ((a.time > b.time) ? 1 : -1) );
+    return filteredActions.sort((a, b) => ((a.time > b.time) ? 1 : -1));
   }
 
-  static async setupBattle(battleBoard: Object): Promise<BattleResult> {
+  static async setupBattle(battleConfig): Promise<BattleResult> {
     // TODO: Future: All battles calculate concurrently, structurize this object maybe
     // todo battle bonuses and so on here
     // Both players have units, battle required
     // todo async maybe and some good syntax
-    const _battleResult = new Battle({ board: battleBoard });
-    const { actionStack, startBoard, winner } = _battleResult;
+    // performance.mark('battle_calc__start');
+    const battle = new Battle(...battleConfig.boards);
+    const { actionStack, startBoard, winner } = battle;
 
     const optimizedActionStack = BattleController.optimizeActionStack(actionStack);
     const lastAction = actionStack[actionStack.length - 1];
-    const battleResult: BattleResult = {
+    const returnValue: BattleResult = {
       actionStack: optimizedActionStack,
       startBoard: startBoard,
       winner: winner,
       battleTime: lastAction ? lastAction.time : 0
     };
 
-    return battleResult;
+    // performance.mark('battle_calc__done');
+    // performance.measure("Time to calculate battle", 'battle_calc__start', 'battle_calc__done');
+    // console.log(performance.getEntriesByType("measure")[0].name, performance.getEntriesByType("measure")[0].duration);
+    // performance.clearMarks();
+    // performance.clearMeasures();
+    return returnValue;
   }
 }
 
