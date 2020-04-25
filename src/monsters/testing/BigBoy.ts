@@ -28,7 +28,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
     }
     yield { actions };
     while (ticks > counter++) {
-      yield { delay: tickDelay, actions: unit.healthChange(tickValue) };
+      yield { actionDelay: tickDelay, actions: unit.healthChange(tickValue) };
     }
   })();
 }

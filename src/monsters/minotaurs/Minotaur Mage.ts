@@ -30,7 +30,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
   const damageDealt = -75;
   return (function*() {
     yield { actions: unit.manaChange(-manaCost) };
-    yield { delay: 0, actors: [
+    yield { actionDelay: 0, actors: [
         new Actor({
           timestamp: battleContext.currentTimestamp,
           actionGenerator: (function*() {
@@ -40,7 +40,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
                   effect: { id: 'thunderstorm' }
                 })
               }
-            
+
               if(affectedUnits.length > 1) {
                 for (let index = 1; index < affectedUnits.length; index++) {
                   yield {

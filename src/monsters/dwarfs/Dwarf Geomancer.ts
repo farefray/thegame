@@ -15,7 +15,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
     let counter = 0;
     yield { actions: unit.manaChange(-manaCost) }; // todo fix manacost for this spell
     while (ticks > counter++) {
-      yield { delay: tickDelay, actions: target.healthChange(tickValue, {
+      yield { actionDelay: tickDelay, actions: target.healthChange(tickValue, {
         effect: { id: 'green_sparkles' }
       }) };
     }

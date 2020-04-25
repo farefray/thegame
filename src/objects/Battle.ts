@@ -146,7 +146,7 @@ export default class Battle {
           }
         }
 
-        delay = value.delay || 0;
+        delay = value.actionDelay || 0;
         if (delay) break;
       }
 

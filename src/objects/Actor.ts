@@ -2,7 +2,7 @@ import { Action } from './Action';
 import { BattleContext } from './Battle';
 
 export interface ActionGeneratorValue {
-  delay?: number;
+  actionDelay?: number;
   actions?: Action[];
   actors?: Actor[];
 }

@@ -194,13 +194,13 @@ export default class BattleUnit {
     const { currentTimestamp } = battleContext;
     const actor = new Actor({ timestamp: currentTimestamp, actionGenerator: spellGenerator });
     return {
-      delay: 1000, // [TODO] check if thats fine to have 1s delay after spellcast
+      actionDelay: 1000, // [TODO] check if thats fine to have 1s delay after spellcast
       actors: [actor]
     };
   }
 
   *unitLifeCycleGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    yield { delay: STARTING_DELAY, actions: this.spawn() };
+    yield { actionDelay: STARTING_DELAY, actions: this.spawn() };
     yield { actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: STARTING_DELAY })] };
 
     while (this.isAlive) {
@@ -222,7 +222,7 @@ export default class BattleUnit {
 
       if (!targetUnit) {
         // Unit has no target to attack, try again in next tick with delay
-        yield { delay: 1000 };
+        yield { actionDelay: 1000 };
         continue;
       }
 
@@ -230,14 +230,14 @@ export default class BattleUnit {
       if (this.attackRange && distanceToTarget < this.attackRange && this?.attack?.speed) {
         const { actions, actors } = this.doAttack(targetUnit, battleContext);
         yield {
-          delay: this.attack.speed,
+          actionDelay: this.attack.speed,
           actions,
           actors
         };
       } else if (this.canMove) {
         const step = pathfinder.findStepToTarget(this, targetUnit);
         yield {
-          delay: this.stepDuration,
+          actionDelay: this.stepDuration,
           actions: this.doMove(step)
         };
       }
@@ -249,8 +249,7 @@ export default class BattleUnit {
        * If unit is actually stuck or somehow bypassed 'isPassive' property, then this gonna ruin battle generation
        * [P1] should be rewised
        */
-      console.log(`${this.name} has nothing to do`) // FIXME
-      yield { delay: 0 };
+      yield { actionDelay: 0 };
     }
 
     return {};
@@ -258,7 +257,7 @@ export default class BattleUnit {
 
   *regeneration(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
     while (this.isAlive && this.maxMana > 0 && this.mana !== this.maxMana) {
-      yield { delay: 1000, actions: this.manaChange(this.manaRegen) };
+      yield { actionDelay: 1000, actions: this.manaChange(this.manaRegen) };
     }
 
     return {};
