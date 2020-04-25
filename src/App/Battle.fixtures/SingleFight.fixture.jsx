@@ -23,6 +23,11 @@ const defaultBoard = [{
       name: 'stone',
       x: 5,
       y: 6
+    },
+    {
+      name: 'target_melee',
+      x: 5,
+      y: 5
     }
   ]
 }];
