@@ -20,14 +20,9 @@ const defaultBoard = [{
       y: 7
     },
     {
-      name: 'minotaur',
+      name: 'elder_beholder',
       x: 5,
       y: 6
-    },
-    {
-      name: 'minotaur',
-      x: 5,
-      y: 5
     }
   ]
 }];

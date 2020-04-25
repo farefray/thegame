@@ -8,7 +8,7 @@ export default function Stone() {
     health: {
       max: 100
     },
-    speed: 0,
+    walkingSpeed: 0,
     specialty: {
       targetable: false
     }

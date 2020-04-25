@@ -49,7 +49,7 @@ function BigBoy() {
     mana: {
       regen: 10
     },
-    speed: 1000,
+    walkingSpeed: 1000,
     spell
   });
 }

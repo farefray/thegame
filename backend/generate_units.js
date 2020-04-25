@@ -97,7 +97,7 @@ function generateUnits(auth) {
             health: {
               max: +row[9]
             },
-            speed: +row[10]
+            walkingSpeed: +row[10]
           };
 
           fs.writeFileSync(path, JSON.stringify(unitData, null, 4));

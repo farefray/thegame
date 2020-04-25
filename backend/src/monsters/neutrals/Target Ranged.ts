@@ -8,6 +8,6 @@ export default function Target_Melee() {
     health: {
       max: 1700
     },
-    speed: 0
+    walkingSpeed: 0
   });
 };

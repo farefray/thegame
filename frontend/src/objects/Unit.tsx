@@ -89,11 +89,11 @@ export default class Unit extends React.Component<IProps, IState> {
           }));
         });
       }
-  
+
       switch (action.type) {
         case ACTION.MOVE: {
           if (payload.to) {
-            this.move(payload.to.x, payload.to.y, () => resolve(action));
+            this.move(payload, () => resolve(action));
           }
           break;
         }
@@ -170,24 +170,17 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   // todo options is not used? investigate
-  move(x, y, callback, options: MoveOptions = {}) {
-    if (!x) {
-      x = this.state.x;
-    }
-    if (!y) {
-      y = this.state.y;
-    }
-
-    const { top, left } = this.getPositionFromCoordinates(x, y);
-    const { unit } = this.props;
+  move(stepPayload, callback, options: MoveOptions = {}) {
+    const { to, stepDuration } = stepPayload;
+    const { top, left } = this.getPositionFromCoordinates(to.x, to.y);
 
     this.setState({
-      x,
-      y,
+      x: to.x,
+      y: to.y,
       top,
       left,
-      transition: !options.instant ? `transform ${unit.actionDelay / 1000}s linear` : 'auto',
-      direction: options.direction || this.getDirectionToTarget(x, y),
+      transition: !options.instant ? `transform ${stepDuration}ms linear` : 'auto',
+      direction: options.direction || this.getDirectionToTarget(to.x, to.y),
       isMoving: !options.instant ? true : false
     }, () => callback());
   }
