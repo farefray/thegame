@@ -12,7 +12,7 @@ export default class Player {
   public gold: number = 1;
   public shopUnits: Object;
   public hand: Object;
-  public board: Object;
+  public board: Object; // this must be an array in order to work in socketcontroller
 
   constructor (id: string) {
     this.index = id;

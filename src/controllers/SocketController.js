@@ -200,7 +200,7 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
         units: playerBoard
       },
       {
-        owner: '',
+        owner: 'AI',
         units: Ai.battleBoard
       }
     ]});
