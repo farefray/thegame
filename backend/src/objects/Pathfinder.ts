@@ -37,7 +37,7 @@ class Node {
 
 export default class Pathfinder {
   private _occupiedTileSet = new Set();
-  private dirtyNodes = [];
+  private dirtyNodes: Array<Node>;
   private gridWidth: number;
   private gridHeight: number;
   private grid;
@@ -55,6 +55,7 @@ export default class Pathfinder {
     }
 
     this.grid = grid;
+    this.dirtyNodes = [];
   }
 
   /**
@@ -100,7 +101,7 @@ export default class Pathfinder {
     this.cleanDirty();
 
     const openHeap = getHeap();
-    const startNode = this.grid[unit.x][unit.y];
+    const startNode:Node = this.grid[unit.x][unit.y];
     let closestNode = startNode;  // set the start node to be the closest if required
 
     closestNode.h = heuristic(startNode, target);
@@ -113,7 +114,7 @@ export default class Pathfinder {
       var currentNode = openHeap.pop();
 
       // End case -- result has been found, return the traced path
-      if (this.constructor.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) {
+      if (Pathfinder.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) {
         // return pathTo(currentNode); ??
         let node = currentNode;
         const stepArray: Array<any> = [];
