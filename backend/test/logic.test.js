@@ -7,7 +7,7 @@ const should = require('should');
 const rewire = require('rewire');
 
 describe('Battle logic tests', () => {
-  it('Closest target being selected', async () => {
+  it('Can handle battle and closest target being selected', async () => {
 
     const battleResult = await BattleController.setupBattle({
       boards: [{

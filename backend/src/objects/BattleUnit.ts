@@ -197,7 +197,7 @@ export default class BattleUnit {
     };
   }
 
-  *actionGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
+  *unitLifeCycleGenerator(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
     yield { delay: STARTING_DELAY, actions: this.spawn() };
     yield { actors: [new Actor({ actionGenerator: this.regeneration(), timestamp: STARTING_DELAY })] };
 
@@ -237,7 +237,9 @@ export default class BattleUnit {
       }
 
       // Unit is just idling on the field(f.e. stone?) [I guess thats not okay here. Rewise plx]
-      yield { delay: 100 };
+      // this actually works as lifecycle delay for neuthral units and those who dont have anything to do
+      // its very performance hungry and has to be rewored.
+      return {};
     }
 
     return {};

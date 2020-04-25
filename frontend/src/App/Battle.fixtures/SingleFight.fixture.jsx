@@ -20,7 +20,7 @@ const defaultBoard = [{
       y: 7
     },
     {
-      name: 'elder_beholder',
+      name: 'stone',
       x: 5,
       y: 6
     }
