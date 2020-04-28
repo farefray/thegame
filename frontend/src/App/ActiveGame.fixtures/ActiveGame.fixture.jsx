@@ -24,7 +24,7 @@ const getCircularReplacer = () => {
 const PLAYER_INDEX = -1;
 
 const generateGameState = async function() {
-  let state = await GameController.initializeState([PLAYER_INDEX]);
+  let state = new State([PLAYER_INDEX]);
   state = await GameController.purchasePawn(state, PLAYER_INDEX, 0);
   return JSON.parse(JSON.stringify(state, getCircularReplacer()));
 };

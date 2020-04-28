@@ -1,8 +1,8 @@
 import BattleController from './BattleController';
 import BoardController from './BoardController';
-import ShopController from './ShopController';
 import GameController from './GameController';
 import AppError from '../objects/AppError';
+import State from '../objects/State';
 
 const Customer = require('../objects/Customer');
 const Session = require('../objects/Session');
@@ -139,9 +139,9 @@ function SocketController(socket, io) {
   return this;
 }
 
-
+// move this somewhere ;)
 SocketController.prototype.initializeGameSessions = async function (clients) {
-  const state = await GameController.initializeState(clients);
+  const state = new State(clients);
   const session = new Session(state);
   const sessionID = session.get('ID');
   sessionsStore.store(session);
@@ -176,13 +176,13 @@ SocketController.prototype.round = async function (sessionID) {
     return sessionsStore.destroy(sessionID);
   }
 
-  const preBattleState = session.get('state');
+  const state = session.get('state');
 
   // Count battles for all players, then send those battles
   let countdown = Number.MIN_VALUE;
   const playersBattleResults = [];
-  for (let uid in preBattleState.get('players')) {
-    const player = preBattleState.getIn(['players', uid]);
+  for (let uid in state.get('players')) {
+    const player = state.getIn(['players', uid]);
     await player.preBattleCheck();
 
     const playerBoard = player.get('board');
@@ -212,14 +212,14 @@ SocketController.prototype.round = async function (sessionID) {
   }
 
   countdown += ADDITIONAL_ROUND_TIME;
-  for (let uid in preBattleState.get('players')) {
+  for (let uid in state.get('players')) {
     playersBattleResults[uid].countdown = countdown; // all players have the battle length of the longest battle
     this.io.to(`${uid}`).emit('START_BATTLE', playersBattleResults[uid]);
   }
 
   await state.roundEnd(playersBattleResults, countdown);
 
-  ShopController.mutateStateByShopRefreshing(state);
+  state.refreshShopForPlayers();
   this.io.to(sessionID).emit('UPDATED_STATE', state);
 
   await state.scheduleNextRound();
