@@ -3,7 +3,6 @@ import BoardController from './BoardController';
 import ShopController from './ShopController';
 import GameController from './GameController';
 import AppError from '../objects/AppError';
-import AiPlayer from '../models/AiPlayer';
 
 const Customer = require('../objects/Customer');
 const Session = require('../objects/Session');
@@ -140,9 +139,10 @@ function SocketController(socket, io) {
   return this;
 }
 
+
 SocketController.prototype.initializeGameSessions = async function (clients) {
-  const state = await GameController.initialize(clients);
-  const session = new Session(clients, state);
+  const state = await GameController.initializeState(clients);
+  const session = new Session(state);
   const sessionID = session.get('ID');
   sessionsStore.store(session);
 
@@ -155,19 +155,19 @@ SocketController.prototype.initializeGameSessions = async function (clients) {
     this.socket.join(sessionID, () => {
       const rooms = Object.keys(this.socket.rooms);
       // console.log(rooms); // [ <socket.id>, 'room 237' ]
-      this.io.to(sessionID).emit('UPDATED_STATE', state); // todo get rid of asNetwork
+      this.io.to(sessionID).emit('UPDATED_STATE', state);
     });
   });
 
   await state.scheduleNextRound();
 
-  this.round(state, clients, sessionID);
+  this.round(state, sessionID);
 };
 
 /**
- * @todo this maybe should be moved to gamecontroller
+ * @todo [P1] this maybe should be moved to gamecontroller
  */
-SocketController.prototype.round = async function (state, clients, sessionID) {
+SocketController.prototype.round = async function (state, sessionID) {
   // do we need to update our session from storage?? TODO Test
   const session = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMETIMES (P1)
   if (!session) {
@@ -189,8 +189,6 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
 
     // todo update state for players?
 
-    // todo PVP, create pairs
-    const Ai = new AiPlayer(preBattleState.round);
     // Check to see if a battle is required
     // Lose when empty, even if enemy no units aswell (tie with no damage taken)
 
@@ -225,7 +223,7 @@ SocketController.prototype.round = async function (state, clients, sessionID) {
 
   await state.scheduleNextRound();
 
-  this.round(state, clients, sessionID);
+  this.round(state, sessionID);
 };
 
 export default SocketController;

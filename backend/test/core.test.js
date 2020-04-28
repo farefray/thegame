@@ -58,16 +58,18 @@ describe('Core Modules', () => {
     let session = null;
 
     it('Can initialize game', async () => {
-      gameState = await GameController.initialize(MOCK_CLIENTS);
+      gameState = await GameController.initializeState(MOCK_CLIENTS);
       gameState.should.be.an.Object();
+      gameState.should.have.property('clients');
       gameState.should.have.property('players');
       gameState.players[MOCK_SOCKETID_1].index.should.be.equal(MOCK_SOCKETID_1);
     });
 
     it('Can create session', () => {
-      session = new Session(MOCK_CLIENTS, gameState);
+      session = new Session(gameState);
       session.should.have.property('ID');
-      session.clients.length.should.be.equal(MOCK_CLIENTS.length);
+      // it may add AI players to session
+      session.clients.length.should.be.equal((MOCK_CLIENTS.length % 2) ? MOCK_CLIENTS.length + 1 : MOCK_CLIENTS.length);
     });
 
     it('Can store and retrieve session', () => {
@@ -162,10 +164,10 @@ describe('Core Modules', () => {
       ];
       const npcBoard = [];
 
-      battle = new Battle({ units: playerBoard }, { units: npcBoard });
+      battle = new Battle({ units: playerBoard, owner: 'TEAM_A' }, { units: npcBoard, owner: 'TEAM_B' });
       battle.should.be.ok();
       should.exist(battle.winner);
-      battle.winner.should.equal(TEAM.A);
+      battle.winner.should.equal('TEAM_A');
     });
   });
 });
