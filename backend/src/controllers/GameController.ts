@@ -1,4 +1,4 @@
-import Player from '../objects/Player.ts';
+import Player from '../objects/Player';
 import ShopController from './ShopController';
 import State from '../objects/State';
 import AppError from '../objects/AppError';
