@@ -1,17 +1,22 @@
 import { promisify } from 'util'
 import MutableObject from '../abstract/MutableObject';
 import { BattleResult } from '../objects/Battle';
+import Player from './Player';
+import AiPlayer from '../models/AiPlayer';
+import Monsters from '../utils/Monsters';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../../../frontend/src/shared/constants.js');
 const MAX_ROUND_FOR_INCOME_INC = 5;
+const PLAYERS_MINIMUM = 2;
+const SHOP_UNITS = 4;
 
 export default class State extends MutableObject {
   public round: number;
   public incomeBase: number;
   public amountOfPlayers: number;
   public countdown: number;
-  public players: any;
+  public players = {};
   public clients: Array<String>;
 
   constructor(clients) {
@@ -22,11 +27,35 @@ export default class State extends MutableObject {
     this.incomeBase = 1;
     this.amountOfPlayers = clients.length;
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
-    this.players = {};
 
-    clients.forEach(player => {
-      this.players[player.index] = player;
+    const players: Array<Player|AiPlayer> = [];
+    // create players
+    clients.forEach(index => {
+      players.push(new Player(index));
     });
+
+    // we need to have pairs, so fill rest of spots as AI
+    while (players.length < PLAYERS_MINIMUM || players.length % 2 > 0) {
+      players.push(new AiPlayer(`ai_player_${players.length}`));
+    }
+
+    // this is dirty
+    for (let index = 0; index < players.length; index++) {
+      const playerEntity = players[index];
+      this.players[playerEntity.index] = playerEntity;
+    }
+
+    this.refreshShopForPlayers()
+  }
+
+  refreshShopForPlayers() {
+    for (const playerIndex in this.players) {
+      for (let i = 0; i <= SHOP_UNITS; i++) {
+        this.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit({
+          cost: this.get('round')
+        }));
+      }
+    }
   }
 
   endRound(playersBattleResults: Array<BattleResult>) {

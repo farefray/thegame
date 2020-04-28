@@ -1,8 +1,8 @@
 /* global describe, it */
-import Battle from '../src/objects/Battle.ts';
+import Battle from '../src/objects/Battle';
+import State from '../src/objects/State';
 import GameController from '../src/controllers/GameController';
 import BoardController from '../src/controllers/BoardController';
-import ShopController from '../src/controllers/ShopController';
 import AppError from '../src/objects/AppError';
 
 const should = require('should');
@@ -58,7 +58,7 @@ describe('Core Modules', () => {
     let session = null;
 
     it('Can initialize game', async () => {
-      gameState = await GameController.initializeState(MOCK_CLIENTS);
+      gameState = new State(MOCK_CLIENTS);
       gameState.should.be.an.Object();
       gameState.should.have.property('clients');
       gameState.should.have.property('players');
@@ -68,8 +68,7 @@ describe('Core Modules', () => {
     it('Can create session', () => {
       session = new Session(gameState);
       session.should.have.property('ID');
-      // it may add AI players to session
-      session.clients.length.should.be.equal((MOCK_CLIENTS.length % 2) ? MOCK_CLIENTS.length + 1 : MOCK_CLIENTS.length);
+      session.clients.length.should.be.equal(MOCK_CLIENTS.length);
     });
 
     it('Can store and retrieve session', () => {
@@ -89,7 +88,7 @@ describe('Core Modules', () => {
     });
 
     it('can refill shop', async () => {
-      ShopController.mutateStateByShopRefreshing(gameState, MOCK_SOCKETID_1);
+      gameState.refreshShopForPlayers();
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].shopUnits[0].should.be.an.Object();

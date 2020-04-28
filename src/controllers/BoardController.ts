@@ -1,7 +1,7 @@
 
 import Position from '../../../frontend/src/shared/Position';
 
-const BoardController = () => {
+const BoardController = function () {
   return this;
 };
 
