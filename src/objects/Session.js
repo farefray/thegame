@@ -1,9 +1,9 @@
 const uuidv1 = require('uuid/v1');
 
-function Session(clients, state) {
+function Session(state) {
   this.ID = uuidv1();
   this.state = state;
-  this.clients = clients; // was connectedPlayers, so handle this in case
+  this.clients = state.clients; // was connectedPlayers, so handle this in case
 
   this.players = {}; // ??
   return this;

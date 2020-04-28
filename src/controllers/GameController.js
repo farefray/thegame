@@ -2,6 +2,7 @@ import Player from '../objects/Player.ts';
 import ShopController from './ShopController';
 import State from '../objects/State';
 import AppError from '../objects/AppError';
+import AiPlayer from '../models/AiPlayer';
 
 const HAND_UNITS_LIMIT = 9;
 
@@ -52,11 +53,16 @@ GameController.purchasePawn = async (state, playerIndex, pieceIndex) => {
   return state;
 };
 
-GameController.initialize = async clients => {
+GameController.initializeState = async (clients, playersMinimum = 0) => {
   const playersArray = [];
   clients.forEach(client => {
     playersArray.push(new Player(client));
   });
+
+  // we need to have pairs, so fill rest of spots as AI
+  while (playersArray.length < playersMinimum || playersArray.length % 2 > 0) {
+    playersArray.push(new AiPlayer(`ai_player_${playersArray.length}`));
+  }
 
   const state = new State(playersArray);
   ShopController.mutateStateByShopRefreshing(state);

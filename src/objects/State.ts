@@ -12,30 +12,30 @@ export default class State extends MutableObject {
   public amountOfPlayers: number;
   public countdown: number;
   public players: any;
+  public clients: Array<String>;
 
-  constructor(playersArray) {
+  constructor(clients) {
     super();
 
+    this.clients = clients;
     this.round = 1;
     this.incomeBase = 1;
-    this.amountOfPlayers = playersArray.length;
+    this.amountOfPlayers = clients.length;
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
+    this.players = {};
 
-    const playersObject = {};
-    playersArray.forEach(player => {
-      playersObject[player.index] = player;
+    clients.forEach(player => {
+      this.players[player.index] = player;
     });
-
-    this.players = playersObject;
   }
 
   endRound(playersBattleResults: Array<BattleResult>) {
     if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
       this.incomeBase = this.incomeBase + 1;
     }
-  
+
     this.round = this.round + 1;
-  
+
     for (const uid in this.players) {
       const gold: number = this.getIn(['players', uid, 'gold']);
       const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
