@@ -161,17 +161,18 @@ SocketController.prototype.initializeGameSessions = async function (clients) {
 
   await state.scheduleNextRound();
 
-  this.round(state, sessionID);
+  this.round(sessionID);
 };
 
 /**
  * @todo [P1] this maybe should be moved to gamecontroller
  */
-SocketController.prototype.round = async function (state, sessionID) {
+SocketController.prototype.round = async function (sessionID) {
   // do we need to update our session from storage?? TODO Test
   const session = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMETIMES (P1)
   if (!session) {
     // user disconnected and no session exists
+    console.warn("Session is lost between rounds - " + sessionID);
     return sessionsStore.destroy(sessionID);
   }
 
@@ -223,7 +224,7 @@ SocketController.prototype.round = async function (state, sessionID) {
 
   await state.scheduleNextRound();
 
-  this.round(state, sessionID);
+  this.round(sessionID);
 };
 
 export default SocketController;
