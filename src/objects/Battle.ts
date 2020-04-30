@@ -59,7 +59,7 @@ export default class Battle {
         this.startBoard[Symbol.for('owners')][teamId] = board.owner;
       }
 
-      board.units.forEach(unitConfig => {
+      board.units.length && board.units.forEach(unitConfig => {
         const battleUnit = new BattleUnit({
           name: unitConfig.name,
           x: unitConfig.x,

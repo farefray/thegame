@@ -58,7 +58,7 @@ class BattleController {
       startBoard: startBoard,
       winner: winner,
       battleTime: lastAction ? lastAction.time : 0,
-      participants: startBoard[Symbol.for('owners')] // ?
+      participants: Object.values(startBoard[Symbol.for('owners')]) // ?
     };
 
     // performance.mark('battle_calc__done');

@@ -1,6 +1,5 @@
 import { promisify } from 'util'
 import MutableObject from '../abstract/MutableObject';
-import { BattleResult } from '../objects/Battle';
 import Player from './Player';
 import AiPlayer from '../models/AiPlayer';
 import Monsters from '../utils/Monsters';
@@ -17,7 +16,7 @@ export default class State extends MutableObject {
   public round: number;
   public incomeBase: number;
   public amountOfPlayers: number;
-  public countdown: number;
+  public countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
   public players = {};
   public clients: Array<String>;
 
@@ -98,7 +97,6 @@ export default class State extends MutableObject {
 
   async scheduleNextRound() {
     await sleep(this.countdown);
-    return true;
   }
 
   purchasePawn(playerIndex, pieceIndex): Boolean|AppError {
