@@ -46,7 +46,6 @@
     "nodemon": "^1.19.1",
     "npm": "^6.13.4",
     "prettier": "^1.18.2",
-    "reflect-metadata": "^0.1.13",
     "rewire": "^4.0.1",
     "socket.io": "^2.2.0",
     "typedi": "^0.8.0",
@@ -66,7 +65,6 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.0",
     "eslint-plugin-react": "^7.12.4",
-    "nyc": "^15.0.1",
     "should": "^13.2.3",
     "typescript": "^3.7.2"
   }
