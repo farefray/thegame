@@ -1,8 +1,8 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
-import GameService from '../src/controllers/GameService';
-import BoardController from '../src/controllers/BoardController';
+import GameService from '../src/services/GameService';
+import BoardController from '../src/services/BoardController';
 import AppError from '../src/objects/AppError';
 import Session from '../src/objects/Session';
 
@@ -82,7 +82,7 @@ describe('Core Modules', () => {
 
   describe('Game Mechanics', () => {
     it('can buy pawn', async () => {
-      gameState = await gameService.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
+      gameState.purchasePawn(MOCK_SOCKETID_1, 0);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
@@ -97,13 +97,13 @@ describe('Core Modules', () => {
 
     it('cannot buy pawn when no gold', async () => {
       gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
-      const state = await gameService.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
-      should(state).instanceOf(AppError);
+      const result = gameState.purchasePawn(MOCK_SOCKETID_1, 0);
+      should(result).instanceOf(AppError);
     });
 
     it('can buy second pawn pawn', async () => {
       gameState.players[MOCK_SOCKETID_1].gold = 1;
-      gameState = await gameService.purchasePawn(gameState, MOCK_SOCKETID_1, 1);
+      gameState.purchasePawn(MOCK_SOCKETID_1, 1);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
@@ -112,7 +112,7 @@ describe('Core Modules', () => {
     });
 
     it('can sell pawn', async () => {
-      gameState = await gameService.purchasePawn(gameState, MOCK_SOCKETID_2, 0);
+      gameState.purchasePawn(MOCK_SOCKETID_2, 0);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(0);
       await BoardController.mutateStateByPawnSelling(gameState, MOCK_SOCKETID_2, firstHandPosition);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(1);

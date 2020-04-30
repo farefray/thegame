@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import SocketController from './controllers/SocketController';
+import SocketController from './services/SocketController';
 
 const express = require('express');
 

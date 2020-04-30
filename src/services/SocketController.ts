@@ -107,13 +107,14 @@ function SocketController(socket, io) {
   socket.on('PURCHASE_UNIT', async pieceIndex => {
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
-    const stateResult = await gameService.purchasePawn(session.get('state'), socket.id, pieceIndex);
+    const state = session.getState();
+    const stateResult = state.purchasePawn(socket.id, pieceIndex);
     if (stateResult instanceof AppError) {
       io.to(`${socket.id}`).emit('NOTIFICATION', socket.id, stateResult);
       return;
     }
 
-    session.set('state', stateResult);
+    // todo check consistency
     sessionsStore.store(session);
 
     // todo some abstract sending with try catch, to not crash app every time it bugs :)

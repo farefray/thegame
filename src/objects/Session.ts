@@ -1,5 +1,5 @@
 import State from "./State";
-import BattleController from "../controllers/BattleController";
+import BattleController from "../services/BattleController";
 import { BattleBoard, BattleResult } from "./Battle";
 
 const uuidv1 = require('uuid/v1');
