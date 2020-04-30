@@ -1,20 +1,21 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
-import GameController from '../src/controllers/GameController';
+import GameService from '../src/controllers/GameService';
 import BoardController from '../src/controllers/BoardController';
 import AppError from '../src/objects/AppError';
+import Session from '../src/objects/Session';
 
 const should = require('should');
 const rewire = require('rewire');
 
-const ConnectedPlayers = rewire('../src/models/ConnectedPlayers.js');
-const SessionsStore = rewire('../src/models/SessionsStore.js');
+const ConnectedPlayers = rewire('../src/models/ConnectedPlayers');
+const SessionsStore = rewire('../src/models/SessionsStore');
 
-const Customer = rewire('../src/objects/Customer.js');
-const Session = rewire('../src/objects/Session.js');
+const Customer = rewire('../src/objects/Customer');
 
-const { TEAM } = rewire('../../frontend/src/shared/constants.js');
+const Container = require("typedi").Container;
+const gameService = GameService(Container);
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -66,13 +67,13 @@ describe('Core Modules', () => {
     });
 
     it('Can create session', () => {
-      session = new Session(gameState);
+      session = new Session(MOCK_CLIENTS);
       session.should.have.property('ID');
       session.clients.length.should.be.equal(MOCK_CLIENTS.length);
     });
 
     it('Can store and retrieve session', () => {
-      const sessID = session.get('ID');
+      const sessID = session.ID;
       sessionsStore.store(session);
       const savedSession = sessionsStore.get(sessID);
       savedSession.ID.should.equal(sessID);
@@ -81,7 +82,7 @@ describe('Core Modules', () => {
 
   describe('Game Mechanics', () => {
     it('can buy pawn', async () => {
-      gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
+      gameState = await gameService.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
@@ -96,13 +97,13 @@ describe('Core Modules', () => {
 
     it('cannot buy pawn when no gold', async () => {
       gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
-      const state = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
+      const state = await gameService.purchasePawn(gameState, MOCK_SOCKETID_1, 0);
       should(state).instanceOf(AppError);
     });
 
     it('can buy second pawn pawn', async () => {
       gameState.players[MOCK_SOCKETID_1].gold = 1;
-      gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_1, 1);
+      gameState = await gameService.purchasePawn(gameState, MOCK_SOCKETID_1, 1);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
@@ -111,7 +112,7 @@ describe('Core Modules', () => {
     });
 
     it('can sell pawn', async () => {
-      gameState = await GameController.purchasePawn(gameState, MOCK_SOCKETID_2, 0);
+      gameState = await gameService.purchasePawn(gameState, MOCK_SOCKETID_2, 0);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(0);
       await BoardController.mutateStateByPawnSelling(gameState, MOCK_SOCKETID_2, firstHandPosition);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(1);

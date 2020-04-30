@@ -28,16 +28,12 @@ const connectedPlayers = new ConnectedPlayers();
 
 
 function SocketController(socket, io) {
-  this.onConnection = () => {
-    socket.join('WAITING_ROOM'); // place new customers to waiting room
-  };
-
-  this.io = io;
-  this.socket = socket;
-
   Container.set("io", io);
+  const gameService = GameService(Container);
+  const sessionsStore = Container.get("session.store");
 
   socket.on('ON_CONNECTION', async () => {
+    socket.join('WAITING_ROOM'); // place new customers to waiting room
     connectedPlayers.set(socket.id, new Customer(socket.id));
     // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
   });
@@ -89,19 +85,18 @@ function SocketController(socket, io) {
       }
 
       // creating session
-      const gameService = GameService(Container);
       const session = gameService.initGameSession(clients);
       // Update players, to notify them that they are in game and countdown till round start
       clients.forEach(socketID => {
         connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers. Investigate if we still need this?
 
-        this.io.to(socketID).emit('INITIALIZE', socketID);
+        io.to(socketID).emit('INITIALIZE', socketID);
 
         // TODO
-        this.socket.join(session.ID, () => {
-          const rooms = Object.keys(this.socket.rooms);
-          // console.log(rooms); // [ <socket.id>, 'room 237' ]
-          this.io.to(session.ID).emit('UPDATED_STATE', session.getState()); // sending whole state isnt good?
+        socket.join(session.ID, () => {
+          const rooms = Object.keys(socket.rooms);
+          console.log(rooms); // [ <socket.id>, 'room 237' ]
+          io.to(session.ID).emit('UPDATED_STATE', session.getState()); // sending whole state isnt good?
         });
       });
 
@@ -112,7 +107,7 @@ function SocketController(socket, io) {
   socket.on('PURCHASE_UNIT', async pieceIndex => {
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
-    const stateResult = await GameController.purchasePawn(session.get('state'), socket.id, pieceIndex);
+    const stateResult = await gameService.purchasePawn(session.get('state'), socket.id, pieceIndex);
     if (stateResult instanceof AppError) {
       io.to(`${socket.id}`).emit('NOTIFICATION', socket.id, stateResult);
       return;
@@ -146,8 +141,6 @@ function SocketController(socket, io) {
     const playerState = state.getIn(['players', socket.id]);
     io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, playerState);
   });
-
-  return this;
 }
 
 

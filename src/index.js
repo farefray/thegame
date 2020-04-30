@@ -18,7 +18,4 @@ app.use(cors());
 
 router.all('*', cors());
 
-io.on('connection', socket => {
-  const socketController = new SocketController(socket, io);
-  socketController.onConnection();
-});
+io.on('connection', socket => new SocketController(socket, io));
