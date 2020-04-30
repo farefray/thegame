@@ -57,7 +57,8 @@ class BattleController {
       actionStack: optimizedActionStack,
       startBoard: startBoard,
       winner: winner,
-      battleTime: lastAction ? lastAction.time : 0
+      battleTime: lastAction ? lastAction.time : 0,
+      participants: Object.values(startBoard[Symbol.for('owners')]) // ?
     };
 
     // performance.mark('battle_calc__done');
@@ -65,7 +66,7 @@ class BattleController {
     // console.log(performance.getEntriesByType("measure")[0].name, performance.getEntriesByType("measure")[0].duration);
     // performance.clearMarks();
     // performance.clearMeasures();
-    return returnValue;
+    return returnValue; // todo P0 this is wrong function, async?
   }
 }
 

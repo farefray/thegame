@@ -1,16 +1,10 @@
-/**
- * Instance for storing active game sessions
- * Also includes helper methods
- *
- * @returns {SessionsStore}
- */
 function SessionsStore() {
   this.storage = {};
   return this;
 }
 
 SessionsStore.prototype.store = function(session) {
-  this.storage[session.get('ID')] = session;
+  this.storage[session.ID] = session;
 };
 
 SessionsStore.prototype.get = function(sessionID) {

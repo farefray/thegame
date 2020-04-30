@@ -11,3 +11,4 @@ Browser game based on fantasy 'auto-chess' game settings
 <a href="https://github.com/ilich2"><img src="https://avatars0.githubusercontent.com/u/31213344?s=400&v=4" title="ilich2" width="64" height="64"></a>
 
 Inspired and early-based on the Pokemon Auto Chess by Petter Andersson - https://github.com/Lolispo/pkmn_auto_chess
+

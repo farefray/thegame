@@ -76,11 +76,7 @@ SocketConnector.login = (customerData) => new Promise((resolve) => {
   });
 });
 
-SocketConnector.startRoundVsAI = () => {
-  socket.emit('START_AI');
-}
-
-SocketConnector.startSolo = () => {
+SocketConnector.startGame = () => {
   socket.emit('START_GAME');
 }
 

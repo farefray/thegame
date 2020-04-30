@@ -1,4 +1,5 @@
-import SocketController from './controllers/SocketController';
+import "reflect-metadata";
+import SocketController from './services/SocketController';
 
 const express = require('express');
 
@@ -17,7 +18,4 @@ app.use(cors());
 
 router.all('*', cors());
 
-io.on('connection', socket => {
-  const socketController = new SocketController(socket, io);
-  socketController.onConnection();
-});
+io.on('connection', socket => new SocketController(socket, io));

@@ -3,7 +3,7 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import RightSidebar from './RightSidebar';
-import GameController from '../../../../backend/src/controllers/GameController';
+import State from '../../../../backend/src/objects/State';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
@@ -22,9 +22,9 @@ const getCircularReplacer = () => {
 const PLAYER_INDEX = -1;
 
 const generateGameState = async function() {
-  let state = await GameController.initializeState([PLAYER_INDEX]);
-  state = await GameController.purchasePawn(state, PLAYER_INDEX, 0);
-  return JSON.parse(JSON.stringify(state, getCircularReplacer()));
+  let state = new State([PLAYER_INDEX]);
+  const result = state.purchasePawn(PLAYER_INDEX, 0);
+  return result && JSON.parse(JSON.stringify(state, getCircularReplacer()));
 };
 
 const MyReduxContext = () => {

@@ -10,11 +10,11 @@ class Lobby extends Component {
   }
 
   handlePlayVsAI() {
-    SocketConnector.startRoundVsAI();
+    SocketConnector.startGame();
   }
 
   handlePlayVsHuman() {}
-  
+
   render() {
     const { customer } = this.props;
 

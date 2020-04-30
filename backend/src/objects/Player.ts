@@ -37,17 +37,15 @@ export default class Player {
     return this[property];
   }
 
-  async addToHand (unitName: string) {
+  addToHand (unitName: string) {
     const availableHandPosition = this.availableHandPosition;
     if (availableHandPosition !== null) {
       const hand = this.hand;
       const pos = new Position(availableHandPosition);
       hand[availableHandPosition] = new BattleUnit({
         name: unitName,
-        position: {
-          x: pos.x,
-          y: pos.y
-        },
+        x: pos.x,
+        y: pos.y,
         teamId: 0
       });
 
@@ -68,7 +66,7 @@ export default class Player {
  * if hand is full, sell cheapest unit
  * Do this until board.size == level
  */
-  async preBattleCheck () {
+  beforeBattle () {
     const board = this.board;
     const takenPositions = Object.keys(board);
     if (takenPositions.length > this.level) {
