@@ -66,6 +66,7 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.0",
     "eslint-plugin-react": "^7.12.4",
+    "nyc": "^15.0.1",
     "should": "^13.2.3",
     "typescript": "^3.7.2"
   }

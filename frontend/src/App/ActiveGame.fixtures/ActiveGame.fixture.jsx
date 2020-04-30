@@ -4,8 +4,10 @@ import rootReducer from '@/reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import ActiveGame from '../ActiveGame';
-import GameController from '../../../../backend/src/controllers/GameController.js';
+import GameService from '../../../../backend/src/controllers/GameService.js';
 
+const Container = require("typedi").Container;
+const gameService = GameService(Container);
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
@@ -25,7 +27,7 @@ const PLAYER_INDEX = -1;
 
 const generateGameState = async function() {
   let state = new State([PLAYER_INDEX]);
-  state = await GameController.purchasePawn(state, PLAYER_INDEX, 0);
+  state = await gameService.purchasePawn(state, PLAYER_INDEX, 0);
   return JSON.parse(JSON.stringify(state, getCircularReplacer()));
 };
 

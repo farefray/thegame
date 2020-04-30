@@ -1,11 +1,10 @@
-@Service()
 function SessionsStore() {
   this.storage = {};
   return this;
 }
 
 SessionsStore.prototype.store = function(session) {
-  this.storage[session.get('ID')] = session;
+  this.storage[session.ID] = session;
 };
 
 SessionsStore.prototype.get = function(sessionID) {
