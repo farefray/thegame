@@ -58,7 +58,8 @@ export default class State extends MutableObject {
     }
   }
 
-  endRound(playersBattleResults: Array<BattleResult>) {
+  endRound(winners) {
+    this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
     if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
       this.incomeBase = this.incomeBase + 1;
     }
@@ -70,13 +71,18 @@ export default class State extends MutableObject {
       const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
       this.setIn(['players', uid, 'gold'], (gold + this.incomeBase + bonusGold));
 
-      const playerBattle = playersBattleResults[uid];
-      if (playerBattle.winner !== uid) {
+      if (!winners.includes(uid)) {
         // player lost battle, remove health
         const newHealth: number = (this.getIn(['players', uid, 'health']) - this.round);
         this.setIn(['players', uid, 'health'], newHealth);
+
+        if (newHealth < 1) {
+          this.dropPlayer(uid)
+        }
       }
     }
+
+    this.refreshShopForPlayers();
   }
 
   dropPlayer(playerID) {
@@ -86,13 +92,6 @@ export default class State extends MutableObject {
         this.amountOfPlayers -= 1;
       }
     }
-  }
-
-  async roundEnd(battleResult: Array<BattleResult>, countdown: number) {
-    await sleep(countdown);
-
-    this.endRound(battleResult);
-    this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
   }
 
   async scheduleNextRound() {

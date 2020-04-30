@@ -1,9 +1,4 @@
-/**
- * Instance for storing active game sessions
- * Also includes helper methods
- *
- * @returns {SessionsStore}
- */
+@Service()
 function SessionsStore() {
   this.storage = {};
   return this;

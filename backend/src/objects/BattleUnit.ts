@@ -15,13 +15,11 @@ const STARTING_DELAY = 2000; // delaying all the starting actions for frontend n
  * @description Describes base unit to be built into BattleUnit
  * @interface UnitConfig
  */
-interface UnitConfig {
+export interface UnitConfig {
   name: string;
-  position: {
-    x: number;
-    y: number;
-  };
-  teamId: number;
+  x: number;
+  y: number;
+  teamId?: number;
 }
 
 interface HealthChangeOptions {
@@ -65,8 +63,8 @@ export default class BattleUnit {
   };
 
   constructor(unitConfig: UnitConfig) {
-    this.x = +unitConfig.position.x;
-    this.y = +unitConfig.position.y;
+    this.x = +unitConfig.x;
+    this.y = +unitConfig.y;
     this.id = this.stringifiedPosition; // id = is also a starting position for mob
     this.teamId = unitConfig.teamId;
 
