@@ -32,7 +32,7 @@ export default class BattleUnit {
   public name: string;
   public x: number;
   public y: number;
-  public teamId: number;
+  public teamId: number | undefined;
   public attack: {
     value?: number;
     range?: number;
