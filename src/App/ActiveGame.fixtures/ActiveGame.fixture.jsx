@@ -4,10 +4,7 @@ import rootReducer from '@/reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import ActiveGame from '../ActiveGame';
-import GameService from '../../../../backend/src/services/GameService.js';
-
-const Container = require("typedi").Container;
-const gameService = GameService(Container);
+import State from '../../../../backend/src/objects/State';
 
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
