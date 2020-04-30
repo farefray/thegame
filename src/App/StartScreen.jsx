@@ -36,7 +36,7 @@ class StartScreen extends Component {
             </FlexboxGrid.Item>
           </FlexboxGrid>
         </Content>
-        <Footer style={{ alignSelf: 'flex-end' }}>Copyrights (c) 2019</Footer>
+        <Footer style={{ alignSelf: 'flex-end' }}>Copyrights (c) 2019 - 2020</Footer>
       </Container>
     );
   }
