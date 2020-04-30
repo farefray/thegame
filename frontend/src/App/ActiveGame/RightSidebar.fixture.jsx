@@ -3,10 +3,8 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import RightSidebar from './RightSidebar';
-import GameService from '../../../../backend/src/services/GameService';
+import State from '../../../../backend/src/objects/State';
 
-const Container = require("typedi").Container;
-const gameService = GameService(Container);
 // todo make it share functionality with jest and core.test.js
 const getCircularReplacer = () => {
   const seen = new WeakSet();
