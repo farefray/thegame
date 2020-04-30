@@ -7,7 +7,6 @@ const {
 } = require('perf_hooks');
 
 const should = require('should');
-const rewire = require('rewire');
 
 
 describe('Perf test', async () => {

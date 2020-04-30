@@ -1,13 +1,12 @@
+import hyperid from 'hyperid';
 import State from "./State";
 import BattleController from "../services/BattleController";
 import { BattleBoard, BattleResult } from "./Battle";
 
-const uuidv1 = require('uuid/v1');
-
 const MAX_ROUND = 5;
 
 export default class Session {
-  private _id = uuidv1();
+  private _id = hyperid().uuid;
   private clients: Array<String>;
   public state: State;
 

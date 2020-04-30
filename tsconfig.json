@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES2019",
     "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
+      "ES2019"
     ],
-    "module": "esnext",
+    "module": "commonjs",
+    "sourceMap": true,
     // Search under node_modules for non-relative imports.
     "moduleResolution": "node",
     // Process & infer types from .js files.
@@ -15,19 +14,12 @@
     "noEmit": true,
     // Enable strictest settings like strictNullChecks & noImplicitAny.
     "strict": true,
-    // Disallow features that require cross-file information for emit.
-    "isolatedModules": true,
-    // Import non-ES modules as default imports.
-    "esModuleInterop": true,
     "noImplicitAny": false,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-  },
-  "include": [
-    "src"
-  ]
+    "experimentalDecorators": true
+  }
 }

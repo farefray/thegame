@@ -1,21 +1,13 @@
-/* global describe, it */
 import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
-import GameService from '../src/services/GameService';
 import BoardController from '../src/services/BoardController';
 import AppError from '../src/objects/AppError';
 import Session from '../src/objects/Session';
+import ConnectedPlayers from '../src/models/ConnectedPlayers';
+import SessionsStore from '../src/models/SessionsStore';
+import Customer from '../src/objects/Customer';
 
 const should = require('should');
-const rewire = require('rewire');
-
-const ConnectedPlayers = rewire('../src/models/ConnectedPlayers');
-const SessionsStore = rewire('../src/models/SessionsStore');
-
-const Customer = rewire('../src/objects/Customer');
-
-const Container = require("typedi").Container;
-const gameService = GameService(Container);
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();

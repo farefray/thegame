@@ -2,7 +2,6 @@
 import Battle from '../src/objects/Battle.ts';
 
 const should = require('should');
-const rewire = require('rewire');
 
 describe('Refactoring testsuite', async function() {
   let runTicks = true;
