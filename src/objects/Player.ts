@@ -68,7 +68,7 @@ export default class Player {
  * if hand is full, sell cheapest unit
  * Do this until board.size == level
  */
-  async preBattleCheck () {
+  beforeBattle () {
     const board = this.board;
     const takenPositions = Object.keys(board);
     if (takenPositions.length > this.level) {

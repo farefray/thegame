@@ -2,7 +2,7 @@ import Pathfinder from './Pathfinder';
 import shuffle from 'lodash/shuffle';
 import Actor from './Actor';
 import TargetPairPool from './TargetPairPool';
-import BattleUnit from './BattleUnit';
+import BattleUnit, { UnitConfig } from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
 import _ from 'lodash';
@@ -15,9 +15,10 @@ export interface BattleContext {
 }
 
 export interface BattleResult {
-  battleTime: number,
-  actionStack: Array<Object>,
-  startBoard: Object,
+  battleTime: number
+  actionStack: Array<Object>
+  startBoard: Object
+  participants: Array<string>
   winner: string
 }
 
@@ -29,6 +30,11 @@ export interface UnitAction {
   effects?: [];
   uid?: string;
   parent?: string;
+}
+
+export interface BattleBoard {
+  units: Array<UnitConfig>,
+  owner: string
 }
 
 export default class Battle {
@@ -44,7 +50,7 @@ export default class Battle {
   private actionGeneratorInstance: Generator;
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
-  constructor(...unitBoards) {
+  constructor(...unitBoards: Array<BattleBoard>) {
     this.startBoard = {};
     this.startBoard[Symbol.for('owners')] = {};
 
@@ -56,10 +62,8 @@ export default class Battle {
       board.units.forEach(unitConfig => {
         const battleUnit = new BattleUnit({
           name: unitConfig.name,
-          position: {
-            x: unitConfig.x,
-            y: unitConfig.y
-          },
+          x: unitConfig.x,
+          y: unitConfig.y,
           teamId
         });
 

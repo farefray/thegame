@@ -1,18 +1,20 @@
 import BattleController from './BattleController';
 import BoardController from './BoardController';
-import GameController from './GameController';
 import AppError from '../objects/AppError';
-import State from '../objects/State';
+
+import SessionStore from '../models/SessionsStore';
+import GameService from './GameService';
+
+// Dependency container
+const Container = require("typedi").Container;
+Container.set("session.store", new SessionStore());
 
 const Customer = require('../objects/Customer');
-const Session = require('../objects/Session');
 
 const ConnectedPlayers = require('../models/ConnectedPlayers');
-const SessionsStore = require('../models/SessionsStore');
 
 // Init connected players models\
 const connectedPlayers = new ConnectedPlayers();
-const sessionsStore = new SessionsStore();
 
 /*
   Example io code
@@ -24,11 +26,7 @@ const sessionsStore = new SessionsStore();
   });
 */
 
-const ADDITIONAL_ROUND_TIME = 5000;
-/**
- * @instance
- * @returns {SocketController}
- */
+
 function SocketController(socket, io) {
   this.onConnection = () => {
     socket.join('WAITING_ROOM'); // place new customers to waiting room
@@ -36,6 +34,8 @@ function SocketController(socket, io) {
 
   this.io = io;
   this.socket = socket;
+
+  Container.set("io", io);
 
   socket.on('ON_CONNECTION', async () => {
     connectedPlayers.set(socket.id, new Customer(socket.id));
@@ -51,13 +51,13 @@ function SocketController(socket, io) {
       // update rooms
       const sessionID = customer.get('sessionID');
       if (sessionID) {
-        const session = sessionsStore.get(sessionID);
+        const session = Container.get("session.store").get(sessionID);
         session.disconnect(socket.id);
         if (session.hasClients()) {
           return; // notify about disconnect todo
         }
 
-        sessionsStore.destroy(sessionID);
+        Container.get("session.store").destroy(sessionID);
       }
     } // todo case when no customer?
   });
@@ -82,19 +82,30 @@ function SocketController(socket, io) {
     return callback(false);
   });
 
-  socket.on('START_AI', async () => {
-    const clients = [socket.id];
-    await this.initializeGameSessions(clients);
-  });
-
   socket.on('START_GAME', async () => {
-    // TODO multiplayer
     io.in('WAITING_ROOM').clients(async (err, clients) => {
       if (err) {
         throw new Error(err);
       }
 
-      await this.initializeGameSessions(clients);
+      // creating session
+      const gameService = GameService(Container);
+      const session = gameService.initGameSession(clients);
+      // Update players, to notify them that they are in game and countdown till round start
+      clients.forEach(socketID => {
+        connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers. Investigate if we still need this?
+
+        this.io.to(socketID).emit('INITIALIZE', socketID);
+
+        // TODO
+        this.socket.join(session.ID, () => {
+          const rooms = Object.keys(this.socket.rooms);
+          // console.log(rooms); // [ <socket.id>, 'room 237' ]
+          this.io.to(session.ID).emit('UPDATED_STATE', session.getState()); // sending whole state isnt good?
+        });
+      });
+
+      gameService.startGameSession(session);
     });
   });
 
@@ -139,92 +150,5 @@ function SocketController(socket, io) {
   return this;
 }
 
-// move this somewhere ;)
-SocketController.prototype.initializeGameSessions = async function (clients) {
-  const state = new State(clients);
-  const session = new Session(state);
-  const sessionID = session.get('ID');
-  sessionsStore.store(session);
-
-  // Update players, to notify them that they are in game and countdown till round start
-  clients.forEach(socketID => {
-    connectedPlayers.setIn(socketID, ['sessionID', sessionID]); // maybe overkill, especially when a lot of customers
-    this.io.to(socketID).emit('INITIALIZE', socketID);
-
-    // TODO
-    this.socket.join(sessionID, () => {
-      const rooms = Object.keys(this.socket.rooms);
-      // console.log(rooms); // [ <socket.id>, 'room 237' ]
-      this.io.to(sessionID).emit('UPDATED_STATE', state);
-    });
-  });
-
-  await state.scheduleNextRound();
-
-  this.round(sessionID);
-};
-
-/**
- * @todo [P1] this maybe should be moved to gamecontroller
- */
-SocketController.prototype.round = async function (sessionID) {
-  // do we need to update our session from storage?? TODO Test
-  const session = sessionsStore.get(sessionID); // TODO WE GOT NULL HERE SOMETIMES (P1)
-  if (!session) {
-    // user disconnected and no session exists
-    console.warn("Session is lost between rounds - " + sessionID);
-    return sessionsStore.destroy(sessionID);
-  }
-
-  const state = session.get('state');
-
-  // Count battles for all players, then send those battles
-  let countdown = Number.MIN_VALUE;
-  const playersBattleResults = [];
-  for (let uid in state.get('players')) {
-    const player = state.getIn(['players', uid]);
-    await player.preBattleCheck();
-
-    const playerBoard = player.get('board');
-    // todo update preBattleState?
-
-    // todo update state for players?
-
-    // Check to see if a battle is required
-    // Lose when empty, even if enemy no units aswell (tie with no damage taken)
-
-    const battleResult = await BattleController.setupBattle({ boards: [
-      {
-        owner: uid,
-        units: playerBoard
-      },
-      {
-        owner: 'AI',
-        units: Ai.battleBoard
-      }
-    ]});
-
-    if (battleResult.battleTime > countdown) {
-      countdown = battleResult.battleTime;
-    }
-
-    playersBattleResults[uid] = battleResult;
-  }
-
-  countdown += ADDITIONAL_ROUND_TIME;
-  for (let uid in state.get('players')) {
-    playersBattleResults[uid].countdown = countdown; // all players have the battle length of the longest battle
-    this.io.to(`${uid}`).emit('START_BATTLE', playersBattleResults[uid]);
-  }
-
-  await state.roundEnd(playersBattleResults, countdown);
-
-  state.refreshShopForPlayers();
-  this.io.to(sessionID).emit('UPDATED_STATE', state);
-
-  await state.scheduleNextRound();
-
-  this.round(sessionID);
-};
 
 export default SocketController;

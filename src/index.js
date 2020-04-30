@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import SocketController from './controllers/SocketController';
 
 const express = require('express');

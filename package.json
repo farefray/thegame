@@ -46,8 +46,10 @@
     "nodemon": "^1.19.1",
     "npm": "^6.13.4",
     "prettier": "^1.18.2",
+    "reflect-metadata": "^0.1.13",
     "rewire": "^4.0.1",
     "socket.io": "^2.2.0",
+    "typedi": "^0.8.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
