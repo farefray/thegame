@@ -109,9 +109,10 @@ export default class Pathfinder {
 
     openHeap.push(startNode);
 
+    let currentNode;
     while (openHeap.size() > 0) {
       // Grab the lowest f(x) to process next.  Heap keeps this sorted for us.
-      var currentNode = openHeap.pop();
+      currentNode = openHeap.pop();
 
       // End case -- result has been found, return the traced path
       if (Pathfinder.getDistanceBetweenUnits(currentNode, target) < unit.attackRange) {

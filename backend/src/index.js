@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import SocketController from './services/SocketController';
 
 const express = require('express');
@@ -11,7 +10,9 @@ const router = express.Router();
 const cors = require('cors');
 
 // we will use port 8000 for our app
-server.listen(8000, () => console.log('connected to port 8000!'));
+server.listen(8000, () => {
+  console.log('connected to port 8000!');
+});
 
 app.use('/', router);
 app.use(cors());

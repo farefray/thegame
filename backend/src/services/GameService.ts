@@ -17,8 +17,8 @@ export default function GameService(dependencyContainer) {
 
       while (session.hasNextRound()) {
         // do we need to update our session from storage?? TODO Test
-        const playersBattleResults = await session.nextRound();
-        const { battles } = playersBattleResults;
+        const roundResults = await session.nextRound();
+        const { battles } = roundResults;
 
         for (let uid in state.players) {
           eventEmitter.emit('roundBattleStarted', uid, battles.filter((battle) => battle.participants.includes(uid)).shift());

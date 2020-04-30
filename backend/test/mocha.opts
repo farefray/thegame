@@ -1,3 +1,0 @@
---require ./test/babel-register.js
---ui bdd
---timeout 1500

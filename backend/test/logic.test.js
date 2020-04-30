@@ -4,7 +4,6 @@ import BattleController from '../src/services/BattleController';
 import Position from '../../frontend/src/shared/Position';
 
 const should = require('should');
-const rewire = require('rewire');
 
 describe('Battle logic tests', () => {
   it('Can handle battle and closest target being selected', async () => {
