@@ -4,7 +4,7 @@ import rootReducer from '@/reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import ActiveGame from '../ActiveGame';
-import GameService from '../../../../backend/src/controllers/GameService.js';
+import GameService from '../../../../backend/src/services/GameService.js';
 
 const Container = require("typedi").Container;
 const gameService = GameService(Container);
@@ -27,8 +27,8 @@ const PLAYER_INDEX = -1;
 
 const generateGameState = async function() {
   let state = new State([PLAYER_INDEX]);
-  state = await gameService.purchasePawn(state, PLAYER_INDEX, 0);
-  return JSON.parse(JSON.stringify(state, getCircularReplacer()));
+  const result = state.purchasePawn(PLAYER_INDEX, 0);
+  return result && JSON.parse(JSON.stringify(state, getCircularReplacer()));
 };
 
 const MyReduxContext = () => {
