@@ -22,27 +22,7 @@
       "name": "Mocha All",
       "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
       "args": [
-        "--opts", 
-        "${workspaceFolder}/backend/test/mocha.opts",
-        "{,!(node_modules)/}*/*.test.js"
-      ],
-      "runtimeArgs": [
-        "--nolazy"
-      ],
-      "sourceMaps": true,
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "cwd":"${workspaceFolder}/backend"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Mocha logic",
-      "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--opts", 
-        "${workspaceFolder}/backend/test/mocha.opts",
-        "{,!(node_modules)/}*/logic.test.js"
+        "{,!(node_modules)/}*/*.test.ts"
       ],
       "runtimeArgs": [
         "--nolazy"

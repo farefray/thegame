@@ -2,8 +2,10 @@ import Position from '../../../frontend/src/shared/Position';
 import { MonsterInterface } from '../abstract/Monster';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError';
+import monsterUtils from '../utils/monsterUtils';
 
 const HAND_UNITS_LIMIT = 8;
+const SHOP_UNITS = 4;
 
 export default class Player {
   public index: string;
@@ -21,6 +23,19 @@ export default class Player {
     this.shopUnits = [];
     this.hand = {};
     this.board = {};
+
+    this.refreshShop();
+  }
+
+  refreshShop() {
+    const newShop: Array<MonsterInterface> = [];
+    for (let i = 0; i <= SHOP_UNITS; i++) {
+      newShop.push(monsterUtils.getRandomUnit({
+        cost: this.get('level'),
+      }));
+    }
+
+    this.shopUnits = newShop;
   }
 
   get availableHandPosition () {
@@ -39,7 +54,7 @@ export default class Player {
     return this[property];
   }
 
-  addToHand (unitName: string) {
+  addToHand (unitName: string): string|AppError {
     const availableHandPosition = this.availableHandPosition;
     if (availableHandPosition !== null) {
       const hand = this.hand;
@@ -55,11 +70,15 @@ export default class Player {
       return availableHandPosition;
     }
 
-    return null;
+    return new AppError('warning', 'No free place');
   }
 
   isDead () {
     return this.health <= 0;
+  }
+
+  isBoardFull() {
+    return Object.keys(this.board).length === this.level;
   }
 
   /**
@@ -104,11 +123,7 @@ export default class Player {
     }
   }
 
-  getAffortableShopUnits() {
-    return this.shopUnits.filter(unit => unit.cost <= this.gold);
-  }
-
-  purchasePawn(pieceIndex): Boolean|AppError {
+  purchasePawn(pieceIndex): string|AppError {
     if (this.isDead()) {
       return new AppError('warning', "Sorry, you're already dead");
     }
@@ -122,9 +137,8 @@ export default class Player {
       return new AppError('warning', 'Not enough money');
     }
 
-    this.addToHand(unit.name);
     delete this.shopUnits[pieceIndex];
     this.gold -= unit.cost;
-    return true;
+    return this.addToHand(unit.name);
   }
 }

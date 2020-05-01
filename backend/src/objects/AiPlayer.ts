@@ -15,6 +15,21 @@ export default class AiPlayer extends Player {
     super.beforeBattle(opponent);
 
     Container.set('player.two', opponent);
-    AIService(Container).roundPrepare();
+
+    const affortableUnits = this.getAffortableShopUnits();
+    if (affortableUnits.length > 0) {
+      const unit = AIService(Container).considerUnitsPurchase(affortableUnits);
+      if (unit && unit.name !== undefined) { // !-- underinfed must be fixed
+        this.purchasePawn(this.shopUnits.findIndex(({ name }) => name === unit.name));
+      }
+    }
+
+    if (Object.keys(this.hand).length) {
+      AIService(Container).considerUnitsPlacing();
+    }
+  }
+
+  getAffortableShopUnits() {
+    return this.shopUnits.filter(unit => unit.cost <= this.gold);
   }
 }
