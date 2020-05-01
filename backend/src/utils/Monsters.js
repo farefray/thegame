@@ -28,8 +28,8 @@ Monsters.getRandomUnit = (filterObject) => {
     if (!filterObject
       || !filterObject.cost
       || mob.cost <= filterObject.cost) {
-        filtered[key] = mob;
-      }
+      filtered[key] = mob;
+    }
   });
 
   return randomProperty(filtered);

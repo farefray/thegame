@@ -1,19 +1,20 @@
+import { v4 as uuidv4 } from 'uuid';
 import State from "./State";
 import BattleController from "../services/BattleController";
 import { BattleBoard, BattleResult } from "./Battle";
 
-const uuidv1 = require('uuid/v1');
-
 const MAX_ROUND = 5;
 
 export default class Session {
-  private _id = uuidv1();
+  private _id = uuidv4();
   private clients: Array<String>;
   public state: State;
 
   constructor (clients) {
     this.state = new State(clients);
     this.clients = this.state.clients; // was connectedPlayers, so handle this in case
+
+    console.log("Session -> constructor -> (this._id)", (this._id))
   }
 
   get ID() {

@@ -1,4 +1,4 @@
-import hyperid from 'hyperid';
+import { v4 as uuidv4 } from 'uuid';
 import * as PathUtil from '../utils/pathUtils';
 import Pathfinder from './Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from './Action';
@@ -346,7 +346,7 @@ export default class BattleUnit {
     const attackDuration = this.attackDuration(from, to);
     const attackAction: AttackAction = {
       unitID: this.id,
-      uid: hyperid().uuid,
+      uid: uuidv4(),
       type: ACTION_TYPE.ATTACK,
       payload: {
         from,
@@ -401,7 +401,7 @@ export default class BattleUnit {
     }
 
     if (!this.isAlive) {
-      healthChangeAction.uid = hyperid().uuid;
+      healthChangeAction.uid = uuidv4();
 
       const deathAction: DeathAction = {
         unitID: this.id,

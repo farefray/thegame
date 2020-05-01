@@ -1,7 +1,7 @@
 import { promisify } from 'util'
 import MutableObject from '../abstract/MutableObject';
 import Player from './Player';
-import AiPlayer from '../models/AiPlayer';
+import AiPlayer from './AiPlayer';
 import Monsters from '../utils/Monsters';
 import AppError from './AppError';
 
