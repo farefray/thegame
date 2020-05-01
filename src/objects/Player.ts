@@ -1,7 +1,8 @@
 import Position from '../../../frontend/src/shared/Position';
 import BattleUnit from './BattleUnit';
+import AppError from './AppError';
 
-const HAND_LIMIT = 8;
+const HAND_UNITS_LIMIT = 8;
 
 export default class Player {
   public index: string;
@@ -12,7 +13,7 @@ export default class Player {
   public gold: number = 1;
   public shopUnits: Object;
   public hand: Object;
-  public board: Object; // this must be an array in order to work in socketcontroller
+  public board: Object; // this must be an array in order to work in socketcontroller TODO P0 Session.ts:66
 
   constructor (id: string) {
     this.index = id;
@@ -66,7 +67,7 @@ export default class Player {
  * if hand is full, sell cheapest unit
  * Do this until board.size == level
  */
-  beforeBattle () {
+  beforeBattle (opponent: Player) {
     const board = this.board;
     const takenPositions = Object.keys(board);
     if (takenPositions.length > this.level) {
@@ -100,5 +101,25 @@ export default class Player {
       //   await _mutateStateByFixingUnitLimit(state, playerIndex);
       // }
     }
+  }
+
+  purchasePawn(pieceIndex): Boolean|AppError {
+    if (this.isDead()) {
+      return new AppError('warning', "Sorry, you're already dead");
+    }
+
+    const unit = this.shopUnits[pieceIndex];
+    if (!unit || Object.keys(this.hand).length >= HAND_UNITS_LIMIT) {
+      return new AppError('warning', 'Your hand is full');
+    }
+
+    if (this.gold < unit.cost) {
+      return new AppError('warning', 'Not enough money');
+    }
+
+    this.addToHand(unit.name);
+    delete this.shopUnits[pieceIndex];
+    this.gold -= unit.cost;
+    return true
   }
 }

@@ -74,7 +74,8 @@ describe('Core Modules', () => {
 
   describe('Game Mechanics', () => {
     it('can buy pawn', async () => {
-      gameState.purchasePawn(MOCK_SOCKETID_1, 0);
+      const player = gameState.getPlayer(MOCK_SOCKETID_1);
+      player.purchasePawn(0);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
@@ -89,13 +90,15 @@ describe('Core Modules', () => {
 
     it('cannot buy pawn when no gold', async () => {
       gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
-      const result = gameState.purchasePawn(MOCK_SOCKETID_1, 0);
+      const player = gameState.getPlayer(MOCK_SOCKETID_1);
+      const result = player.purchasePawn(0);
       should(result).instanceOf(AppError);
     });
 
     it('can buy second pawn pawn', async () => {
       gameState.players[MOCK_SOCKETID_1].gold = 1;
-      gameState.purchasePawn(MOCK_SOCKETID_1, 1);
+      const player = gameState.getPlayer(MOCK_SOCKETID_1);
+      player.purchasePawn(1);
       gameState.should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
@@ -104,7 +107,8 @@ describe('Core Modules', () => {
     });
 
     it('can sell pawn', async () => {
-      gameState.purchasePawn(MOCK_SOCKETID_2, 0);
+      const player = gameState.getPlayer(MOCK_SOCKETID_2);
+      player.purchasePawn(0);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(0);
       await BoardController.mutateStateByPawnSelling(gameState, MOCK_SOCKETID_2, firstHandPosition);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(1);

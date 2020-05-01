@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import State from './State';
 import BattleController from '../services/BattleController';
 import { BattleBoard, BattleResult } from './Battle';
+import Player from './Player';
 
 const MAX_ROUND = 5;
 
@@ -13,8 +14,6 @@ export default class Session {
   constructor (clients) {
     this.state = new State(clients);
     this.clients = this.state.clients; // was connectedPlayers, so handle this in case
-
-    console.log('Session -> constructor -> (this._id)', (this._id));
   }
 
   get ID() {
@@ -35,7 +34,7 @@ export default class Session {
 
   async nextRound() {
     // form player pairs
-    const playersPairs = Object.keys(this.state.players).reduce(function(result: Array<Array<string>>, value, index, array: Array<string>) {
+    const playersPairs = Object.keys(this.state.players).reduce((result: Array<Array<string>>, value, index, array: Array<string>) => {
       if (index % 2 === 0) {
         result.push(array.slice(index, index + 2));
       }
@@ -57,12 +56,14 @@ export default class Session {
     for (const playerPair of playersPairs) {
       const battleBoard: Array<BattleBoard> = [];
       for (const uid of playerPair) {
-        const player = this.state.players[uid];
-        player.beforeBattle();
+        const player: Player = this.state.players[uid];
+        const opponentUID: string = (playerPair.filter(v => v !== uid).shift()) || '';
+        const opponentPlayer: Player = this.state.players[opponentUID];
+        player.beforeBattle(opponentPlayer);
 
         battleBoard.push({
           owner: player.index,
-          units: player.board,
+          units: Object.values(player.board),
         });
       }
 
