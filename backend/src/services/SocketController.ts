@@ -5,8 +5,8 @@ import SessionStore from '../models/SessionsStore';
 import GameService from './GameService';
 
 // Dependency container
-const Container = require("typedi").Container;
-Container.set("session.store", new SessionStore());
+const Container = require('typedi').Container;
+Container.set('session.store', new SessionStore());
 
 // Event emitter
 const EventEmitter = require('events');

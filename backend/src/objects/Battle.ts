@@ -1,11 +1,9 @@
 import Pathfinder from './Pathfinder';
-import shuffle from 'lodash/shuffle';
 import Actor from './Actor';
 import TargetPairPool from './TargetPairPool';
 import BattleUnit, { UnitConfig } from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
-import _ from 'lodash';
 
 export interface BattleContext {
   currentTimestamp: number;
@@ -79,7 +77,9 @@ export default class Battle {
      * Actually object with units to calculate battle
      * clone is needed here in order to remove symlinks to our startBoard battle units and they can be passed normally
      */
-    this.units = _.cloneDeep(shuffle(Object.keys(this.startBoard).map(key => this.startBoard[key])));
+    const easyShuffle = array => array.sort(() => Math.random() - 0.5);
+
+    this.units = easyShuffle(Object.keys(this.startBoard).map(key => this.startBoard[key]));
 
     this.actorQueue = this.units.map(
       unit =>
