@@ -17,7 +17,8 @@
     "member-ordering": false,
     "deprecation": true,
     "no-reference": false,
-    "linebreak-style": false
+    "linebreak-style": false,
+    "variable-name": false
   },
   "jsRules": true
 }

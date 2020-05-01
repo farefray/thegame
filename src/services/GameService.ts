@@ -6,7 +6,8 @@ export default function GameService(dependencyContainer) {
   return {
     initGameSession: (clients) => {
       const session = new Session(clients);
-      Container.get("session.store").store(session);
+      const sessionStore = Container.get("session.store");
+      sessionStore.store(session);
       return session;
     },
 
@@ -15,6 +16,7 @@ export default function GameService(dependencyContainer) {
       const state = session.getState();
       await state.scheduleNextRound();
 
+      // TODO [P0] rounds going even if all disconnected!
       while (session.hasNextRound()) {
         // do we need to update our session from storage?? TODO Test
         const roundResults = await session.nextRound();

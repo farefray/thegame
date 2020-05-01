@@ -1,5 +1,4 @@
 import Battle, { UnitAction, BattleResult } from '../objects/Battle';
-import * as cloneDeep from 'lodash/cloneDeep';
 
 class BattleController {
   /**
@@ -29,7 +28,7 @@ class BattleController {
           uidMap[action.parent].chainedAction = action;
         } catch (e) {
           // in case error happened, we remove parent reference (this is very bad, we need to fix this)
-          console.warn('Wrong action parent during optimization!', cloneDeep(action));
+          console.warn('Wrong action parent during optimization!', JSON.parse(JSON.stringify((action))));
           delete action.parent;
         }
       }
