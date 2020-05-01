@@ -57,16 +57,18 @@ export default class Battle {
         this.startBoard[Symbol.for('owners')][teamId] = board.owner;
       }
 
-      board.units.length && board.units.forEach(unitConfig => {
-        const battleUnit = new BattleUnit({
-          name: unitConfig.name,
-          x: unitConfig.x,
-          y: unitConfig.y,
-          teamId,
-        });
+      if (board.units.length) {
+        board.units.forEach((unitConfig) => {
+          const battleUnit = new BattleUnit({
+            name: unitConfig.name,
+            x: unitConfig.x,
+            y: unitConfig.y,
+            teamId,
+          });
 
-        this.startBoard[battleUnit.id] = battleUnit;
-      });
+          this.startBoard[battleUnit.id] = battleUnit;
+        });
+      }
     });
 
     this.currentTimestamp = 0;

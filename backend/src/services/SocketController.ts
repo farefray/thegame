@@ -115,13 +115,14 @@ function SocketController(socket, io) {
     });
   });
 
-  socket.on('PURCHASE_UNIT', async pieceIndex => {
+  socket.on('PURCHASE_UNIT', async (pieceIndex) => {
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const state = session.getState();
-    const stateResult = state.purchasePawn(socket.id, pieceIndex);
-    if (stateResult instanceof AppError) {
-      io.to(`${socket.id}`).emit('NOTIFICATION', socket.id, stateResult);
+    const player = state.getPlayer(socket.id);
+    const result = player.purchasePawn(pieceIndex);
+    if (result instanceof AppError) {
+      io.to(`${socket.id}`).emit('NOTIFICATION', socket.id, result);
       return;
     }
 
@@ -129,8 +130,7 @@ function SocketController(socket, io) {
     sessionsStore.store(session);
 
     // todo some abstract sending with try catch, to not crash app every time it bugs :)
-    const playerState = state.getIn(['players', socket.id]);
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, playerState);
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, player);
   });
 
   socket.on('PLACE_PIECE', async (fromBoardPosition, toBoardPosition) => {

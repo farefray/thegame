@@ -10,7 +10,6 @@ const { STATE } = require('../../../frontend/src/shared/constants.js');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 const PLAYERS_MINIMUM = 2;
 const SHOP_UNITS = 4;
-const HAND_UNITS_LIMIT = 9;
 
 export default class State extends MutableObject {
   public round: number;
@@ -99,38 +98,7 @@ export default class State extends MutableObject {
     await sleep(this.countdown);
   }
 
-  purchasePawn(playerIndex, pieceIndex): Boolean|AppError {
-    const player: Player = this.getIn(['players', playerIndex]);
-    if (player.isDead()) {
-      return new AppError('warning', "Sorry, you're already dead");
-    }
-
-    /**
-     * Checks to be done:
-     * unit exist in shop
-     * hand is not full
-     * can afford
-     */
-    const unit = player.shopUnits[pieceIndex];
-    if (!unit || Object.keys(player.hand).length >= HAND_UNITS_LIMIT) {
-      return new AppError('warning', 'Your hand is full');
-    }
-
-    if (player.gold < unit.cost) {
-      return new AppError('warning', 'Not enough money');
-    }
-
-    /**
-     * remove unit from shop
-     * add unit to hand
-     * remove gold
-     * set player state
-     */
-    player.addToHand(unit.name);
-    delete player.shopUnits[pieceIndex];
-    player.gold -= unit.cost;
-
-    this.setIn(['players', playerIndex], player);
-    return true;
+  getPlayer(playerIndex): Player {
+    return this.getIn(['players', playerIndex]);
   }
 }

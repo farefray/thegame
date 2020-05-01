@@ -300,13 +300,16 @@ export default class Pathfinder {
    */
   getGridNeighbours({ x, y }: { x: number, y: number }): Array<Position> {
     return [{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -0, y: 1 }]
-      .filter(step => {
-        const isOutOfBounds = x + step.x < 0 || x + step.x >= this.gridWidth || y + step.y < 0 || y + step.y >= this.gridHeight;
+      .filter((step) => {
+        const isOutOfBounds = (x + step.x < 0 || x + step.x >= this.gridWidth || y + step.y < 0 || y + step.y >= this.gridHeight);
+
         if (isOutOfBounds) return false;
+
         if (this.isTaken({
           x: x + step.x,
           y: y + step.y,
         })) return false;
+
         return true;
       });
   }
