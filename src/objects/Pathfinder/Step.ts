@@ -1,30 +1,30 @@
 export default class Step {
-    public x: number;
-    public y: number;
-    public resistance: number;
+  public x: number;
+  public y: number;
+  public resistance: number;
 
-    constructor({
+  constructor({
         x = 0,
         y = 0,
-        resistance = 0
+        resistance = 0,
     } = {}) {
-        this.x = x;
-        this.y = y;
-        this.resistance = resistance;
+      this.x = x;
+      this.y = y;
+      this.resistance = resistance;
     }
 
-    applyModifiers(modifiers) {
-        for (const modifier of modifiers) {
-            const isMatchingX = modifier.x === undefined || modifier.x === this.x;
-            const isMatchingY = modifier.y === undefined || modifier.y === this.y;
+  applyModifiers(modifiers) {
+      for (const modifier of modifiers) {
+          const isMatchingX = modifier.x === undefined || modifier.x === this.x;
+          const isMatchingY = modifier.y === undefined || modifier.y === this.y;
 
-            if (!isMatchingX || !isMatchingY) continue;
+          if (!isMatchingX || !isMatchingY) continue;
 
-            this.resistance += modifier.resistance;
+          this.resistance += modifier.resistance;
         }
     }
 
-    isSameDirection(step) {
-        return this.x === step.x && this.y === step.y;
+  isSameDirection(step) {
+      return this.x === step.x && this.y === step.y;
     }
 }

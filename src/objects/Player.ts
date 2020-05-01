@@ -46,7 +46,7 @@ export default class Player {
         name: unitName,
         x: pos.x,
         y: pos.y,
-        teamId: 0
+        teamId: 0,
       });
 
       this.hand = hand;
@@ -70,7 +70,6 @@ export default class Player {
     const board = this.board;
     const takenPositions = Object.keys(board);
     if (takenPositions.length > this.level) {
-
       let unitCost = Infinity;
       let cheapestUnitPosition = '';
 
@@ -84,7 +83,7 @@ export default class Player {
         }
       }
 
-      console.log("TODO P0 widthawing for this unit:", cheapestUnitPosition)
+      console.log('TODO P0 widthawing for this unit:', cheapestUnitPosition);
 
       // P0 TODO THIS PART
       // Withdraw if possible unit, otherwise sell
@@ -102,4 +101,4 @@ export default class Player {
       // }
     }
   }
-};
+}

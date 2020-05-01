@@ -16,7 +16,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
     yield { actions: unit.manaChange(-manaCost) }; // todo fix manacost for this spell
     while (ticks > counter++) {
       yield { actionDelay: tickDelay, actions: target.healthChange(tickValue, {
-        effect: { id: 'green_sparkles' }
+        effect: { id: 'green_sparkles' },
       }) };
     }
   })();
@@ -25,7 +25,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
 function Dwarf_Geomancer() {
   return Monster({
     ...config,
-    spell
+    spell,
   });
 }
 

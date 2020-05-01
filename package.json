@@ -15,6 +15,7 @@
     "mocha:ref": "node --allow-natives-syntax ./node_modules/mocha/bin/_mocha --opt ./test/mocha.opts -w ./test/refactoring.test.js",
     "mocha:ai": "mocha -w ./test/ai.test.ts",
     "lint": "tslint --project tsconfig.json",
+    "lint:fix": "tslint --fix --project tsconfig.json",
     "debug": "node --inspect -r ts-node/register src/index.js"
   },
   "repository": {

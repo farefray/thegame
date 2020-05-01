@@ -13,7 +13,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
 
   const targetEnemy = <BattleUnit>getSuitableTargets(unit, battleContext.units, {
     amount: 1,
-    enemy: true
+    enemy: true,
   });
 
   if (!targetEnemy) {
@@ -21,7 +21,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
   }
 
   const affectedUnits:BattleUnit[] = [targetEnemy];
-  const nearbyEnemies = <BattleUnit[]>getSuitableTargets(targetEnemy, battleContext.units, { enemy: false, maxDistance: 1, amount: Infinity})
+  const nearbyEnemies = <BattleUnit[]>getSuitableTargets(targetEnemy, battleContext.units, { enemy: false, maxDistance: 1, amount: Infinity });
 
   if (nearbyEnemies) {
     affectedUnits.push(...nearbyEnemies);
@@ -31,35 +31,35 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
   return (function*() {
     yield { actions: unit.manaChange(-manaCost) };
     yield { actionDelay: 0, actors: [
-        new Actor({
+      new Actor({
           timestamp: battleContext.currentTimestamp,
           actionGenerator: (function*() {
             if (affectedUnits.length > 0) {
               yield {
-                  actions: affectedUnits[0].healthChange(2 * damageDealt, {
-                  effect: { id: 'thunderstorm' }
-                })
-              }
+                actions: affectedUnits[0].healthChange(2 * damageDealt, {
+                    effect: { id: 'thunderstorm' },
+                  }),
+              };
 
               if(affectedUnits.length > 1) {
                 for (let index = 1; index < affectedUnits.length; index++) {
                   yield {
                     actions: affectedUnits[index].healthChange(damageDealt, {
-                      effect: { id: 'blue_chain' }
-                    })
-                  }
+                      effect: { id: 'blue_chain' },
+                    }),
+                  };
                 }
               }
             }
-          })()
-        })
-      ]
-    }
+          })(),
+        }),
+    ],
+    };
   })();
 }
 
 function Minotaur_Mage() {
-  return Monster({...config, spell});
+  return Monster({ ...config, spell });
 }
 
 export default Minotaur_Mage;

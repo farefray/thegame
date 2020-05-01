@@ -13,11 +13,11 @@ export interface BattleContext {
 }
 
 export interface BattleResult {
-  battleTime: number
-  actionStack: Array<Object>
-  startBoard: Object
-  participants: Array<string>
-  winner: string
+  battleTime: number;
+  actionStack: Array<Object>;
+  startBoard: Object;
+  participants: Array<string>;
+  winner: string;
 }
 
 export interface UnitAction {
@@ -31,8 +31,8 @@ export interface UnitAction {
 }
 
 export interface BattleBoard {
-  units: Array<UnitConfig>,
-  owner: string
+  units: Array<UnitConfig>;
+  owner: string;
 }
 
 export default class Battle {
@@ -62,12 +62,12 @@ export default class Battle {
           name: unitConfig.name,
           x: unitConfig.x,
           y: unitConfig.y,
-          teamId
+          teamId,
         });
 
         this.startBoard[battleUnit.id] = battleUnit;
       });
-    })
+    });
 
     this.currentTimestamp = 0;
     this.actionStack = [];
@@ -86,8 +86,8 @@ export default class Battle {
         new Actor({
           id: unit.id,
           actionGenerator: unit.unitLifeCycleGenerator(),
-          timestamp: 0
-        }) // adding first run of actionGenerator for every unit in order to spawn
+          timestamp: 0,
+        }), // adding first run of actionGenerator for every unit in order to spawn
     );
 
     this.pathfinder = new Pathfinder();
@@ -102,7 +102,7 @@ export default class Battle {
       currentTimestamp: this.currentTimestamp,
       pathfinder: this.pathfinder,
       targetPairPool: this.targetPairPool,
-      units: this.units
+      units: this.units,
     };
   }
 

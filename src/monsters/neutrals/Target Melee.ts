@@ -6,11 +6,11 @@ export default function Target_Melee() {
     cost: 1,
     lookType: 2,
     health: {
-      max: 700
+      max: 700,
     },
     walkingSpeed: 0,
     specialty: {
-      passive: true
-    }
+      passive: true,
+    },
   });
-};
+}

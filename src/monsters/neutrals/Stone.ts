@@ -6,12 +6,12 @@ export default function Stone() {
     cost: 1,
     lookType: 1,
     health: {
-      max: 100
+      max: 100,
     },
     walkingSpeed: 0,
     specialty: {
       targetable: false,
-      passive: true
-    }
+      passive: true,
+    },
   });
-};
+}
