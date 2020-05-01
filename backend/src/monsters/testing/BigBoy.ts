@@ -15,14 +15,14 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
     actions.push(unit.manaChange(-manaCost)[0]);
     const target = battleContext.targetPairPool.findTargetByUnitId(unit.id);
     if (target) {
-      //Stun
+      // Stun
       const rescheduleActorAction: RescheduleActorAction = {
         unitID: unit.id,
         type: ACTION_TYPE.RESCHEDULE_ACTOR,
         payload: {
           actorId: target.id,
-          timestamp: battleContext.currentTimestamp + 3000
-        }
+          timestamp: battleContext.currentTimestamp + 3000,
+        },
       };
       actions.push(rescheduleActorAction);
     }
@@ -39,18 +39,18 @@ function BigBoy() {
     attack: {
       value: 55,
       range: 1,
-      speed: 1000
+      speed: 1000,
     },
     cost: 1,
     lookType: 25,
     health: {
-      max: 1700
+      max: 1700,
     },
     mana: {
-      regen: 10
+      regen: 10,
     },
     walkingSpeed: 1000,
-    spell
+    spell,
   });
 }
 

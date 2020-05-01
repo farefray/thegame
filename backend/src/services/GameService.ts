@@ -6,7 +6,7 @@ export default function GameService(dependencyContainer) {
   return {
     initGameSession: (clients) => {
       const session = new Session(clients);
-      const sessionStore = Container.get("session.store");
+      const sessionStore = Container.get('session.store');
       sessionStore.store(session);
       return session;
     },
@@ -22,13 +22,13 @@ export default function GameService(dependencyContainer) {
         const roundResults = await session.nextRound();
         const { battles } = roundResults;
 
-        for (let uid in state.players) {
+        for (const uid in state.players) {
           eventEmitter.emit('roundBattleStarted', uid, battles.filter((battle) => battle.participants.includes(uid)).shift());
         }
 
         eventEmitter.emit('stateUpdate', session.ID, state);
         await state.scheduleNextRound();
       }
-    }
+    },
   };
 }

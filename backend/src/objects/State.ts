@@ -1,4 +1,4 @@
-import { promisify } from 'util'
+import { promisify } from 'util';
 import MutableObject from '../abstract/MutableObject';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
@@ -46,14 +46,14 @@ export default class State extends MutableObject {
       this.players[playerEntity.index] = playerEntity;
     }
 
-    this.refreshShopForPlayers()
+    this.refreshShopForPlayers();
   }
 
   refreshShopForPlayers() {
     for (const playerIndex in this.players) {
       for (let i = 0; i <= SHOP_UNITS; i++) {
         this.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit({
-          cost: this.get('round')
+          cost: this.get('round'),
         }));
       }
     }
@@ -78,7 +78,7 @@ export default class State extends MutableObject {
         this.setIn(['players', uid, 'health'], newHealth);
 
         if (newHealth < 1) {
-          this.dropPlayer(uid)
+          this.dropPlayer(uid);
         }
       }
     }

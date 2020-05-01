@@ -18,7 +18,8 @@
     "deprecation": true,
     "no-reference": false,
     "linebreak-style": false,
-    "variable-name": false
+    "variable-name": false,
+    "no-magic-numbers": false
   },
   "jsRules": true
 }

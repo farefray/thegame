@@ -13,7 +13,7 @@ export enum ACTION_TYPE {
   DEATH,
   SPAWN,
   ACQUIRE_TARGET,
-  RESCHEDULE_ACTOR
+  RESCHEDULE_ACTOR,
 }
 
 interface ActionBase {

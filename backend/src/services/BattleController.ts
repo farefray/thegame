@@ -14,7 +14,7 @@ class BattleController {
         uidMap[action.uid] = action;
         // delete action.uid;
       }
-    })
+    });
 
     actionStack.forEach((action, index) => {
       if (action.parent) {
@@ -32,9 +32,9 @@ class BattleController {
           delete action.parent;
         }
       }
-    })
+    });
 
-    let filteredActions = actionStack.filter(action => {
+    const filteredActions = actionStack.filter(action => {
       return !action.parent;
     });
 
@@ -54,10 +54,10 @@ class BattleController {
     const lastAction = actionStack[actionStack.length - 1];
     const returnValue: BattleResult = {
       actionStack: optimizedActionStack,
-      startBoard: startBoard,
-      winner: winner,
+      startBoard,
+      winner,
       battleTime: lastAction ? lastAction.time : 0,
-      participants: Object.values(startBoard[Symbol.for('owners')]) // ?
+      participants: Object.values(startBoard[Symbol.for('owners')]), // ?
     };
 
     // performance.mark('battle_calc__done');

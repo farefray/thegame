@@ -11,18 +11,18 @@ export const getClosestTargets = ({ x, y, targets, maxDistance = 9, amount = 1 }
       x,
       y,
       x2: targetX,
-      y2: targetY
+      y2: targetY,
     });
 
     if (distance < maxDistance) {
       targetsDistances.push({
         distance,
-        target
-      })
+        target,
+      });
     }
   }
 
-  targetsDistances = targetsDistances.sort((a, b) => ((a.distance > b.distance) ? 1 : -1) );
+  targetsDistances = targetsDistances.sort((a, b) => ((a.distance > b.distance) ? 1 : -1));
 
   const returnArray:Array<BattleUnit> = [];
   for (let index = 0; index < amount && index < targetsDistances.length; index++) {
@@ -43,7 +43,7 @@ interface TargetSearchParams {
 
 // most likely this function is not needed, as it mostly passes all the stuff down to getClosestTargets
 export function getSuitableTargets(caster: BattleUnit, units: Array<BattleUnit>, params: TargetSearchParams): Array<BattleUnit> | BattleUnit | null {
-  const targets = units.filter(u => 
+  const targets = units.filter(u =>
     u.teamId === (params.enemy ? caster.oppositeTeamId : caster.teamId)
     && u.isAlive
     && u.id !== caster.id);
@@ -53,8 +53,8 @@ export function getSuitableTargets(caster: BattleUnit, units: Array<BattleUnit>,
     y: caster.y,
     targets,
     maxDistance: params.maxDistance || 9,
-    amount: params.amount || 1
+    amount: params.amount || 1,
   });
 
   return suitableTargets;
-};
+}

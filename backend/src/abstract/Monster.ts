@@ -42,7 +42,7 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
   monsterDefaults.mana = {
     max: 100,
     regen: 0,
-  }
+  };
 
   monsterDefaults.health = {
     max: 100,

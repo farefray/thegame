@@ -7,8 +7,8 @@ import BinaryHeap from './Pathfinder/BinaryHeap';
 const normalize = number => number < 0 ? -1 : (number > 0 ? 1 : 0);
 
 function heuristic(pos0, pos1) { // switch to getDistanceBetweenCoordinates
-  var d1 = Math.abs(pos1.x - pos0.x);
-  var d2 = Math.abs(pos1.y - pos0.y);
+  let d1 = Math.abs(pos1.x - pos0.x);
+  let d2 = Math.abs(pos1.y - pos0.y);
   return d1 + d2;
 }
 
@@ -73,7 +73,7 @@ export default class Pathfinder {
   }
 
   isTaken(pos: Position) {
-    return this._occupiedTileSet.has(`${pos.x},${pos.y}`)
+    return this._occupiedTileSet.has(`${pos.x},${pos.y}`);
   }
 
   cleanNode(node) {
@@ -128,7 +128,7 @@ export default class Pathfinder {
         const step = stepArray[stepArray.length - 1];
         return new Step({
           x: step.x - unit.x,
-          y: step.y - unit.y
+          y: step.y - unit.y,
         });
       }
 
@@ -138,7 +138,7 @@ export default class Pathfinder {
       // Find all neighbors for the current node. Todo? find diagonal neighbors as well.
       const neighbors = this.getGridNeighbours({
         x: currentNode.x,
-        y: currentNode.y
+        y: currentNode.y,
       }).map(step => this.grid[currentNode.x + step.x][currentNode.y + step.y]);
 
       for (const neighbor of neighbors) {
@@ -192,7 +192,7 @@ export default class Pathfinder {
       const step = stepArray[stepArray.length - 1];
       return new Step({
         x: step.x - unit.x,
-        y: step.y - unit.y
+        y: step.y - unit.y,
       });
     }
 
@@ -204,7 +204,7 @@ export default class Pathfinder {
     if (aStarStep) {
       return {
         x: aStarStep.x,
-        y: aStarStep.y
+        y: aStarStep.y,
       };
     }
 
@@ -214,12 +214,12 @@ export default class Pathfinder {
 
     const distance = {
       x: Math.abs(targetUnit.x - unit.x),
-      y: Math.abs(targetUnit.y - unit.y)
+      y: Math.abs(targetUnit.y - unit.y),
     };
 
     const normalizedDistance = {
       x: normalize(targetUnit.x - unit.x),
-      y: normalize(targetUnit.y - unit.y)
+      y: normalize(targetUnit.y - unit.y),
     };
 
     const preferredAxis = distance.x > distance.y ? 'x' : 'y';
@@ -227,30 +227,30 @@ export default class Pathfinder {
 
     const modifiers = [{
       [preferredAxis]: normalizedDistance[preferredAxis],
-      resistance: -20
+      resistance: -20,
     },
-    {
-      [preferredAxis]: normalizedDistance[preferredAxis] * -1,
-      resistance: 20
-    },
-    {
-      [secondaryAxis]: normalizedDistance[secondaryAxis],
-      resistance: -10
-    },
-    {
-      [secondaryAxis]: normalizedDistance[secondaryAxis] * -1,
-      resistance: 10
-    }
+      {
+        [preferredAxis]: normalizedDistance[preferredAxis] * -1,
+        resistance: 20,
+      },
+      {
+        [secondaryAxis]: normalizedDistance[secondaryAxis],
+        resistance: -10,
+      },
+      {
+        [secondaryAxis]: normalizedDistance[secondaryAxis] * -1,
+        resistance: 10,
+      },
     ];
 
     const {
-      previousStep
+      previousStep,
     } = unit;
     if (previousStep) {
       modifiers.push({
         x: previousStep.x,
         y: previousStep.y,
-        resistance: -5
+        resistance: -5,
       });
     }
     possibleSteps.forEach(step => step.applyModifiers(modifiers));
@@ -259,7 +259,7 @@ export default class Pathfinder {
     if (optimalSteps.length === 1) {
       return new Step({
         x: optimalSteps[0].x,
-        y: optimalSteps[0].y
+        y: optimalSteps[0].y,
       });
     }
 
@@ -267,29 +267,29 @@ export default class Pathfinder {
 
     return {
       x: optimalStep.x,
-      y: optimalStep.y
+      y: optimalStep.y,
     };
   }
 
   getUnitPossibleSteps(unit) {
     return [new Step({
       x: 0,
-      y: -1
+      y: -1,
     }), new Step({
       x: 0,
-      y: 1
+      y: 1,
     }), new Step({
       x: -1,
-      y: 0
+      y: 0,
     }), new Step({
       x: 1,
-      y: 0
+      y: 0,
     })].filter(step => {
       const isOutOfBounds = unit.x + step.x < 0 || unit.x + step.x >= this.gridWidth || unit.y + step.y < 0 || unit.y + step.y >= this.gridHeight;
       if (isOutOfBounds) return false;
       if (this.isTaken({
         x: unit.x + step.x,
-        y: unit.y + step.y
+        y: unit.y + step.y,
       })) return false;
       return true;
     });
@@ -305,7 +305,7 @@ export default class Pathfinder {
         if (isOutOfBounds) return false;
         if (this.isTaken({
           x: x + step.x,
-          y: y + step.y
+          y: y + step.y,
         })) return false;
         return true;
       });
@@ -321,7 +321,7 @@ export default class Pathfinder {
       x: unit1.x,
       y: unit1.y,
       x2: unit2.x,
-      y2: unit2.y
+      y2: unit2.y,
     });
   }
 

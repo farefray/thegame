@@ -1,4 +1,4 @@
-import { suite, test } from "@testdeck/mocha";
+import { suite, test } from '@testdeck/mocha';
 import { expect } from 'chai';
 
 import Session from '../src/objects/Session';
@@ -8,7 +8,6 @@ let session: Session;
 
 @suite
 class AI {
-
   @test
   canInitializeGameWithAI() {
     session = new Session([]);
@@ -24,10 +23,10 @@ class AI {
 /*
 
 describe('Core Modules', () => {
-  
+
 
   it('Can initialize game with AI only', async () => {
-    
+
   });
 
   it('AI can proceed into rounds', async () => {

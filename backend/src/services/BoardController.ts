@@ -77,7 +77,7 @@ export default class BoardController {
       delete board[fromBoardPosition];
     }
 
-    battleUnit.rearrange(toPosition)
+    battleUnit.rearrange(toPosition);
 
     let unitToSwap;
     // place on new position
@@ -90,7 +90,7 @@ export default class BoardController {
     }
 
     if (shouldSwap && !!unitToSwap) {
-      unitToSwap.rearrange(fromPosition)
+      unitToSwap.rearrange(fromPosition);
 
       if (fromPosition.isMyHandPosition()) {
         hand[fromBoardPosition] = unitToSwap;

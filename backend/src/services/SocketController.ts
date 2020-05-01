@@ -11,7 +11,7 @@ Container.set('session.store', new SessionStore());
 // Event emitter
 const EventEmitter = require('events');
 const eventEmitter = new EventEmitter();
-Container.set("event.emitter", eventEmitter);
+Container.set('event.emitter', eventEmitter);
 
 const Customer = require('../objects/Customer');
 
@@ -33,7 +33,7 @@ const connectedPlayers = new ConnectedPlayers();
 
 function SocketController(socket, io) {
   const gameService = GameService(Container);
-  const sessionsStore = Container.get("session.store");
+  const sessionsStore = Container.get('session.store');
 
   eventEmitter.on('roundBattleStarted', (uid, playerBattle) => {
     io.to(uid).emit('START_BATTLE', playerBattle);
@@ -58,13 +58,13 @@ function SocketController(socket, io) {
       // update rooms
       const sessionID = customer.get('sessionID');
       if (sessionID) {
-        const session = Container.get("session.store").get(sessionID);
+        const session = Container.get('session.store').get(sessionID);
         session.disconnect(socket.id);
         if (session.hasClients()) {
           return; // notify about disconnect todo
         }
 
-        Container.get("session.store").destroy(sessionID);
+        Container.get('session.store').destroy(sessionID);
       }
     } // todo case when no customer?
   });
@@ -72,7 +72,7 @@ function SocketController(socket, io) {
   socket.on('CUSTOMER_LOGIN_TRY', async (customerData, callback) => {
     const {
       email,
-      password
+      password,
     } = customerData;
     // TODO auth, check email/pasw for current user, load him from database.
     // false@gmail.com is used to test failed login
@@ -80,7 +80,7 @@ function SocketController(socket, io) {
       connectedPlayers.setIn(socket.id, ['isLoggedIn', true]);
       io.to(socket.id).emit('CUSTOMER_LOGIN_SUCCESS', {
         email,
-        index: socket.id
+        index: socket.id,
       });
 
       return callback(true);

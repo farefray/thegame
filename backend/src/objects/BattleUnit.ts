@@ -76,13 +76,13 @@ export default class BattleUnit {
     const { attack } = unitStats;
 
     this.attack = {
-      ...attack
+      ...attack,
     };
 
     if (attack.particleID) {
       attack.particle = {
         id: attack.particleID || null,
-        duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
+        duration: Math.floor(attack.speed / 10), // todo isnt this supposed to be varying on distance/atkspeed?
       };
     }
 
@@ -93,7 +93,7 @@ export default class BattleUnit {
       this._mana = {
         now: 0,
         max: unitStats.mana.max || 0,
-        regen: unitStats.mana.regen || 0
+        regen: unitStats.mana.regen || 0,
       };
     }
 
@@ -101,7 +101,7 @@ export default class BattleUnit {
 
     this._health = {
       now: unitStats.health.max,
-      max: unitStats.health.max
+      max: unitStats.health.max,
     };
 
     this.walkingSpeed = unitStats.walkingSpeed;
@@ -193,7 +193,7 @@ export default class BattleUnit {
     const actor = new Actor({ timestamp: currentTimestamp, actionGenerator: spellGenerator });
     return {
       actionDelay: 1000, // [TODO] check if thats fine to have 1s delay after spellcast
-      actors: [actor]
+      actors: [actor],
     };
   }
 
@@ -214,7 +214,7 @@ export default class BattleUnit {
       let targetUnit = targetPairPool.findTargetByUnitId(this.id); // ? :)
       const closestTarget = this.getClosestTarget(units);
       if (closestTarget && (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit))) {
-        yield { actions: this.acquireTarget(closestTarget)};
+        yield { actions: this.acquireTarget(closestTarget) };
         targetUnit = closestTarget;
       }
 
@@ -230,13 +230,13 @@ export default class BattleUnit {
         yield {
           actionDelay: this.attack.speed,
           actions,
-          actors
+          actors,
         };
       } else if (this.canMove) {
         const step = pathfinder.findStepToTarget(this, targetUnit);
         yield {
           actionDelay: this.stepDuration,
-          actions: this.doMove(step)
+          actions: this.doMove(step),
         };
       }
 
@@ -265,7 +265,7 @@ export default class BattleUnit {
     const spawnAction: SpawnAction = {
       unitID: this.id,
       type: ACTION_TYPE.SPAWN,
-      payload: { unit: this }
+      payload: { unit: this },
     };
 
     return [spawnAction];
@@ -290,9 +290,9 @@ export default class BattleUnit {
         payload: {
           from,
           to,
-          stepDuration: this.stepDuration
-        }
-      }
+          stepDuration: this.stepDuration,
+        },
+      },
     ];
   }
 
@@ -329,9 +329,9 @@ export default class BattleUnit {
             x: from.x,
             y: from.y,
             x2: to.x,
-            y2: to.y
-          }) * speedByTile
-        )
+            y2: to.y,
+          }) * speedByTile,
+        ),
       );
     }
 
@@ -351,8 +351,8 @@ export default class BattleUnit {
       payload: {
         from,
         to,
-        duration: attackDuration
-      }
+        duration: attackDuration,
+      },
     };
 
     const value = -Math.floor(multiplier * this.attackValue);
@@ -363,24 +363,24 @@ export default class BattleUnit {
           actionGenerator: (function*() {
             yield {
               actions: targetUnit.healthChange(value, {
-                parent: attackAction.uid
-              })
+                parent: attackAction.uid,
+              }),
             };
-          })()
-        })
-      ]
+          })(),
+        }),
+      ],
     };
   }
 
-  healthChange(value: number, opts?: HealthChangeOptions ): [HealthChangeAction] | [HealthChangeAction, DeathAction] {
+  healthChange(value: number, opts?: HealthChangeOptions): [HealthChangeAction] | [HealthChangeAction, DeathAction] {
     this.health += value;
 
     const healthChangeAction: HealthChangeAction = {
       unitID: this.id,
       type: ACTION_TYPE.HEALTH_CHANGE,
       payload: {
-        value
-      }
+        value,
+      },
     };
 
     if (opts?.effect) {
@@ -390,9 +390,9 @@ export default class BattleUnit {
           duration: opts.effect.duration || EFFECTS[opts.effect.id].duration,
           from: {
             x: this.x,
-            y: this.y
-          }
-        }
+            y: this.y,
+          },
+        },
       ];
     }
 
@@ -407,7 +407,7 @@ export default class BattleUnit {
         unitID: this.id,
         type: ACTION_TYPE.DEATH,
         payload: { unit: this },
-        parent: healthChangeAction.uid
+        parent: healthChangeAction.uid,
       };
 
 
@@ -427,8 +427,8 @@ export default class BattleUnit {
       unitID: this.id,
       type: ACTION_TYPE.MANA_CHANGE,
       payload: {
-        value
-      }
+        value,
+      },
     };
     return [manaChangeAction];
   }
@@ -440,9 +440,9 @@ export default class BattleUnit {
         type: ACTION_TYPE.ACQUIRE_TARGET,
         payload: {
           attacker: this,
-          target
-        }
-      }
+          target,
+        },
+      },
     ];
   }
 
@@ -451,7 +451,7 @@ export default class BattleUnit {
       x: this.x,
       y: this.y,
       targets: units.filter(u => u.teamId !== this.teamId && u.isAlive && u.isTargetable),
-      amount: 1
+      amount: 1,
     });
 
     return closestTarget.length > 0 ? closestTarget[0]: null;

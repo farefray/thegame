@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import State from "./State";
-import BattleController from "../services/BattleController";
-import { BattleBoard, BattleResult } from "./Battle";
+import State from './State';
+import BattleController from '../services/BattleController';
+import { BattleBoard, BattleResult } from './Battle';
 
 const MAX_ROUND = 5;
 
@@ -14,7 +14,7 @@ export default class Session {
     this.state = new State(clients);
     this.clients = this.state.clients; // was connectedPlayers, so handle this in case
 
-    console.log("Session -> constructor -> (this._id)", (this._id))
+    console.log('Session -> constructor -> (this._id)', (this._id));
   }
 
   get ID() {
@@ -47,14 +47,14 @@ export default class Session {
     const playersBattleResults: {
       countdown: number,
       battles: Array<BattleResult>,
-      winners: Array<string>
+      winners: Array<string>,
     } = {
       countdown: Number.MIN_VALUE,
       battles: [],
-      winners:[]
+      winners:[],
     };
 
-    for (let playerPair of playersPairs) {
+    for (const playerPair of playersPairs) {
       const battleBoard: Array<BattleBoard> = [];
       for (const uid of playerPair) {
         const player = this.state.players[uid];
@@ -62,11 +62,11 @@ export default class Session {
 
         battleBoard.push({
           owner: player.index,
-          units: player.board
-        })
+          units: player.board,
+        });
       }
 
-      const battleResult = await BattleController.setupBattle({ boards: battleBoard});
+      const battleResult = await BattleController.setupBattle({ boards: battleBoard });
       if (battleResult.battleTime > playersBattleResults.countdown) {
         playersBattleResults.countdown = battleResult.battleTime;
       }
