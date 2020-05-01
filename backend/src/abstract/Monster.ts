@@ -1,4 +1,5 @@
-interface MonsterInterface {
+export interface MonsterInterface {
+  name?: string; // auto-generated later
   lookType: number;
   cost: number;
   health: {

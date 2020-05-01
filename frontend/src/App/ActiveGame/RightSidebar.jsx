@@ -28,12 +28,11 @@ class RightSidebar extends Component {
   }
 
   render() {
-    const { shopUnits:pawns } = this.state;
+    const { shopUnits } = this.state;
     return (
       <FlexboxGrid align="middle" justify="center" className="rightsidebar">
         <FlexboxGrid.Item colspan={24} className="rightsidebar-shop">
-          {Object.keys(pawns).map((index) => {
-            const unit = pawns[index];
+          {shopUnits.map((unit, index) => {
             return <ShopPawn key={index} unit={unit} index={index} onPurchase={this.onPurchase} />;
           })}
         </FlexboxGrid.Item>

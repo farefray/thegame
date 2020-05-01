@@ -1,4 +1,5 @@
 import Position from '../../../frontend/src/shared/Position';
+import { MonsterInterface } from '../abstract/Monster';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError';
 
@@ -11,13 +12,13 @@ export default class Player {
   public level: number = 1;
   public exp: number = 0;
   public gold: number = 1;
-  public shopUnits: Object;
+  public shopUnits: Array<MonsterInterface>;
   public hand: Object;
   public board: Object; // this must be an array in order to work in socketcontroller TODO P0 Session.ts:66
 
   constructor (id: string) {
     this.index = id;
-    this.shopUnits = {};
+    this.shopUnits = [];
     this.hand = {};
     this.board = {};
   }
@@ -103,13 +104,17 @@ export default class Player {
     }
   }
 
+  getAffortableShopUnits() {
+    return this.shopUnits.filter(unit => unit.cost <= this.gold);
+  }
+
   purchasePawn(pieceIndex): Boolean|AppError {
     if (this.isDead()) {
       return new AppError('warning', "Sorry, you're already dead");
     }
 
     const unit = this.shopUnits[pieceIndex];
-    if (!unit || Object.keys(this.hand).length >= HAND_UNITS_LIMIT) {
+    if (!unit || !unit.name || Object.keys(this.hand).length >= HAND_UNITS_LIMIT) {
       return new AppError('warning', 'Your hand is full');
     }
 
@@ -120,6 +125,6 @@ export default class Player {
     this.addToHand(unit.name);
     delete this.shopUnits[pieceIndex];
     this.gold -= unit.cost;
-    return true
+    return true;
   }
 }
