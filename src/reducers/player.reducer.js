@@ -6,7 +6,7 @@ const basePlayerState = {
   exp: -1,
   expToReach: -1,
   gold: -1,
-  shopUnits: {}
+  shopUnits: []
 };
 
 export default function player(state = basePlayerState, action) {
