@@ -9,7 +9,6 @@ const sleep = promisify(setTimeout);
 const { STATE } = require('../../../frontend/src/shared/constants.js');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 const PLAYERS_MINIMUM = 2;
-const SHOP_UNITS = 4;
 
 export default class State extends MutableObject {
   public round: number;
@@ -49,12 +48,8 @@ export default class State extends MutableObject {
   }
 
   refreshShopForPlayers() {
-    for (const playerIndex in this.players) {
-      for (let i = 0; i <= SHOP_UNITS; i++) {
-        this.setIn(['players', playerIndex, 'shopUnits', i], monsterUtils.getRandomUnit({
-          cost: this.get('round'),
-        }));
-      }
+    for (const index in this.players) {
+      this.players[index].refreshShop();
     }
   }
 
