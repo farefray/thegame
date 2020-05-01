@@ -1,10 +1,20 @@
 
+import AIService from '../services/AIService';
 import Player from './Player';
 
-export default class AiPlayer extends Player {
-  beforeBattle() {
-      super.beforeBattle();
+const Container = require('typedi').Container;
 
-        // AI part here?
-    }
+export default class AiPlayer extends Player {
+  constructor(id: string) {
+    super(id);
+
+    Container.set('player.one', this);
+  }
+
+  beforeBattle(opponent: Player) {
+    super.beforeBattle(opponent);
+
+    Container.set('player.two', opponent);
+    AIService(Container).roundPrepare();
+  }
 }

@@ -2,7 +2,7 @@ import { promisify } from 'util';
 import MutableObject from '../abstract/MutableObject';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
-import Monsters from '../utils/Monsters';
+import monsterUtils from '../utils/monsterUtils';
 import AppError from './AppError';
 
 const sleep = promisify(setTimeout);
@@ -51,7 +51,7 @@ export default class State extends MutableObject {
   refreshShopForPlayers() {
     for (const playerIndex in this.players) {
       for (let i = 0; i <= SHOP_UNITS; i++) {
-        this.setIn(['players', playerIndex, 'shopUnits', i], Monsters.getRandomUnit({
+        this.setIn(['players', playerIndex, 'shopUnits', i], monsterUtils.getRandomUnit({
           cost: this.get('round'),
         }));
       }
