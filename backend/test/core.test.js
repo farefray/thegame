@@ -19,8 +19,8 @@ describe('Core Modules', () => {
   const MOCK_CLIENTS = [MOCK_SOCKETID_1, MOCK_SOCKETID_2, MOCK_SOCKETID_3];
 
   let gameState = null;
-  const firstHandPosition = '0,-1';
-  const secondHandPosition = '1,-1';
+  const firstHandPosition = 0;
+  const secondHandPosition = 1;
 
   describe('ConnectedPlayers Storage and Game start', () => {
     it('Can add customer', () => {
