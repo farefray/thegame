@@ -15,13 +15,13 @@ export default class Player {
   public exp: number = 0;
   public gold: number = 1;
   public shopUnits: Array<MonsterInterface>;
-  public hand: Object;
+  public hand: Array<BattleUnit>;
   public board: Object; // this must be an array in order to work in socketcontroller TODO P0 Session.ts:66
 
   constructor (id: string) {
     this.index = id;
     this.shopUnits = [];
-    this.hand = {};
+    this.hand = [];
     this.board = {};
 
     this.refreshShop();
@@ -39,34 +39,29 @@ export default class Player {
   }
 
   get availableHandPosition () {
-    const hand = this.hand;
     for (let i = 0; i < 8; i++) {
-      const pos = `${String(i)},-1`;
-      if (hand[pos] === undefined) {
-        return pos;
+      if (this.hand[i] === undefined) {
+        return i;
       }
     }
 
-    return null;
+    return -1;
   }
 
   get(property: string) {
     return this[property];
   }
 
-  addToHand (unitName: string): string|AppError {
+  addToHand (unitName: string): number|AppError {
     const availableHandPosition = this.availableHandPosition;
     if (availableHandPosition !== null) {
-      const hand = this.hand;
-      const pos = new Position(availableHandPosition);
-      hand[availableHandPosition] = new BattleUnit({
+      this.hand[availableHandPosition] = new BattleUnit({
         name: unitName,
-        x: pos.x,
-        y: pos.y,
+        x: availableHandPosition,
+        y: -1,
         teamId: 0,
       });
 
-      this.hand = hand;
       return availableHandPosition;
     }
 
@@ -123,13 +118,13 @@ export default class Player {
     }
   }
 
-  purchasePawn(pieceIndex): string|AppError {
+  purchasePawn(pieceIndex): number|AppError {
     if (this.isDead()) {
       return new AppError('warning', "Sorry, you're already dead");
     }
 
     const unit = this.shopUnits[pieceIndex];
-    if (!unit || !unit.name || Object.keys(this.hand).length >= HAND_UNITS_LIMIT) {
+    if (!unit || !unit.name || this.hand.length >= HAND_UNITS_LIMIT) {
       return new AppError('warning', 'Your hand is full');
     }
 

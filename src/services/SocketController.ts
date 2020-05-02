@@ -98,7 +98,7 @@ function SocketController(socket, io) {
       // creating session
       const session = gameService.initGameSession(clients);
       // Update players, to notify them that they are in game and countdown till round start
-      clients.forEach(socketID => {
+      clients.forEach((socketID) => {
         connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers. Investigate if we still need this?
 
         io.to(socketID).emit('INITIALIZE', socketID);
