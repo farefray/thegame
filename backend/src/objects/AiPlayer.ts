@@ -16,7 +16,7 @@ export default class AiPlayer extends Player {
 
     Container.set('player.two', opponent);
 
-    const affortableUnits = this.getAffortableShopUnits(); // todo make shopunits to be actually battleunit
+    const affortableUnits = this.getAffortableShopUnits();
     if (affortableUnits.length > 0) {
       const unit = AIService(Container).considerUnitsPurchase(affortableUnits);
       if (unit && unit.name !== undefined) { // !-- underinfed must be fixed

@@ -1,8 +1,8 @@
-import BoardController from './BoardController';
 import AppError from '../objects/AppError';
 
 import SessionStore from '../models/SessionsStore';
 import GameService from './GameService';
+import Player from '../objects/Player';
 
 // Dependency container
 const Container = require('typedi').Container;
@@ -137,21 +137,21 @@ function SocketController(socket, io) {
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const state = session.getState();
-    await BoardController.mutateStateByPawnPlacing(state, socket.id, fromBoardPosition, toBoardPosition);
+    const player:Player = state.getPlayer(socket.id);
+    player.movePawn(fromBoardPosition, toBoardPosition);
     session.updateState(state);
     sessionsStore.store(session);
     // todo some abstract sending with try catch, to not crash app every time it bugs :)
-    const playerState = state.getIn(['players', socket.id]);
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, playerState);
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, player);
   });
 
   socket.on('SELL_PIECE', async (fromBoardPosition) => {
     const sessionID = connectedPlayers.getSessionID(socket.id);
     const session = sessionsStore.get(sessionID);
     const state = session.getState();
-    await BoardController.mutateStateByPawnSelling(state, socket.id, fromBoardPosition);
-    const playerState = state.getIn(['players', socket.id]);
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, playerState);
+    const player:Player = state.getPlayer(socket.id);
+    player.sellPawn(fromBoardPosition);
+    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, player);
   });
 }
 
