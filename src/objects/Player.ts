@@ -1,5 +1,4 @@
 import Position from '../../../frontend/src/shared/Position';
-import { MonsterInterface } from '../abstract/Monster';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError';
 import monsterUtils from '../utils/monsterUtils';
@@ -14,7 +13,7 @@ export default class Player {
   public level: number = 1;
   public exp: number = 0;
   public gold: number = 1;
-  public shopUnits: Array<MonsterInterface>;
+  public shopUnits: Array<BattleUnit>;
   public hand: Array<BattleUnit>;
   public board: Object; // this must be an array in order to work in socketcontroller TODO P0 Session.ts:66
 
@@ -28,10 +27,17 @@ export default class Player {
   }
 
   refreshShop() {
-    const newShop: Array<MonsterInterface> = [];
+    const newShop: Array<BattleUnit> = [];
     for (let i = 0; i <= SHOP_UNITS; i++) {
-      newShop.push(monsterUtils.getRandomUnit({
+      const shopUnit = monsterUtils.getRandomUnit({
         cost: this.get('level'),
+      });
+
+      newShop.push(new BattleUnit({
+        name: shopUnit.name || 'Monster',
+        x: i,
+        y: -1,
+        teamId: 0,
       }));
     }
 
@@ -54,12 +60,12 @@ export default class Player {
 
   addToHand (unitName: string): number|AppError {
     const availableHandPosition = this.availableHandPosition;
-    if (availableHandPosition !== null) {
+    if (availableHandPosition !== -1) {
       this.hand[availableHandPosition] = new BattleUnit({
         name: unitName,
         x: availableHandPosition,
         y: -1,
-        teamId: 0,
+        teamId: 0, // this has to be revised. Its not always 0!! TODO [P0]
       });
 
       return availableHandPosition;
@@ -115,6 +121,60 @@ export default class Player {
       // if (newBoard.size > level) {
       //   await _mutateStateByFixingUnitLimit(state, playerIndex);
       // }
+    }
+  }
+
+  sellPawn(fromBoardPosition) {
+    const fromPosition = new Position(fromBoardPosition);
+    const piece:BattleUnit = fromPosition.isMyHandPosition()
+      ? this.hand[fromBoardPosition]
+      : this.board[fromBoardPosition]; // TODO this can be optimized if we use unique positions ENUM
+
+    this.gold += piece.cost;
+
+    if (fromPosition.isMyHandPosition()) {
+      delete this.hand[fromBoardPosition];
+    } else {
+      delete this.board[fromBoardPosition];
+    }
+  }
+
+  movePawn(fromBoardPosition, toBoardPosition) {
+    const fromPosition = new Position(fromBoardPosition);
+    const toPosition = new Position(toBoardPosition);
+
+    // todo validate positions
+
+    let battleUnit:BattleUnit;
+    // remove from old position
+    if (fromPosition.isMyHandPosition()) {
+      battleUnit = this.hand[fromPosition.x];
+      delete this.hand[fromPosition.x];
+    } else {
+      battleUnit = this.board[fromBoardPosition];
+      delete this.board[fromBoardPosition];
+    }
+
+    battleUnit.rearrange(toPosition);
+
+    let unitToSwap:BattleUnit;
+    // place on new position
+    if (toPosition.isMyHandPosition()) {
+      unitToSwap = this.hand[toPosition.x];
+      this.hand[toPosition.x] = battleUnit;
+    } else {
+      unitToSwap = this.board[toBoardPosition];
+      this.board[toBoardPosition] = battleUnit;
+    }
+
+    if (unitToSwap) {
+      unitToSwap.rearrange(fromPosition);
+
+      if (fromPosition.isMyHandPosition()) {
+        this.hand[fromPosition.x] = unitToSwap;
+      } else {
+        this.board[fromBoardPosition] = unitToSwap;
+      }
     }
   }
 

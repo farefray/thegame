@@ -24,15 +24,17 @@ class AI {
   }
 
   @test
-  willPurchaseMob() {
+  willPurchaseAndPlaceMob() {
     const playerOne = new AiPlayer('ai_1');
     const playerTwo = new AiPlayer('ai_2');
 
     playerOne.beforeBattle(playerTwo);
-    expect(playerOne.hand['0,-1']).to.be.a('object');
+    expect(playerOne.board).to.be.a('object');
+    expect(Object.keys(playerOne.board).length).to.be.above(0);
 
     playerTwo.beforeBattle(playerOne);
-    expect(playerTwo.hand['0,-1']).to.be.a('object');
+    expect(playerTwo.board).to.be.a('object');
+    expect(Object.keys(playerTwo.board).length).to.be.above(0);
   }
 
   @test

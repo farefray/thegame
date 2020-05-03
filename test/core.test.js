@@ -1,6 +1,5 @@
 import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
-import BoardController from '../src/services/BoardController';
 import AppError from '../src/objects/AppError';
 import Session from '../src/objects/Session';
 import ConnectedPlayers from '../src/models/ConnectedPlayers';
@@ -110,14 +109,15 @@ describe('Core Modules', () => {
       const player = gameState.getPlayer(MOCK_SOCKETID_2);
       player.purchasePawn(0);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(0);
-      await BoardController.mutateStateByPawnSelling(gameState, MOCK_SOCKETID_2, firstHandPosition);
+      player.sellPawn(firstHandPosition);
       gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(1);
       should(gameState.players[MOCK_SOCKETID_2].hand[firstHandPosition]).Undefined();
     });
 
     it('move pawn to board', async () => {
       const toPosition = '0,2';
-      await BoardController.mutateStateByPawnPlacing(gameState, MOCK_SOCKETID_1, firstHandPosition, toPosition);
+      const player = gameState.getPlayer(MOCK_SOCKETID_1);
+      player.movePawn(firstHandPosition, toPosition);
       should(gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition]).undefined();
       gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.be.an.Object();

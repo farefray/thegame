@@ -1,21 +1,23 @@
 import Player from '../objects/Player';
 import AiPlayer from '../objects/AiPlayer';
-import { MonsterInterface } from '../abstract/Monster';
 import BattleUnit from '../objects/BattleUnit';
 
+const findMostSuitableUnit = (units: BattleUnit[]) => {
+  // todo logic here
+  return units[Math.floor(Math.random() * units.length)];
+};
+
+const findMostSuitablePosition = (unit: BattleUnit) => {
+  // todo logic here
+  return '2,2';
+}
+
 export default function AIService(dependencyContainer) {
-  const Container = dependencyContainer;
-
-  const self: AiPlayer = Container.get('player.one');
-  const opponent: Player = Container.get('player.two');
-
-  const findMostSuitableUnit = (units: BattleUnit[]|MonsterInterface[]) => {
-    // todo logic here
-    return units[Math.floor(Math.random() * units.length)];
-  };
+  const self: AiPlayer = dependencyContainer.get('player.one');
+  const opponent: Player = dependencyContainer.get('player.two');
 
   return {
-    considerUnitsPurchase: (affortableUnits: MonsterInterface[]) => {
+    considerUnitsPurchase: (affortableUnits: BattleUnit[]) => {
       if (!self.isBoardFull()) {
         // we definately need to buy some unit, find most suitable
         return findMostSuitableUnit(affortableUnits);
@@ -27,10 +29,11 @@ export default function AIService(dependencyContainer) {
     considerUnitsPlacing: () => {
       if (!self.isBoardFull()) {
         // we need to place units for sure!
-        // todo hand must be array also? :)
         const unit = findMostSuitableUnit(self.hand);
 
-        // todo place unit to board
+        if (unit) {
+          self.movePawn(unit.stringifiedPosition, findMostSuitablePosition(unit));
+        }
       }
     },
   };
