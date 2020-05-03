@@ -1,4 +1,3 @@
-import Player from '../objects/Player';
 import AiPlayer from '../objects/AiPlayer';
 import BattleUnit from '../objects/BattleUnit';
 
@@ -10,12 +9,9 @@ const findMostSuitableUnit = (units: BattleUnit[]) => {
 const findMostSuitablePosition = (unit: BattleUnit) => {
   // todo logic here
   return '2,2';
-}
+};
 
-export default function AIService(dependencyContainer) {
-  const self: AiPlayer = dependencyContainer.get('player.one');
-  const opponent: Player = dependencyContainer.get('player.two');
-
+export default function AIService(self: AiPlayer) {
   return {
     considerUnitsPurchase: (affortableUnits: BattleUnit[]) => {
       if (!self.isBoardFull()) {
