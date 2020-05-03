@@ -1,3 +1,7 @@
+import 'reflect-metadata';
+import { Container } from 'typedi';
+import { EventEmitter } from 'events';
+
 import AppError from '../objects/AppError';
 
 import SessionStore from '../models/SessionsStore';
@@ -5,12 +9,10 @@ import GameService from './GameService';
 import Player from '../objects/Player';
 
 // Dependency container
-const Container = require('typedi').Container;
 Container.set('session.store', new SessionStore());
 
 // Event emitter
-const EventEmitter = require('events');
-const eventEmitter = new EventEmitter();
+const eventEmitter:EventEmitter = new EventEmitter();
 Container.set('event.emitter', eventEmitter);
 
 const Customer = require('../objects/Customer');
@@ -32,8 +34,8 @@ const connectedPlayers = new ConnectedPlayers();
 
 
 function SocketController(socket, io) {
-  const gameService = GameService(Container);
-  const sessionsStore = Container.get('session.store');
+  const gameService = GameService();
+  const sessionsStore:SessionStore = Container.get('session.store');
 
   eventEmitter.on('roundBattleStarted', (uid, playerBattle) => {
     io.to(uid).emit('START_BATTLE', playerBattle);
@@ -58,13 +60,13 @@ function SocketController(socket, io) {
       // update rooms
       const sessionID = customer.get('sessionID');
       if (sessionID) {
-        const session = Container.get('session.store').get(sessionID);
+        const session = sessionsStore.get(sessionID);
         session.disconnect(socket.id);
         if (session.hasClients()) {
           return; // notify about disconnect todo
         }
 
-        Container.get('session.store').destroy(sessionID);
+        sessionsStore.destroy(sessionID);
       }
     } // todo case when no customer?
   });

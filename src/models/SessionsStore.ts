@@ -1,3 +1,5 @@
+import { Service } from 'typedi';
+@Service()
 export default class SessionsStore {
   private storage: Object;
 

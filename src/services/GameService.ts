@@ -1,18 +1,19 @@
+import { Container } from 'typedi';
 import Session from '../objects/Session';
+import SessionsStore from '../models/SessionsStore';
+import { EventEmitter } from 'events';
 
-export default function GameService(dependencyContainer) {
-  const Container = dependencyContainer;
-
+export default function GameService() {
   return {
     initGameSession: (clients) => {
       const session = new Session(clients);
-      const sessionStore = Container.get('session.store');
+      const sessionStore:SessionsStore = Container.get('session.store');
       sessionStore.store(session);
       return session;
     },
 
     startGameSession: async (session: Session) => {
-      const eventEmitter = Container.get('event.emitter');
+      const eventEmitter:EventEmitter = Container.get('event.emitter');
       const state = session.getState();
       await state.scheduleNextRound();
 
@@ -23,7 +24,7 @@ export default function GameService(dependencyContainer) {
         const { battles } = roundResults;
 
         for (const uid in state.players) {
-          eventEmitter.emit('roundBattleStarted', uid, battles.filter((battle) => battle.participants.includes(uid)).shift());
+          eventEmitter.emit('roundBattleStarted', uid, battles.filter(battle => battle.participants.includes(uid)).shift());
         }
 
         eventEmitter.emit('stateUpdate', session.ID, state);
