@@ -3,6 +3,7 @@ import { expect } from 'chai';
 
 import Session from '../src/objects/Session';
 import AiPlayer from '../src/objects/AiPlayer';
+import { BattleResult } from '../src/objects/Battle';
 
 @suite
 class AI {
@@ -30,28 +31,33 @@ class AI {
 
     playerOne.beforeBattle(playerTwo);
     expect(playerOne.board).to.be.a('object');
-    expect(Object.keys(playerOne.board).length).to.be.above(0);
+    expect((playerOne.board.units()).length).to.be.above(0);
 
     playerTwo.beforeBattle(playerOne);
     expect(playerTwo.board).to.be.a('object');
-    expect(Object.keys(playerTwo.board).length).to.be.above(0);
+    expect((playerTwo.board.units()).length).to.be.above(0);
   }
 
   @test
   async canProceedIntoAIRounds() {
-    for (let round = 0; round < 1; round++) {
+    for (let round = 0; round < 2; round++) {
       const roundResults = await this.session.nextRound();
       const { battles } = roundResults;
 
       // make sure AI has units
-      const firstBattle = battles.shift();
+      expect(battles.length).to.be.above(0);
+      const firstBattle:BattleResult|undefined = battles.shift();
       expect(firstBattle).to.be.a('object');
       expect(firstBattle).to.be.not.a('undefined');
 
       if (firstBattle?.startBoard) {
         expect(Object.keys(firstBattle.startBoard)).to.be.a('array');
         expect(Object.keys(firstBattle.startBoard).length).to.be.above(0);
+      } else {
+        throw Error('No board was made');
       }
+
+      expect(firstBattle.actionStack.length).to.be.above(0);
     }
   }
 }

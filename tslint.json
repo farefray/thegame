@@ -1,7 +1,8 @@
 {
   "defaultSeverity": "warn",
   "extends": [
-    "tslint-config-airbnb-base"
+    "tslint-config-airbnb-base",
+    "tslint-config-prettier"
   ],
   "rules": {
     "max-classes-per-file": false,
