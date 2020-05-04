@@ -119,7 +119,7 @@ describe('Core Modules', () => {
       const player = gameState.getPlayer(MOCK_SOCKETID_1);
       player.movePawn(firstHandPosition, toPosition);
       should(gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition]).undefined();
-      gameState.players[MOCK_SOCKETID_1].board[toPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].board.getCell(toPosition.x, toPosition.y).should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.have.property('lookType');
     });
