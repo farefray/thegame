@@ -1,3 +1,4 @@
+import BoardMatrix from '../utils/BoardMatrix';
 import Position from '../../../frontend/src/shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError';
@@ -14,14 +15,14 @@ export default class Player {
   public exp: number = 0;
   public gold: number = 1;
   public shopUnits: Array<BattleUnit>;
-  public hand: Array<BattleUnit>;
-  public board: Object; // this must be an array in order to work in socketcontroller TODO P0 Session.ts:66
+  public hand: Array<BattleUnit>; // BoardMatrix here too please
+  public board: BoardMatrix;
 
   constructor (id: string) {
     this.index = id;
     this.shopUnits = [];
     this.hand = [];
-    this.board = {};
+    this.board = new BoardMatrix(8, 4);
 
     this.refreshShop();
   }
@@ -79,7 +80,7 @@ export default class Player {
   }
 
   isBoardFull() {
-    return Object.keys(this.board).length === this.level;
+    return this.board.units().length === this.level;
   }
 
   /**
@@ -89,6 +90,8 @@ export default class Player {
  * Do this until board.size == level
  */
   beforeBattle (opponent: Player) {
+    // REWORK THIS P0
+    /*
     const board = this.board;
     const takenPositions = Object.keys(board);
     if (takenPositions.length > this.level) {
@@ -121,21 +124,27 @@ export default class Player {
       // if (newBoard.size > level) {
       //   await _mutateStateByFixingUnitLimit(state, playerIndex);
       // }
+      
     }
+    */
   }
 
   sellPawn(fromBoardPosition) {
     const fromPosition = new Position(fromBoardPosition);
-    const piece:BattleUnit = fromPosition.isMyHandPosition()
+    const piece:BattleUnit|null = fromPosition.isMyHandPosition()
       ? this.hand[fromBoardPosition]
-      : this.board[fromBoardPosition]; // TODO this can be optimized if we use unique positions ENUM
+      : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
-    this.gold += piece.cost;
+    if (piece) {
+      this.gold += piece.cost;
 
-    if (fromPosition.isMyHandPosition()) {
-      delete this.hand[fromBoardPosition];
+      if (fromPosition.isMyHandPosition()) {
+        delete this.hand[fromBoardPosition];
+      } else {
+        this.board.setCell(fromPosition.x, fromPosition.y, null);
+      }
     } else {
-      delete this.board[fromBoardPosition];
+      throw new Error('Trying to sell not existance pawn')
     }
   }
 
@@ -145,26 +154,30 @@ export default class Player {
 
     // todo validate positions
 
-    let battleUnit:BattleUnit;
+    let battleUnit:BattleUnit|null = null;
     // remove from old position
     if (fromPosition.isMyHandPosition()) {
       battleUnit = this.hand[fromPosition.x];
       delete this.hand[fromPosition.x];
     } else {
-      battleUnit = this.board[fromBoardPosition];
-      delete this.board[fromBoardPosition];
+      battleUnit = this.board.getCell(fromPosition.x, fromPosition.y);
+      this.board.setCell(fromPosition.x, fromPosition.y, null);
     }
 
-    battleUnit.rearrange(toPosition);
+    if (battleUnit) {
+      battleUnit.rearrange(toPosition);
+    } else {
+      throw new Error('Trying to move not existance pawn');
+    }
 
-    let unitToSwap:BattleUnit;
+    let unitToSwap:BattleUnit|null = null;
     // place on new position
     if (toPosition.isMyHandPosition()) {
       unitToSwap = this.hand[toPosition.x];
       this.hand[toPosition.x] = battleUnit;
     } else {
-      unitToSwap = this.board[toBoardPosition];
-      this.board[toBoardPosition] = battleUnit;
+      unitToSwap = this.board.getCell(toBoardPosition.x, toBoardPosition.y);
+      this.board.setCell(toPosition.x, toPosition.y, battleUnit);
     }
 
     if (unitToSwap) {
@@ -173,7 +186,7 @@ export default class Player {
       if (fromPosition.isMyHandPosition()) {
         this.hand[fromPosition.x] = unitToSwap;
       } else {
-        this.board[fromBoardPosition] = unitToSwap;
+        this.board.setCell(fromPosition.x, fromPosition.y, unitToSwap);
       }
     }
   }

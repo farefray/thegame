@@ -63,7 +63,7 @@ export default class Session {
 
         battleBoard.push({
           owner: player.index,
-          units: Object.values(player.board),
+          units: player.board.units(),
         });
       }
 
