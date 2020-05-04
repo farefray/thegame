@@ -35,6 +35,27 @@ export interface BattleBoard {
   owner: string;
 }
 
+function shuffle(array) {
+  const length = array.length;
+
+  // Fisher-Yates shuffle
+  for (let iterator = 0; iterator < length; iterator += 1) {
+
+    // define target randomized index from given array
+    const target = Math.floor(Math.random() * (iterator + 1));
+    // if target index is different of current iterator then switch values
+    if (target !== iterator) {
+      const temporary = array[iterator];
+      // switch values
+      array[iterator] = array[target];
+      array[target] = temporary;
+    }
+  }
+
+  // returns given array with mutation
+  return array;
+}
+
 export default class Battle {
   public startBoard: Object;
   public winner = TEAM.NONE;
@@ -52,13 +73,13 @@ export default class Battle {
     this.startBoard = {};
     this.startBoard[Symbol.for('owners')] = {};
 
-    unitBoards.forEach((board, teamId) => {
-      if (board.owner) {
-        this.startBoard[Symbol.for('owners')][teamId] = board.owner;
+    unitBoards.forEach((unitBoard, teamId) => {
+      if (unitBoard.owner) {
+        this.startBoard[Symbol.for('owners')][teamId] = unitBoard.owner;
       }
 
-      if (board.units.length) {
-        board.units.forEach((unitConfig) => {
+      if (unitBoard.units.length) {
+        unitBoard.units.forEach((unitConfig) => {
           const battleUnit = new BattleUnit({
             name: unitConfig.name,
             x: unitConfig.x,
@@ -79,9 +100,7 @@ export default class Battle {
      * Actually object with units to calculate battle
      * clone is needed here in order to remove symlinks to our startBoard battle units and they can be passed normally
      */
-    const easyShuffle = array => array.sort(() => Math.random() - 0.5);
-
-    this.units = easyShuffle(Object.keys(this.startBoard).map(key => this.startBoard[key]));
+    this.units = shuffle(Object.keys(this.startBoard).map(key => this.startBoard[key]));
 
     this.actorQueue = this.units.map(
       unit =>
@@ -169,7 +188,8 @@ export default class Battle {
     let min = 0;
     let max = this.actorQueue.length;
     while (min < max) {
-      const mid = (min + max) >>> 1; // eslint-disable-line
+      // tslint:disable-next-line: no-bitwise
+      const mid = (min + max) >>> 1;
       if (this.actorQueue[mid].timestamp < timestamp) {
         min = mid + 1;
       } else {
@@ -232,7 +252,7 @@ export default class Battle {
 
   addToActionStack(action, type): void {
     const { unitID, payload } = action;
-    const actionStackItem:any = { type, unitID, payload, time: this.currentTimestamp };
+    const actionStackItem: any = { type, unitID, payload, time: this.currentTimestamp };
     action.effects && (actionStackItem.effects = action.effects);
     action.uid && (actionStackItem.uid = action.uid);
     action.parent && (actionStackItem.parent = action.parent);

@@ -25,7 +25,7 @@ const PLAYER_INDEX = -1;
 const generateGameState = async function() {
   let state = new State([PLAYER_INDEX]);
   state.getPlayer(PLAYER_INDEX).purchasePawn(0);
-  return result && JSON.parse(JSON.stringify(state, getCircularReplacer()));
+  return state && JSON.parse(JSON.stringify(state, getCircularReplacer()));
 };
 
 const MyReduxContext = () => {
