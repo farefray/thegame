@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IState, IProps, MoveOptions } from './Unit';
+import { IState, IProps, MoveOptions } from './Unit.d';
 
 import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../shared/UnitUtils';

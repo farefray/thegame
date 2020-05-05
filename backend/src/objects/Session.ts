@@ -8,7 +8,7 @@ const MAX_ROUND = 5;
 
 export default class Session {
   private _id = uuidv4();
-  private clients: Array<String>;
+  public clients: Array<String>; // reivew
   public state: State;
 
   constructor (clients) {
