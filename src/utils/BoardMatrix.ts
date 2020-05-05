@@ -58,7 +58,7 @@ export default class BoardMatrix {
     return [...this.matrix[x]];
   }
 
-  getCell(x, y): BattleUnit | null {
+  getCell(x, y = 0): BattleUnit | null {
     if (x < 0 || x > this.sizeX - 1 || y < 0 || y > this.sizeY - 1) {
       throw new RangeError('Illegal indexes');
     }
@@ -66,7 +66,11 @@ export default class BoardMatrix {
     return this.matrix[y][x]; // because our matrix representation is reversed
   }
 
-  setCell(x, y, value: BattleUnit | null): void {
+  /**
+   * y param can be omitted if thats 1 dimension matrix assumed
+   * value can be ommited if thats erasing
+   */
+  setCell(x, y = 0, value: BattleUnit | null = null): void {
     if (x < 0 || x > this.sizeX - 1 || y < 0 || y > this.sizeY - 1) {
       throw new RangeError('Illegal indexes');
     }
@@ -90,6 +94,11 @@ export default class BoardMatrix {
         fn(this.getCell(x, y), [x, y], this.matrix);
       }
     }
+  }
+
+  unitsAmount() {
+    // todo optimize
+    return this.units().length
   }
 
   units(): BattleUnit[] {

@@ -15,13 +15,13 @@ export default class Player {
   public exp: number = 0;
   public gold: number = 1;
   public shopUnits: Array<BattleUnit>;
-  public hand: Array<BattleUnit>; // BoardMatrix here too please
+  public hand: BoardMatrix;
   public board: BoardMatrix;
 
   constructor (id: string) {
     this.index = id;
     this.shopUnits = [];
-    this.hand = [];
+    this.hand = new BoardMatrix(8, 1);
     this.board = new BoardMatrix(8, 4);
 
     this.refreshShop();
@@ -47,7 +47,7 @@ export default class Player {
 
   get availableHandPosition () {
     for (let i = 0; i < 8; i++) {
-      if (this.hand[i] === undefined) {
+      if (this.hand.getCell(i) === null) {
         return i;
       }
     }
@@ -62,12 +62,12 @@ export default class Player {
   addToHand (unitName: string): number|AppError {
     const availableHandPosition = this.availableHandPosition;
     if (availableHandPosition !== -1) {
-      this.hand[availableHandPosition] = new BattleUnit({
+      this.hand.setCell(availableHandPosition, 0, new BattleUnit({
         name: unitName,
         x: availableHandPosition,
         y: -1,
         teamId: 0, // this has to be revised. Its not always 0!! TODO [P0]
-      });
+      }));
 
       return availableHandPosition;
     }
@@ -132,16 +132,16 @@ export default class Player {
   sellPawn(fromBoardPosition) {
     const fromPosition = new Position(fromBoardPosition);
     const piece:BattleUnit|null = fromPosition.isMyHandPosition()
-      ? this.hand[fromBoardPosition]
+      ? this.hand.getCell(fromPosition.x)
       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
     if (piece) {
       this.gold += piece.cost;
 
       if (fromPosition.isMyHandPosition()) {
-        delete this.hand[fromBoardPosition];
+        this.hand.setCell(fromPosition.x);
       } else {
-        this.board.setCell(fromPosition.x, fromPosition.y, null);
+        this.board.setCell(fromPosition.x, fromPosition.y);
       }
     } else {
       throw new Error('Trying to sell not existance pawn')
@@ -155,13 +155,11 @@ export default class Player {
     // todo validate positions
 
     let battleUnit:BattleUnit|null = null;
-    // remove from old position
+    // retrieve units from positions
     if (fromPosition.isMyHandPosition()) {
-      battleUnit = this.hand[fromPosition.x];
-      delete this.hand[fromPosition.x];
+      battleUnit = this.hand.getCell(fromPosition.x);
     } else {
       battleUnit = this.board.getCell(fromPosition.x, fromPosition.y);
-      this.board.setCell(fromPosition.x, fromPosition.y, null);
     }
 
     if (battleUnit) {
@@ -170,11 +168,11 @@ export default class Player {
       throw new Error('Trying to move not existance pawn');
     }
 
-    let unitToSwap:BattleUnit|null = null;
+    let unitToSwap:BattleUnit|null = null; // todo test this
     // place on new position
     if (toPosition.isMyHandPosition()) {
-      unitToSwap = this.hand[toPosition.x];
-      this.hand[toPosition.x] = battleUnit;
+      unitToSwap = this.hand.getCell(toBoardPosition.x);
+      this.hand.setCell(toPosition.x, 0, battleUnit);
     } else {
       unitToSwap = this.board.getCell(toBoardPosition.x, toBoardPosition.y);
       this.board.setCell(toPosition.x, toPosition.y, battleUnit);
@@ -184,10 +182,17 @@ export default class Player {
       unitToSwap.rearrange(fromPosition);
 
       if (fromPosition.isMyHandPosition()) {
-        this.hand[fromPosition.x] = unitToSwap;
+        this.board.setCell(fromPosition.x, 0, unitToSwap);
       } else {
         this.board.setCell(fromPosition.x, fromPosition.y, unitToSwap);
       }
+    }
+
+    // clean from old position
+    if (fromPosition.isMyHandPosition()) {
+      this.hand.setCell(fromPosition.x);
+    } else {
+      this.board.setCell(fromPosition.x, fromPosition.y, null);
     }
   }
 
@@ -197,7 +202,7 @@ export default class Player {
     }
 
     const unit = this.shopUnits[pieceIndex];
-    if (!unit || !unit.name || this.hand.length >= HAND_UNITS_LIMIT) {
+    if (!unit || !unit.name || this.hand.unitsAmount() >= HAND_UNITS_LIMIT) {
       return new AppError('warning', 'Your hand is full');
     }
 

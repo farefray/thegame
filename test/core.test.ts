@@ -1,3 +1,4 @@
+import should from 'should';
 import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
 import AppError from '../src/objects/AppError';
@@ -5,8 +6,7 @@ import Session from '../src/objects/Session';
 import ConnectedPlayers from '../src/models/ConnectedPlayers';
 import SessionsStore from '../src/models/SessionsStore';
 import Customer from '../src/objects/Customer';
-
-const should = require('should');
+import Player from '../src/objects/Player';
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -17,7 +17,7 @@ describe('Core Modules', () => {
   const sessionsStore = new SessionsStore();
   const MOCK_CLIENTS = [MOCK_SOCKETID_1, MOCK_SOCKETID_2, MOCK_SOCKETID_3];
 
-  let gameState = null;
+  let gameState:State;
   const firstHandPosition = 0;
   const secondHandPosition = 1;
 
@@ -47,9 +47,9 @@ describe('Core Modules', () => {
   });
 
   describe('Sessions and game init', () => {
-    let session = null;
+    let session:Session;
 
-    it('Can initialize game', async () => {
+    it('Can initialize game', () => {
       gameState = new State(MOCK_CLIENTS);
       gameState.should.be.an.Object();
       gameState.should.have.property('clients');
@@ -72,56 +72,60 @@ describe('Core Modules', () => {
   });
 
   describe('Game Mechanics', () => {
-    it('can buy pawn', async () => {
+    it('can buy pawn', (done) => {
       const player = gameState.getPlayer(MOCK_SOCKETID_1);
       player.purchasePawn(0);
       gameState.should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
+      gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition).should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition).should.have.property('lookType');
+      done();
     });
 
-    it('can refill shop', async () => {
+    it('can refill shop', (done) => {
       gameState.refreshShopForPlayers();
       gameState.should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition).should.be.an.Object();
       gameState.players[MOCK_SOCKETID_1].shopUnits[0].should.be.an.Object();
+      done();
     });
 
-    it('cannot buy pawn when no gold', async () => {
+    it('cannot buy pawn when no gold', (done) => {
       gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
       const player = gameState.getPlayer(MOCK_SOCKETID_1);
       const result = player.purchasePawn(0);
       should(result).instanceOf(AppError);
+      done();
     });
 
-    it('can buy second pawn pawn', async () => {
+    it('can buy second pawn pawn', (done) => {
       gameState.players[MOCK_SOCKETID_1].gold = 1;
       const player = gameState.getPlayer(MOCK_SOCKETID_1);
       player.purchasePawn(1);
       gameState.should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition].should.have.property('lookType');
-      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.have.property('lookType');
+      (gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition)).should.be.an.Object();
+      (gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition)).should.have.property('lookType');
+      (gameState.players[MOCK_SOCKETID_1].hand.getCell(secondHandPosition)).should.be.an.Object();
+      (gameState.players[MOCK_SOCKETID_1].hand.getCell(secondHandPosition)).should.have.property('lookType');
+      done();
     });
 
-    it('can sell pawn', async () => {
-      const player = gameState.getPlayer(MOCK_SOCKETID_2);
-      player.purchasePawn(0);
-      gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(0);
-      player.sellPawn(firstHandPosition);
-      gameState.players[MOCK_SOCKETID_2].gold.should.be.equal(1);
-      should(gameState.players[MOCK_SOCKETID_2].hand[firstHandPosition]).Undefined();
+    it('move pawn to board', async (done) => {
+      const player:Player = gameState.getPlayer(MOCK_SOCKETID_1); // TODO replace all with new Player();
+      player.movePawn({ x: 0, y: -1}, { x: 0, y: 1});
+      should(gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition)).null();
+      gameState.players[MOCK_SOCKETID_1].board.getCell(0, 1).should.be.an.Object();
+      gameState.players[MOCK_SOCKETID_1].board.getCell(0, 1).should.have.property('lookType');
+      done();
     });
 
-    it('move pawn to board', async () => {
-      const toPosition = '0,2';
-      const player = gameState.getPlayer(MOCK_SOCKETID_1);
-      player.movePawn(firstHandPosition, toPosition);
-      should(gameState.players[MOCK_SOCKETID_1].hand[firstHandPosition]).undefined();
-      gameState.players[MOCK_SOCKETID_1].board.getCell(toPosition.x, toPosition.y).should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand[secondHandPosition].should.have.property('lookType');
+    it('can sell pawn', () => {
+      const player:Player = new Player('test_sell');
+      const result = player.purchasePawn(0);
+      should(result).not.instanceOf(AppError);
+      player.gold.should.be.equal(0);
+      player.sellPawn({ x: 0, y: -1});
+      player.gold.should.be.equal(1);
+      should(player.hand.getCell(firstHandPosition)).null();
     });
 
   });
@@ -144,7 +148,7 @@ describe('Core Modules', () => {
         }
       ];
 
-      battle = new Battle({ units: playerBoard }, { units: npcBoard });
+      battle = new Battle({ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' });
       battle.should.be.ok();
       battle.actionStack.should.be.an.Array();
       battle.actionStack.length.should.be.above(0);
