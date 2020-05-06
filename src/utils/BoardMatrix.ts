@@ -101,6 +101,25 @@ export default class BoardMatrix {
     return this.units().length
   }
 
+  reverse() {
+    const units = this.units();
+    units.forEach((unit) => {
+        const { x, y } = unit;
+        const newX = Math.abs(x);
+        const newY = Math.abs(this.sizeY - y - 1);
+
+        unit.rearrange({
+            x: newX,
+            y: newY
+        });
+
+        this.setCell(newX, newY, unit)
+        this.setCell(x, y);
+    });
+
+    return this;
+  }
+
   units(): BattleUnit[] {
     // this can be replaced with .flat(2)
     const units: BattleUnit[] = [];

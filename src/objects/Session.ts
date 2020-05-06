@@ -54,20 +54,22 @@ export default class Session {
     };
 
     for (const playerPair of playersPairs) {
-      const battleBoard: Array<BattleBoard> = [];
+      const battleBoards: Array<BattleBoard> = [];
       for (const uid of playerPair) {
         const player: Player = this.state.players[uid];
         const opponentUID: string = (playerPair.filter(v => v !== uid).shift()) || '';
         const opponentPlayer: Player = this.state.players[opponentUID];
         player.beforeBattle(opponentPlayer);
 
-        battleBoard.push({
+        // now we need to reverse second player board in order for it to appear properly
+        const battleBoard:BattleBoard = {
           owner: player.index,
-          units: player.board.units(),
-        });
+          units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units(),
+        };
+        battleBoards.push(battleBoard);
       }
 
-      const battleResult = await BattleController.setupBattle({ boards: battleBoard }); // shOUldnt be await! TODO
+      const battleResult = await BattleController.setupBattle({ boards: battleBoards }); // shOUldnt be await! TODO
       if (battleResult.battleTime > playersBattleResults.countdown) {
         playersBattleResults.countdown = battleResult.battleTime;
       }
