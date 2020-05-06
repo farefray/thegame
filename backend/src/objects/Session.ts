@@ -67,7 +67,7 @@ export default class Session {
         });
       }
 
-      const battleResult = await BattleController.setupBattle({ boards: battleBoard });
+      const battleResult = await BattleController.setupBattle({ boards: battleBoard }); // shOUldnt be await! TODO
       if (battleResult.battleTime > playersBattleResults.countdown) {
         playersBattleResults.countdown = battleResult.battleTime;
       }
