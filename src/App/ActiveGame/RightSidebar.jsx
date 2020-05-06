@@ -33,7 +33,7 @@ class RightSidebar extends Component {
       <FlexboxGrid align="middle" justify="center" className="rightsidebar">
         <FlexboxGrid.Item colspan={24} className="rightsidebar-shop">
           {shopUnits.map((unit, index) => {
-            return <ShopPawn key={index} unit={unit} index={index} onPurchase={this.onPurchase} />;
+            return unit ? <ShopPawn key={index} unit={unit} index={index} onPurchase={this.onPurchase} /> : <React.Fragment key={index}/>;
           })}
         </FlexboxGrid.Item>
       </FlexboxGrid>

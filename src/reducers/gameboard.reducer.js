@@ -2,9 +2,9 @@ export function gameboard(
   state = {
     isActiveBattleGoing: false, // Most battle checks
     actionStack: [], // active battle actions
-    battleStartBoard: {}, // game board on battle start
-    myHand: {},
-    myBoard: {},
+    battleStartBoard: [], // game board on battle start
+    myHand: [],
+    myBoard: [],
     index: -1, // player index, but need to get rid of this
     isDead: false // get rid plx
   },
