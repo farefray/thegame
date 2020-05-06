@@ -124,6 +124,11 @@ export default class BoardMatrix {
     return freeSpots;
   }
 
+  // For sending state via socket
+  toJSON() {
+    return this.units();
+  }
+
   /** For debug needs */
   toString() {
     const rows: Array<any> = [];

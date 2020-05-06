@@ -2,7 +2,6 @@
  * Logical component for gameboard
  * It's quite complex, but I cannot find any more suitable way to make it simplier
  */
-import _ from 'lodash';
 import React, {
   useEffect,
   useState,
@@ -35,13 +34,15 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
     const {
       board
     } = action;
-    for (const pos in board) {
-      const unit = board[pos];
-      _unitComponents[pos] = {
-        ...unit,
-        key: uuidv1(),
-        component: null
-      };
+
+    if (board && board.length) {
+      board.forEach(unit => {
+        _unitComponents[unit.id] = {
+          ...unit,
+          key: uuidv1(),
+          component: null
+        };
+      });
     }
 
     return _unitComponents;
@@ -90,9 +91,9 @@ GameBoardWrapper.propTypes = {
   state: PropTypes.shape({
     isActiveBattleGoing: PropTypes.bool,
     actionStack: PropTypes.array,
-    battleStartBoard: PropTypes.objectOf(PropTypes.object),
-    myHand: PropTypes.objectOf(PropTypes.object),
-    myBoard: PropTypes.objectOf(PropTypes.object)
+    battleStartBoard: PropTypes.arrayOf(PropTypes.object),
+    myHand: PropTypes.arrayOf(PropTypes.object),
+    myBoard: PropTypes.arrayOf(PropTypes.object)
   })
 };
 
@@ -120,7 +121,7 @@ function GameBoardWrapper({ state }) {
 
   // If board is being updated by backend, update board state for this component
   useEffect(() => {
-    setBoard(_.merge(isActiveBattleGoing ? battleStartBoard : myBoard, myHand));
+    setBoard(isActiveBattleGoing ? battleStartBoard : [...myBoard, ...myHand]);
   }, [myHand, myBoard, battleStartBoard, isActiveBattleGoing]);
 
   // When board is being updated, we update units [units is object which will be later rendered into 'Unit' components and saved into ref into that array, also processing unit actions and events by this ref]

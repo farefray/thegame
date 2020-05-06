@@ -1,3 +1,4 @@
+import { Container } from 'typedi';
 import SocketController from './services/SocketController';
 
 const express = require('express');
@@ -19,4 +20,7 @@ app.use(cors());
 
 router.all('*', cors());
 
-io.on('connection', socket => new SocketController(socket, io));
+// Dependencies
+Container.set('socket.io', io);
+
+io.on('connection', socket => new SocketController(socket));

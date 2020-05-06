@@ -4,6 +4,7 @@ import TargetPairPool from './TargetPairPool';
 import BattleUnit, { UnitConfig } from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
+import BoardMatrix from '../utils/BoardMatrix';
 
 export interface BattleContext {
   currentTimestamp: number;
@@ -15,7 +16,7 @@ export interface BattleContext {
 export interface BattleResult {
   battleTime: number;
   actionStack: Array<Object>;
-  startBoard: Object;
+  startBoard: BoardMatrix;
   participants: Array<string>;
   winner: string;
 }
@@ -57,7 +58,7 @@ function shuffle(array) {
 }
 
 export default class Battle {
-  public startBoard: Object;
+  public startBoard: BoardMatrix;
   public winner = TEAM.NONE;
   public readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
@@ -70,12 +71,12 @@ export default class Battle {
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
   constructor(...unitBoards: Array<BattleBoard>) {
-    this.startBoard = {};
-    this.startBoard[Symbol.for('owners')] = {};
+    this.startBoard = new BoardMatrix(8, 8);
+    this[Symbol.for('owners')] = {};
 
     unitBoards.forEach((unitBoard, teamId) => {
       if (unitBoard.owner) {
-        this.startBoard[Symbol.for('owners')][teamId] = unitBoard.owner;
+        this[Symbol.for('owners')][teamId] = unitBoard.owner;
       }
 
       if (unitBoard.units.length) {
@@ -87,7 +88,8 @@ export default class Battle {
             teamId,
           });
 
-          this.startBoard[battleUnit.id] = battleUnit;
+          // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
+          this.startBoard.setCell(unitConfig.x, unitConfig.y, battleUnit);
         });
       }
     });
@@ -100,7 +102,10 @@ export default class Battle {
      * Actually object with units to calculate battle
      * clone is needed here in order to remove symlinks to our startBoard battle units and they can be passed normally
      */
-    this.units = shuffle(Object.keys(this.startBoard).map(key => this.startBoard[key]));
+    this.units = shuffle(this.startBoard.units());
+
+    // dirty way to unlink units from startboard, need to be revised
+    this.startBoard = JSON.parse(JSON.stringify(this.startBoard));
 
     this.actorQueue = this.units.map(
       unit =>
@@ -269,7 +274,7 @@ export default class Battle {
     const bTeamUnits = this.unitsFromTeam(TEAM.B);
 
     if (!aTeamUnits.length || !bTeamUnits.length) {
-      this.winner = aTeamUnits.length ? this.startBoard[Symbol.for('owners')][0] : this.startBoard[Symbol.for('owners')][1]; // todo support for more board owners?
+      this.winner = aTeamUnits.length ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
     } else {
       this.winner = '';
     }
