@@ -96,4 +96,8 @@ export default class State extends MutableObject {
   getPlayer(playerIndex): Player {
     return this.getIn(['players', playerIndex]);
   }
+
+  toSocket() {
+    return JSON.parse(JSON.stringify(this));
+  }
 }
