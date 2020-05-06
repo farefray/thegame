@@ -22,7 +22,7 @@ export default class Player {
     this.index = id;
     this.shopUnits = [];
     this.hand = new BoardMatrix(8, 1);
-    this.board = new BoardMatrix(8, 4);
+    this.board = new BoardMatrix(8, 8);
 
     this.refreshShop();
   }

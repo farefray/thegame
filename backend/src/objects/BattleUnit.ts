@@ -466,21 +466,17 @@ export default class BattleUnit {
 
     if (this.attackRange > 1) {
       bestY = Math.max(0, Math.min(bestY - this.attackRange, bestY));
-      console.log('Test -> getPreferablePosition -> bestY', bestY);
     }
 
     const allY = [0, 1, 2, 3];
     for (let index = 0; index < allY.length; index++) {
       const bestYiterator = allY.findIndex((val) => val === bestY);
       const pickedY = bestYiterator ? allY.splice(bestYiterator, 1)[0] : allY.pop();
-      console.log("getPreferablePosition -> pickedY", pickedY)
       const xPositions = availableSpots.filter(pos => pos.y === pickedY).reduce((xValues: number[], pos) => {
           xValues.push(pos.x);
           return xValues;
       }, []); // here we got some dirty typescript. Resolve this please
-      console.log("getPreferablePosition -> xPositions", xPositions)
       if (xPositions.length) {
-        console.log("getPreferablePosition -> xPositions", xPositions)
         const bestXMatch = xPositions.reduce((prev, curr) => (Math.abs(curr - bestX) < Math.abs(prev - bestX) ? curr : prev));
         if (bestXMatch) {
           bestMatch = { x: bestXMatch, y: bestYiterator };
@@ -490,7 +486,6 @@ export default class BattleUnit {
     }
 
     // todo also base to closest unit?
-    console.log(bestMatch);
     return bestMatch;
   }
 }

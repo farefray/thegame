@@ -40,7 +40,7 @@ class AI {
 
   @test
   async canProceedIntoAIRounds() {
-    for (let round = 0; round < 2; round++) {
+    for (let round = 0; round < 1; round++) {
       const roundResults = await this.session.nextRound();
       const { battles } = roundResults;
 
