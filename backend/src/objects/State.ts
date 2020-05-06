@@ -62,9 +62,14 @@ export default class State extends MutableObject {
     this.round = this.round + 1;
 
     for (const uid in this.players) {
+      // FOR REWORK!!
       const gold: number = this.getIn(['players', uid, 'gold']);
       const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
       this.setIn(['players', uid, 'gold'], (gold + this.incomeBase + bonusGold));
+
+      if (this.round <= 10) {
+        this.setIn(['players', uid, 'level'], this.round);
+      }
 
       if (!winners.includes(uid)) {
         // player lost battle, remove health
@@ -93,7 +98,15 @@ export default class State extends MutableObject {
     await sleep(this.countdown);
   }
 
+  async wait(time) {
+    await sleep(time);
+  }
+
   getPlayer(playerIndex): Player {
     return this.getIn(['players', playerIndex]);
+  }
+
+  toSocket() {
+    return JSON.parse(JSON.stringify(this));
   }
 }

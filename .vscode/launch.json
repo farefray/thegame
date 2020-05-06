@@ -22,6 +22,7 @@
       "name": "Mocha All",
       "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
       "args": [
+        "{,!(node_modules)/}*/*.test.js",
         "{,!(node_modules)/}*/*.test.ts"
       ],
       "runtimeArgs": [

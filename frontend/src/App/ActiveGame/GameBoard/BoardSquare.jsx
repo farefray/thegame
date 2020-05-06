@@ -21,14 +21,14 @@ export default function BoardSquare({ cellPosition, children }) {
     const fromBoardPosition = fromPosition.toBoardPosition();
     if (isActiveBattleGoing) {
       // only hand to hand movement is allowed
-      const handUnit = myHand[fromBoardPosition];
+      const handUnit = myHand[fromPosition.x];
       return handUnit && fromPosition.isMyHandPosition() && toPosition.isMyHandPosition();
     } else {
       const isPositionFromValid = fromPosition.isMyPosition();
       const isPositionToValid = toPosition.isMyPosition();
 
       if (isPositionFromValid && isPositionToValid) {
-        const handUnit = fromPosition.isMyHandPosition() ? myHand[fromBoardPosition] : myBoard[fromBoardPosition];
+        const handUnit = fromPosition.isMyHandPosition() ? myHand[fromPosition.x] : myBoard[fromBoardPosition];
         return !!handUnit;
       }
     }

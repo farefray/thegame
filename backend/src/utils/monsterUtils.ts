@@ -16,15 +16,20 @@ const randomProperty = function(obj) {
   return obj[keys[(keys.length * Math.random()) << 0]];
 };
 
+interface MonstersFilter {
+  cost?: number;
+}
+
 const monsterUtils = {
+  getAllUnits: () => MONSTERS,
   getMonsterStats: name => MONSTERS[name.toLowerCase()],
-  getRandomUnit: (filterObject) => {
+  getRandomUnit: (filterObject: MonstersFilter) => {
     const filtered = {};
-    Object.keys(MONSTERS).forEach(key => {
+    Object.keys(MONSTERS).forEach((key) => {
       const mob: MonsterInterface = MONSTERS[key];
       if (!filterObject
-        || !filterObject.cost
-        || mob.cost <= filterObject.cost) {
+        || !filterObject?.cost
+        || mob.cost <= filterObject?.cost) {
         filtered[key] = mob;
       }
     });

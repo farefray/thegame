@@ -4,6 +4,7 @@ import TargetPairPool from './TargetPairPool';
 import BattleUnit, { UnitConfig } from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
+import BoardMatrix from '../utils/BoardMatrix';
 
 export interface BattleContext {
   currentTimestamp: number;
@@ -15,7 +16,7 @@ export interface BattleContext {
 export interface BattleResult {
   battleTime: number;
   actionStack: Array<Object>;
-  startBoard: Object;
+  startBoard: BoardMatrix;
   participants: Array<string>;
   winner: string;
 }
@@ -35,8 +36,29 @@ export interface BattleBoard {
   owner: string;
 }
 
+function shuffle(array) {
+  const length = array.length;
+
+  // Fisher-Yates shuffle
+  for (let iterator = 0; iterator < length; iterator += 1) {
+
+    // define target randomized index from given array
+    const target = Math.floor(Math.random() * (iterator + 1));
+    // if target index is different of current iterator then switch values
+    if (target !== iterator) {
+      const temporary = array[iterator];
+      // switch values
+      array[iterator] = array[target];
+      array[target] = temporary;
+    }
+  }
+
+  // returns given array with mutation
+  return array;
+}
+
 export default class Battle {
-  public startBoard: Object;
+  public startBoard: BoardMatrix;
   public winner = TEAM.NONE;
   public readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
@@ -49,16 +71,16 @@ export default class Battle {
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
   constructor(...unitBoards: Array<BattleBoard>) {
-    this.startBoard = {};
-    this.startBoard[Symbol.for('owners')] = {};
+    this.startBoard = new BoardMatrix(8, 8);
+    this[Symbol.for('owners')] = {};
 
-    unitBoards.forEach((board, teamId) => {
-      if (board.owner) {
-        this.startBoard[Symbol.for('owners')][teamId] = board.owner;
+    unitBoards.forEach((unitBoard, teamId) => {
+      if (unitBoard.owner) {
+        this[Symbol.for('owners')][teamId] = unitBoard.owner;
       }
 
-      if (board.units.length) {
-        board.units.forEach((unitConfig) => {
+      if (unitBoard.units.length) {
+        unitBoard.units.forEach((unitConfig) => {
           const battleUnit = new BattleUnit({
             name: unitConfig.name,
             x: unitConfig.x,
@@ -66,7 +88,8 @@ export default class Battle {
             teamId,
           });
 
-          this.startBoard[battleUnit.id] = battleUnit;
+          // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
+          this.startBoard.setCell(unitConfig.x, unitConfig.y, battleUnit);
         });
       }
     });
@@ -79,9 +102,10 @@ export default class Battle {
      * Actually object with units to calculate battle
      * clone is needed here in order to remove symlinks to our startBoard battle units and they can be passed normally
      */
-    const easyShuffle = array => array.sort(() => Math.random() - 0.5);
+    this.units = shuffle(this.startBoard.units());
 
-    this.units = easyShuffle(Object.keys(this.startBoard).map(key => this.startBoard[key]));
+    // dirty way to unlink units from startboard, need to be revised
+    this.startBoard = JSON.parse(JSON.stringify(this.startBoard));
 
     this.actorQueue = this.units.map(
       unit =>
@@ -169,7 +193,8 @@ export default class Battle {
     let min = 0;
     let max = this.actorQueue.length;
     while (min < max) {
-      const mid = (min + max) >>> 1; // eslint-disable-line
+      // tslint:disable-next-line: no-bitwise
+      const mid = (min + max) >>> 1;
       if (this.actorQueue[mid].timestamp < timestamp) {
         min = mid + 1;
       } else {
@@ -232,7 +257,7 @@ export default class Battle {
 
   addToActionStack(action, type): void {
     const { unitID, payload } = action;
-    const actionStackItem:any = { type, unitID, payload, time: this.currentTimestamp };
+    const actionStackItem: any = { type, unitID, payload, time: this.currentTimestamp };
     action.effects && (actionStackItem.effects = action.effects);
     action.uid && (actionStackItem.uid = action.uid);
     action.parent && (actionStackItem.parent = action.parent);
@@ -249,7 +274,7 @@ export default class Battle {
     const bTeamUnits = this.unitsFromTeam(TEAM.B);
 
     if (!aTeamUnits.length || !bTeamUnits.length) {
-      this.winner = aTeamUnits.length ? this.startBoard[Symbol.for('owners')][0] : this.startBoard[Symbol.for('owners')][1]; // todo support for more board owners?
+      this.winner = aTeamUnits.length ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
     } else {
       this.winner = '';
     }

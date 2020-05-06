@@ -27,6 +27,8 @@ export default function GameService() {
           eventEmitter.emit('roundBattleStarted', uid, battles.filter(battle => battle.participants.includes(uid)).shift());
         }
 
+        await state.wait(roundResults.countdown); // this is a hotfix, has to be done better way
+
         eventEmitter.emit('stateUpdate', session.ID, state);
         await state.scheduleNextRound();
       }

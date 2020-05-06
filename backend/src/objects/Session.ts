@@ -8,7 +8,7 @@ const MAX_ROUND = 5;
 
 export default class Session {
   private _id = uuidv4();
-  private clients: Array<String>;
+  public clients: Array<String>; // reivew
   public state: State;
 
   constructor (clients) {
@@ -63,11 +63,11 @@ export default class Session {
 
         battleBoard.push({
           owner: player.index,
-          units: Object.values(player.board),
+          units: player.board.units(),
         });
       }
 
-      const battleResult = await BattleController.setupBattle({ boards: battleBoard });
+      const battleResult = await BattleController.setupBattle({ boards: battleBoard }); // shOUldnt be await! TODO
       if (battleResult.battleTime > playersBattleResults.countdown) {
         playersBattleResults.countdown = battleResult.battleTime;
       }

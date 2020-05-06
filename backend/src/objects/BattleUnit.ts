@@ -76,13 +76,13 @@ export default class BattleUnit {
     const { attack } = unitStats;
 
     this.attack = {
-      ...attack,
+      ...attack
     };
 
     if (attack.particleID) {
       attack.particle = {
         id: attack.particleID || null,
-        duration: Math.floor(attack.speed / 10), // todo isnt this supposed to be varying on distance/atkspeed?
+        duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
       };
     }
 
@@ -93,7 +93,7 @@ export default class BattleUnit {
       this._mana = {
         now: 0,
         max: unitStats.mana.max || 0,
-        regen: unitStats.mana.regen || 0,
+        regen: unitStats.mana.regen || 0
       };
     }
 
@@ -101,7 +101,7 @@ export default class BattleUnit {
 
     this._health = {
       now: unitStats.health.max,
-      max: unitStats.health.max,
+      max: unitStats.health.max
     };
 
     this.walkingSpeed = unitStats.walkingSpeed;
@@ -140,7 +140,7 @@ export default class BattleUnit {
 
   set mana(value: number) {
     if (this._mana) {
-      this._mana.now = Math.max(0, Math.min((value || 0), this._mana.max));
+      this._mana.now = Math.max(0, Math.min(value || 0, this._mana.max));
     }
   }
 
@@ -168,7 +168,7 @@ export default class BattleUnit {
   }
 
   get attackRange() {
-    return this.attack?.range;
+    return this.attack?.range ?? 1;
   }
 
   get canMove() {
@@ -193,7 +193,7 @@ export default class BattleUnit {
     const actor = new Actor({ timestamp: currentTimestamp, actionGenerator: spellGenerator });
     return {
       actionDelay: 1000, // [TODO] check if thats fine to have 1s delay after spellcast
-      actors: [actor],
+      actors: [actor]
     };
   }
 
@@ -225,18 +225,18 @@ export default class BattleUnit {
       }
 
       const distanceToTarget = Pathfinder.getDistanceBetweenUnits(this, targetUnit);
-      if (this.attackRange && distanceToTarget < this.attackRange && this?.attack?.speed) {
+      if (distanceToTarget < this.attackRange && this?.attack?.speed) {
         const { actions, actors } = this.doAttack(targetUnit, battleContext);
         yield {
           actionDelay: this.attack.speed,
           actions,
-          actors,
+          actors
         };
       } else if (this.canMove) {
         const step = pathfinder.findStepToTarget(this, targetUnit);
         yield {
           actionDelay: this.stepDuration,
-          actions: this.doMove(step),
+          actions: this.doMove(step)
         };
       }
 
@@ -265,7 +265,7 @@ export default class BattleUnit {
     const spawnAction: SpawnAction = {
       unitID: this.id,
       type: ACTION_TYPE.SPAWN,
-      payload: { unit: this },
+      payload: { unit: this }
     };
 
     return [spawnAction];
@@ -290,9 +290,9 @@ export default class BattleUnit {
         payload: {
           from,
           to,
-          stepDuration: this.stepDuration,
-        },
-      },
+          stepDuration: this.stepDuration
+        }
+      }
     ];
   }
 
@@ -329,9 +329,9 @@ export default class BattleUnit {
             x: from.x,
             y: from.y,
             x2: to.x,
-            y2: to.y,
-          }) * speedByTile,
-        ),
+            y2: to.y
+          }) * speedByTile
+        )
       );
     }
 
@@ -351,24 +351,25 @@ export default class BattleUnit {
       payload: {
         from,
         to,
-        duration: attackDuration,
-      },
+        duration: attackDuration
+      }
     };
 
     const value = -Math.floor(multiplier * this.attackValue);
     return {
-      actions: [attackAction], actors: [
+      actions: [attackAction],
+      actors: [
         new Actor({
           timestamp: battleContext.currentTimestamp + attackDuration,
-          actionGenerator: (function*() {
+          actionGenerator: (function* () {
             yield {
               actions: targetUnit.healthChange(value, {
-                parent: attackAction.uid,
-              }),
+                parent: attackAction.uid
+              })
             };
-          })(),
-        }),
-      ],
+          })()
+        })
+      ]
     };
   }
 
@@ -379,8 +380,8 @@ export default class BattleUnit {
       unitID: this.id,
       type: ACTION_TYPE.HEALTH_CHANGE,
       payload: {
-        value,
-      },
+        value
+      }
     };
 
     if (opts?.effect) {
@@ -390,9 +391,9 @@ export default class BattleUnit {
           duration: opts.effect.duration || EFFECTS[opts.effect.id].duration,
           from: {
             x: this.x,
-            y: this.y,
-          },
-        },
+            y: this.y
+          }
+        }
       ];
     }
 
@@ -407,9 +408,8 @@ export default class BattleUnit {
         unitID: this.id,
         type: ACTION_TYPE.DEATH,
         payload: { unit: this },
-        parent: healthChangeAction.uid,
+        parent: healthChangeAction.uid
       };
-
 
       return [healthChangeAction, deathAction];
     }
@@ -427,8 +427,8 @@ export default class BattleUnit {
       unitID: this.id,
       type: ACTION_TYPE.MANA_CHANGE,
       payload: {
-        value,
-      },
+        value
+      }
     };
     return [manaChangeAction];
   }
@@ -440,9 +440,9 @@ export default class BattleUnit {
         type: ACTION_TYPE.ACQUIRE_TARGET,
         payload: {
           attacker: this,
-          target,
-        },
-      },
+          target
+        }
+      }
     ];
   }
 
@@ -450,10 +450,47 @@ export default class BattleUnit {
     const closestTarget = <BattleUnit[]>PathUtil.getClosestTargets({
       x: this.x,
       y: this.y,
-      targets: units.filter(u => u.teamId !== this.teamId && u.isAlive && u.isTargetable),
-      amount: 1,
+      targets: units.filter((u) => u.teamId !== this.teamId && u.isAlive && u.isTargetable),
+      amount: 1
     });
 
-    return closestTarget.length > 0 ? closestTarget[0]: null;
+    return closestTarget.length > 0 ? closestTarget[0] : null;
+  }
+
+  // AI methods
+  getPreferablePosition(availableSpots: Position[]) {
+    // based on attack range
+    let bestMatch: Position|null = null;
+    const bestX = 4; // Math.floor(Math.random() * 4) + 3
+    let bestY = 3;
+
+    if (this.attackRange > 1) {
+      bestY = Math.max(0, Math.min(bestY - this.attackRange, bestY));
+      console.log('Test -> getPreferablePosition -> bestY', bestY);
+    }
+
+    const allY = [0, 1, 2, 3];
+    for (let index = 0; index < allY.length; index++) {
+      const bestYiterator = allY.findIndex((val) => val === bestY);
+      const pickedY = bestYiterator ? allY.splice(bestYiterator, 1)[0] : allY.pop();
+      console.log("getPreferablePosition -> pickedY", pickedY)
+      const xPositions = availableSpots.filter(pos => pos.y === pickedY).reduce((xValues: number[], pos) => {
+          xValues.push(pos.x);
+          return xValues;
+      }, []); // here we got some dirty typescript. Resolve this please
+      console.log("getPreferablePosition -> xPositions", xPositions)
+      if (xPositions.length) {
+        console.log("getPreferablePosition -> xPositions", xPositions)
+        const bestXMatch = xPositions.reduce((prev, curr) => (Math.abs(curr - bestX) < Math.abs(prev - bestX) ? curr : prev));
+        if (bestXMatch) {
+          bestMatch = { x: bestXMatch, y: bestYiterator };
+          break;
+        }
+      }
+    }
+
+    // todo also base to closest unit?
+    console.log(bestMatch);
+    return bestMatch;
   }
 }

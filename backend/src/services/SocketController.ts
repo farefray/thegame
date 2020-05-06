@@ -7,6 +7,8 @@ import AppError from '../objects/AppError';
 import SessionStore from '../models/SessionsStore';
 import GameService from './GameService';
 import Player from '../objects/Player';
+import State from '../objects/State';
+import { BattleResult } from '../objects/Battle';
 
 // Dependency container
 Container.set('session.store', new SessionStore());
@@ -32,18 +34,23 @@ const connectedPlayers = new ConnectedPlayers();
   });
 */
 
+/**
+ * We need to review what we are sending to socket. Many objects can be simplified with toJson and removing unnessesary big parts
+ */
+eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) => {
+  const io:SocketIO.Server = Container.get('socket.io');
+  io.to(uid).emit('START_BATTLE', playerBattleResult);
+});
 
-function SocketController(socket, io) {
+eventEmitter.on('stateUpdate', (sessionID, state: State) => {
+  const io:SocketIO.Server = Container.get('socket.io');
+  io.to(sessionID).emit('UPDATED_STATE', state.toSocket()); // do we need to send whole state?
+});
+
+function SocketController(socket) {
   const gameService = GameService();
   const sessionsStore:SessionStore = Container.get('session.store');
-
-  eventEmitter.on('roundBattleStarted', (uid, playerBattle) => {
-    io.to(uid).emit('START_BATTLE', playerBattle);
-  });
-
-  eventEmitter.on('stateUpdate', (sessionID, state) => {
-    io.to(sessionID).emit('UPDATED_STATE', state); // do we need to send whole state?
-  });
+  const io:SocketIO.Server = Container.get('socket.io');
 
   socket.on('ON_CONNECTION', async () => {
     socket.join('WAITING_ROOM'); // place new customers to waiting room
@@ -109,7 +116,7 @@ function SocketController(socket, io) {
         socket.join(session.ID, () => {
           const rooms = Object.keys(socket.rooms);
           console.log(rooms); // [ <socket.id>, 'room 237' ]
-          io.to(session.ID).emit('UPDATED_STATE', session.getState()); // sending whole state isnt good?
+          io.to(session.ID).emit('UPDATED_STATE', session.getState().toSocket()); // sending whole state isnt good?
         });
       });
 
