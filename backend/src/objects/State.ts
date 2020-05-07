@@ -2,7 +2,6 @@ import { promisify } from 'util';
 import MutableObject from '../abstract/MutableObject';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
-import monsterUtils from '../utils/monsterUtils';
 import AppError from './AppError';
 
 const sleep = promisify(setTimeout);
@@ -108,5 +107,9 @@ export default class State extends MutableObject {
 
   toSocket() {
     return JSON.parse(JSON.stringify(this));
+  }
+
+  getPlayers(): Player[] {
+    return Object.values(this.players);
   }
 }

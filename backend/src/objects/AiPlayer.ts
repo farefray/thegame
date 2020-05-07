@@ -6,10 +6,6 @@ const findMostSuitableUnit = (units: BattleUnit[]) => {
   return units[Math.floor(Math.random() * units.length)];
 };
 
-const findMostSuitablePosition = (self: AiPlayer, unit: BattleUnit) => {
-  return unit.getPreferablePosition(self.board.freeSpots());
-};
-
 export default class AiPlayer extends Player {
   constructor(id: string) {
     super(id);
@@ -31,7 +27,8 @@ export default class AiPlayer extends Player {
       const unit = findMostSuitableUnit(this.hand.units());
 
       if (unit) {
-        this.movePawn(unit.stringifiedPosition, findMostSuitablePosition(this, unit));
+        const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
+        this.movePawn(unit.stringifiedPosition, prefereablePosition);
       }
     }
   }
@@ -42,7 +39,7 @@ export default class AiPlayer extends Player {
     const affortableUnits = this.getAffortableShopUnits();
     if (affortableUnits.length > 0) {
       const unit = this.considerUnitsPurchase(affortableUnits, opponent.board.units());
-      if (unit && unit.name !== undefined) { // !-- underinfed must be fixed
+      if (unit) {
         this.purchasePawn(this.shopUnits.findIndex(({ name }) => name === unit.name));
       }
     }

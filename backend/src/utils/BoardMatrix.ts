@@ -60,7 +60,7 @@ export default class BoardMatrix {
 
   getCell(x, y = 0): BattleUnit | null {
     if (x < 0 || x > this.sizeX - 1 || y < 0 || y > this.sizeY - 1) {
-      throw new RangeError('Illegal indexes');
+      throw new RangeError(`Illegal matrix indexes, x: ${x}, y:${y}`);
     }
 
     return this.matrix[y][x]; // because our matrix representation is reversed
@@ -72,7 +72,7 @@ export default class BoardMatrix {
    */
   setCell(x, y = 0, value: BattleUnit | null = null): void {
     if (x < 0 || x > this.sizeX - 1 || y < 0 || y > this.sizeY - 1) {
-      throw new RangeError('Illegal indexes');
+      throw new RangeError(`Illegal matrix indexes, x: ${x}, y:${y}`);
     }
 
     this.matrix[y][x] = value;
@@ -161,5 +161,9 @@ export default class BoardMatrix {
     }
 
     return rows.join('\n');
+  }
+
+  get _units() {
+    return this.units()
   }
 }

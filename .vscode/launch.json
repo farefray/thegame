@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+
     {
       "type": "node",
       "request": "launch",
@@ -24,6 +25,22 @@
       "args": [
         "{,!(node_modules)/}*/*.test.js",
         "{,!(node_modules)/}*/*.test.ts"
+      ],
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "cwd":"${workspaceFolder}/backend"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha AI only",
+      "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
+      "args": [
+        "{,!(node_modules)/}*/ai.test.ts"
       ],
       "runtimeArgs": [
         "--nolazy"

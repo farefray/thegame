@@ -23,7 +23,7 @@ interface MonstersFilter {
 const monsterUtils = {
   getAllUnits: () => MONSTERS,
   getMonsterStats: name => MONSTERS[name.toLowerCase()],
-  getRandomUnit: (filterObject: MonstersFilter) => {
+  getRandomUnit: (filterObject?: MonstersFilter) => {
     const filtered = {};
     Object.keys(MONSTERS).forEach((key) => {
       const mob: MonsterInterface = MONSTERS[key];
