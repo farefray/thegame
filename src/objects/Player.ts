@@ -5,6 +5,7 @@ import AppError from './AppError';
 import monsterUtils from '../utils/monsterUtils';
 
 const HAND_UNITS_LIMIT = 8;
+const BOARD_UNITS_LIMIT = 8;
 const SHOP_UNITS = 4;
 
 export default class Player {
@@ -80,7 +81,8 @@ export default class Player {
   }
 
   isBoardFull() {
-    return this.board.units().length === this.level;
+    const boardUnitsAmount = this.board.units().length;
+    return boardUnitsAmount >= this.level || boardUnitsAmount === BOARD_UNITS_LIMIT;
   }
 
   /**

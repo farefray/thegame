@@ -458,6 +458,7 @@ export default class BattleUnit {
   }
 
   // AI methods
+  // todo review this one
   getPreferablePosition(availableSpots: Position[]) {
     // based on attack range
     let bestMatch: Position|null = null;
@@ -471,15 +472,26 @@ export default class BattleUnit {
     const allY = [0, 1, 2, 3];
     for (let index = 0; index < allY.length; index++) {
       const bestYiterator = allY.findIndex((val) => val === bestY);
-      const pickedY = bestYiterator ? allY.splice(bestYiterator, 1)[0] : allY.pop();
+
+      // we got chance to find best suitable position in needed Y
+      let pickedY;
+      if (bestYiterator !== -1) {
+        pickedY = allY.splice(bestYiterator, 1).pop();
+      } else {
+        // all X values of preferable Y are picked, so we need to try another Y
+        pickedY = bestY > 1 ? allY.pop() : allY.shift();
+      }
+
       const xPositions = availableSpots.filter(pos => pos.y === pickedY).reduce((xValues: number[], pos) => {
-          xValues.push(pos.x);
-          return xValues;
-      }, []); // here we got some dirty typescript. Resolve this please
+        xValues.push(pos.x);
+        return xValues;
+      }, []);
+
       if (xPositions.length) {
         const bestXMatch = xPositions.reduce((prev, curr) => (Math.abs(curr - bestX) < Math.abs(prev - bestX) ? curr : prev));
+
         if (bestXMatch) {
-          bestMatch = { x: bestXMatch, y: bestYiterator };
+          bestMatch = { x: bestXMatch, y: pickedY };
           break;
         }
       }

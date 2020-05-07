@@ -4,7 +4,7 @@ import BattleController from '../services/BattleController';
 import { BattleBoard, BattleResult } from './Battle';
 import Player from './Player';
 
-const MAX_ROUND = 5;
+const MAX_ROUND = 20;
 
 export default class Session {
   private _id = uuidv4();

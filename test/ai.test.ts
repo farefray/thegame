@@ -4,6 +4,8 @@ import { expect } from 'chai';
 import Session from '../src/objects/Session';
 import AiPlayer from '../src/objects/AiPlayer';
 import { BattleResult } from '../src/objects/Battle';
+import monsterUtils from '../src/utils/monsterUtils';
+import BattleUnit from '../src/objects/BattleUnit';
 
 @suite
 class AI {
@@ -39,8 +41,8 @@ class AI {
   }
 
   @test
-  async canProceedIntoAIRounds() {
-    for (let round = 0; round < 1; round++) {
+  async canProcessAIBattle() {
+    while (this.session.hasNextRound()) {
       const roundResults = await this.session.nextRound();
       const { battles } = roundResults;
 
@@ -58,6 +60,34 @@ class AI {
       }
 
       expect(firstBattle.actionStack.length).to.be.above(0);
+    }
+
+    const state = this.session.getState();
+    expect(state.getPlayers().length).to.be.equal(1);
+  }
+}
+
+
+@suite
+class Minor_AI_functionality {
+  @test
+  getPreferablePosition() {
+    const playerOne = new AiPlayer('ai_1');
+    playerOne.level = 10;
+    while(!playerOne.isBoardFull()) {
+      const monsterInterface = monsterUtils.getRandomUnit();
+      const unit = new BattleUnit({
+        name: monsterInterface.name || 'dwarf',
+        x: playerOne.availableHandPosition,
+        y: -1,
+        teamId: 0,
+      });
+
+      playerOne.hand.setCell(playerOne.availableHandPosition, 0, unit);
+
+      const freeSpots = playerOne.board.freeSpots(); // todo make player.freeSpots and filter positions which are not in scope
+      const prefereablePosition = unit.getPreferablePosition(freeSpots);
+      playerOne.movePawn(unit.stringifiedPosition, prefereablePosition);
     }
   }
 }
