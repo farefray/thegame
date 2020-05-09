@@ -5,9 +5,10 @@ import AppError from './AppError';
 import monsterUtils from '../utils/monsterUtils';
 
 const HAND_UNITS_LIMIT = 8;
-const BOARD_UNITS_LIMIT = 8;
+export const BOARD_UNITS_LIMIT = 8;
 const SHOP_UNITS = 4;
 
+// TODO move logic to service/controller and data to model
 export default class Player {
   public index: string;
   public health: number = 100;
@@ -154,7 +155,7 @@ export default class Player {
     const fromPosition = new Position(fromBoardPosition);
     const toPosition = new Position(toBoardPosition);
 
-    // todo validate positions
+    // todo validate positions and actually move to boardMatrix maybe?
 
     let battleUnit:BattleUnit|null = null;
     // retrieve units from positions
