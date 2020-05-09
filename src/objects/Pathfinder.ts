@@ -179,7 +179,7 @@ export default class Pathfinder {
       }
     }
 
-    if (closest) {
+    if (closest && (closestNode.x !== startNode.x || closestNode.y !== startNode.y)) {
       // return pathTo(closestNode);
       let node = currentNode;
       const stepArray: Array<any> = [];

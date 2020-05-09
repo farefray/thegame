@@ -62,7 +62,7 @@ export default class Battle {
   public winner = TEAM.NONE;
   public readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
-  private units: BattleUnit[];
+  public units: BattleUnit[]; // temporaly public for ai needs
   private readonly actorQueue: Actor[];
   private readonly targetPairPool: TargetPairPool;
   private currentTimestamp: number;

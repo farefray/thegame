@@ -891,6 +891,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/synaptic@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/synaptic/-/synaptic-1.0.3.tgz#9bb132018cfc27d1476515960c29ce93403df7b1"
+  integrity sha512-YhFSgLpf684br0COiwSfdlH8vrW86kUuYaOWwgjoC5p2kGrdUQotMArk1cBopXQJeDfzsHlZtCWUkUNuHVkbHw==
+
 JSONStream@^1.3.4, JSONStream@^1.3.5:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.5.tgz#3208c1f08d3a4d99261ab64f92302bc15e111ca0"
@@ -5449,6 +5454,11 @@ supports-color@^7.1.0:
   integrity sha512-oRSIpR8pxT1Wr2FquTNnGet79b3BWljqOuoW/h4oBhxJ/HUbX5nX6JSruTkvXDCFMwDPvsaTTbvMLKZWSy0R5g==
   dependencies:
     has-flag "^4.0.0"
+
+synaptic@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/synaptic/-/synaptic-1.1.4.tgz#b058163e2e86a3f86fc964ab792496c0642c13d7"
+  integrity sha512-JFtU98VDFI0uBTowgySo+UUEkc7rSVHaxx9D6dR5BK6u81G7uAxcp32Gi2SHciLpFbvJVd1Pfz7aqSNQO4EH9Q==
 
 tar@^4.4.10, tar@^4.4.12, tar@^4.4.13:
   version "4.4.13"
