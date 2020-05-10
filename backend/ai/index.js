@@ -1,6 +1,6 @@
 import { Loader } from './loader';
 import { Normalizer } from './normalizer';
-import { Architect, Trainer } from 'synaptic';
+import * as brain from './brain/browser';
 
 const trainData = new Loader().getData();
 
@@ -18,30 +18,37 @@ const nbrOutputs = normalizer.getOutputLength();
 
 const metadata = normalizer.getDatasetMetaData();
 
-const dataSet = normalizer.getBinaryTrainingSet();
+const binaryDataSet = normalizer.getBinaryTrainingSet();
+const trainingDataSet = normalizer.getDataSet();
 
 console.log('\n', '\x1b[37m\x1b[46m', 'METADATA:', '\x1b[0m');
 console.log(metadata);
-// console.log('\n', '\x1b[37m\x1b[42m', 'DATASET:', '\x1b[0m');
-// console.log(dataSet);
+console.log('\n', '\x1b[37m\x1b[42m', 'binaryDataSet example:', '\x1b[0m');
+console.log(binaryDataSet[0]);
+console.log('\n', '\x1b[37m\x1b[42m', 'trainingDataSet example:', '\x1b[0m');
+console.log(trainingDataSet[0]);
 
 console.time('TrainingTimer');
 console.timeLog('TrainingTimer', 'Starting training up…');
-const myNetwork = new Architect.Perceptron(nbrInputs, 10, 10, nbrOutputs);
-const trainer = new Trainer(myNetwork);
 
-const trainConfig = {
-  rate: 0.3,
-  iterations: 100,
-  error: 0.05,
-  shuffle: true,
-  log: 1,
-	cost: Trainer.cost.CROSS_ENTROPY
+const RNNconfig = {
+  inputSize: nbrInputs,
+  hiddenLayers: [nbrInputs, nbrInputs],
+  outputSize: nbrOutputs,
+  learningRate: 0.01,
+  decayRate: 0.999,
 };
 
-console.log("trainConfig", trainConfig)
+const net = new brain.recurrent.LSTM()
 
-trainer.train(dataSet, trainConfig);
+const trainingOptions = {
+  iterations: 1000,
+  log: details => {
+    console.timeLog('TrainingTimer', '... training');
+    return console.log(details)
+  }
+};
+net.train(binaryDataSet, trainingOptions);
 
 console.timeLog('TrainingTimer', 'AI is setup');
 console.timeEnd('TrainingTimer');
@@ -53,7 +60,9 @@ examinator.setDatasetMetaData(metadata).setOutputProperties(['winner'/*, 'winner
 
 console.log('=====================EXAM==========================');
 const examDataSet = examinator.getBinaryTrainingSet();
-
+const dataSet = examinator.getDataSet();
+console.log(dataSet[0]);
+console.log(examDataSet[0]);
 const examResults = {
   passed: 0,
   failed: 0
@@ -73,17 +82,24 @@ function almostEqual(a, b, absoluteError = 0.1, relativeError = 0.2) {
   return a === b;
 }
 
-examDataSet.forEach((examSet) => {
-  const [predictedWinner/**, predictedPower */] = myNetwork.activate(examSet.input);
+examDataSet.forEach((examSet, index) => {
+  const predictionResult = net.run(examSet.input);
+
+  const [predictedWinner/**, predictedPower */] = predictionResult;
   const [actualWinner/**, actualPower */] = examSet.output;
 
-  if (Math.round(predictedWinner) !== actualWinner) {
+  if (!almostEqual(predictedWinner, actualWinner)) {
+    //console.log(dataSet[index])
+    //console.log("predictionResult", predictionResult)
+    //console.log("actualWinner", actualWinner)
+
     examResults.failed++;
   /**
    } else if (!almostEqual(predictedPower, actualPower)) {
     examResults.failed++;
    */
   } else {
+    
     examResults.passed++;
   }
 });
@@ -97,7 +113,7 @@ console.log(`Total tests: ${examResults.passed + examResults.failed}. Success ra
 console.log('=====================EXAM==========================');
 
 
-const exported = myNetwork.toJSON();
+const exported = net.toJSON();
 new Loader('network', 'trained.json').saveData(exported).then(() => {
   console.log(`Network was saved to JSON.`);
 })

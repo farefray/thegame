@@ -49,6 +49,36 @@ export class Normalizer {
     return this.binaryInput[0].length;
   }
 
+  getDataSet() {
+    const dataSet: any = [];
+
+    for (const i in this.dataset) {
+      const row = this.dataset[i];
+
+      let index: number = 0;
+      let input: any = [];
+      let output: any = [];
+
+      for (const prop in row) {
+        const value: any = row[prop];
+
+        if (this.outputProperties.indexOf(prop) > -1) {
+          output.push(value);
+        } else {
+          input.push(value);
+        }
+
+        index++;
+      }
+
+      dataSet.push({
+        input,
+        output
+      });
+    }
+
+    return dataSet;
+  }
   getBinaryTrainingSet() {
     const trainingSet: any = [];
 
