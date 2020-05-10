@@ -43,7 +43,7 @@ export default {
   Elder_Beholder,
 
   // neutrals
-  Stone,
+  /* Stone, */
   Target_Melee,
   Target_Ranged,
 };
