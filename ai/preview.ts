@@ -22,7 +22,7 @@ console.log("nbrOutputs", nbrOutputs)
 
 const metadata = normalizer.getDatasetMetaData();
 
-const useBINARY = false;
+const useBINARY = true;
 
 console.log('\n', '\x1b[37m\x1b[46m', 'METADATA:', '\x1b[0m');
 console.log(metadata);
@@ -31,6 +31,7 @@ console.time('TrainingTimer');
 console.timeLog('TrainingTimer', 'Checking trained network');
 
 // create a simple recurrent neural network
+
 const net = new brain.NeuralNetwork()
 
 net.fromJSON(json as INeuralNetworkJSON)
@@ -48,10 +49,11 @@ const examResults = {passed: 0, failed: 0};
 
 examDataSet.forEach((examSet, index) => {
   const predictionResult = net.run(examSet.input);
-  console.log("predictionResult", predictionResult)
-  console.log("examSet.output", examSet.output)
+  
 
   if (!almostEqual(predictionResult, examSet.output)) {
+    console.log("predictionResult", predictionResult)
+    console.log("examSet.output", examSet.output)
     examResults.failed++;
   } else {
     examResults.passed++;

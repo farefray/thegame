@@ -1,7 +1,7 @@
 import { Normalizer } from './normalizer';
 import { Loader } from './loader';
-import brain from 'brain.js';
 import { percentage, almostEqual } from '../src/utils/math';
+
 
 const trainData = new Loader().getData();
 

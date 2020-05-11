@@ -16,10 +16,9 @@
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --fix --project tsconfig.json",
     "debug": "node --inspect -r ts-node/register src/index.js",
-    "ai:train": "node -r ts-node/register ai/index.js",
+    "ai:train": "ts-node ai/train.ts",
     "ai:generate": "ts-node ai/generateTrainData.ts",
-    "ai:test": "node -r ts-node/register ai/tests.js",
-    "ai": "ts-node ai/preview.ts"
+    "ai:preview": "ts-node ai/preview.ts"
   },
   "repository": {
     "type": "git",
@@ -28,10 +27,11 @@
   "author": "Maksym Fedan&&Jacek Kizinski",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow/tfjs": "^1.7.4",
+    "@tensorflow/tfjs-node": "^1.7.4",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.13.4",
     "@types/socket.io": "^2.1.4",
-    "brain.js": "^2.0.0-alpha.12",
     "chai": "^4.2.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
