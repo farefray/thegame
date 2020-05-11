@@ -48,7 +48,7 @@ class BattleController {
     // todo async maybe and some good syntax
     // performance.mark('battle_calc__start');
     const battle = new Battle(...battleConfig.boards);
-    const { actionStack, startBoard, winner } = battle;
+    const { actionStack, startBoard, winner, units:finalBoard } = battle;
 
     const optimizedActionStack = BattleController.optimizeActionStack(actionStack);
     const lastAction = actionStack[actionStack.length - 1];
@@ -56,6 +56,7 @@ class BattleController {
       actionStack: optimizedActionStack,
       startBoard,
       winner,
+      finalBoard,
       battleTime: lastAction ? lastAction.time : 0,
       participants: Object.values(battle[Symbol.for('owners')]), // ?
     };

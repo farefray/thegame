@@ -19,6 +19,7 @@ export interface BattleResult {
   startBoard: BoardMatrix;
   participants: Array<string>;
   winner: string;
+  finalBoard: BattleUnit[]; // DEBUG needs for generating train data of naural network. Should be rewrited
 }
 
 export interface UnitAction {
