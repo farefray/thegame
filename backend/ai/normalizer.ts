@@ -16,6 +16,8 @@ export class Normalizer {
   private datasetMeta: any = null; // training meta data (ranges, min, max, etc)
   private binaryInput: Array<Array<any>> = [];
   private binaryOutput: Array<number> = [];
+  private dataOutput: Array<Array<any>> = [];
+  private dataInput: Array<number> = [];
   private outputProperties: Array<string> = [];
 
   constructor(data: Array<RowInput> = []) {
@@ -49,36 +51,37 @@ export class Normalizer {
     return this.binaryInput[0].length;
   }
 
-  getDataSet() {
-    const dataSet: any = [];
-
-    for (const i in this.dataset) {
-      const row = this.dataset[i];
-
-      let index: number = 0;
-      let input: any = [];
-      let output: any = [];
-
-      for (const prop in row) {
-        const value: any = row[prop];
-
-        if (this.outputProperties.indexOf(prop) > -1) {
-          output.push(value);
-        } else {
-          input.push(value);
-        }
-
-        index++;
-      }
-
-      dataSet.push({
-        input,
-        output
-      });
-    }
-
-    return dataSet;
+  getBinaryInput() {
+    return this.binaryInput;
   }
+
+  getBinaryOutput() {
+    return this.binaryOutput;
+  }
+
+  getDataOutput() {
+    return this.dataOutput;
+  }
+
+  getDataInput() {
+    return this.dataInput;
+  }
+
+  getDataSet() {
+    const trainingSet: any = [];
+
+    this.dataInput.forEach((inputArr, index) => {
+      if (this.dataOutput[index] !== undefined) {
+        trainingSet.push({
+          input: inputArr,
+          output: this.dataOutput[index]
+        });
+      }
+    });
+
+    return trainingSet;
+  }
+
   getBinaryTrainingSet() {
     const trainingSet: any = [];
 
@@ -146,8 +149,10 @@ export class Normalizer {
 
         if (this.outputProperties.indexOf(prop) > -1) {
           outputBits = outputBits.concat(bitsArr);
+          this.dataOutput.push(value);
         } else {
           inputBits = inputBits.concat(bitsArr);
+          this.dataInput.push(value);
         }
 
         index++;
