@@ -4,12 +4,12 @@ import * as fs from 'fs';
  * Load/Save data from local file(s)
  */
 export class Loader {
-  public dir: string = '';
-  public filename: string = '';
+  public dir: string;
+  public filename: string;
 
-  constructor(dirName = 'data', filename = 'trainData.json') {
+  constructor(dirName, filename) {
     this.dir = dirName;
-    this.filename = filename;
+    this.filename = `${filename}.json`;
   }
 
   getData() {
