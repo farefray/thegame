@@ -5,6 +5,8 @@ import AiPlayer from '../src/objects/AiPlayer';
 import BattleUnit from '../src/objects/BattleUnit';
 import { percentage } from '../src/utils/math';
 
+const TRAIN_DATA_AMOUNT = 5000;
+
 interface SimulationResult {
   gandicap: number;
   firstUnits: string[];
@@ -12,7 +14,6 @@ interface SimulationResult {
   round: number;
 }
 
-const SIMULATIONS_AMOUNT = 100;
 class Simulation {
   private session: Session;
   private players: AiPlayer[]|Player[];
@@ -63,7 +64,7 @@ class Simulation {
       simulationResults.push({
         firstUnits,
         secondUnits,
-        gandicap,
+        gandicap: +(gandicap/100).toFixed(2),
         round
       });
     }
@@ -74,9 +75,9 @@ class Simulation {
 
 console.log('Generating train data ...');
 
-(async function() {
+const generate = async function(folderName, dataAmount) {
   const records: any = {};
-  for (let iteration = 0; iteration < SIMULATIONS_AMOUNT; iteration++) {
+  for (let iteration = 0; iteration < dataAmount; iteration++) {
     const simulation = new Simulation();
     const results = await simulation.run();
     console.log(`${iteration + 1} simulation is done.`)
@@ -92,14 +93,17 @@ console.log('Generating train data ...');
 
       records[res.round].push({
         units: [...res.firstUnits],
-        gandicap: [ res.gandicap ]
+        gandicap: res.gandicap
       })
     });
   }
 
   Object.keys(records).forEach((round) => {
-    new Loader('data/perRound', round).saveData(records[round]).then(() => {
+    new Loader(`${folderName}`, round).saveData(records[round]).then(() => {
       console.log(`${records[round].length} amount of ${round} round were saved`);
     });
   })
-})();
+};
+
+generate('trainData', TRAIN_DATA_AMOUNT);
+generate('examData', Math.round(TRAIN_DATA_AMOUNT / 100));
