@@ -1,4 +1,13 @@
-import MLPerceptron from "./mlp";
+import { tensor } from '@tensorflow/tfjs';
+
+import {
+  createSmp,
+  getInputLayerShape,
+  getOutputUnits,
+  smpEarlyStoppingTraining,
+  smpPredict
+} from './smp';
+
 import { Loader } from "./loader";
 import { Normalizer } from "./normalizer";
 
@@ -32,10 +41,43 @@ console.log(netOutput[0]);
 console.time('TrainingTimer');
 console.timeLog('TrainingTimer', 'Starting training up…');
 
-const net = new MLPerceptron(netInput, netOutput, 2, 'sgd', 'sigmoid', 'linear', 'meanSquaredError', 0.25);
+const inputTensor = tensor([[0], [1], [2], [3], [4]]);
+const targetTensor = tensor([[1, 2, 3, 4, 5]]);
+
+console.log(getOutputUnits(targetTensor));
+
+const inputShape = getInputLayerShape(inputTensor);
+
+if (inputShape && inputShape.length) {
+  const smp = createSmp({
+    inputLayerShape: inputShape,
+    outputUnits: getOutputUnits(targetTensor),
+    hiddenUnits: 5,
+    training: 'sgd'
+  });
+
+  smpEarlyStoppingTraining({
+    smp,
+    trainingIterations: 2000,
+    threshold: 0.000001,
+    validationSplit: 0,
+    getInputForTrainingIteration: (trainingIterationNum: number) =>
+      inputTensor,
+    getTargetForTrainingIteration: (trainingIterationNum: number) =>
+      targetTensor
+  }).then(h => {
+    smpPredict({ smp, inputTensorLike: [[0]] });
+    smpPredict({ smp, inputTensorLike: [[1]] });
+    smpPredict({ smp, inputTensorLike: [[2]] });
+    smpPredict({ smp, inputTensorLike: [[3]] });
+    console.log(smpPredict({ smp, inputTensorLike: [[4]] })[0][0]);
+  });
+}
+
+/*const net = new MLPerceptron(netInput, netOutput, 2, 'sgd', 'sigmoid', 'linear', 'meanSquaredError', 0.25);
 
 net.earlyStoppingTraining(2000, 0.000001, 0).then((h) => {
   console.log("h", h)
   net.predict(netInput[0]);
   console.log(netOutput[0])
-});
+});*/
