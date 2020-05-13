@@ -90,6 +90,13 @@ const run = async () => {
         console.log(`Network for round ${round} was saved to JSON.`);
       });
 
+      const standalone = NN.standalone();
+      new Loader('trained', round, 'js').saveData('export default ' + standalone.toString()).then(() => {
+        console.log(`Trained network for round ${round} was exported.`);
+
+        return true;
+      });
+
       new Loader('metadata', round).saveData(metadata).then(() => {
         console.log(`Metadata for round ${round} was saved to JSON.`);
 

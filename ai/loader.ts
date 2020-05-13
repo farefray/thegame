@@ -7,9 +7,9 @@ export class Loader {
   public dir: string;
   public filename: string;
 
-  constructor(dirName, filename) {
+  constructor(dirName, filename, ext = 'json') {
     this.dir = dirName;
-    this.filename = `${filename}.json`;
+    this.filename = `${filename}.${ext}`;
   }
 
   getData() {
