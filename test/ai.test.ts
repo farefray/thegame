@@ -1,4 +1,4 @@
-import { suite, test } from '@testdeck/mocha';
+import { suite, test, only } from '@testdeck/mocha';
 import { expect } from 'chai';
 
 import Session from '../src/objects/Session';
@@ -34,10 +34,6 @@ class AI {
     playerOne.beforeBattle(playerTwo);
     expect(playerOne.board).to.be.a('object');
     expect((playerOne.board.units()).length).to.be.above(0);
-
-    playerTwo.beforeBattle(playerOne);
-    expect(playerTwo.board).to.be.a('object');
-    expect((playerTwo.board.units()).length).to.be.above(0);
   }
 
   @test

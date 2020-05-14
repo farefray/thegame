@@ -4,8 +4,9 @@ import BattleUnit from './BattleUnit';
 import AppError from './AppError';
 import monsterUtils from '../utils/monsterUtils';
 
-const HAND_UNITS_LIMIT = 8;
 export const BOARD_UNITS_LIMIT = 8;
+
+const HAND_UNITS_LIMIT = 8;
 const SHOP_UNITS = 4;
 
 // TODO move logic to service/controller and data to model
@@ -81,9 +82,13 @@ export default class Player {
     return this.health <= 0;
   }
 
+  allowedBoardSize() {
+    return Math.min(this.level, BOARD_UNITS_LIMIT);
+  }
+
   isBoardFull() {
     const boardUnitsAmount = this.board.units().length;
-    return boardUnitsAmount >= this.level || boardUnitsAmount === BOARD_UNITS_LIMIT;
+    return boardUnitsAmount >= this.allowedBoardSize();
   }
 
   /**

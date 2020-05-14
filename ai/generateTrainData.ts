@@ -5,13 +5,13 @@ import AiPlayer from '../src/objects/AiPlayer';
 import BattleUnit from '../src/objects/BattleUnit';
 import { percentage } from '../src/utils/math';
 
-const TRAIN_DATA_AMOUNT = 5000;
+const TRAIN_DATA_AMOUNT = 100;
 
 interface SimulationResult {
   gandicap: number;
   firstUnits: string[];
   secondUnits: string[];
-  round: number;
+  bucket: number;
 }
 
 class Simulation {
@@ -27,7 +27,6 @@ class Simulation {
     const simulationResults:Array<SimulationResult> = [];
 
     while (this.session.hasNextRound()) {
-      const round = this.session.getState().round;
       const roundResults = await this.session.nextRound();
       let winner = parseInt(roundResults.winners[0].split('_')[2], 2);
       winner = isNaN(winner) ? -1 : winner;
@@ -65,7 +64,7 @@ class Simulation {
         firstUnits,
         secondUnits,
         gandicap: +(gandicap/100).toFixed(2),
-        round
+        bucket: firstUnits.length
       });
     }
 
@@ -79,28 +78,28 @@ const generate = async function(folderName, dataAmount) {
   const records: any = {};
   for (let iteration = 0; iteration < dataAmount; iteration++) {
     const simulation = new Simulation();
-    const results = await simulation.run();
+    const simulationResults = await simulation.run();
     console.log(`${iteration + 1} simulation is done.`)
 
-    results.forEach(res => {
-      if (!records[res.round]) {
-        records[res.round] = [];
+    simulationResults.forEach(res => {
+      if (!records[res.bucket]) {
+        records[res.bucket] = [];
       }
 
       // if (res.round === 1) {
       //   console.log("res", res)
       // }
 
-      records[res.round].push({
+      records[res.bucket].push({
         units: [...res.firstUnits],
-        gandicap: res.gandicap
+        output: res.gandicap
       })
     });
   }
 
-  Object.keys(records).forEach((round) => {
-    new Loader(`${folderName}`, round).saveData(records[round]).then(() => {
-      console.log(`${records[round].length} amount of ${round} round were saved`);
+  Object.keys(records).forEach((bucket) => {
+    new Loader(`${folderName}`, bucket).cleanup().saveData(records[bucket]).then(() => {
+      console.log(`${records[bucket].length} amount of ${bucket} bucket were saved`);
     });
   })
 };

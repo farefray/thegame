@@ -18,9 +18,15 @@ export class Normalizer {
   private binaryOutput: Array<number> = [];
   private dataOutput: Array<Array<any>> = [];
   private dataInput: Array<number> = [];
-  private outputProperties: Array<string> = [];
+  private outputProperties: Array<string> = ['output'];
 
-  constructor(data: Array<RowInput> = []) {
+  constructor(data?: Array<RowInput>) {
+    if (data && data.length) {
+      this.setDataSet(data);
+    }
+  }
+
+  public setDataSet(data: Array<RowInput> = []) {
     this.dataset = data;
 
     // prevent empty data input
@@ -37,6 +43,8 @@ export class Normalizer {
     if (Object.keys(this.dataset[0]).length <= 0) {
       throw new Error(`\x1b[37m\x1b[44mNormalizer input data rows has to contain some properties (only 1st row is checked)\x1b[0m`);
     }
+
+    return this;
   }
 
   getOutputLength() {
@@ -106,8 +114,59 @@ export class Normalizer {
     return this;
   }
 
-  convertOutput() {
-    const metadata = this.datasetMeta;
+  dataToBinary(dataset: Array<RowInput>) {
+    const binaryInput: Array<Array<any>> = [];
+
+    if (!this.datasetMeta) {
+      throw new Error('Cannot transform data to binary without provided metadata')
+    };
+
+    // now loop through data and convert any data to bits
+    // depending on data type and known settings of metadata
+    for (const i in dataset) {
+      const row = dataset[i];
+
+      let index: number = 0;
+      let inputBits: any = [];
+
+      for (const prop in row) {
+        // skip output properties, they are not in the input dataset
+        // start turning all data into bits!
+        let bitsArr: any;
+
+        const value: any = row[prop];
+        const meta = this.datasetMeta[prop];
+
+        switch (meta.type) {
+          case 'number':
+            bitsArr = [this.numToBit(meta.min, meta.max, value)]; // scalar to array of 1 length
+            break;
+          case 'boolean':
+            bitsArr = [this.boolToBit(value)]; // scalar to array of 1 length
+            break;
+          case 'string':
+            bitsArr = this.strToBitsArr(meta.distinctValues, value);
+            break;
+          case 'array':
+            bitsArr = this.arrToBitsArr(meta.distinctValues, value);
+            break;
+          default:
+            break;
+        }
+
+        if (this.outputProperties.indexOf(prop) === -1) {
+          inputBits = inputBits.concat(bitsArr);
+        }
+
+        index++;
+      }
+
+      if (inputBits.length > 0) {
+        binaryInput.push(inputBits);
+      }
+    }
+
+    return binaryInput;
   }
 
   normalize() {
@@ -222,7 +281,8 @@ export class Normalizer {
       }
     }
 
-    return metadata;
+    this.datasetMeta = metadata;
+    return this.datasetMeta;
   }
 
   setOutputProperties(props: Array<string>) {

@@ -1,20 +1,16 @@
 import Player from './Player';
 import BattleUnit from './BattleUnit';
-
-const findMostSuitableUnit = (units: BattleUnit[]) => {
-  // todo logic here
-  return units[Math.floor(Math.random() * units.length)];
-};
+import AIService from '../services/AIService';
 
 export default class AiPlayer extends Player {
   constructor(id: string) {
     super(id);
   }
 
-  considerUnitsPurchase(affortableUnits: BattleUnit[], opponentUnits: BattleUnit[]) {
+  considerUnitsPurchase(affortableUnits: BattleUnit[], opponentUnits: BattleUnit[] /** not used!! */) {
     if (!this.isBoardFull()) {
       // we definately need to buy some unit, find most suitable
-      return findMostSuitableUnit(affortableUnits);
+      return AIService.getInstance().mostSuitableUnit(this.board.units(), affortableUnits, this.allowedBoardSize());
     }
 
     // todo logic here to find any good units in pocket
@@ -24,7 +20,7 @@ export default class AiPlayer extends Player {
   considerUnitsPlacing() {
     if (!this.isBoardFull()) {
       // we need to place units for sure!
-      const unit = findMostSuitableUnit(this.hand.units());
+      const unit = AIService.getInstance().mostSuitableUnit(this.board.units(), this.hand.units(), this.allowedBoardSize());
 
       if (unit) {
         const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
