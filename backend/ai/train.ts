@@ -1,17 +1,19 @@
 import { Trainer } from 'synaptic';
 import { Loader } from './loader';
-import { Normalizer } from './normalizer';
+import { Normalizer } from './Normalizer';
 import NeuralNetwork from './neuralNetwork';
 import { almostEqual, percentage } from '../src/utils/math';
 
-const ROUND = 5;
+import { BOARD_UNITS_LIMIT as BUCKETS } from '../src/objects/Player';
+
 const run = async () => {
-  for (let index = 1; index < ROUND; index++) {
-    const aiGenerator = async (round) => {
-      const trainData = new Loader('trainData', ROUND).getData();
+  console.time('TrainingTimer');
+
+  for (let index = 1; index <= BUCKETS; index++) {
+    const aiGenerator = async (bucket) => {
+      const trainData = new Loader('trainData', bucket).getData();
       const normalizer = new Normalizer(trainData);
       // setting required options and normalize the data
-      normalizer.setOutputProperties(['gandicap']);
       normalizer.normalize();
 
       // find useful information about your data
@@ -39,8 +41,7 @@ const run = async () => {
       console.log('\n', '\x1b[37m\x1b[42m', 'netOutput example:', '\x1b[0m');
       console.log(netOutput[0]);
 
-      console.time('TrainingTimer');
-      console.timeLog('TrainingTimer', 'Starting training up…');
+      console.timeLog('TrainingTimer', 'Starting network train, bucket: ' + bucket);
 
       const NN = new NeuralNetwork(nbrInputs, nbrInputs, nbrOutputs);
       const trainer = new Trainer(NN);
@@ -54,9 +55,9 @@ const run = async () => {
       });
 
       // our net is trained now, lets check how correct is that
-      const examData = new Loader('examData', round).getData();
+      const examData = new Loader('examData', bucket).getData();
       const examinator = new Normalizer(examData);
-      examinator.setDatasetMetaData(metadata).setOutputProperties(['gandicap']).normalize();
+      examinator.setDatasetMetaData(metadata).normalize();
 
       console.log('=====================REAL EXAM==========================');
       const examDataSet = examinator.getBinaryTrainingSet();
@@ -86,22 +87,15 @@ const run = async () => {
       console.log('=====================EXAM==========================');
 
       const exported = NN.toJSON();
-      new Loader('network', round).saveData(exported).then(() => {
-        console.log(`Network for round ${round} was saved to JSON.`);
-      });
+      await new Loader('network', bucket).saveData(exported);
+      console.log(`Network for bucket ${bucket} was saved to JSON.`);
 
       const standalone = NN.standalone();
-      new Loader('trained', round, 'js').saveData('export default ' + standalone.toString()).then(() => {
-        console.log(`Trained network for round ${round} was exported.`);
+      await new Loader('trained', bucket, 'js').saveData('let F;\nexport default ' + standalone.toString());
+      console.log(`Trained network for bucket ${bucket} was exported.`);
 
-        return true;
-      });
-
-      new Loader('metadata', round).saveData(metadata).then(() => {
-        console.log(`Metadata for round ${round} was saved to JSON.`);
-
-        return true;
-      });
+      await new Loader('metadata', bucket).saveData(metadata);
+      console.log(`Metadata for bucket ${bucket} was saved to JSON.`);
     };
 
     await aiGenerator(index);
