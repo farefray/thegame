@@ -1,75 +1,75 @@
 /* global describe, it */
-import BattleController from '../src/services/BattleController';
 
 import Position from '../../frontend/src/shared/Position';
+import Battle from '../src/objects/Battle';
 
 const should = require('should');
 
 describe('Battle logic tests', () => {
   it('Can handle battle and closest target being selected', async () => {
 
-    const battleResult = await BattleController.setupBattle({
-      boards: [{
-        owner: 'first_player',
-        units: [
-          {
-            name: 'dwarf',
-            x: 0,
-            y: 3
-          },
-          {
-            name: 'dwarf',
-            x: 2,
-            y: 3
-          },
-          {
-            name: 'dwarf',
-            x: 4,
-            y: 3
-          },
-          {
-            name: 'dwarf',
-            x: 6,
-            y: 3
-          },
-          {
-            name: 'dwarf',
-            x: 7,
-            y: 3
-          }
-        ]
-      },
-      {
-        owner: 'second_player',
-        units: [
-          {
-            name: 'minotaur',
-            x: 0,
-            y: 4
-          },
-          {
-            name: 'minotaur',
-            x: 1,
-            y: 4
-          },
-          {
-            name: 'minotaur',
-            x: 3,
-            y: 4
-          },
-          {
-            name: 'minotaur',
-            x: 5,
-            y: 4
-          },
-          {
-            name: 'minotaur',
-            x: 6,
-            y: 4
-          }
-        ]
-      }]
-    });  // assuming all units are melee
+    const battle = new Battle([{
+      owner: 'first_player',
+      units: [
+        {
+          name: 'dwarf',
+          x: 0,
+          y: 3
+        },
+        {
+          name: 'dwarf',
+          x: 2,
+          y: 3
+        },
+        {
+          name: 'dwarf',
+          x: 4,
+          y: 3
+        },
+        {
+          name: 'dwarf',
+          x: 6,
+          y: 3
+        },
+        {
+          name: 'dwarf',
+          x: 7,
+          y: 3
+        }
+      ]
+    },
+    {
+      owner: 'second_player',
+      units: [
+        {
+          name: 'minotaur',
+          x: 0,
+          y: 4
+        },
+        {
+          name: 'minotaur',
+          x: 1,
+          y: 4
+        },
+        {
+          name: 'minotaur',
+          x: 3,
+          y: 4
+        },
+        {
+          name: 'minotaur',
+          x: 5,
+          y: 4
+        },
+        {
+          name: 'minotaur',
+          x: 6,
+          y: 4
+        }
+      ]
+      }]);
+
+    const battleResult = await battle.proceedBattle();  // assuming all units are melee
     battleResult.should.be.ok();
 
     // supposed that first action in such case will be melee attack, not a move
@@ -88,7 +88,7 @@ describe('Battle logic tests', () => {
   });
 
   it('Can handle battle with neutral "stone" unit', async () => {
-    const battle = await BattleController.setupBattle({ boards: [
+    const battle = new Battle([
       {
         owner: 'first_player',
         units: [
@@ -118,15 +118,16 @@ describe('Battle logic tests', () => {
           }
         ]
       }
-    ]});
+    ]);
 
-    battle.should.be.ok();
-    battle.actionStack.should.be.an.Array();
-    battle.actionStack.length.should.be.above(0);
-    battle.actionStack.length.should.be.below(40);
+    const battleResult = await battle.proceedBattle();
+    battleResult.should.be.ok();
+    battleResult.actionStack.should.be.an.Array();
+    battleResult.actionStack.length.should.be.above(0);
+    battleResult.actionStack.length.should.be.below(40);
 
     // we should detect that no moves was done into stone
-    const moveActions = battle.actionStack.filter((a) => a.type === 'move');
+    const moveActions = battleResult.actionStack.filter((a) => a.type === 'move');
     moveActions.length.should.be.equal(3);
     moveActions.forEach((action) => {
       action.type.should.be.equal('move');
@@ -138,7 +139,7 @@ describe('Battle logic tests', () => {
   });
 
   it('Can handle battle with neutral "target" unit', async () => {
-    const battle = await BattleController.setupBattle({ boards: [
+    const battle = new Battle([
       {
         owner: 'first_player',
         units: [
@@ -168,15 +169,17 @@ describe('Battle logic tests', () => {
           }
         ]
       }
-    ]});
+    ]);
+    
+    const battleResult = await battle.proceedBattle();
 
-    battle.should.be.ok();
-    battle.actionStack.should.be.an.Array();
-    battle.actionStack.length.should.be.above(0);
-    battle.actionStack.length.should.be.below(100);
+    battleResult.should.be.ok();
+    battleResult.actionStack.should.be.an.Array();
+    battleResult.actionStack.length.should.be.above(0);
+    battleResult.actionStack.length.should.be.below(100);
 
     // we should detect that no moves was done into stone
-    const attackActions = battle.actionStack.filter((a) => a.type === 'attack').splice(2, 2);
+    const attackActions = battleResult.actionStack.filter((a) => a.type === 'attack').splice(2, 2);
     attackActions.forEach((action) => {
       action.type.should.be.equal('attack');
 

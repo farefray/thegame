@@ -131,7 +131,6 @@ describe('Core Modules', () => {
   });
 
   describe('Battle', () => {
-    let battle;
     it('whole battle can be executed', async () => {
       const npcBoard = [
         {
@@ -148,10 +147,11 @@ describe('Core Modules', () => {
         }
       ];
 
-      battle = new Battle({ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' });
-      battle.should.be.ok();
-      battle.actionStack.should.be.an.Array();
-      battle.actionStack.length.should.be.above(0);
+      const battle = new Battle([{ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' }]);
+      const battleResult = await battle.proceedBattle();
+      battleResult.should.be.ok();
+      battleResult.actionStack.should.be.an.Array();
+      battleResult.actionStack.length.should.be.above(0);
     });
 
     it('can handle battle with no units', async () => {
@@ -164,10 +164,11 @@ describe('Core Modules', () => {
       ];
       const npcBoard = [];
 
-      battle = new Battle({ units: playerBoard, owner: 'TEAM_A' }, { units: npcBoard, owner: 'TEAM_B' });
-      battle.should.be.ok();
-      should.exist(battle.winner);
-      battle.winner.should.equal('TEAM_A');
+      const battle = new Battle([{ units: playerBoard, owner: 'TEAM_A' }, { units: npcBoard, owner: 'TEAM_B' }]);
+      const battleResult = await battle.proceedBattle();
+      battleResult.should.be.ok();
+      should.exist(battleResult.winner);
+      battleResult.winner.should.equal('TEAM_A');
     });
   });
 });
