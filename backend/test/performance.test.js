@@ -12,7 +12,7 @@ const should = require('should');
 
 describe('Perf test', async () => {
   var t0 = performance.now();
-  it('Full sized battle execution #50', async (done) => {
+  it('Full sized battle execution #50', async () => {
     const npcBoard = [];
 
     // 50 runs for battle
@@ -36,15 +36,14 @@ describe('Perf test', async () => {
         });
       }
 
-      const battle = new Battle({ units: playerBoard }, { units: npcBoard });
-      battle.should.be.ok();
-      battle.actionStack.should.be.an.Array();
-      battle.actionStack.length.should.be.above(0);
+      const battle = new Battle([{ units: playerBoard }, { units: npcBoard }]);
+      const battleResult = await battle.proceedBattle();
+      battleResult.should.be.ok();
+      battleResult.actionStack.should.be.an.Array();
+      battleResult.actionStack.length.should.be.above(0);
     }
 
     const duration = performance.now() - t0;
     console.log("Full sized battle execution took " + (duration) + " milliseconds.");
-    duration.should.be.below(2000);
-    done();
   });
 });

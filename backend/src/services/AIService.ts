@@ -12,7 +12,7 @@ export default class AIService {
 
   // todo get rid of dynamic imports. Preload those buckets and neurals!
   private constructor() {
-    console.log('AIService is being constructed.')
+    console.log('AIService', 'is being constructed.')
 
     this.neurals = [];
     this.dataNormalizers = [];
@@ -22,6 +22,8 @@ export default class AIService {
       this.neurals[bucket] = require(`../../ai/trained/${bucket}.js`);
       this.dataNormalizers[bucket] = new Normalizer().setDatasetMetaData(require(`../../ai/metadata/${bucket}.json`));
     }
+
+    console.log('AIService', 'is constructed.')
   }
 
   public static getInstance(): AIService {

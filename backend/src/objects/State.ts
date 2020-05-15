@@ -109,7 +109,7 @@ export default class State extends MutableObject {
     return JSON.parse(JSON.stringify(this));
   }
 
-  getPlayers(): Player[]|AiPlayer[] {
+  getPlayers(): Array<Player|AiPlayer> {
     return Object.values(this.players);
   }
 }
