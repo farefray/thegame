@@ -1,7 +1,7 @@
 import { Trainer } from 'synaptic';
-import { Loader } from './loader';
+import { Loader } from './Loader';
 import { Normalizer } from './Normalizer';
-import NeuralNetwork from './neuralNetwork';
+import NeuralNetwork from './NeuralNetwork';
 import { almostEqual, percentage } from '../src/utils/math';
 
 import { BOARD_UNITS_LIMIT as BUCKETS } from '../src/objects/Player';

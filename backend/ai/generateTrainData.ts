@@ -1,5 +1,5 @@
 import Player from '../src/objects/Player';
-import { Loader } from './loader';
+import { Loader } from './Loader';
 import Session from '../src/objects/Session';
 import AiPlayer from '../src/objects/AiPlayer';
 import BattleUnit from '../src/objects/BattleUnit';
