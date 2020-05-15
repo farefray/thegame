@@ -7,14 +7,13 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import BattleController from '../../../../backend/src/services/BattleController';
+import Battle from '../../../../backend/src/objects/Battle';
 
-const generateGameState = async function(boardDefinition) {
-  const battleResult = await BattleController.setupBattle({
-    boards: [
-      ...boardDefinition
-    ]
-  });
+const generateGameState = async function (boardDefinition) {
+  const battle = new Battle([
+    ...boardDefinition
+  ]);
+  const battleResult = await battle.proceedBattle();
   console.log("battleResult", battleResult)
   const result = _.cloneDeep(battleResult);
   console.log(_.cloneDeep(battleResult.actionStack));
