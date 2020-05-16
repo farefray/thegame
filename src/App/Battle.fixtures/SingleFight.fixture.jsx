@@ -1,30 +1,32 @@
 import React from 'react';
 import ActiveGame from '../ActiveGame';
+import BattleUnitList from '@/../../backend/src/objects/BattleUnit/BattleUnitList';
+import BattleUnit from '@/../../backend/src/objects/BattleUnit';
 
 const defaultBoard = [{
   owner: 'first_player',
-  units: [
-    {
+  units: new BattleUnitList([
+    new BattleUnit({
       name: 'target_ranged',
       x: 5,
       y: 0
-    }
-  ]
+    })
+  ])
 },
 {
   owner: 'second_player',
-  units: [
-    {
+  units: new BattleUnitList([
+    new BattleUnit({
       name: 'elf',
       x: 5,
       y: 7
-    },
-    {
+    }),
+    new BattleUnit({
       name: 'stone',
       x: 5,
       y: 6
-    }
-  ]
+    })
+  ])
 }];
 
 
