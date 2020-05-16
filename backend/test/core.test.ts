@@ -7,6 +7,8 @@ import ConnectedPlayers from '../src/models/ConnectedPlayers';
 import SessionsStore from '../src/models/SessionsStore';
 import Customer from '../src/objects/Customer';
 import Player from '../src/objects/Player';
+import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
+import BattleUnit from '../src/objects/BattleUnit';
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -131,43 +133,47 @@ describe('Core Modules', () => {
   });
 
   describe('Battle', () => {
-    let battle;
     it('whole battle can be executed', async () => {
-      const npcBoard = [
-        {
+      const npcBoard = new BattleUnitList([
+        new BattleUnit({
           name: 'dwarf_geomancer',
           x: 0,
-          y: 7
-        }
-      ];
-      const playerBoard = [
-        {
+          y: 7,
+          teamId: 1
+        })
+      ]);
+      const playerBoard = new BattleUnitList([
+        new BattleUnit({
           name: 'dwarf_geomancer',
           x: 0,
-          y: 0
-        }
-      ];
+          y: 0,
+          teamId: 0
+        })
+      ]);
 
-      battle = new Battle({ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' });
-      battle.should.be.ok();
-      battle.actionStack.should.be.an.Array();
-      battle.actionStack.length.should.be.above(0);
+      const battle = new Battle([{ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' }]);
+      const battleResult = await battle.proceedBattle();
+      battleResult.should.be.ok();
+      battleResult.actionStack.should.be.an.Array();
+      battleResult.actionStack.length.should.be.above(0);
     });
 
     it('can handle battle with no units', async () => {
-      const playerBoard = [
-        {
+      const playerBoard = new BattleUnitList([
+        new BattleUnit({
           name: 'minotaur',
           x: 0,
-          y: 7
-        }
-      ];
-      const npcBoard = [];
+          y: 7,
+          teamId: 0
+        })
+      ]);
+      const npcBoard = new BattleUnitList([]);
 
-      battle = new Battle({ units: playerBoard, owner: 'TEAM_A' }, { units: npcBoard, owner: 'TEAM_B' });
-      battle.should.be.ok();
-      should.exist(battle.winner);
-      battle.winner.should.equal('TEAM_A');
+      const battle = new Battle([{ units: playerBoard, owner: 'TEAM_A' }, { units: npcBoard, owner: 'TEAM_B' }]);
+      const battleResult = await battle.proceedBattle();
+      battleResult.should.be.ok();
+      should.exist(battleResult.winner);
+      battleResult.winner.should.equal('TEAM_A');
     });
   });
 });

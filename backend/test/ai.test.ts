@@ -1,4 +1,4 @@
-import { suite, test } from '@testdeck/mocha';
+import { suite, test, only } from '@testdeck/mocha';
 import { expect } from 'chai';
 
 import Session from '../src/objects/Session';
@@ -9,15 +9,9 @@ import BattleUnit from '../src/objects/BattleUnit';
 
 @suite
 class AI {
-  private session: Session;
-
-  constructor() {
-    this.session = new Session([]);
-  }
-
   @test
   canInitializeGameWithAI() {
-    const session = this.session;
+    const session = new Session([]);
     expect(session).to.be.a('object');
     expect(session).to.have.property('state');
 
@@ -33,17 +27,14 @@ class AI {
 
     playerOne.beforeBattle(playerTwo);
     expect(playerOne.board).to.be.a('object');
-    expect((playerOne.board.units()).length).to.be.above(0);
-
-    playerTwo.beforeBattle(playerOne);
-    expect(playerTwo.board).to.be.a('object');
-    expect((playerTwo.board.units()).length).to.be.above(0);
+    expect((playerOne.board.units()).size).to.be.above(0);
   }
 
   @test
   async canProcessAIBattle() {
-    while (this.session.hasNextRound()) {
-      const roundResults = await this.session.nextRound();
+    const session = new Session([]);
+    while (session.hasNextRound()) {
+      const roundResults = await session.nextRound();
       const { battles } = roundResults;
 
       // make sure AI has units
@@ -62,7 +53,7 @@ class AI {
       expect(firstBattle.actionStack.length).to.be.above(0);
     }
 
-    const state = this.session.getState();
+    const state = session.getState();
     expect(state.getPlayers().length).to.be.equal(1);
   }
 }

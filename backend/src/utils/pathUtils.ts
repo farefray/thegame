@@ -1,4 +1,5 @@
 import BattleUnit from '../objects/BattleUnit';
+import BattleUnitList from '../objects/BattleUnit/BattleUnitList';
 
 export const getDistanceBetweenCoordinates = ({ x, y, x2, y2 }) => (Math.max(Math.abs(x2 - x), Math.abs(y2 - y)) - 1);
 
@@ -42,7 +43,7 @@ interface TargetSearchParams {
 }
 
 // most likely this function is not needed, as it mostly passes all the stuff down to getClosestTargets
-export function getSuitableTargets(caster: BattleUnit, units: Array<BattleUnit>, params: TargetSearchParams): Array<BattleUnit> | BattleUnit | null {
+export function getSuitableTargets(caster: BattleUnit, units: BattleUnitList, params: TargetSearchParams): Array<BattleUnit> | BattleUnit | null {
   const targets = units.filter(u =>
     u.teamId === (params.enemy ? caster.oppositeTeamId : caster.teamId)
     && u.isAlive

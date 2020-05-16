@@ -1,17 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import State from './State';
-import BattleController from '../services/BattleController';
-import { BattleBoard, BattleResult } from './Battle';
+import Battle, { BattleBoard, BattleResult } from './Battle';
 import Player from './Player';
 
-const MAX_ROUND = 20;
+const MAX_ROUND = 25;
 
 export default class Session {
   private _id = uuidv4();
   public clients: Array<String>; // reivew
   public state: State;
 
-  constructor (clients) {
+  constructor(clients) {
     this.state = new State(clients);
     this.clients = this.state.clients; // was connectedPlayers, so handle this in case
   }
@@ -29,47 +28,51 @@ export default class Session {
   }
 
   hasNextRound() {
-    return Object.keys(this.state.get('players')).length > 1 && this.state.get('round') < MAX_ROUND;
+    return Object.keys(this.state.getPlayers()).length > 1 && this.state.getRound() < MAX_ROUND;
   }
 
-  async nextRound() {
-    // form player pairs
-    const playersPairs = Object.keys(this.state.players).reduce((result: Array<Array<string>>, value, index, array: Array<string>) => {
+  getPlayerPairs() {
+    return Object.keys(this.state.players).reduce((result: Array<Array<string>>, value, index, array: Array<string>) => {
       if (index % 2 === 0) {
         result.push(array.slice(index, index + 2));
       }
 
       return result;
     }, []);
+  }
 
+  async nextRound() {
     // process with battles
     const playersBattleResults: {
-      countdown: number,
-      battles: Array<BattleResult>,
-      winners: Array<string>,
+      countdown: number;
+      battles: Array<BattleResult>;
+      winners: Array<string>;
     } = {
       countdown: Number.MIN_VALUE,
       battles: [],
-      winners:[],
+      winners: []
     };
 
+    const playersPairs = this.getPlayerPairs();
     for (const playerPair of playersPairs) {
       const battleBoards: Array<BattleBoard> = [];
       for (const uid of playerPair) {
         const player: Player = this.state.players[uid];
-        const opponentUID: string = (playerPair.filter(v => v !== uid).shift()) || '';
+        const opponentUID: string = playerPair.filter((v) => v !== uid).shift() || '';
         const opponentPlayer: Player = this.state.players[opponentUID];
         player.beforeBattle(opponentPlayer);
 
         // now we need to reverse second player board in order for it to appear properly
-        const battleBoard:BattleBoard = {
+        const battleBoard: BattleBoard = {
           owner: player.index,
-          units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units(),
+          units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units()
         };
+
         battleBoards.push(battleBoard);
       }
 
-      const battleResult = await BattleController.setupBattle({ boards: battleBoards }); // shOUldnt be await! TODO
+      const battle = new Battle(battleBoards);
+      const battleResult = await battle.proceedBattle();
       if (battleResult.battleTime > playersBattleResults.countdown) {
         playersBattleResults.countdown = battleResult.battleTime;
       }
@@ -84,7 +87,7 @@ export default class Session {
 
   disconnect(clientID) {
     if (this.clients.includes(clientID)) {
-      this.clients = this.clients.filter(index => index !== clientID);
+      this.clients = this.clients.filter((index) => index !== clientID);
     }
   }
 

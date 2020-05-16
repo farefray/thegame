@@ -498,6 +498,10 @@ export default class BattleUnit {
     }
 
     // todo also base to closest unit?
+    if (bestMatch === null) {
+      throw new Error('Cannot find free position for an unit');
+    }
+
     return bestMatch;
   }
 }

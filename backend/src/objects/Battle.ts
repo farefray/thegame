@@ -5,12 +5,17 @@ import BattleUnit, { UnitConfig } from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
 import BoardMatrix from '../utils/BoardMatrix';
+import BattleUnitList from './BattleUnit/BattleUnitList';
 
+/**
+ * TODO: move this into Battle.d.ts, just need to investigate if thats fine to use classes in types,
+ * as this will require importing real classes for .d.ts file which may be no optimal solution
+ */
 export interface BattleContext {
   currentTimestamp: number;
   pathfinder: Pathfinder;
   targetPairPool: TargetPairPool;
-  units: BattleUnit[];
+  units: BattleUnitList;
 }
 
 export interface BattleResult {
@@ -19,6 +24,7 @@ export interface BattleResult {
   startBoard: BoardMatrix;
   participants: Array<string>;
   winner: string;
+  finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
 }
 
 export interface UnitAction {
@@ -32,67 +38,52 @@ export interface UnitAction {
 }
 
 export interface BattleBoard {
-  units: Array<UnitConfig>;
+  units: BattleUnitList;
   owner: string;
 }
 
-function shuffle(array) {
-  const length = array.length;
-
-  // Fisher-Yates shuffle
-  for (let iterator = 0; iterator < length; iterator += 1) {
-
-    // define target randomized index from given array
-    const target = Math.floor(Math.random() * (iterator + 1));
-    // if target index is different of current iterator then switch values
-    if (target !== iterator) {
-      const temporary = array[iterator];
-      // switch values
-      array[iterator] = array[target];
-      array[target] = temporary;
-    }
-  }
-
-  // returns given array with mutation
-  return array;
-}
-
 export default class Battle {
-  public startBoard: BoardMatrix;
-  public winner = TEAM.NONE;
-  public readonly actionStack: UnitAction[];
+  private startBoard: BoardMatrix;
+  private winner = TEAM.NONE;
+  private readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
-  private units: BattleUnit[];
-  private readonly actorQueue: Actor[];
+  private units: BattleUnitList; // temporaly public for ai needs
+  private readonly actorQueue: Actor[] = [];
   private readonly targetPairPool: TargetPairPool;
   private currentTimestamp: number;
   private isOver = false;
   private actionGeneratorInstance: Generator;
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
-  constructor(...unitBoards: Array<BattleBoard>) {
+  constructor(unitBoards: Array<BattleBoard>) {
     this.startBoard = new BoardMatrix(8, 8);
     this[Symbol.for('owners')] = {};
 
-    unitBoards.forEach((unitBoard, teamId) => {
-      if (unitBoard.owner) {
-        this[Symbol.for('owners')][teamId] = unitBoard.owner;
-      }
+    if (unitBoards.length) {
+      unitBoards.forEach((unitBoard, teamId) => {
+        if (unitBoard.owner) {
+          this[Symbol.for('owners')][teamId] = unitBoard.owner;
+        }
 
-      if (unitBoard.units.length) {
-        unitBoard.units.forEach((unitConfig) => {
-          const battleUnit = new BattleUnit({
-            name: unitConfig.name,
-            x: unitConfig.x,
-            y: unitConfig.y,
-            teamId,
-          });
+        if (unitBoard.units.size) {
+          for (const unit of unitBoard.units) {
+            /**
+             * TODO P0 - Investigate this. based on what we see on Session, units are alrdy a battleunitlist with battle units.
+             * Shall we create them? Or they supposed to be unitConfigs, not units.
+             */
+            const battleUnit = new BattleUnit({
+              name: unit.name,
+              x: unit.x,
+              y: unit.y,
+              teamId,
+            });
 
-          // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
-          this.startBoard.setCell(unitConfig.x, unitConfig.y, battleUnit);
-        });
-      }
-    });
+            // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
+            this.startBoard.setCell(unit.x, unit.y, battleUnit);
+          }
+        }
+      });
+    }
 
     this.currentTimestamp = 0;
     this.actionStack = [];
@@ -102,25 +93,23 @@ export default class Battle {
      * Actually object with units to calculate battle
      * clone is needed here in order to remove symlinks to our startBoard battle units and they can be passed normally
      */
-    this.units = shuffle(this.startBoard.units());
+    this.units = this.startBoard.units().shuffle();
 
     // dirty way to unlink units from startboard, need to be revised
     this.startBoard = JSON.parse(JSON.stringify(this.startBoard));
 
-    this.actorQueue = this.units.map(
-      unit =>
-        new Actor({
-          id: unit.id,
-          actionGenerator: unit.unitLifeCycleGenerator(),
-          timestamp: 0,
-        }), // adding first run of actionGenerator for every unit in order to spawn
-    );
-
     this.pathfinder = new Pathfinder();
-    this.units.forEach(unit => this.pathfinder.taken(unit.position));
+
+    for (const unit of this.units) {
+      this.pathfinder.taken(unit.position)
+      this.actorQueue.push(new Actor({
+        id: unit.id,
+        actionGenerator: unit.unitLifeCycleGenerator(),
+        timestamp: 0,
+      }))
+    }
 
     this.actionGeneratorInstance = this.generateActions();
-    this.proceedBattle(); // this is sync call. We can consider using node 10+ and async generators here
   }
 
   get context(): BattleContext {
@@ -133,20 +122,28 @@ export default class Battle {
   }
 
   updateUnits() {
-    this.units = this.units.filter(unit => unit.isAlive);
+    this.units.filter(unit => unit.isAlive, true);
 
-    if (!this.unitsFromTeam(TEAM.A).length || !this.unitsFromTeam(TEAM.B).length) {
+    if (!this.units.byTeam(TEAM.A).size || !this.units.byTeam(TEAM.B).size) {
       this.isOver = true;
       this.battleTimeEndTime = this.currentTimestamp + 2500; // we ends battle in 2.5 seconds, in order to finish attacks, particles, animations
     }
   }
 
-  proceedBattle() {
-    while (!this.actionGeneratorInstance.next().done) {
+  async proceedBattle() {
+    let isOver = false;
+    while (!isOver) {
       // action was generated already, so we dont need to execute another next() here
+      const { done, value } = await this.actionGeneratorInstance.next();
+
+      if (done) {
+        isOver = done;
+      }
     }
 
     this.setWinner();
+
+    return this.battleResult;
   }
 
   *generateActions() {
@@ -258,25 +255,76 @@ export default class Battle {
   addToActionStack(action, type): void {
     const { unitID, payload } = action;
     const actionStackItem: any = { type, unitID, payload, time: this.currentTimestamp };
-    action.effects && (actionStackItem.effects = action.effects);
-    action.uid && (actionStackItem.uid = action.uid);
-    action.parent && (actionStackItem.parent = action.parent);
+    if (action.effects) {
+      actionStackItem.effects = action.effects;
+    }
+
+    if (action.uid) {
+      actionStackItem.uid = action.uid;
+    }
+
+    if (action.parent) {
+      actionStackItem.parent = action.parent;
+    }
 
     this.actionStack.push(actionStackItem);
   }
 
-  unitsFromTeam(teamId: number) {
-    return this.units.filter(unit => unit.teamId === teamId && unit.isAlive);
-  }
-
   setWinner() {
-    const aTeamUnits = this.unitsFromTeam(TEAM.A);
-    const bTeamUnits = this.unitsFromTeam(TEAM.B);
+    const aTeamUnits = this.units.byTeam(TEAM.A);
+    const bTeamUnits = this.units.byTeam(TEAM.B);
 
-    if (!aTeamUnits.length || !bTeamUnits.length) {
-      this.winner = aTeamUnits.length ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
+    if (!aTeamUnits.size || !bTeamUnits.size) {
+      this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
     } else {
       this.winner = '';
+    }
+  }
+
+  /**
+   * @description optimizes actionStack for frontend, formatting chained actions
+   */
+  get optimizedActionStack() {
+    const uidMap = {};
+
+    // building uidMap first
+    this.actionStack.forEach((action, index) => {
+      if (action.uid) {
+        uidMap[action.uid] = action;
+      }
+    });
+
+    this.actionStack.forEach((action, index) => {
+      if (action.parent) {
+        // We are chaining actions in order to execute them immediatly(after/in the middle) on frontend, instead of trusting our schedule
+        try {
+          if (!uidMap[action.parent]) {
+            // TODO avoid such issues
+            throw new Error('Stack optimization failed');
+          }
+
+          uidMap[action.parent].chainedAction = action;
+        } catch (e) {
+          // in case error happened, we remove parent reference (this is very bad, we need to fix this)
+          console.warn('Wrong action parent during optimization!', JSON.parse(JSON.stringify((action))));
+          delete action.parent;
+        }
+      }
+    });
+
+    return this.actionStack.filter(action => !action.parent).sort((a, b) => ((a.time > b.time) ? 1 : -1));
+  }
+
+  // output for a battle execution
+  get battleResult(): BattleResult {
+    return {
+      actionStack: this.optimizedActionStack,
+      battleTime: this.currentTimestamp,
+      winner: this.winner,
+
+      startBoard: this.startBoard, // todo unlink? matrix to json?
+      participants: Object.values(this[Symbol.for('owners')]), // ??
+      finalBoard: this.units // OMIT this!!
     }
   }
 }

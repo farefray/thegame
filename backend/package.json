@@ -16,7 +16,9 @@
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --fix --project tsconfig.json",
     "debug": "node --inspect -r ts-node/register src/index.js",
-    "learn": "ts-node deepLearning/index.js"
+    "ai:train": "ts-node ai/train.ts",
+    "ai:generate": "ts-node ai/generateTrainData.ts",
+    "ai:preview": "ts-node ai/preview.ts"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.13.4",
     "@types/socket.io": "^2.1.4",
+    "@types/synaptic": "^1.0.3",
     "chai": "^4.2.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
@@ -36,6 +39,7 @@
     "npm": "^6.14.4",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^2.2.0",
+    "synaptic": "^1.1.4",
     "tslint": "^6.1.2",
     "typedi": "^0.8.0",
     "uuid": "^8.0.0"

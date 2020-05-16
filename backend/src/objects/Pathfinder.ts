@@ -7,15 +7,13 @@ import BinaryHeap from './Pathfinder/BinaryHeap';
 const normalize = number => number < 0 ? -1 : (number > 0 ? 1 : 0);
 
 function heuristic(pos0, pos1) { // switch to getDistanceBetweenCoordinates
-  let d1 = Math.abs(pos1.x - pos0.x);
-  let d2 = Math.abs(pos1.y - pos0.y);
+  const d1 = Math.abs(pos1.x - pos0.x);
+  const d2 = Math.abs(pos1.y - pos0.y);
   return d1 + d2;
 }
 
 function getHeap() {
-  return new BinaryHeap(function(node) {
-    return node.f;
-  });
+  return new BinaryHeap(node => node.f);
 }
 
 class Node {
@@ -179,7 +177,7 @@ export default class Pathfinder {
       }
     }
 
-    if (closest) {
+    if (closest && (closestNode.x !== startNode.x || closestNode.y !== startNode.y)) {
       // return pathTo(closestNode);
       let node = currentNode;
       const stepArray: Array<any> = [];

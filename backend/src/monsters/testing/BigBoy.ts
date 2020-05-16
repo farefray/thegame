@@ -41,10 +41,10 @@ function BigBoy() {
       range: 1,
       speed: 1000,
     },
-    cost: 1,
+    cost: 3,
     lookType: 25,
     health: {
-      max: 1700,
+      max: 700,
     },
     mana: {
       regen: 10,
