@@ -63,4 +63,3 @@ frontend/public/UI/
 
 # generated AI networks/data
 backend/ai/*/*.json
-backend/ai/trained/*.js
