@@ -1,7 +1,7 @@
 import BoardMatrix from '../utils/BoardMatrix';
 import Position from '../../../frontend/src/shared/Position';
 import BattleUnit from './BattleUnit';
-import AppError from './AppError';
+import AppError from './AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import monsterUtils from '../utils/monsterUtils';
 
 export const BOARD_UNITS_LIMIT = 8;
@@ -87,8 +87,7 @@ export default class Player {
   }
 
   isBoardFull() {
-    const boardUnitsAmount = this.board.units().length;
-    return boardUnitsAmount >= this.allowedBoardSize();
+    return this.board.units().size >= this.allowedBoardSize();
   }
 
   /**
@@ -210,7 +209,7 @@ export default class Player {
     }
 
     const unit = this.shopUnits[pieceIndex];
-    if (!unit || !unit.name || this.hand.unitsAmount() >= HAND_UNITS_LIMIT) {
+    if (!unit || !unit.name || this.hand.units().size >= HAND_UNITS_LIMIT) {
       return new AppError('warning', 'Your hand is full');
     }
 

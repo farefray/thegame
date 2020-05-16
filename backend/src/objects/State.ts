@@ -1,5 +1,4 @@
 import { promisify } from 'util';
-import MutableObject from '../abstract/MutableObject';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
 import AppError from './AppError';
@@ -9,7 +8,7 @@ const { STATE } = require('../../../frontend/src/shared/constants.js');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 const PLAYERS_MINIMUM = 2;
 
-export default class State extends MutableObject {
+export default class State {
   public round: number;
   public incomeBase: number;
   public amountOfPlayers: number;
@@ -18,8 +17,6 @@ export default class State extends MutableObject {
   public clients: Array<String>;
 
   constructor(clients) {
-    super();
-
     this.clients = clients;
     this.round = 1;
     this.incomeBase = 1;
@@ -62,18 +59,18 @@ export default class State extends MutableObject {
 
     for (const uid in this.players) {
       // FOR REWORK!!
-      const gold: number = this.getIn(['players', uid, 'gold']);
+      const gold: number = this.players[uid].gold;
       const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
-      this.setIn(['players', uid, 'gold'], (gold + this.incomeBase + bonusGold));
+      this.players[uid].gold = (gold + this.incomeBase + bonusGold);
 
       if (this.round <= 10) {
-        this.setIn(['players', uid, 'level'], this.round);
+        this.players[uid].level = this.round;
       }
 
       if (!winners.includes(uid)) {
         // player lost battle, remove health
-        const newHealth: number = (this.getIn(['players', uid, 'health']) - this.round);
-        this.setIn(['players', uid, 'health'], newHealth);
+        const newHealth: number = (this.players[uid].health - this.round);
+        this.players[uid].health = newHealth;
 
         if (newHealth < 1) {
           this.dropPlayer(uid);
@@ -102,11 +99,15 @@ export default class State extends MutableObject {
   }
 
   getPlayer(playerIndex): Player {
-    return this.getIn(['players', playerIndex]);
+    return this.players[playerIndex];
   }
 
   toSocket() {
     return JSON.parse(JSON.stringify(this));
+  }
+
+  getRound() {
+    return this.round;
   }
 
   getPlayers(): Array<Player|AiPlayer> {

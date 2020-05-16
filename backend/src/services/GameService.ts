@@ -12,6 +12,7 @@ export default function GameService() {
       return session;
     },
 
+    // This seems wrong. Need some better implementation, lets say using event emitted from SessionService
     startGameSession: async (session: Session) => {
       const eventEmitter:EventEmitter = Container.get('event.emitter');
       const state = session.getState();

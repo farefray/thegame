@@ -28,7 +28,7 @@ export default class Session {
   }
 
   hasNextRound() {
-    return Object.keys(this.state.getPlayers()).length > 1 && this.state.get('round') < MAX_ROUND;
+    return Object.keys(this.state.getPlayers()).length > 1 && this.state.getRound() < MAX_ROUND;
   }
 
   getPlayerPairs() {

@@ -1,5 +1,6 @@
 import BattleUnit from '../objects/BattleUnit';
 import { Position } from '../objects/Position';
+import BattleUnitList from '../objects/BattleUnit/BattleUnitList';
 
 export default class BoardMatrix {
   private sizeX: number;
@@ -96,32 +97,25 @@ export default class BoardMatrix {
     }
   }
 
-  unitsAmount() {
-    // todo optimize
-    return this.units().length
-  }
-
   reverse() {
-    const units = this.units();
-    units.forEach((unit) => {
-        const { x, y } = unit;
-        const newX = Math.abs(x);
-        const newY = Math.abs(this.sizeY - y - 1);
+    for (const unit of this.units()) {
+      const { x, y } = unit;
+      const newX = Math.abs(x);
+      const newY = Math.abs(this.sizeY - y - 1);
 
-        unit.rearrange({
-            x: newX,
-            y: newY
-        });
+      unit.rearrange({
+          x: newX,
+          y: newY
+      });
 
-        this.setCell(newX, newY, unit)
-        this.setCell(x, y);
-    });
+      this.setCell(newX, newY, unit)
+      this.setCell(x, y);
+    }
 
     return this;
   }
 
-  units(): BattleUnit[] {
-    // this can be replaced with .flat(2)
+  units(): BattleUnitList {
     const units: BattleUnit[] = [];
     this.forEach((spot) => {
       if (spot instanceof BattleUnit) {
@@ -129,7 +123,7 @@ export default class BoardMatrix {
       }
     });
 
-    return units;
+    return new BattleUnitList(units);
   }
 
   freeSpots(): Position[] {
@@ -145,7 +139,7 @@ export default class BoardMatrix {
 
   // For sending state via socket
   toJSON() {
-    return this.units();
+    return this.units().toJSON();
   }
 
   /** For debug needs */
@@ -161,9 +155,5 @@ export default class BoardMatrix {
     }
 
     return rows.join('\n');
-  }
-
-  get _units() {
-    return this.units()
   }
 }
