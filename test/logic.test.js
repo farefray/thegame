@@ -2,6 +2,8 @@
 
 import Position from '../../frontend/src/shared/Position';
 import Battle from '../src/objects/Battle';
+import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
+import BattleUnit from '../src/objects/BattleUnit';
 
 const should = require('should');
 
@@ -91,32 +93,35 @@ describe('Battle logic tests', () => {
     const battle = new Battle([
       {
         owner: 'first_player',
-        units: [
-          {
+        units: new BattleUnitList([
+          new BattleUnit({
             name: 'dwarf',
             x: 4,
-            y: 3
-          }
-        ]
+            y: 3,
+            teamId: 0
+          })
+        ])
       },
       {
         owner: 'second_player',
-        units: [
-          {
+        units: new BattleUnitList([
+          new BattleUnit({
             name: 'minotaur',
             x: 4,
-            y: 5
-          }
-        ]
+            y: 5,
+            teamId: 1
+          })
+        ])
       },
       {
-        units: [
-          {
+        units: new BattleUnitList([
+          new BattleUnit({
             name: 'stone',
             x: 4,
-            y: 4
-          }
-        ]
+            y: 4,
+            teamId: 2
+          })
+        ])
       }
     ]);
 
@@ -142,35 +147,39 @@ describe('Battle logic tests', () => {
     const battle = new Battle([
       {
         owner: 'first_player',
-        units: [
-          {
+        units: new BattleUnitList([
+          new BattleUnit({
             name: 'dwarf',
             x: 4,
-            y: 3
-          }
-        ]
+            y: 3,
+            teamId: 0
+          })
+        ])
       },
       {
         owner: 'second_player',
-        units: [
-          {
+        units: new BattleUnitList([
+          new BattleUnit({
             name: 'minotaur',
             x: 4,
-            y: 5
-          }
-        ]
+            y: 5,
+            teamId: 1
+          })
+        ])
       },
       {
-        units: [
-          {
+        owner: 'neutral',
+        units: new BattleUnitList([
+          new BattleUnit({
             name: 'target_melee',
             x: 4,
-            y: 4
-          }
-        ]
+            y: 4,
+            teamId: 2
+          })
+        ])
       }
     ]);
-    
+
     const battleResult = await battle.proceedBattle();
 
     battleResult.should.be.ok();

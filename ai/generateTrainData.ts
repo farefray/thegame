@@ -1,7 +1,7 @@
 import Player from '../src/objects/Player';
 import { Loader } from './Loader';
 import Session from '../src/objects/Session';
-import AiPlayer from '../src/objects/AiPlayer';
+import AiPlayer, { StrategyFlags } from '../src/objects/AiPlayer';
 import BattleUnit from '../src/objects/BattleUnit';
 import { percentage } from '../src/utils/math';
 
@@ -16,11 +16,17 @@ interface SimulationResult {
 
 class Simulation {
   private session: Session;
-  private players: AiPlayer[]|Player[];
+  private players: AiPlayer[];
 
   constructor() {
     this.session = new Session([]);
-    this.players = this.session.getState().getPlayers();
+    this.players  = this.session.getState().getPlayers() as AiPlayer[];
+
+    /**
+     * first player has to be random, second player will pick best opponents.
+     * This way it would give quite good overall information rate for random picks
+     */
+    this.players[0].AIFlags.removeStrategyFlags(StrategyFlags.PICK_BEST_UNITS);
   }
 
   async run() {
@@ -31,19 +37,13 @@ class Simulation {
       let winner = parseInt(roundResults.winners[0].split('_')[2], 2);
       winner = isNaN(winner) ? -1 : winner;
 
-      const firstUnits = this.players[0] ? this.players[0].board.units().reduce((prev:string[], cur) => {
-        prev.push(cur.name)
-        return prev;
-      }, []) : [];
+      const firstUnits = this.players[0].board.units().unitNames;
 
-      const secondUnits = this.players[1] ? this.players[1].board.units().reduce((prev:string[], cur) => {
-        prev.push(cur.name)
-        return prev;
-      }, []) : [];
+      const secondUnits = this.players[1].board.units().unitNames;
 
       const gandicaps:number[] = [];
       if (this.players[winner]) {
-        this.players[winner].board.units().map((myUnit: BattleUnit) => {
+        for (const myUnit of this.players[winner].board.units()) {
           // we iterate battle units for our winner and finding out how much health is left after battle
           const bUnit = roundResults.battles[0].finalBoard.find(unit => unit.id === myUnit.id);
           if (bUnit) {
@@ -51,7 +51,7 @@ class Simulation {
           } else {
             gandicaps.push(0); // unit is dead
           }
-        });
+        }
       }
 
       let gandicap = gandicaps.reduce((avg, value, _, { length }) => avg + value / length, 0);
