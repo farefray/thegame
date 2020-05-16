@@ -1,18 +1,20 @@
 import React from 'react';
 import ActiveGame from '../ActiveGame';
+import BattleUnitList from '@/../../backend/src/objects/BattleUnit/BattleUnitList';
+import BattleUnit from '@/../../backend/src/objects/BattleUnit';
 
 const generateBoard = () => {
   const unitCount = 7;
-  const board = [];
-  while (board.length < unitCount) {
+  const board = new BattleUnitList();
+  while (board.size < unitCount) {
     const x = Math.floor(Math.random() * 7);
     const y = Math.floor(Math.random() * 4);
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
-    board.push({
+    board.push(new BattleUnit({
       name: 'minotaur',
       x,
       y
-    });
+    }));
   }
   return board;
 };
@@ -35,4 +37,6 @@ const defaultBoard = [{
   units: flipBoard(generateBoard())
 }];
 
+console.log("defaultBoard", defaultBoard)
 export default <ActiveGame props={defaultBoard} />;
+

@@ -1,19 +1,21 @@
 import React from 'react';
 import ActiveGame from '../ActiveGame';
 import monsterUtils from '@/../../backend/src/utils/monsterUtils';
+import BattleUnitList from '@/../../backend/src/objects/BattleUnit/BattleUnitList';
+import BattleUnit from '@/../../backend/src/objects/BattleUnit';
 
 const generateBoard = () => {
   const unitCount = 8;
-  const board = [];
-  while (board.length < unitCount) {
+  const board = new BattleUnitList();
+  while (board.size < unitCount) {
     const x = Math.floor(Math.random() * 8);
     const y = 0;
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
-    board.push({
+    board.push(new BattleUnit({
       name: monsterUtils.getRandomUnit().name,
       x,
       y
-    });
+    }));
   }
   return board;
 };

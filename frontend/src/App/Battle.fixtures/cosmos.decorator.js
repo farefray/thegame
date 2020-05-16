@@ -14,7 +14,6 @@ const generateGameState = async function (boardDefinition) {
     ...boardDefinition
   ]);
   const battleResult = await battle.proceedBattle();
-  console.log("battleResult", battleResult)
   const result = _.cloneDeep(battleResult);
   console.log(_.cloneDeep(battleResult.actionStack));
 
