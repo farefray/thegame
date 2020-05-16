@@ -34,6 +34,7 @@ export default class BattleUnitList {
 
   push(unit: BattleUnit) {
     this._list.push(unit);
+    console.log("BattleUnitList -> push -> this._list", this._list)
   }
 
   filter(conditionFn: Function, mutateInstance = false) {
@@ -75,6 +76,10 @@ export default class BattleUnitList {
 
   findByName(searchName) {
     return this._list.find(({ name }) => name === searchName);
+  }
+
+  find(condition) {
+    return this._list.find(condition);
   }
 
   toJSON() {
