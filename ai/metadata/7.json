@@ -1,0 +1,1 @@
+{"units":{"type":"array","min":null,"max":null,"distinctValues":["dwarf","minotaur_archer","beholder","target_ranged","target_melee","dwarf_guard","baby_beholder","minotaur_guard","minotaur","bigboy","elf_scout","elf","dwarf_soldier","elf_arcanist","dwarf_geomancer","minotaur_mage"]},"output":{"type":"number","min":-0.81,"max":0.86,"distinctValues":null}}
