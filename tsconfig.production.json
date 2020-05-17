@@ -6,14 +6,15 @@
     ],
     "module": "commonjs",
     "outDir": "./build",
-    "rootDir": "./src/",
+    "sourceRoot": "./src",
+    "rootDir": ".",
     "sourceMap": true,
     // Search under node_modules for non-relative imports.
     "moduleResolution": "node",
     // Process & infer types from .js files.
     "allowJs": true,
     // Don't emit; allow Babel to transform files.
-    "noEmit": true,
+    "noEmit": false,
     // Enable strictest settings like strictNullChecks & noImplicitAny.
     "strict": true,
     "noImplicitAny": false,
@@ -23,6 +24,9 @@
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+  },
+  "include": [
+    "src/**/*.json"
+  ]
 }
