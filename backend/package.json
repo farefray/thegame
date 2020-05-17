@@ -25,6 +25,7 @@
     "type": "git",
     "url": "git+https://github.com/farefray/thegame.git"
   },
+  "heroku-run-build-script": true,
   "author": "Maksym Fedan&&Jacek Kizinski",
   "license": "ISC",
   "dependencies": {
