@@ -1,5 +1,5 @@
 import BoardMatrix from '../utils/BoardMatrix';
-import Position from '../../../frontend/src/shared/Position';
+import Position from '../../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import monsterUtils from '../utils/monsterUtils';

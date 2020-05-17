@@ -3,7 +3,7 @@ import Actor from './Actor';
 import TargetPairPool from './TargetPairPool';
 import BattleUnit from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
-import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
+import { ACTION, TEAM } from '../../shared/constants';
 import BoardMatrix from '../utils/BoardMatrix';
 import BattleUnitList from './BattleUnit/BattleUnitList';
 
