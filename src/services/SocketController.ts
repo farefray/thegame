@@ -48,6 +48,7 @@ eventEmitter.on('stateUpdate', (sessionID, state: State) => {
 });
 
 function SocketController(socket) {
+  console.log('New connection established', socket);
   const gameService = GameService();
   const sessionsStore:SessionStore = Container.get('session.store');
   const io:SocketIO.Server = Container.get('socket.io');

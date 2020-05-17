@@ -7,7 +7,6 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const router = express.Router();
 const cors = require('cors');
 
 // we will use port 8000 for our app
@@ -15,10 +14,11 @@ server.listen(8000, () => {
   console.log('connected to port 8000!');
 });
 
-app.use('/', router);
+app.get('/', (req, res) => res.send('Hello World!'))
+
 app.use(cors());
 
-router.all('*', cors());
+// router.all('*', cors());
 
 // Dependencies
 Container.set('socket.io', io);
