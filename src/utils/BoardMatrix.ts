@@ -1,6 +1,7 @@
 import BattleUnit from '../objects/BattleUnit';
 import { Position } from '../objects/Position';
 import BattleUnitList from '../objects/BattleUnit/BattleUnitList';
+import cloneDeep from './cloneDeep';
 
 export default class BoardMatrix {
   private sizeX: number;
@@ -98,21 +99,22 @@ export default class BoardMatrix {
   }
 
   reverse() {
+    const reversedMatrix = new BoardMatrix(this.sizeX, this.sizeY);
     for (const unit of this.units()) {
-      const { x, y } = unit;
+      const reversedUnit = cloneDeep(unit);
+      const { x, y } = reversedUnit;
       const newX = Math.abs(x);
       const newY = Math.abs(this.sizeY - y - 1);
 
-      unit.rearrange({
+      reversedUnit.rearrange({
           x: newX,
           y: newY
       });
 
-      this.setCell(newX, newY, unit)
-      this.setCell(x, y);
+      reversedMatrix.setCell(newX, newY, reversedUnit)
     }
 
-    return this;
+    return reversedMatrix;
   }
 
   units(): BattleUnitList {

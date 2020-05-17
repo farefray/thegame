@@ -1,7 +1,7 @@
 import Pathfinder from './Pathfinder';
 import Actor from './Actor';
 import TargetPairPool from './TargetPairPool';
-import BattleUnit, { UnitConfig } from './BattleUnit';
+import BattleUnit from './BattleUnit';
 import { ACTION_TYPE, Action } from './Action';
 import { ACTION, TEAM } from '../../../frontend/src/shared/constants';
 import BoardMatrix from '../utils/BoardMatrix';

@@ -62,6 +62,10 @@ export default class BattleUnit {
     regen: number;
   };
 
+  /**
+   * ? Unit config is not used anymore? Its alrdy battleunits here...
+   * TODO fixthis
+   */
   constructor(unitConfig: UnitConfig) {
     this.x = +unitConfig.x;
     this.y = +unitConfig.y;
@@ -192,7 +196,7 @@ export default class BattleUnit {
     const { currentTimestamp } = battleContext;
     const actor = new Actor({ timestamp: currentTimestamp, actionGenerator: spellGenerator });
     return {
-      actionDelay: 1000, // [TODO] check if thats fine to have 1s delay after spellcast
+      actionDelay: 1000, // ! [TODO] check if thats fine to have 1s delay after spellcast
       actors: [actor]
     };
   }
