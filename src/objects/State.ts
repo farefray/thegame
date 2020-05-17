@@ -4,7 +4,7 @@ import AiPlayer from './AiPlayer';
 import AppError from './AppError';
 
 const sleep = promisify(setTimeout);
-const { STATE } = require('../../../frontend/src/shared/constants.js');
+const { STATE } = require('../../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 const PLAYERS_MINIMUM = 2;
 
