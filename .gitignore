@@ -62,4 +62,6 @@ typings/
 frontend/public/UI/
 
 # generated AI networks/data
-backend/ai/*/*.json
+backend/ai/examData/*.json
+backend/ai/trainData/*.json
+backend/ai/network/*.json

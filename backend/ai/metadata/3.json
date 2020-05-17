@@ -1,0 +1,1 @@
+{"units":{"type":"array","min":null,"max":null,"distinctValues":["dwarf","target_ranged","target_melee","minotaur_archer","minotaur","elf","baby_beholder","dwarf_soldier","bigboy"]},"output":{"type":"number","min":-1,"max":1,"distinctValues":null}}
