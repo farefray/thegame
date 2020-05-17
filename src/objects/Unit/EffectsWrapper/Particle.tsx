@@ -28,7 +28,7 @@ export function ParticleComponent({ instance, onDone }) {
   const rotationDegrees = (Math.atan2(to.top, to.left) * 180 / Math.PI) + 90; // + 90 because all particles are N oriented by default
 
   React.useEffect(() => {
-    // destination [TODO better way to make particle coming INTO unit]
+    // ! destination [TODO better way to make particle coming INTO unit]
     const top = instance.to.top * 1.5; // >0 = moving down
     const left = instance.to.left * 1.5; // >0 = moving right
     if (ref && ref.current) {

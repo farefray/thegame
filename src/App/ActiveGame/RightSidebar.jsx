@@ -24,7 +24,7 @@ class RightSidebar extends Component {
   }
 
   onPurchase(unitIndex) {
-    SocketConnector.purchaseUnit(unitIndex); // shall we validate it on frontend at least just a lil bit? TODO
+    SocketConnector.purchaseUnit(unitIndex); // ! shall we validate it on frontend at least just a lil bit? TODO
   }
 
   render() {

@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 
 function Layout({ children }) {
   const { title, description } = {
-    title: 'Imba auto chess',
+    title: 'This is a game',
     description: 'This is description'
   };
 
