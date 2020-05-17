@@ -66,7 +66,7 @@ class Minor_AI_functionality {
     const playerOne = new AiPlayer('ai_1');
     playerOne.level = 10;
     while(!playerOne.isBoardFull()) {
-      const monsterInterface = monsterUtils.getRandomUnit();
+      const monsterInterface = monsterUtils.getInstance().getRandomUnit();
       const unit = new BattleUnit({
         name: monsterInterface.name || 'dwarf',
         x: playerOne.availableHandPosition,

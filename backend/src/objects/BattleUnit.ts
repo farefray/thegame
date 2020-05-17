@@ -72,7 +72,7 @@ export default class BattleUnit {
     this.id = this.stringifiedPosition; // id = is also a starting position for mob
     this.teamId = unitConfig.teamId;
 
-    const unitStats = monsterUtils.getMonsterStats(unitConfig.name);
+    const unitStats = monsterUtils.getInstance().getMonsterStats(unitConfig.name);
 
     this.name = unitStats.name;
     this.cost = unitStats.cost;
