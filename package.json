@@ -40,6 +40,7 @@
     "reflect-metadata": "^0.1.13",
     "socket.io": "^2.2.0",
     "synaptic": "^1.1.4",
+    "ts-node": "^8.9.1",
     "tslint": "^6.1.2",
     "typedi": "^0.8.0",
     "uuid": "^8.0.0"
@@ -58,7 +59,6 @@
     "mocha": "^7.1.2",
     "prettier": "^2.0.5",
     "should": "^13.2.3",
-    "ts-node": "^8.9.1",
     "tslint-config-airbnb-base": "^0.3.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.8.3"
