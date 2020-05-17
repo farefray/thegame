@@ -1,8 +1,6 @@
-import Player from '../src/objects/Player';
-import { Loader } from './Loader';
+import { Loader } from './loader';
 import Session from '../src/objects/Session';
 import AiPlayer, { StrategyFlags } from '../src/objects/AiPlayer';
-import BattleUnit from '../src/objects/BattleUnit';
 import { percentage } from '../src/utils/math';
 
 const TRAIN_DATA_AMOUNT = 100;

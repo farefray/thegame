@@ -1,8 +1,6 @@
 
-import BattleUnit from "../objects/BattleUnit";
-
 import { BOARD_UNITS_LIMIT as BUCKETS} from '../objects/Player';
-import { Normalizer } from "../../ai/Normalizer";
+import { Normalizer } from "../../ai/normalizer";
 import { AIFlags, StrategyFlags } from "../objects/AiPlayer";
 import BattleUnitList from "../objects/BattleUnit/BattleUnitList";
 

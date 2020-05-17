@@ -41,7 +41,7 @@ module.exports = override(
     javascriptEnabled: true // required for rsuite
   }),
   rewiredMap(),
-  enchantBabelForTypescript(), // required only for cosmos. TODO: Exclude it from frontend builds
+  enchantBabelForTypescript(), // ! required only for cosmos. TODO: Exclude it from frontend builds
   addWebpackAlias({
     backend: path.resolve(__dirname, '..', 'backend'),
     components: path.resolve(__dirname, 'src', 'components'),
