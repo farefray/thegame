@@ -1,7 +1,7 @@
 import { Loader } from './loader';
-import Session from '../src/objects/Session';
-import AiPlayer, { StrategyFlags } from '../src/objects/AiPlayer';
-import { percentage } from '../src/utils/math';
+import Session from '../objects/Session';
+import AiPlayer, { StrategyFlags } from '../objects/AiPlayer';
+import { percentage } from '../utils/math';
 
 const TRAIN_DATA_AMOUNT = 100;
 

@@ -1,6 +1,6 @@
 /* global describe, it */
 
-import Position from '../shared/Position';
+import Position from '../src/shared/Position';
 import Battle from '../src/objects/Battle';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '../src/objects/BattleUnit';

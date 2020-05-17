@@ -2,9 +2,9 @@ import { Trainer } from 'synaptic';
 import { Loader } from './loader';
 import { Normalizer } from './normalizer';
 import NeuralNetwork from './neuralNetwork';
-import { almostEqual, percentage } from '../src/utils/math';
+import { almostEqual, percentage } from '../utils/math';
 
-import { BOARD_UNITS_LIMIT as BUCKETS } from '../src/objects/Player';
+import { BOARD_UNITS_LIMIT as BUCKETS } from '../objects/Player';
 
 const run = async () => {
   console.time('TrainingTimer');

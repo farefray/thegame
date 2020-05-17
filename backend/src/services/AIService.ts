@@ -1,6 +1,6 @@
 
 import { BOARD_UNITS_LIMIT as BUCKETS} from '../objects/Player';
-import { Normalizer } from "../../ai/normalizer";
+import { Normalizer } from "../ai/normalizer";
 import { AIFlags, StrategyFlags } from "../objects/AiPlayer";
 import BattleUnitList from "../objects/BattleUnit/BattleUnitList";
 
@@ -9,8 +9,8 @@ const dataNormalizers: Array<Normalizer> = [];
 
 for (let bucket = 1; bucket <= BUCKETS; bucket++) {
   // each bucket represents amount of units used in simulation. Thats the simpliest way for handling base logic
-  neurals[bucket] = require(`../../ai/trained/${bucket}.js`);
-  dataNormalizers[bucket] = new Normalizer().setDatasetMetaData(require(`../../ai/metadata/${bucket}.json`));
+  neurals[bucket] = require(`../ai/trained/${bucket}.js`);
+  dataNormalizers[bucket] = new Normalizer().setDatasetMetaData(require(`../ai/metadata/${bucket}.json`));
 }
 
 interface mostSuitableInterface {
