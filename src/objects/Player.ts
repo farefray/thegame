@@ -33,7 +33,7 @@ export default class Player {
   refreshShop() {
     const newShop: Array<BattleUnit> = [];
     for (let i = 0; i <= SHOP_UNITS; i++) {
-      const shopUnit = monsterUtils.getRandomUnit({
+      const shopUnit = monsterUtils.getInstance().getRandomUnit({
         cost: this.get('level'),
       });
 

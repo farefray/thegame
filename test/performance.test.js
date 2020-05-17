@@ -20,7 +20,7 @@ describe('Perf test', async () => {
     // 50 runs for battle
     for (let runs = 0; runs < 10; runs++) {
       for (let x = 0; x < 8; x++) {
-        const monster = monsterUtils.getRandomUnit();
+        const monster = monsterUtils.getInstance().getRandomUnit();
         npcBoard.push(new BattleUnit({
           name: monster.name,
           x: x,
@@ -30,7 +30,7 @@ describe('Perf test', async () => {
 
       const playerBoard = new BattleUnitList();
       for (let x = 0; x < 8; x++) {
-        const monster = monsterUtils.getRandomUnit();
+        const monster = monsterUtils.getInstance().getRandomUnit();
         playerBoard.push(new BattleUnit({
           name: monster.name,
           x: x,

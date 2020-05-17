@@ -22,7 +22,7 @@ import Target_Ranged from './neutrals/Target Ranged';
 
 import BigBoy from './testing/BigBoy';
 
-export default {
+export {
   // testing purposes
   BigBoy,
 

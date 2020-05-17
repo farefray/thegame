@@ -1,15 +1,6 @@
 import { MonsterInterface } from '../abstract/Monster';
 import * as monsters from '../monsters/loader';
 
-const MONSTERS = {};
-Object.keys(monsters.default).forEach((element) => {
-  const monsterName = element.toLowerCase();
-  const mob = monsters.default[element]();
-  MONSTERS[monsterName] = Object.assign({
-    name: monsterName,
-  }, mob) as MonsterInterface;
-});
-
 const randomProperty = function(obj) {
   const keys = Object.keys(obj);
   // tslint:disable-next-line: no-bitwise
@@ -20,13 +11,47 @@ interface MonstersFilter {
   cost?: number;
 }
 
-const monsterUtils = {
-  getAllUnits: () => MONSTERS,
-  getMonsterStats: name => MONSTERS[name.toLowerCase()],
-  getRandomUnit: (filterObject?: MonstersFilter) => {
+/**
+ * * HOtfix version which has to be reworked
+ * ! REMAKE THIS INTO SOME SINGLETONE SERVICE OR SMT
+ */
+
+export default class Monsters {
+  private static instance: Monsters;
+  public MONSTERS: any;
+
+  private constructor() {
+    this.MONSTERS = {};
+    console.log(Object.keys(monsters));
+    Object.keys(monsters).forEach((element) => {
+      const monsterName = element.toLowerCase();
+      const mob = new monsters[element]();
+      this.MONSTERS[monsterName] = Object.assign({
+        name: monsterName,
+      }, mob) as MonsterInterface;
+    });
+  }
+
+  public static getInstance(): Monsters {
+    if (!Monsters.instance) {
+      Monsters.instance = new Monsters();
+    }
+
+    return Monsters.instance;
+  }
+
+  getAllUnits() {
+    return Monsters.getInstance().MONSTERS
+  }
+
+  getMonsterStats(name) {
+    return Monsters.getInstance().MONSTERS[name.toLowerCase()]
+  }
+
+  getRandomUnit(filterObject?: MonstersFilter) {
     const filtered = {};
-    Object.keys(MONSTERS).forEach((key) => {
-      const mob: MonsterInterface = MONSTERS[key];
+    Object.keys(Monsters.getInstance().MONSTERS).forEach((key) => {
+      const mob: MonsterInterface = Monsters.getInstance().MONSTERS[key];
       if (!filterObject
         || !filterObject?.cost
         || mob.cost <= filterObject?.cost) {
@@ -35,7 +60,5 @@ const monsterUtils = {
     });
 
     return randomProperty(filtered) as MonsterInterface;
-  },
-};
-
-export default monsterUtils;
+  }
+}
