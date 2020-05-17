@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { IState, IProps, MoveOptions } from './Unit.d';
 
 import { DIRECTION, ACTION } from '../shared/constants.js';
-import { getHealthColorByPercentage } from '../shared/UnitUtils';
+import { getHealthColorByPercentage } from '../utils/UnitUtils';
 import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage';
 import IsDraggable from './Unit/IsDraggable';
