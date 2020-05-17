@@ -12,7 +12,7 @@ const generateBoard = () => {
     const y = 0;
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
     board.push(new BattleUnit({
-      name: monsterUtils.getRandomUnit().name,
+      name: monsterUtils.getInstance().getRandomUnit().name,
       x,
       y
     }));
@@ -24,7 +24,7 @@ const flipBoard = board => {
   for (const unit of board) {
     unit.y = 7 - unit.y;
     unit.x = 7 - unit.x;
-    unit.name = monsterUtils.getRandomUnit().name;
+    unit.name = monsterUtils.getInstance().getRandomUnit().name;
   }
   return board;
 };
