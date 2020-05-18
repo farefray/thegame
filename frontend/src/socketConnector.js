@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 const url = window.location.href;
 const ip = url.split(':3000')[0].split('http://')[1];
-const ipAdress = process.env.BACKEND_URL || 'http://' + ip + '';
+const ipAdress = process.env.NODE_ENV === 'production' ? 'https://thegame-backend.herokuapp.com/' : 'http://' + ip + '';
 console.log('Connecting to ' + ipAdress + ' ...');
 const socket = io(ipAdress);
 
