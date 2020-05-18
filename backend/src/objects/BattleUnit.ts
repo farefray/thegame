@@ -6,7 +6,7 @@ import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAc
 import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
-import monsterUtils from '../utils/monsterUtils';
+import Monsters from '../utils/monsters';
 import { IEffect, EFFECTS } from '../utils/effects';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
@@ -72,7 +72,7 @@ export default class BattleUnit {
     this.id = this.stringifiedPosition; // id = is also a starting position for mob
     this.teamId = unitConfig.teamId;
 
-    const unitStats = monsterUtils.getInstance().getMonsterStats(unitConfig.name);
+    const unitStats = Monsters.getMonsterStats(unitConfig.name);
 
     this.name = unitStats.name;
     this.cost = unitStats.cost;

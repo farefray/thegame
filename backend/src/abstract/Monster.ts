@@ -56,5 +56,5 @@ export default function Monster(monsterConfig: MonsterInterface): MonsterInterfa
     speed: 0,
   };
 
-  return Object.assign(monsterDefaults, monsterConfig);
+  return Object.assign({} as MonsterInterface, monsterDefaults, monsterConfig);
 }

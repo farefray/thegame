@@ -1,7 +1,6 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle.ts';
-import Monsters from '../src/utils/monsterUtils';
-import monsterUtils from '../src/utils/monsterUtils';
+import Monsters from '../src/utils/Monsters';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '../src/objects/BattleUnit';
 
@@ -20,7 +19,7 @@ describe('Perf test', async () => {
     // 50 runs for battle
     for (let runs = 0; runs < 10; runs++) {
       for (let x = 0; x < 8; x++) {
-        const monster = monsterUtils.getInstance().getRandomUnit();
+        const monster = Monsters.getRandomUnit();
         npcBoard.push(new BattleUnit({
           name: monster.name,
           x: x,
@@ -30,7 +29,7 @@ describe('Perf test', async () => {
 
       const playerBoard = new BattleUnitList();
       for (let x = 0; x < 8; x++) {
-        const monster = monsterUtils.getInstance().getRandomUnit();
+        const monster = Monsters.getRandomUnit();
         playerBoard.push(new BattleUnit({
           name: monster.name,
           x: x,

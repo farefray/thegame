@@ -1,5 +1,5 @@
 import Monster from '../../abstract/Monster';
-import config from './Elf Arcanist.json';
+import config from './Elf Arcanist.config.json';
 
 function Elf_Arcanist() {
   return Monster(config);

@@ -1,7 +1,7 @@
 import Monster from '../../abstract/Monster';
 import BattleUnit from '../../objects/BattleUnit';
 import { BattleContext } from '../../objects/Battle';
-import config from './Dwarf Geomancer.json';
+import config from './Dwarf Geomancer.config.json';
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;

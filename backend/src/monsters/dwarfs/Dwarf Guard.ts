@@ -1,5 +1,5 @@
 import Monster from '../../abstract/Monster';
-import config from './Dwarf Guard.json';
+import config from './Dwarf Guard.config.json';
 
 function Dwarf_Guard() {
   return Monster({ ...config });
