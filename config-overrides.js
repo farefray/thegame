@@ -31,17 +31,20 @@ const enchantBabelForTypescript = () => config => {
 
 module.exports = override(
   removeModuleScopePlugin(),
-  addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: '@lesechos/image-size-loader' }),
+  addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: [{ loader: '@lesechos/image-size-loader', options: {
+    name: '[name].[contenthash].[ext]',
+    outputPath: 'static/assets/',
+    postTransformPublicPath: (p) => `__webpack_public_path__ + ${p}`,
+  }}]}),
   addLessLoader({
     modifyVars: require('./src/UI/ui-overrides.js'),
-    async: true,
-    env: 'development',
-    useFileCache: true,
+    env: process.env.NODE_ENV,
+    useFileCache: false,
     sourceMap: {},
-    javascriptEnabled: true // required for rsuite
+    javascriptEnabled: true, // required for rsuite
   }),
   rewiredMap(),
-  enchantBabelForTypescript(), // ! required only for cosmos. TODO: Exclude it from frontend builds
+  process.env.NODE_ENV !== 'production' ? enchantBabelForTypescript() : (config) => config,
   addWebpackAlias({
     backend: path.resolve(__dirname, '..', 'backend'),
     components: path.resolve(__dirname, 'src', 'components'),

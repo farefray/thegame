@@ -1,5 +1,4 @@
 .rs-panel {
-  border-image: url('./res/panel/stage_frame_default.png') 95 95 95 95 stretch stretch; 
   border-color: #413b2d;
   border-style: inset;
   border-width: 60px;
@@ -8,6 +7,10 @@
   height: auto;
   margin: 0 auto;
   padding: 0;
+
+  &-default {
+    border-image: url('./res/panel/stage_frame_default.png') 95 95 95 95 stretch stretch; 
+  }
 
   &-heading,
     &-body {
