@@ -1,6 +1,6 @@
 import React from 'react';
 import ActiveGame from '../ActiveGame';
-import monsterUtils from '@/../../backend/src/utils/monsterUtils';
+import Monsters from '@/../../backend/src/utils/monsters';
 import BattleUnitList from '@/../../backend/src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '@/../../backend/src/objects/BattleUnit';
 
@@ -12,7 +12,7 @@ const generateBoard = () => {
     const y = 0;
     if (board.find(unit => unit.x === x && unit.y === y)) continue;
     board.push(new BattleUnit({
-      name: monsterUtils.getInstance().getRandomUnit().name,
+      name: Monsters.getRandomUnit().name,
       x,
       y
     }));
@@ -24,7 +24,7 @@ const flipBoard = board => {
   for (const unit of board) {
     unit.y = 7 - unit.y;
     unit.x = 7 - unit.x;
-    unit.name = monsterUtils.getInstance().getRandomUnit().name;
+    unit.name = Monsters.getRandomUnit().name;
   }
   return board;
 };
