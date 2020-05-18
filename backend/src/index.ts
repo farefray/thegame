@@ -9,9 +9,9 @@ const io = require('socket.io')(server);
 
 const cors = require('cors');
 
-// we will use port 8000 for our app
-server.listen(80, () => {
-  console.log('connected to port 80!');
+const PORT = process.env.PORT || 80; // Heroku dynos expose a dynamic port for your app to bind to
+server.listen(PORT, () => {
+  console.log(`Connected at ${PORT} port!`);
 });
 
 app.get('/', (req, res) => res.send('Hello World!'))
