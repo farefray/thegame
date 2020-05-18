@@ -1,6 +1,9 @@
 # TheGame (awaiting for proposals about game naming)
 Browser game based on fantasy 'auto-chess' game settings
 
+// git subtree push --prefix frontend heroku-frontend master
+// git subtree push --prefix backend heroku-backend master
+
 #### Collaborators: 
 <a href="https://github.com/farefray"><img src="https://avatars1.githubusercontent.com/u/30721331?s=460&v=4" title="farefray" width="64" height="64"></a>
 <a href="https://github.com/JacekKiz"><img src="https://avatars2.githubusercontent.com/u/6553747?s=460&v=4" title="JacekKiz" width="64" height="64"></a>
