@@ -10,8 +10,8 @@ const io = require('socket.io')(server);
 const cors = require('cors');
 
 // we will use port 8000 for our app
-server.listen(8000, () => {
-  console.log('connected to port 8000!');
+server.listen(80, () => {
+  console.log('connected to port 80!');
 });
 
 app.get('/', (req, res) => res.send('Hello World!'))
