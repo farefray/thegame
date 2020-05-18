@@ -59,8 +59,6 @@ typings/
 .env
 
 
-frontend/public/UI/
-
 # generated AI networks/data
 backend/src/ai/examData/*.json
 backend/src/ai/trainData/*.json
