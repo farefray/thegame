@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 const url = window.location.href;
 const ip = url.split(':3000')[0].split('http://')[1];
-const ipAdress = 'http://' + ip + ':8000';
+const ipAdress = 'http://' + ip + ':80';
 console.log('Connecting to ' + ipAdress + ' ...');
 const socket = io(ipAdress);
 
