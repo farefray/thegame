@@ -1,5 +1,5 @@
 import { MonsterInterface } from '../abstract/Monster';
-import * as monsters from '../monsters/loader';
+import * as monsters from '../monsters';
 
 const randomProperty = function(obj) {
   const keys = Object.keys(obj);
@@ -11,18 +11,13 @@ interface MonstersFilter {
   cost?: number;
 }
 
-/**
- * * HOtfix version which has to be reworked
- * ! REMAKE THIS INTO SOME SINGLETONE SERVICE OR SMT
- */
-
-export default class Monsters {
+class Monsters {
   private static instance: Monsters;
   public MONSTERS: any;
 
   private constructor() {
+    console.log('Construction monsters util');
     this.MONSTERS = {};
-    console.log(Object.keys(monsters));
     Object.keys(monsters).forEach((element) => {
       const monsterName = element.toLowerCase();
       const mob = new monsters[element]();
@@ -62,3 +57,5 @@ export default class Monsters {
     return randomProperty(filtered) as MonsterInterface;
   }
 }
+
+export default Monsters.getInstance();

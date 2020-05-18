@@ -2,7 +2,7 @@ import BoardMatrix from '../utils/BoardMatrix';
 import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
-import monsterUtils from '../utils/monsterUtils';
+import Monsters from '../utils/monsters';
 
 export const BOARD_UNITS_LIMIT = 8;
 
@@ -33,7 +33,7 @@ export default class Player {
   refreshShop() {
     const newShop: Array<BattleUnit> = [];
     for (let i = 0; i <= SHOP_UNITS; i++) {
-      const shopUnit = monsterUtils.getInstance().getRandomUnit({
+      const shopUnit = Monsters.getRandomUnit({
         cost: this.get('level'),
       });
 

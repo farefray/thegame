@@ -1,6 +1,6 @@
 import Monster from '../../abstract/Monster';
 import BattleUnit from '../../objects/BattleUnit';
-import config from './Minotaur Mage.json';
+import config from './Minotaur Mage.config.json';
 
 import { BattleContext } from '../../objects/Battle';
 import { getSuitableTargets } from '../../utils/pathUtils';

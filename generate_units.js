@@ -82,7 +82,7 @@ function generateUnits(auth) {
     if (rows.length) {
       rows.map((row) => {
         if (row[0] && row[1]) {
-          const path = `./src/monsters/${row[0]}/${row[1]}.json`
+          const path = `./src/monsters/${row[0]}/${row[1]}.config.json`
 
           const unitData = {
             armor: +row[2],

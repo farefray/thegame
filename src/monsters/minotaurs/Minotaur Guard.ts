@@ -1,5 +1,5 @@
 import Monster from '../../abstract/Monster';
-import config from './Minotaur Guard.json';
+import config from './Minotaur Guard.config.json';
 
 function Minotaur_Guard() {
   return Monster(config);
