@@ -1,0 +1,17 @@
+{
+  "name": "thegame",
+  "version": "1.0.0",
+  "description": "thegame main package",
+  "main": "index.js",
+  "repository": "https://github.com/farefray/thegame.git",
+  "author": "Maksym Fedan <maksym.fedan@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "publish:frontend": "git subtree push --prefix frontend heroku-frontend master",
+    "publish:backend": "git subtree push --prefix backend heroku-backend master",
+    "logs:backend": "heroku logs --tail --app thegame-backend",
+    "logs:frontend": "heroku logs --tail --app thegameprototype",
+    "stop": "heroku ps:scale web=0 --app thegameprototype && heroku ps:scale web=0 --app thegame-backend",
+    "start": "heroku ps:scale web=1 --app thegameprototype && heroku ps:scale web=1 --app thegame-backend"
+  }
+}
