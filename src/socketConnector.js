@@ -5,7 +5,7 @@ const url = window.location.href;
 const ip = url.split(':3000')[0].split('http://')[1];
 const ipAdress = 'http://' + ip + '';
 console.log('Connecting to ' + ipAdress + ' ...');
-const socket = io(ipAdress);
+const socket = io('https://thegame-backend.herokuapp.com/'); // ! TODO MAKE THIS BASED ON BUILD OPTS 
 
 /** Socket connector for frontend
  * Handles connection to backend and sends events born in browser to backend.
