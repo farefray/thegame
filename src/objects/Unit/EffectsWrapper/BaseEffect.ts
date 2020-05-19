@@ -6,6 +6,7 @@ export interface EffectPosition {
 }
 
 interface BaseEffectConfig {
+    type: string;
     duration: string;
     effect: number;
     from: EffectPosition;
@@ -21,6 +22,7 @@ export interface BaseEffectType extends BaseEffectConfig {
 
 export class BaseEffect implements BaseEffectType {
     public id: string;
+    public type: string;
     public __proto__: any;
     public duration: string;
     public effect: number;
@@ -31,7 +33,8 @@ export class BaseEffect implements BaseEffectType {
     constructor (conf: BaseEffectConfig) {
         this.id = hyperid().uuid;
 
-        const { duration, effect, from, id } = conf;
+        const { duration, effect, from, id, type } = conf;
+        this.type = type;
         this.duration = duration;
         this.effect = effect;
         this.from = from;
