@@ -12,8 +12,8 @@ function PlayerStats({ playerStats }) {
         <div className="player-data__value">{playerStats.gold}</div>
       </div>
       <div className="player-data">
-        <div className="player-data__mana"></div>
-        <div className="player-data__value">{playerStats.mana}</div>
+        <div className="player-data__level"></div>
+        <div className="player-data__value">{playerStats.level}</div>
       </div>
     </div>
   );

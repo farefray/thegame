@@ -3,6 +3,7 @@
  * Also used for frontend to customize webpack config and use 'rsuite'
  */
 const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader, addWebpackModuleRule } = require('customize-cra');
+const { addReactRefresh } = require("customize-cra-react-refresh");
 const path = require('path');
 
 const rewiredMap = () => config => {
@@ -30,6 +31,7 @@ const enchantBabelForTypescript = () => config => {
 };
 
 module.exports = override(
+  addReactRefresh({ disableRefreshCheck: true }),
   removeModuleScopePlugin(),
   addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: [{ loader: '@lesechos/image-size-loader', options: {
     name: '[name].[contenthash].[ext]',
