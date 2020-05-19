@@ -8,7 +8,6 @@ import { getHealthColorByPercentage } from '../utils/UnitUtils';
 import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage';
 import IsDraggable from './Unit/IsDraggable';
-import EffectsWrapper from './Unit/EffectsWrapper';
 import EffectsFactory from './Unit/EffectsFactory';
 
 const GAMEBOARD_HEIGHT = 8;
@@ -80,13 +79,14 @@ export default class Unit extends React.Component<IProps, IState> {
       if (effects && effects.length) {
         effects.forEach(e => {
           const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
-          this.addEffect(EffectsFactory.create('effect', {
-            ...e,
+          this.addEffect({
+            type: 'effect',
             from: {
               top,
               left
-            }
-          }));
+            },
+            ...e
+          });
         });
       }
 
@@ -129,7 +129,8 @@ export default class Unit extends React.Component<IProps, IState> {
   death(callback) {
     const { top, left } = this.state;
 
-    this.addEffect(EffectsFactory.create('effect', {
+    this.addEffect({
+      type: 'effect',
       id: 'ghost',
       duration: 500,
       from: {
@@ -139,7 +140,7 @@ export default class Unit extends React.Component<IProps, IState> {
       callback: () => this.setState({
         isDead: true
       }, () => callback())
-    }));
+    });
   }
 
   getPositionFromCoordinates(x, y) {
@@ -227,8 +228,8 @@ export default class Unit extends React.Component<IProps, IState> {
         throw new Error('No particle for range attack');
       }
 
-      this.addEffect(
-        EffectsFactory.create('particle', {
+      this.addEffect({
+          type: 'particle',
           id: particleID,
           duration,
           from: {
@@ -239,17 +240,16 @@ export default class Unit extends React.Component<IProps, IState> {
             top: midpointTop - top,
             left: midpointLeft - left
           }
-        })
-      );
+        });
 
       callback(); // todo this callback should be actually linked to created particle (:
     }
   }
 
   addEffect(effect) {
-    this.setState({
-      effects: [...this.state.effects, effect]
-    });
+    this.setState(prevState => ({
+      effects: [...prevState.effects, EffectsFactory.create(effect)]
+    }))
   }
 
   manaChange(value) {
@@ -264,10 +264,11 @@ export default class Unit extends React.Component<IProps, IState> {
     this.setState({
       health: Math.max(0, Math.min(health + value, stats._health.max))
     }, () => {
-      this.addEffect(EffectsFactory.create('text', {
-        text: value,
-        classes: value > 0 ? 'green' : 'red'
-      }));
+        this.addEffect({
+          type: 'text',
+          text: value,
+          classes: value > 0 ? 'green' : 'red'
+        });
 
       callback();
     });
@@ -312,6 +313,7 @@ export default class Unit extends React.Component<IProps, IState> {
     });
 
     const { unit } = this.props;
+    const { effects } = this.state;
     return (
       <div
         className={classes}
@@ -325,7 +327,7 @@ export default class Unit extends React.Component<IProps, IState> {
         <IsDraggable cellPosition={this.startingPosition} lookType={unit.lookType}>
           <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />
         </IsDraggable>
-        <EffectsWrapper effects={this.state.effects} onEffectDone={this.onEffectDone.bind(this)} />
+        {effects.map(effect => EffectsFactory.render(effect, this.onEffectDone.bind(this)))}
         <div className="unit-healthbar">
           <div
             className="unit-healthbar-fill"
