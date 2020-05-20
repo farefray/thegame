@@ -6,26 +6,13 @@ import { useDispatch } from 'react-redux';
 import ActiveGame from '../ActiveGame';
 import State from '../../../../backend/src/objects/State';
 
-// todo make it share functionality with jest and core.test.js
-const getCircularReplacer = () => {
-  const seen = new WeakSet();
-  return (key, value) => {
-    if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
-    }
-    return value;
-  };
-};
 
 const PLAYER_INDEX = -1;
 
 const generateGameState = async function() {
   let state = new State([PLAYER_INDEX]);
   state.getPlayer(PLAYER_INDEX).purchasePawn(0);
-  return state && JSON.parse(JSON.stringify(state, getCircularReplacer()));
+  return state && state.toSocket();
 };
 
 const MyReduxContext = () => {

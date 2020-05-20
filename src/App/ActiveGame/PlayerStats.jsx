@@ -13,7 +13,7 @@ function PlayerStats({ playerStats }) {
       </div>
       <div className="player-data">
         <div className="player-data__level"></div>
-        <div className="player-data__value">{playerStats.level}</div>
+        <div className="player-data__value">{`${playerStats.unitsAmount} / ${playerStats.level}`}</div>
       </div>
     </div>
   );
