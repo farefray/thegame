@@ -1,5 +1,5 @@
 const basePlayerState = {
-  index: 0, // revise
+  index: -1, // revise
   health: 100,
   mana: 0,
   level: -1,
@@ -27,15 +27,16 @@ export default function player(state = basePlayerState, action) {
         shopUnits: action.player.shopUnits
     }
     case 'UPDATED_STATE':
+      const player = action.newState.players.find(player => player.index === state.index);
       return {
         ...state,
-        shopUnits: action.newState.players[state.index].shopUnits,
-        level: action.newState.players[state.index].level,
-        exp: action.newState.players[state.index].exp,
-        expToReach: action.newState.players[state.index].expToReach,
-        gold: action.newState.players[state.index].gold,
-        health: action.newState.players[state.index].health,
-        mana: action.newState.players[state.index].mana
+        shopUnits: player.shopUnits,
+        level: player.level,
+        exp: player.exp,
+        expToReach: player.expToReach,
+        gold: player.gold,
+        health: player.health,
+        mana: player.mana
       };
     default:
       return state

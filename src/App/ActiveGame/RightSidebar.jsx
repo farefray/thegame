@@ -1,9 +1,9 @@
 import React from 'react';
 
-function Sidebar({players}) {
+function Sidebar({ players }) {
   return players.sort((a, b) => a.heath - b.health).map(player => {
     return (
-      <div> Player: {player.index}. HP: {player.health} </div>
+      <div> {player.index} - {player.health} </div>
     );
   });
 }
