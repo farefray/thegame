@@ -10,8 +10,12 @@ import State from '../../../../backend/src/objects/State';
 const PLAYER_INDEX = -1;
 
 const generateGameState = async function() {
-  let state = new State([PLAYER_INDEX]);
-  state.getPlayer(PLAYER_INDEX).purchasePawn(0);
+  const state = new State([PLAYER_INDEX]);
+  const player = state.getPlayer(PLAYER_INDEX);
+  player.gold = 5;
+  player.purchasePawn(0);
+  player.movePawn({ x: 0, y: -1 }, { x: 0, y: 1 });
+  player.purchasePawn(1);
   return state && state.toSocket();
 };
 

@@ -1,23 +1,24 @@
 .rightsidebar {
-  width: 100%;
   margin-left: 64px;
+  width: 100%;
 
   &-shop {
-    flex-direction: column;
-    display: flex;
-    flex-wrap: wrap;
     border-image: url('../res/frames/stage_frame_default.png') 80 110 110 80 stretch stretch;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
 
     .shopunit {
-      width: 128px;
+      cursor: pointer;
       height: 128px;
       position: relative;
-      cursor: pointer;
+      width: 128px;
 
       &:hover {
         border-image: url('../res/frames/stage_frame_complete.png') 80 110 110 80 stretch stretch;
 
-        .rs-frame-inner, .rs-frame-body {
+        .rs-frame-inner,
+        .rs-frame-body {
           background: #503e34;
         }
       }
@@ -27,11 +28,11 @@
       }
 
       .rs-frame-heading {
-        text-align: center;
-        width: 128px;
-        left: -26px;
-        top: -20px;
         font-size: 1.5em;
+        left: -26px;
+        text-align: center;
+        top: -20px;
+        width: 128px;
       }
 
       &-stats {
@@ -40,21 +41,21 @@
         padding-top: 4px;
 
         &__wrapper {
-          position: absolute;
           left: -16px;
+          position: absolute;
           top: 0;
         }
 
         &-stat {
-          background-size: contain;
-          background-repeat: no-repeat;
           background-position: left;
+          background-repeat: no-repeat;
+          background-size: contain;
           padding-left: 21px;
 
           &__hp {
             background-image: url('../res/icons/icon_potion_red.png');
           }
-  
+
           &__attack {
             background-image: url('../res/icons/icon_sword_A.png');
           }
@@ -74,9 +75,9 @@
       }
 
       &-image {
+        bottom: -10px;
         position: absolute;
         right: -10px;
-        bottom: -10px;
       }
     }
   }

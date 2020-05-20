@@ -300,7 +300,7 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead } = this.state;
+    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead, y, effects } = this.state;
 
     if (isDead) {
       return null;
@@ -309,18 +309,18 @@ export default class Unit extends React.Component<IProps, IState> {
     const classes = classNames({
       unit: true,
       'm-loading': !isLoaded,
+      'unit-onhand': y === -1,
       'm-in-battle': false // todo
     });
 
     const { unit } = this.props;
-    const { effects } = this.state;
     return (
       <div
         className={classes}
         style={{
           left: 0,
           top: 0,
-          transform: `translate3d(${left}px, ${top}px, 0px)`,
+          transform: `translate3d(${left}px, ${top}px, 0)`,
           transition
         }}
       >

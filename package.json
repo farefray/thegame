@@ -11,7 +11,7 @@
     "eject": "react-app-rewired eject",
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
-    "cosmos": "cross-env REACT_APP_GAMEMODE=debug cosmos",
+    "cosmos": "cross-env REACT_APP_GAMEMODE=no-debug cosmos",
     "stylelint": "npx stylelint \"**/*.less\""
   },
   "dependencies": {

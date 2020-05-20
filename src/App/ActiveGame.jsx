@@ -25,13 +25,13 @@ function ActiveGame() {
       </Header>
       <Container>
         <Sidebar>
-          <LeftSidebar />
+          <LeftSidebar shopUnits={playerState.shopUnits} />
         </Sidebar>
         <Content>
           <GameBoardWrapper state={gameboardState} />
         </Content>
-        <Sidebar width={448}>
-          <RightSidebar shopUnits={playerState.shopUnits} />
+        <Sidebar>
+          <RightSidebar />
         </Sidebar>
       </Container>
       <Footer></Footer>
