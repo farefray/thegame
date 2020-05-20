@@ -7,7 +7,7 @@ import ActiveGame from '../ActiveGame';
 import State from '../../../../backend/src/objects/State';
 
 
-const PLAYER_INDEX = -1;
+const PLAYER_INDEX = 0;
 
 const generateGameState = async function() {
   const state = new State([PLAYER_INDEX]);
@@ -24,6 +24,12 @@ const MyReduxContext = () => {
 
   React.useEffect(() => {
     generateGameState().then(newState => {
+      newState.index = PLAYER_INDEX;
+      dispatch({
+        type: 'UPDATED_STATE',
+        newState: newState
+      });
+
       dispatch({
         type: 'UPDATE_PLAYER',
         index: PLAYER_INDEX,

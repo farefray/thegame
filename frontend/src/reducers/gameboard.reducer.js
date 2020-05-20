@@ -5,7 +5,7 @@ export function gameboard(
     battleStartBoard: [], // game board on battle start
     myHand: [],
     myBoard: [],
-    index: -1, // player index, but need to get rid of this
+    index: 0, // player index, but need to get rid of this
     isDead: false // get rid plx
   },
   action

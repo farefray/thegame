@@ -2,7 +2,7 @@ export function app(
   state = {
     gameIsLive: false,
     index: -1,
-    players: {}, // do we need this here??
+    players: [],
     isDead: true,
     round: 1,
     roundType: '',
