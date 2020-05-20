@@ -3,6 +3,7 @@
  * Also used for frontend to customize webpack config and use 'rsuite'
  */
 const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader, addWebpackModuleRule } = require('customize-cra');
+const { overridePassedProcessEnv } = require("cra-define-override");
 const { addReactRefresh } = require("customize-cra-react-refresh");
 const path = require('path');
 
@@ -31,6 +32,7 @@ const enchantBabelForTypescript = () => config => {
 };
 
 module.exports = override(
+  overridePassedProcessEnv(["REACT_APP_GAMEMODE"]),
   addReactRefresh({ disableRefreshCheck: true }),
   removeModuleScopePlugin(),
   addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: [{ loader: '@lesechos/image-size-loader', options: {
