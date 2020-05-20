@@ -11,7 +11,8 @@
     "eject": "react-app-rewired eject",
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
-    "cosmos": "cosmos"
+    "cosmos": "cross-env REACT_APP_GAMEMODE=debug cosmos",
+    "stylelint": "npx stylelint \"**/*.less\""
   },
   "dependencies": {
     "@lesechos/image-size-loader": "^1.0.1",
@@ -20,6 +21,7 @@
     "@types/react-dom": "^16.9.3",
     "classnames": "^2.2.6",
     "concurrently": "^5.2.0",
+    "cra-define-override": "^1.0.0",
     "cross-env": "^7.0.2",
     "customize-cra": "^0.9.1",
     "customize-cra-react-refresh": "^1.0.1",
@@ -31,6 +33,7 @@
     "react": "^16.7.0",
     "react-dnd": "^10.0.2",
     "react-dnd-html5-backend": "^9.3.2",
+    "react-dnd-touch-backend": "^10.0.2",
     "react-dom": "^16.7.0",
     "react-helmet": "^5.2.1",
     "react-redux": "^7.1.1",
@@ -62,6 +65,10 @@
     "react-cosmos-fixture": "^4.8.1",
     "react-cosmos-redux": "^2.0.0",
     "react-mock": "^6.0.1",
+    "stylelint": "^13.5.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-order": "^4.0.0",
+    "stylelint-scss": "^3.17.2",
     "typescript": "^3.7.2",
     "webpack": "4.42.0",
     "webpack-visualizer-plugin": "^0.1.11"
