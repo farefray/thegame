@@ -5,7 +5,7 @@ export function gameboard(
     battleStartBoard: [], // game board on battle start
     myHand: [],
     myBoard: [],
-    index: 0, // player index, but need to get rid of this
+    index: -1, // player index, but need to get rid of this
     isDead: false // get rid plx
   },
   action
@@ -27,10 +27,11 @@ export function gameboard(
       };
     }
     case 'UPDATED_STATE': {
+      const player = action.newState.players.find(player => player.index === state.index);
       return {
         ...state,
-        myHand: action.newState.players[state.index].hand,
-        myBoard: action.newState.players[state.index].board,
+        myHand: player.hand,
+        myBoard: player.board,
         isActiveBattleGoing: false
       };
     }
