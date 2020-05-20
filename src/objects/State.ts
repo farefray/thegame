@@ -103,8 +103,24 @@ export default class State {
     return this.players[playerIndex];
   }
 
+  /**
+   * Prepare only data which is required for socket transfer
+   * ! TODO
+   */
   toSocket() {
-    return JSON.parse(JSON.stringify(this));
+    const dataToSend = JSON.parse(JSON.stringify(this));
+    dataToSend.players = this.getPlayers().map((player) => {
+      return {
+        index: player.index,
+        level: player.level,
+        health: player.health,
+        hand: player.hand.toJSON(),
+        board: player.board.toJSON(),
+        shopUnits: player.shopUnits
+      };
+    })
+
+    return dataToSend;
   }
 
   getRound() {
