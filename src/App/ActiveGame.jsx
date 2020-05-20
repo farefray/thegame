@@ -31,7 +31,7 @@ function ActiveGame() {
           <GameBoardWrapper state={gameboardState} />
         </Content>
         <Sidebar>
-          <RightSidebar />
+          <RightSidebar players={appState.players}/>
         </Sidebar>
       </Container>
       <Footer></Footer>

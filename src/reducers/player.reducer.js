@@ -1,5 +1,5 @@
 const basePlayerState = {
-  index: -1, // revise
+  index: 0, // revise
   health: 100,
   mana: 0,
   level: -1,
