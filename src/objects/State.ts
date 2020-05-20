@@ -7,6 +7,7 @@ const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 const PLAYERS_MINIMUM = 2;
+const MAX_LEVEL = 8;
 
 export default class State {
   public round: number;
@@ -63,7 +64,7 @@ export default class State {
       const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
       this.players[uid].gold = (gold + this.incomeBase + bonusGold);
 
-      if (this.round <= 10) {
+      if (this.round <= MAX_LEVEL) {
         this.players[uid].level = this.round;
       }
 
