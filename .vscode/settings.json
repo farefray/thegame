@@ -1,0 +1,6 @@
+{
+  "indentRainbow.excludedLanguages": [
+    "less",
+    "plaintext"
+  ]
+}

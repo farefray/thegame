@@ -14,11 +14,10 @@ export default function BoardSquare({ cellPosition, children }) {
 
   // TODO the same check must be added to backend[without repeating the code!]
   const canMovePawn = (fromPosition, toPosition) => {
-    if (isDead || isActiveBattleGoing) {
+    if (isDead) {
       return false;
     }
 
-    const fromBoardPosition = fromPosition.toBoardPosition();
     if (isActiveBattleGoing) {
       // only hand to hand movement is allowed
       const handUnit = myHand[fromPosition.x];
@@ -26,14 +25,8 @@ export default function BoardSquare({ cellPosition, children }) {
     } else {
       const isPositionFromValid = fromPosition.isMyPosition();
       const isPositionToValid = toPosition.isMyPosition();
-
-      if (isPositionFromValid && isPositionToValid) {
-        const handUnit = fromPosition.isMyHandPosition() ? myHand[fromPosition.x] : myBoard[fromBoardPosition];
-        return !!handUnit;
-      }
+      return (isPositionFromValid && isPositionToValid);
     }
-
-    return false;
   };
 
   const movePawn = (fromPosition, toPosition) => {

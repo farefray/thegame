@@ -34,7 +34,7 @@ class UnitsWrapper extends Component {
   render() {
     const { unitComponents, boardRef } = this.state;
 
-    return boardRef && boardRef.current && Object.keys(unitComponents).map(pos => {
+    return boardRef?.current && Object.keys(unitComponents).map(pos => {
       const unit = unitComponents[pos];
       return (
         <Unit
