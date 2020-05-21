@@ -16,7 +16,7 @@
     "test:ai": "mocha -w ./test/ai.test.ts",
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --fix --project tsconfig.json",
-    "debug": "node --inspect -r ts-node/register src/index.js",
+    "debug": "node --inspect -r ts-node/register src/index.ts",
     "ai:train": "ts-node ai/train.ts",
     "ai:generate": "ts-node ai/generateTrainData.ts",
     "ai:preview": "ts-node ai/preview.ts"

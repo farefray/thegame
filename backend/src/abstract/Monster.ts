@@ -23,6 +23,7 @@ export interface MonsterInterface {
   specialty?: {
     targetable?: boolean, // can be taken as a target by other units
     passive?: boolean, // ignores lifecycle loop targeting/moving actions
+    shopRestricted?: boolean, // not allowed to be randomed for unit shop
   };
 }
 

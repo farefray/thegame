@@ -1,6 +1,6 @@
 {
   "name": "thegame",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "thegame main package",
   "main": "index.js",
   "repository": "https://github.com/farefray/thegame.git",

@@ -34,7 +34,7 @@ export default class Player {
     const newShop: Array<BattleUnit> = [];
     for (let i = 0; i <= SHOP_UNITS; i++) {
       const shopUnit = Monsters.getRandomUnit({
-        cost: this.get('level'),
+        cost: this.get('level')
       });
 
       newShop.push(new BattleUnit({

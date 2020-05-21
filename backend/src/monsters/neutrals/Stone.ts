@@ -12,6 +12,7 @@ export default function Stone() {
     specialty: {
       targetable: false,
       passive: true,
+      shopRestricted: true
     },
   });
 }

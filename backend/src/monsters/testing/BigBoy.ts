@@ -51,6 +51,9 @@ function BigBoy() {
     },
     walkingSpeed: 1000,
     spell,
+    specialty: {
+      shopRestricted: true
+    }
   });
 }
 
