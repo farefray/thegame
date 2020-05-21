@@ -44,15 +44,24 @@ class Monsters {
   }
 
   getRandomUnit(filterObject?: MonstersFilter) {
+    const instance = Monsters.getInstance();
+    const monsterNames = Object.keys(instance.MONSTERS);
+
     const filtered = {};
-    Object.keys(Monsters.getInstance().MONSTERS).forEach((key) => {
-      const mob: MonsterInterface = Monsters.getInstance().MONSTERS[key];
-      if (!filterObject
-        || !filterObject?.cost
-        || mob.cost <= filterObject?.cost) {
-        filtered[key] = mob;
+    for (let i = 0; i < monsterNames.length; i++) {
+      const monsterName = monsterNames[i];
+      const mob: MonsterInterface = instance.MONSTERS[monsterName];
+
+      if (filterObject?.cost && mob.cost > filterObject?.cost) {
+        continue;
       }
-    });
+
+      if (mob.specialty?.shopRestricted) {
+        continue;
+      }
+
+      filtered[monsterName] = mob;
+    }
 
     return randomProperty(filtered) as MonsterInterface;
   }

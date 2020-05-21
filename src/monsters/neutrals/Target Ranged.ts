@@ -11,6 +11,7 @@ export default function Target_Melee() {
     walkingSpeed: 0,
     specialty: {
       passive: true,
+      shopRestricted: true
     },
   });
 }

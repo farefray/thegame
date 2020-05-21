@@ -49,6 +49,7 @@ export default class BattleUnit {
   public cost: number;
   public isTargetable: boolean;
   public isPassive: boolean;
+  public isShopRestricted: boolean;
   public walkingSpeed: number;
 
   private _health: {
@@ -112,6 +113,7 @@ export default class BattleUnit {
 
     this.isTargetable = unitStats?.specialty?.targetable !== undefined ? unitStats.specialty.targetable : true;
     this.isPassive = unitStats?.specialty?.passive !== undefined ? unitStats.specialty.passive : false;
+    this.isShopRestricted = !!unitStats?.specialty?.shopRestricted;
   }
 
   get position(): Position {
@@ -258,7 +260,7 @@ export default class BattleUnit {
   }
 
   *regeneration(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    while (this.isAlive && this.maxMana > 0 && this.mana !== this.maxMana) {
+    while (this.isAlive && this.maxMana > 0 && this.mana !== this.maxMana && this.manaRegen > 0) {
       yield { actionDelay: 1000, actions: this.manaChange(this.manaRegen) };
     }
 
@@ -422,7 +424,7 @@ export default class BattleUnit {
   }
 
   manaChange(value: number): Array<ManaChangeAction> {
-    if (!this.mana || +value === 0 || this._mana?.max === this.mana) {
+    if (this.mana === undefined || +value === 0 || this.maxMana === this.mana) {
       return [];
     }
 

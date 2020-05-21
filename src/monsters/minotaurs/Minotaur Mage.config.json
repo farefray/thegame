@@ -11,5 +11,9 @@
     "health": {
         "max": 850
     },
+    "mana": {
+        "max": 100,
+        "regen": 15
+    },
     "walkingSpeed": 2000
 }

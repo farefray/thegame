@@ -74,13 +74,14 @@ function generateUnits(auth) {
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
     spreadsheetId: '1iJL-p0L21tXqeKM4ham-vvbXrNiK7aWDEIMgM_fJzAo',
-    range: 'base!A:K',
+    range: 'base!A:L',
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
 
     const rows = res.data.values;
     if (rows.length) {
       rows.map((row) => {
+      console.log("generateUnits -> row", row)
         if (row[0] && row[1]) {
           const path = `./src/monsters/${row[0]}/${row[1]}.config.json`
 
@@ -96,6 +97,10 @@ function generateUnits(auth) {
             },
             health: {
               max: +row[9]
+            },
+            mana: {
+              max: +row[11] > 0 ? 100 : 0,
+              regen: +row[11] || 0
             },
             walkingSpeed: +row[10]
           };
