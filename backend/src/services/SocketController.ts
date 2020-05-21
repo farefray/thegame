@@ -35,7 +35,7 @@ const connectedPlayers = new ConnectedPlayers();
 */
 
 /**
- * We need to review what we are sending to socket. Many objects can be simplified with toJson and removing unnessesary big parts
+ * TODO ! We need to review what we are sending to socket. Many objects can be simplified with toJson and removing unnessesary big parts
  */
 eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) => {
   const io:SocketIO.Server = Container.get('socket.io');
@@ -46,6 +46,11 @@ eventEmitter.on('stateUpdate', (sessionID, state: State) => {
   const io:SocketIO.Server = Container.get('socket.io');
   io.to(sessionID).emit('UPDATED_STATE', state.toSocket()); // do we need to send whole state?
 });
+
+eventEmitter.on('playerUpdate', (uid, player: Player) => {
+  const io:SocketIO.Server = Container.get('socket.io');
+  io.to(uid).emit('UPDATE_PLAYER', uid, player); // TODO redurant uid
+})
 
 function SocketController(socket) {
   const gameService = GameService();
@@ -136,10 +141,7 @@ function SocketController(socket) {
     }
 
     // todo check consistency
-    sessionsStore.store(session);
-
-    // todo some abstract sending with try catch, to not crash app every time it bugs :)
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, player);
+    // sessionsStore.store(session);
   });
 
   socket.on('PLACE_PIECE', async (fromBoardPosition, toBoardPosition) => {
@@ -148,10 +150,10 @@ function SocketController(socket) {
     const state = session.getState();
     const player:Player = state.getPlayer(socket.id);
     player.movePawn(fromBoardPosition, toBoardPosition);
-    session.updateState(state);
-    sessionsStore.store(session);
-    // todo some abstract sending with try catch, to not crash app every time it bugs :)
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, player);
+
+    // ? do we really need this?
+    // session.updateState(state);
+    // sessionsStore.store(session);
   });
 
   socket.on('SELL_PIECE', async (fromBoardPosition) => {
@@ -160,7 +162,6 @@ function SocketController(socket) {
     const state = session.getState();
     const player:Player = state.getPlayer(socket.id);
     player.sellPawn(fromBoardPosition);
-    io.to(`${socket.id}`).emit('UPDATE_PLAYER', socket.id, player);
   });
 }
 
