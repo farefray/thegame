@@ -7,5 +7,6 @@
     "webpack": {
         "configPath": "react-scripts/config/webpack.config",
         "overridePath": "./config-overrides.js"
-    }
+    },
+    "port": 3000
 }
