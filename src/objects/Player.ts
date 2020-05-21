@@ -1,8 +1,10 @@
+import { Container } from 'typedi';
 import BoardMatrix from '../utils/BoardMatrix';
 import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import Monsters from '../utils/monsters';
+import { EventEmitter } from 'events';
 
 export const BOARD_UNITS_LIMIT = 8;
 
@@ -153,6 +155,8 @@ export default class Player {
     } else {
       throw new Error('Trying to sell not existance pawn')
     }
+
+    this.sendUpdate();
   }
 
   movePawn(fromBoardPosition, toBoardPosition) {
@@ -201,9 +205,15 @@ export default class Player {
     } else {
       this.board.setCell(fromPosition.x, fromPosition.y, null);
     }
+
+    this.sendUpdate();
   }
 
-  purchasePawn(pieceIndex): number|AppError {
+  /**
+   * TODO handle AppError differently, to not pass into SocketController
+   */
+  purchasePawn(pieceIndex): void|AppError {
+
     if (this.isDead()) {
       return new AppError('warning', "Sorry, you're already dead");
     }
@@ -219,6 +229,31 @@ export default class Player {
 
     delete this.shopUnits[pieceIndex];
     this.gold -= unit.cost;
-    return this.addToHand(unit.name);
+
+    const addToHandResult = this.addToHand(unit.name);
+    if (addToHandResult instanceof AppError) {
+      return addToHandResult;
+    }
+
+    this.sendUpdate();
+  }
+
+  /**
+   * Emitting event to update this player via socket
+   */
+  sendUpdate() {
+    const eventEmitter: EventEmitter = Container.get('event.emitter');
+    eventEmitter.emit('playerUpdate', this.index, this.toSocket());
+  }
+
+  toSocket() {
+    return {
+      index: this.index,
+      level: this.level,
+      health: this.health,
+      hand: this.hand.toJSON(),
+      board: this.board.toJSON(),
+      shopUnits: this.shopUnits
+    }
   }
 }
