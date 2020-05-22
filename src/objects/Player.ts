@@ -36,7 +36,7 @@ export default class Player {
     const newShop: Array<BattleUnit> = [];
     for (let i = 0; i <= SHOP_UNITS; i++) {
       const shopUnit = Monsters.getRandomUnit({
-        cost: this.get('level')
+        cost: this.getLevel()
       });
 
       newShop.push(new BattleUnit({
@@ -48,6 +48,7 @@ export default class Player {
     }
 
     this.shopUnits = newShop;
+    this.sendUpdate();
   }
 
   get availableHandPosition () {
@@ -60,11 +61,11 @@ export default class Player {
     return -1;
   }
 
-  get(property: string) {
-    return this[property];
+  getLevel() {
+    return this.level;
   }
 
-  addToHand (unitName: string): number|AppError {
+  private addToHand (unitName: string): number|AppError {
     const availableHandPosition = this.availableHandPosition;
     if (availableHandPosition !== -1) {
       this.hand.setCell(availableHandPosition, 0, new BattleUnit({
@@ -241,7 +242,7 @@ export default class Player {
   /**
    * Emitting event to update this player via socket
    */
-  sendUpdate() {
+  private sendUpdate() {
     const eventEmitter: EventEmitter = Container.get('event.emitter');
     eventEmitter.emit('playerUpdate', this.index, this.toSocket());
   }
