@@ -16,11 +16,13 @@ export interface IState {
   left: number;
   transition: string;
   isDead: boolean;
+  isDraggable: boolean
 }
 
 export interface IProps {
   unit: any;
   onLifecycle?: Function;
+  isDraggable?: boolean
 }
 
 export interface MoveOptions {

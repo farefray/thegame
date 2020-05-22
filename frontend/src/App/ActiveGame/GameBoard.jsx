@@ -5,13 +5,16 @@ import { DndProvider } from 'react-dnd';
 import TouchBackend from 'react-dnd-touch-backend';
 
 import Position from '../../shared/Position';
+import BoardSquareDnD from './GameBoard/BoardSquareDnD.jsx';
 
 class GameBoard extends React.Component {
   constructor(props) {
     super(props);
 
+    const { width, height, startingY } = props;
     this.state = {
-      gameBoard: this.createGameBoard(props.width, props.height)
+      gameBoard: this.createGameBoard(parseInt(width), parseInt(height), startingY),
+      hasDnD: props.hasDnD
     };
 
     this.boardRef = React.createRef();
@@ -19,13 +22,14 @@ class GameBoard extends React.Component {
 
   componentDidMount() {}
 
-  createGameBoard(width, height) {
+  createGameBoard(width, height, startingY = 0) {
     let data = [];
-    for (let y = height - 1; y >= 0; y--) {
+    for (let y = 0; y < height; y++) {
       const rowData = [];
       for (let x = 0; x < width; x++) {
-        rowData.push(new Position(x, y));
+        rowData.push(new Position(x, parseInt(startingY) + height - y - 1));
       }
+
       data.push(rowData);
     }
 
@@ -33,32 +37,44 @@ class GameBoard extends React.Component {
   }
 
   render() {
-    const { gameBoard } = this.state;
-    return (
-          <div className="gameboard-board">
-            <DndProvider backend={TouchBackend} options={{
-              enableMouseEvents: true
-            }}>
-              <div ref={this.boardRef}>
+    const { gameBoard, hasDnD } = this.state;
+    const dndDecorator = (innerContent) =>
+      hasDnD ? (
+        <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
+          {innerContent}
+        </DndProvider>
+      ) : (
+        innerContent
+      );
 
-                {this.props.render(this.boardRef)}
+    /** TODO use memo for board tiles once its in battle */
+    return dndDecorator(
+      <div className="gameboard-board">
+        <div ref={this.boardRef}>
+          {this.props.render(this.boardRef)}
 
-                {gameBoard.map((boardRow, index) => {
-                  return (
-                    <div className="gameboard-board-row" key={index}>
-                      {boardRow.map((cellPosition) => {
-                        return (
-                          <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                            {process.env.REACT_APP_GAMEMODE ? cellPosition.toBoardPosition() : ''}
-                          </BoardSquare>
-                        );
-                      })}
-                    </div>
+          {gameBoard.map((boardRow, index) => {
+            return (
+              <div className="gameboard-board-row" key={index}>
+                {boardRow.map((cellPosition) => {
+                  const innerDebugContent = process.env.REACT_APP_DEBUGMODE ? cellPosition.toBoardPosition() : '';
+                  const boardSquare = hasDnD ? (
+                    <BoardSquareDnD key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+                      {innerDebugContent}
+                    </BoardSquareDnD>
+                  ) : (
+                    <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
+                      {innerDebugContent}
+                    </BoardSquare>
                   );
+
+                  return boardSquare;
                 })}
               </div>
-            </DndProvider>
-          </div>
+            );
+          })}
+        </div>
+      </div>
     );
   }
 }

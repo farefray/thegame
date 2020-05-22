@@ -25,7 +25,6 @@ export function gameboard(
       };
     }
     case 'UPDATED_STATE': {
-      const player = action.newState.players.find(player => player.index === state.index);
       return {
         ...state,
         isActiveBattleGoing: false

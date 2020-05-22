@@ -10,7 +10,7 @@ import { Container } from '../../../../backend/node_modules/typedi'; // to use s
 
 const mockedEventEmitter = {
   emit: (...args) => {
-    console.log("mockedEventEmitter args", args)
+    window.info("mockedEventEmitter args", args)
   }
 };
 

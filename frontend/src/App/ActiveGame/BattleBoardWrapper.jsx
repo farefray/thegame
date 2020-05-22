@@ -1,7 +1,3 @@
-/**
- * Logical component for gameboard
- * It's quite complex, but I cannot find any more suitable way to make it simplier
- */
 import React, {
   useEffect,
   useState,
@@ -12,8 +8,7 @@ import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
 import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
 
-import usePrevious from '../../customhooks/usePrevious';
-
+const stepByStep = process.env.REACT_APP_STEPBYSTEP === 'true';
 const uuidv1 = require('uuid/v1');
 
 let nextActionReady = null;
@@ -85,7 +80,6 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
 
 BattleBoardWrapper.propTypes = {
   gameboardState: PropTypes.shape({
-    isActiveBattleGoing: PropTypes.bool,
     actionStack: PropTypes.array,
     battleStartBoard: PropTypes.arrayOf(PropTypes.object)
   })
@@ -94,47 +88,28 @@ BattleBoardWrapper.propTypes = {
 /**
  * Logical component for GameBoard
  * @param {gameboard.reducer} gameboardState
- * @param {player.reducer} playerState
  * @returns
  */
 function BattleBoardWrapper({ gameboardState, playerState }) {
   /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
-  const [gameboardKey, setGameboardKey] = useState(1);
-  const [count, setCount] = useState(0.0); // eslint-disable-line
+  const [count, setCount] = useState(0.0); // used to determine battle run time and sync animation
 
   // Get all passed down props which we will use, from gameboard state
   const {
-    myHand,
-    myBoard,
-    battleStartBoard,
-    isActiveBattleGoing,
+    battleStartBoard: board,
     actionStack
   } = gameboardState;
-
-  // Contains current board units(if thats battle, then battleStartBoard, else combination of myBoard && myHand)
-  const [board, setBoard] = useState({});
-
-  // If board is being updated by backend, update board state for this component
-  useEffect(() => {
-    setBoard(isActiveBattleGoing ? battleStartBoard : [...myBoard, ...myHand]);
-  }, [myHand, myBoard, battleStartBoard, isActiveBattleGoing]);
 
   // When board is being updated, we update units [units is object which will be later rendered into 'Unit' components and saved into ref into that array, also processing unit actions and events by this ref]
   const [unitComponents, dispatchUnitLifecycle] = useReducer(dispatchUnitLifecycleReducer, {});
 
-  // If board being updated, update units to re-render them
+  // If board being updated(active battle start/finish), update units to re-render them
   useEffect(() => {
     dispatchUnitLifecycle({
       type: 'BOARD_UPDATE',
       board
     });
-  }, [board]);
-
-  /** Active battle controlling for component state */
-  const [isBattleLaunched, setBattleLaunched] = useState(false);
-
-  /** We use usePrevious hook in order to get previous state value for isBattleLaunched, to know when its changed */
-  const wasBattleLaunched = usePrevious(isBattleLaunched);
+  }, []);
 
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
@@ -157,11 +132,11 @@ function BattleBoardWrapper({ gameboardState, playerState }) {
           if (possibleNextAction) {
             const action = () => {
               const currentAction = actionStack.shift();
-              process.env.REACT_APP_GAMEMODE && console.log(currentAction);
+              process.env.REACT_APP_DEBUGMODE && console.log(currentAction);
               dispatchUnitLifecycle(currentAction);
             }
 
-            if (process.env.REACT_APP_GAMEMODE) {
+            if (stepByStep) {
               nextActionReady && action();
               nextActionReady = false;
             } else if (possibleNextAction.time <= timePassed) {
@@ -175,7 +150,7 @@ function BattleBoardWrapper({ gameboardState, playerState }) {
           return 0.0;
         }
       })
-  
+
       if (actionStack.length === 0 && previousTimeRef.current) {
         // last iteration to null out time
         previousTimeRef.current = null;
@@ -190,23 +165,9 @@ function BattleBoardWrapper({ gameboardState, playerState }) {
       animationRef.current = requestAnimationFrame(animate);
     }
 
-    /** isActiveBattleGoing is redux state from backend, isBattleLaunched is internal state for this component
-     * we devide those two values, because we cannot start battle immediatly when redux updated, as not all Unit components yet mounted and registered here.
-     */
-    if (isActiveBattleGoing && !isBattleLaunched && !wasBattleLaunched) {
-      // Launch battle and update gameboard key in order to re-render units
-      setBattleLaunched(true);
-      setGameboardKey(gameboardKey + 1);
-    } else if (isActiveBattleGoing && isBattleLaunched && !wasBattleLaunched
-      && !animationRef.current) {
-      // starting battle animations on frontend
-      animationRef.current = requestAnimationFrame(animate);
-    } else if (!isActiveBattleGoing && isBattleLaunched && wasBattleLaunched) {
-      // Finished battle (isActiveBattleGoing via redux is false, while battle is running in component yet)
-      setBattleLaunched(false);
-      setGameboardKey(gameboardKey + 1);
-    }
-  }, [isActiveBattleGoing, isBattleLaunched, gameboardKey, wasBattleLaunched]); // eslint-disable-line react-hooks/exhaustive-deps
+    // starting battle animations on frontend
+    animationRef.current = requestAnimationFrame(animate);
+  }, []);
 
   // stop any animations on unmount
   useEffect(() => {
@@ -215,9 +176,10 @@ function BattleBoardWrapper({ gameboardState, playerState }) {
     }
   }, [])
 
-  return ( <React.Fragment>
-      {process.env.REACT_APP_GAMEMODE && <a href="#0" onClick={ () => nextActionReady = true }>Debug next action</a>} 
-      <GameBoard key={ gameboardKey } render={ boardRef =>
+  const stepByStepLink = stepByStep ?? <a href="#0" onClick={() => nextActionReady = true}>Debug next action</a>;
+  return (<React.Fragment>
+      {stepByStepLink}
+      <GameBoard hasDnD={false} render={ boardRef =>
         <UnitsWrapper unitComponents={ unitComponents } onLifecycle={ dispatchUnitLifecycle } boardRef={ boardRef } />
       } width="8" height="8"
     /></React.Fragment>);

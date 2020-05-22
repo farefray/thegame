@@ -32,7 +32,7 @@ const enchantBabelForTypescript = () => config => {
 };
 
 module.exports = override(
-  overridePassedProcessEnv(["REACT_APP_GAMEMODE"]),
+  overridePassedProcessEnv(["REACT_APP_DEBUGMODE", "REACT_APP_STEPBYSTEP"]),
   process.env.APP_COSMOS ? (config) => config : addReactRefresh({ disableRefreshCheck: true }), // react-refresh for yarn dev, but not for cosmos
   removeModuleScopePlugin(),
   addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: [{ loader: '@lesechos/image-size-loader', options: {

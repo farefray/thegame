@@ -37,9 +37,10 @@ function ActiveGame() {
             </div>
           </div>
           <div className="gameboard">
-          <div className="playerHand">
-            <PlayerHand handUnits={playerState.handUnits} />
-          </div></div>
+            <div className="playerHand">
+              <PlayerHand handUnits={playerState.handUnits} />
+            </div>
+          </div>
         </Content>
         <Sidebar>
           <RightSidebar players={appState.players} />

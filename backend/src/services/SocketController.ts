@@ -47,6 +47,9 @@ eventEmitter.on('stateUpdate', (sessionID, state: State) => {
   io.to(sessionID).emit('UPDATED_STATE', state.toSocket()); // do we need to send whole state?
 });
 
+/**
+ * ! TODO need to batch those updates and not send instantly (@see gameplay console)
+ */
 eventEmitter.on('playerUpdate', (uid, player: Player) => {
   const io:SocketIO.Server = Container.get('socket.io');
   io.to(uid).emit('UPDATE_PLAYER', player);
