@@ -18,7 +18,7 @@ export default class Unit extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    const { unit } = props;
+    const { unit, isDraggable } = props;
     const { x, y, id, key } = unit;
     const position = this.getPositionFromCoordinates(x, y);
     this.state = {
@@ -42,7 +42,8 @@ export default class Unit extends React.Component<IProps, IState> {
       left: position.left,
       transition: '',
 
-      isDead: false
+      isDead: false,
+      isDraggable: !!isDraggable
     };
   }
 
@@ -319,7 +320,7 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead, y, effects } = this.state;
+    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead, y, effects, isDraggable } = this.state;
 
     if (isDead) {
       return null;
@@ -333,6 +334,16 @@ export default class Unit extends React.Component<IProps, IState> {
     });
 
     const { unit } = this.props;
+
+    const draggableDecorator = (inner) =>
+      !isDraggable ? (
+        inner
+      ) : (
+        <IsDraggable cellPosition={this.startingPosition} lookType={unit.lookType}>
+          {inner}
+        </IsDraggable>
+      );
+
     return (
       <div
         className={classes}
@@ -343,9 +354,7 @@ export default class Unit extends React.Component<IProps, IState> {
           transition
         }}
       >
-        <IsDraggable cellPosition={this.startingPosition} lookType={unit.lookType}>
-          <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />
-        </IsDraggable>
+        {draggableDecorator(<UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />)}
         {effects.map((effect) => EffectsFactory.render(effect, this.onEffectDone.bind(this)))}
         <div className="unit-healthbar">
           <div

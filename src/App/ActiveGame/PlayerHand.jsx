@@ -11,7 +11,6 @@ PlayerHand.propTypes = {
 function PlayerHand({ handUnits }) {
   const [gameboardKey, setGameboardKey] = useState(1);
   const [board, setBoard] = useState([]);
-  console.log("PlayerHand -> board", board)
 
   // If board is being updated by backend, update board state for this component
   useEffect(() => {
@@ -19,9 +18,9 @@ function PlayerHand({ handUnits }) {
     setGameboardKey(gameboardKey + 1)
   }, [handUnits]);
 
-  return <GameBoard render={
-    () => board.map((unit) => <Unit key={unit.id} unit={unit} />)
-  } width="8" height="1" />;
+  return <GameBoard hasDnD={true} render={
+    () => board.map((unit) => <Unit key={unit.id} unit={unit} isDraggable={true}/>)
+  } width="8" height="1" startingY={-1}/>;
 }
 
 export default PlayerHand;
