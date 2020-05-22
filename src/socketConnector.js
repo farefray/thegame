@@ -36,8 +36,8 @@ SocketConnector.init = function (dispatch) {
     dispatch({ type: 'UPDATED_STATE', newState: state });
   });
 
-  socket.on('UPDATE_PLAYER', (index, player) => {
-    dispatch({ type: 'UPDATE_PLAYER', index: index, player: player });
+  socket.on('UPDATE_PLAYER', (player) => {
+    dispatch({ type: 'UPDATE_PLAYER', player: player });
   });
 
   socket.on('NOTIFICATION', (index, notification) => {

@@ -47,10 +47,11 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    this.props.onLifecycle({
-      type: 'SPAWN',
-      component: this
-    });
+    this.props.onLifecycle &&
+      this.props.onLifecycle({
+        type: 'SPAWN',
+        component: this
+      });
   }
 
   get id() {
@@ -75,9 +76,9 @@ export default class Unit extends React.Component<IProps, IState> {
   onAction(action) {
     return new Promise((resolve) => {
       const { payload, effects } = action;
-  
+
       if (effects && effects.length) {
-        effects.forEach(e => {
+        effects.forEach((e) => {
           const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
           this.addEffect({
             type: 'effect',
@@ -137,16 +138,21 @@ export default class Unit extends React.Component<IProps, IState> {
         top: top,
         left: left
       },
-      callback: () => this.setState({
-        isDead: true
-      }, () => callback())
+      callback: () =>
+        this.setState(
+          {
+            isDead: true
+          },
+          () => callback()
+        )
     });
   }
 
   getPositionFromCoordinates(x, y) {
     const spriteDims = this.state ? this.state.unitSpriteDimensions : 64;
     const unitDimsCorrection = (ONE_CELL_HEIGHT - spriteDims) / 2;
-    const top = Math.abs(y - GAMEBOARD_HEIGHT + 1) * ONE_CELL_HEIGHT - unitDimsCorrection;
+    const isInHand = y === -1;
+    const top = (isInHand ? 0 : Math.abs(y - GAMEBOARD_HEIGHT + 1)) * ONE_CELL_HEIGHT - unitDimsCorrection;
     const left = (x * 512) / GAMEBOARD_WIDTH - unitDimsCorrection;
 
     return {
@@ -175,28 +181,34 @@ export default class Unit extends React.Component<IProps, IState> {
     const { to, stepDuration } = stepPayload;
     const { top, left } = this.getPositionFromCoordinates(to.x, to.y);
 
-    this.setState({
-      x: to.x,
-      y: to.y,
-      top,
-      left,
-      transition: !options.instant ? `transform ${stepDuration}ms linear` : 'auto',
-      direction: options.direction || this.getDirectionToTarget(to.x, to.y),
-      isMoving: !options.instant ? true : false
-    }, () => callback());
+    this.setState(
+      {
+        x: to.x,
+        y: to.y,
+        top,
+        left,
+        transition: !options.instant ? `transform ${stepDuration}ms linear` : 'auto',
+        direction: options.direction || this.getDirectionToTarget(to.x, to.y),
+        isMoving: !options.instant ? true : false
+      },
+      () => callback()
+    );
   }
 
   onEffectDone(effectID) {
-    const currentEffect = this.state.effects.filter(effect => effect.id === effectID)[0]; // todo object and get by key
+    const currentEffect = this.state.effects.filter((effect) => effect.id === effectID)[0]; // todo object and get by key
     const effectCallback = currentEffect && currentEffect.callback;
 
-    this.setState({
-      effects: [...this.state.effects].filter(effect => effect.id !== effectID)
-    }, () => {
-      if (effectCallback) {
-        effectCallback();
+    this.setState(
+      {
+        effects: [...this.state.effects].filter((effect) => effect.id !== effectID)
+      },
+      () => {
+        if (effectCallback) {
+          effectCallback();
+        }
       }
-    });
+    );
   }
 
   attack(x: number, y: number, duration: number, callback: Function) {
@@ -210,11 +222,14 @@ export default class Unit extends React.Component<IProps, IState> {
     });
 
     if (this.isMelee()) {
-      this.setState({
-        top: midpointTop,
-        left: midpointLeft,
-        transition: `transform ${duration}ms ease`
-      }, () => callback());
+      this.setState(
+        {
+          top: midpointTop,
+          left: midpointLeft,
+          transition: `transform ${duration}ms ease`
+        },
+        () => callback()
+      );
 
       setTimeout(() => {
         // Recalculate position instead of passing {top, left} since there is a possibility unit should not return to the same position it started the attack from due to ongoing animations and whatnot
@@ -229,27 +244,27 @@ export default class Unit extends React.Component<IProps, IState> {
       }
 
       this.addEffect({
-          type: 'particle',
-          id: particleID,
-          duration,
-          from: {
-            top: top,
-            left: left
-          },
-          to: {
-            top: midpointTop - top,
-            left: midpointLeft - left
-          }
-        });
+        type: 'particle',
+        id: particleID,
+        duration,
+        from: {
+          top: top,
+          left: left
+        },
+        to: {
+          top: midpointTop - top,
+          left: midpointLeft - left
+        }
+      });
 
       callback(); // todo this callback should be actually linked to created particle (:
     }
   }
 
   addEffect(effect) {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       effects: [...prevState.effects, EffectsFactory.create(effect)]
-    }))
+    }));
   }
 
   manaChange(value) {
@@ -261,24 +276,28 @@ export default class Unit extends React.Component<IProps, IState> {
 
   healthChange(value, callback) {
     let { health, stats } = this.state;
-    this.setState({
-      health: Math.max(0, Math.min(health + value, stats._health.max))
-    }, () => {
+    this.setState(
+      {
+        health: Math.max(0, Math.min(health + value, stats._health.max))
+      },
+      () => {
         this.addEffect({
           type: 'text',
           text: value,
           classes: value > 0 ? 'green' : 'red'
         });
 
-      callback();
-    });
+        callback();
+      }
+    );
   }
 
   componentWillUnmount() {
-    this.props.onLifecycle({
-      type: 'DESTROY',
-      component: this
-    });
+    this.props.onLifecycle &&
+      this.props.onLifecycle({
+        type: 'DESTROY',
+        component: this
+      });
   }
 
   isMelee() {
@@ -327,12 +346,12 @@ export default class Unit extends React.Component<IProps, IState> {
         <IsDraggable cellPosition={this.startingPosition} lookType={unit.lookType}>
           <UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />
         </IsDraggable>
-        {effects.map(effect => EffectsFactory.render(effect, this.onEffectDone.bind(this)))}
+        {effects.map((effect) => EffectsFactory.render(effect, this.onEffectDone.bind(this)))}
         <div className="unit-healthbar">
           <div
             className="unit-healthbar-fill"
             style={{
-              backgroundColor: getHealthColorByPercentage(((health / stats._health.max) * 100), stats.teamId),
+              backgroundColor: getHealthColorByPercentage((health / stats._health.max) * 100, stats.teamId),
               right: `${21 - 20 * (health / stats._health.max)}px`
             }}
           />

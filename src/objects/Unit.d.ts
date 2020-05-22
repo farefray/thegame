@@ -20,7 +20,7 @@ export interface IState {
 
 export interface IProps {
   unit: any;
-  onLifecycle: Function;
+  onLifecycle?: Function;
 }
 
 export interface MoveOptions {

@@ -6,15 +6,12 @@ import TouchBackend from 'react-dnd-touch-backend';
 
 import Position from '../../shared/Position';
 
-const gameBoardWidth = 8;
-const gameBoardHeight = 8;
-
 class GameBoard extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      gameBoard: this.createGameBoard(gameBoardHeight, gameBoardWidth)
+      gameBoard: this.createGameBoard(props.width, props.height)
     };
 
     this.boardRef = React.createRef();
@@ -24,7 +21,7 @@ class GameBoard extends React.Component {
 
   createGameBoard(width, height) {
     let data = [];
-    for (let y = height - 1; y >= -1; y--) {
+    for (let y = height - 1; y >= 0; y--) {
       const rowData = [];
       for (let x = 0; x < width; x++) {
         rowData.push(new Position(x, y));
@@ -38,22 +35,21 @@ class GameBoard extends React.Component {
   render() {
     const { gameBoard } = this.state;
     return (
-      <div className="gameboard">
-        <div className="gameboard-background"></div>
-        <div className="gameboard-wrapper">
           <div className="gameboard-board">
             <DndProvider backend={TouchBackend} options={{
               enableMouseEvents: true
             }}>
               <div ref={this.boardRef}>
+
                 {this.props.render(this.boardRef)}
+
                 {gameBoard.map((boardRow, index) => {
                   return (
                     <div className="gameboard-board-row" key={index}>
                       {boardRow.map((cellPosition) => {
                         return (
                           <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                            {process.env.REACT_APP_GAMEMODE === 'debug' ? cellPosition.toBoardPosition() : ''}
+                            {process.env.REACT_APP_GAMEMODE ? cellPosition.toBoardPosition() : ''}
                           </BoardSquare>
                         );
                       })}
@@ -63,8 +59,6 @@ class GameBoard extends React.Component {
               </div>
             </DndProvider>
           </div>
-        </div>
-      </div>
     );
   }
 }

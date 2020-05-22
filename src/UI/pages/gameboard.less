@@ -62,40 +62,40 @@
       color: rgb(12, 139, 12);
     }
   }
-}
 
-.cell {
-  background-color: rgba(0, 0, 0, 0);
-  border-bottom: 0.5px dashed #00000030;
-  height: 64px;
-  position: relative;
-  width: 64px;
+  .cell {
+    background-color: rgba(0, 0, 0, 0);
+    border-bottom: 0.5px dashed #00000030;
+    height: 64px;
+    position: relative;
+    width: 64px;
 
-  &:not(:last-child) {
-    border-right: 0.5px dashed #00000030;
-  }
+    &:not(:last-child) {
+      border-right: 0.5px dashed #00000030;
+    }
 
-  &__green {
-    background: rgba(0, 255, 21, 0.562);
+    &__green {
+      background: rgba(0, 255, 21, 0.562);
+    }
 
-    &.cell-hand {
-      background: url('../res/frames/mission_frame_green.png');
-      background-repeat: no-repeat;
-      background-size: contain;
-      border: none;
+    &__red {
+      background: rgba(255, 0, 0, 0.473);
     }
   }
 
-  &__red {
-    background: rgba(255, 0, 0, 0.473);
-  }
+  .playerHand {
+    .cell {
+      background: url('../res/frames/mission_frame_silver.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+      border: none;
+      margin-top: 10px;
 
-  &-hand {
-    background: url('../res/frames/mission_frame_silver.png');
-    background-repeat: no-repeat;
-    background-size: contain;
-    border: none;
-    margin-top: 10px;
+      &__green {
+        background: url('../res/frames/mission_frame_green.png');
+        background-size: contain;
+      }
+    }
   }
 }
 
