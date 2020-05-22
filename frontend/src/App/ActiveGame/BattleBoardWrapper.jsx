@@ -12,14 +12,10 @@ import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
 import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
 
-import {
-  StateProvider
-} from './GameBoard.context.js';
 import usePrevious from '../../customhooks/usePrevious';
 
 const uuidv1 = require('uuid/v1');
 
-const DEBUG_MODE = process.env.REACT_APP_GAMEMODE === 'debug';
 let nextActionReady = null;
 /**
  * Handles previously stored actions(actionStack) as well as frontend generated events
@@ -87,22 +83,21 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
   }
 }
 
-GameBoardWrapper.propTypes = {
-  state: PropTypes.shape({
+BattleBoardWrapper.propTypes = {
+  gameboardState: PropTypes.shape({
     isActiveBattleGoing: PropTypes.bool,
     actionStack: PropTypes.array,
-    battleStartBoard: PropTypes.arrayOf(PropTypes.object),
-    myHand: PropTypes.arrayOf(PropTypes.object),
-    myBoard: PropTypes.arrayOf(PropTypes.object)
+    battleStartBoard: PropTypes.arrayOf(PropTypes.object)
   })
 };
 
 /**
  * Logical component for GameBoard
- * @param {gameboard.reducer} state
+ * @param {gameboard.reducer} gameboardState
+ * @param {player.reducer} playerState
  * @returns
  */
-function GameBoardWrapper({ state }) {
+function BattleBoardWrapper({ gameboardState, playerState }) {
   /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   const [gameboardKey, setGameboardKey] = useState(1);
   const [count, setCount] = useState(0.0); // eslint-disable-line
@@ -114,7 +109,7 @@ function GameBoardWrapper({ state }) {
     battleStartBoard,
     isActiveBattleGoing,
     actionStack
-  } = state;
+  } = gameboardState;
 
   // Contains current board units(if thats battle, then battleStartBoard, else combination of myBoard && myHand)
   const [board, setBoard] = useState({});
@@ -162,11 +157,11 @@ function GameBoardWrapper({ state }) {
           if (possibleNextAction) {
             const action = () => {
               const currentAction = actionStack.shift();
-              DEBUG_MODE && console.log(currentAction);
+              process.env.REACT_APP_GAMEMODE && console.log(currentAction);
               dispatchUnitLifecycle(currentAction);
             }
 
-            if (DEBUG_MODE) {
+            if (process.env.REACT_APP_GAMEMODE) {
               nextActionReady && action();
               nextActionReady = false;
             } else if (possibleNextAction.time <= timePassed) {
@@ -220,12 +215,12 @@ function GameBoardWrapper({ state }) {
     }
   }, [])
 
-  return ( <StateProvider initialState={{...state}}>
-      {DEBUG_MODE && <a href="#0" onClick={ () => nextActionReady = true }>Debug next action</a>} 
+  return ( <React.Fragment>
+      {process.env.REACT_APP_GAMEMODE && <a href="#0" onClick={ () => nextActionReady = true }>Debug next action</a>} 
       <GameBoard key={ gameboardKey } render={ boardRef =>
         <UnitsWrapper unitComponents={ unitComponents } onLifecycle={ dispatchUnitLifecycle } boardRef={ boardRef } />
-      }
-    /></StateProvider>);
+      } width="8" height="8"
+    /></React.Fragment>);
   }
 
-  export default GameBoardWrapper;
+  export default BattleBoardWrapper;

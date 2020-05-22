@@ -7,17 +7,11 @@ import { SocketConnector } from '../../../socketConnector';
 
 import ItemTypes from './ItemTypes';
 
-import { useStateValue } from '../GameBoard.context.js';
-
 export default function BoardSquare({ cellPosition, children }) {
-  const { isDead, isActiveBattleGoing } = useStateValue();
+  const isActiveBattleGoing = false; // ! TODO!!
 
   // TODO the same check must be added to backend[without repeating the code!]
   const canMovePawn = (fromPosition, toPosition) => {
-    if (isDead) {
-      return false;
-    }
-
     if (isActiveBattleGoing) {
       // only hand to hand movement is allowed
       return fromPosition.isMyHandPosition() && toPosition.isMyHandPosition();
@@ -48,7 +42,6 @@ export default function BoardSquare({ cellPosition, children }) {
 
   const baseClass = 'cell';
   const classes = classNames(baseClass, {
-    [prefix(baseClass)('hand')]: !isBoard,
     [prefix(baseClass)('red', true)]: isOver && !canDrop,
     [prefix(baseClass)('green', true)]: isOver && canDrop
   });

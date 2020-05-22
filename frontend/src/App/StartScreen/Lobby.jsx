@@ -10,6 +10,7 @@ class Lobby extends Component {
   }
 
   handlePlayVsAI() {
+    // ? DO we really need import socketConnector here? It seems like starting socket connection cuz of that(cosmos)
     SocketConnector.startGame();
   }
 

@@ -49,7 +49,7 @@ eventEmitter.on('stateUpdate', (sessionID, state: State) => {
 
 eventEmitter.on('playerUpdate', (uid, player: Player) => {
   const io:SocketIO.Server = Container.get('socket.io');
-  io.to(uid).emit('UPDATE_PLAYER', uid, player); // TODO redurant uid
+  io.to(uid).emit('UPDATE_PLAYER', player);
 })
 
 function SocketController(socket) {

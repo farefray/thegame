@@ -6,6 +6,15 @@ import { useDispatch } from 'react-redux';
 import ActiveGame from '../ActiveGame';
 import State from '../../../../backend/src/objects/State';
 
+import { Container } from '../../../../backend/node_modules/typedi'; // to use same DI container as backend
+
+const mockedEventEmitter = {
+  emit: (...args) => {
+    console.log("mockedEventEmitter args", args)
+  }
+};
+
+Container.set('event.emitter', mockedEventEmitter);
 
 const PLAYER_INDEX = 0;
 
@@ -25,6 +34,7 @@ const MyReduxContext = () => {
   React.useEffect(() => {
     generateGameState().then(newState => {
       newState.index = PLAYER_INDEX;
+      console.log("MyReduxContext -> newState", newState)
       dispatch({
         type: 'UPDATED_STATE',
         newState: newState
@@ -32,7 +42,6 @@ const MyReduxContext = () => {
 
       dispatch({
         type: 'UPDATE_PLAYER',
-        index: PLAYER_INDEX,
         player: newState.players[PLAYER_INDEX]
       });
     });

@@ -6,7 +6,9 @@ const basePlayerState = {
   exp: -1,
   expToReach: -1,
   gold: -1,
-  shopUnits: []
+  shopUnits: [],
+  handUnits: [],
+  boardUnits: []
 };
 
 export default function player(state = basePlayerState, action) {
@@ -24,20 +26,10 @@ export default function player(state = basePlayerState, action) {
         exp: action.player.exp,
         expToReach: action.player.expToReach,
         gold: action.player.gold,
-        shopUnits: action.player.shopUnits
+        shopUnits: action.player.shopUnits,
+        handUnits: action.player.hand,
+        boardUnits: action.player.board
     }
-    case 'UPDATED_STATE':
-      const player = action.newState.players.find(player => player.index === state.index);
-      return {
-        ...state,
-        shopUnits: player.shopUnits,
-        level: player.level,
-        exp: player.exp,
-        expToReach: player.expToReach,
-        gold: player.gold,
-        health: player.health,
-        mana: player.mana
-      };
     default:
       return state
   }
