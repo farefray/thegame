@@ -19,7 +19,15 @@ export interface MonsterInterface {
   };
   armor?: number;
   walkingSpeed?: number;
-  spell?: Function;
+  spell?: {
+    manacost: number;
+    execute: Function;
+    config?: {
+      ticks?: number;
+      tickValue?: number;
+      tickDelay?: number;
+    }
+  };
   specialty?: {
     targetable?: boolean, // can be taken as a target by other units
     passive?: boolean, // ignores lifecycle loop targeting/moving actions

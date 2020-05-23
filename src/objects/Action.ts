@@ -40,6 +40,11 @@ export interface AttackAction extends ActionBase {
   };
 }
 
+export interface CastAction extends ActionBase {
+  spellName: string;
+  type: ACTION_TYPE.CAST;
+}
+
 export interface HealthChangeAction extends ActionBase {
   type: ACTION_TYPE.HEALTH_CHANGE;
   parent?: string; // another action uid which is used as relation
@@ -85,4 +90,4 @@ export interface RescheduleActorAction extends ActionBase {
   };
 }
 
-export type Action = MoveAction | AttackAction | HealthChangeAction | ManaChangeAction | DeathAction | AcquireTargetAction | SpawnAction | RescheduleActorAction;
+export type Action = MoveAction | AttackAction | CastAction | HealthChangeAction | ManaChangeAction | DeathAction | AcquireTargetAction | SpawnAction | RescheduleActorAction;

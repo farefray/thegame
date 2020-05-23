@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as PathUtil from '../utils/pathUtils';
 import Pathfinder from './Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from './Action';
-import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction } from './Action';
+import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from './Action';
 import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
@@ -22,9 +22,23 @@ export interface UnitConfig {
   teamId?: number;
 }
 
-interface HealthChangeOptions {
-  effect?: IEffect | undefined;
+interface ActionOptions {
   parent?: string;
+}
+interface HealthChangeOptions extends ActionOptions {
+  effect?: IEffect | undefined;
+}
+
+interface ManaChangeOptions extends ActionOptions { }
+
+interface SpellOptions {
+  manacost: number;
+  execute: Function;
+  config?: {
+    ticks?: number;
+    tickValue?: number;
+    tickDelay?: number;
+  }
 }
 
 export default class BattleUnit {
@@ -45,7 +59,7 @@ export default class BattleUnit {
   public lookType: number;
   public previousStep?: Object;
   public armor: number;
-  public spell?: Function;
+  public spell?: SpellOptions;
   public cost: number;
   public isTargetable: boolean;
   public isPassive: boolean;
@@ -192,14 +206,29 @@ export default class BattleUnit {
   }
 
   attemptSpellCast(battleContext: BattleContext) {
-    if (!this.spell) return {};
-    const spellGenerator = this.spell(this, battleContext);
-    if (!spellGenerator) return {};
-    const { currentTimestamp } = battleContext;
-    const actor = new Actor({ timestamp: currentTimestamp, actionGenerator: spellGenerator });
+    if (!this.spell || this.mana < this.spell.manacost) return {};
+
+    const spellActionGenerator: Generator | null = this.spell.execute.call(this, battleContext);
+    if (!spellActionGenerator) return {};
+
+    const castAction: CastAction = {
+      unitID: this.id,
+      uid: uuidv4(),
+      type: ACTION_TYPE.CAST,
+      spellName: this.spell.execute.name
+    };
+
+    const caster = this;
     return {
-      actionDelay: 1000, // ! [TODO] check if thats fine to have 1s delay after spellcast
-      actors: [actor]
+      actions: [castAction, ...caster.manaChange(-(caster.spell?.manacost || caster.mana), {
+        parent: castAction.uid
+      })],
+      actors: [
+        new Actor({
+          timestamp: battleContext.currentTimestamp,
+          actionGenerator: spellActionGenerator
+        })
+      ]
     };
   }
 
@@ -211,7 +240,7 @@ export default class BattleUnit {
       const battleContext = yield {};
       const { targetPairPool, pathfinder, units } = battleContext;
 
-      yield this.attemptSpellCast(battleContext); // maybe we need to acquire target before spell cast?
+      yield this.attemptSpellCast(battleContext);
 
       if (this.isPassive) {
         return {};
@@ -260,7 +289,7 @@ export default class BattleUnit {
   }
 
   *regeneration(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    while (this.isAlive && this.maxMana > 0 && this.mana !== this.maxMana && this.manaRegen > 0) {
+    while (this.isAlive && this.maxMana > 0 && this.manaRegen > 0) {
       yield { actionDelay: 1000, actions: this.manaChange(this.manaRegen) };
     }
 
@@ -423,8 +452,10 @@ export default class BattleUnit {
     return [healthChangeAction];
   }
 
-  manaChange(value: number): Array<ManaChangeAction> {
-    if (this.mana === undefined || +value === 0 || this.maxMana === this.mana) {
+  manaChange(value: number, opts?: ManaChangeOptions): Array<ManaChangeAction> {
+    if (this.mana === undefined
+      || +value === 0
+      || (value > 0 && this.maxMana === this.mana)) {
       return [];
     }
 
@@ -436,6 +467,11 @@ export default class BattleUnit {
         value
       }
     };
+
+    if (opts?.parent) {
+      manaChangeAction.parent = opts.parent;
+    }
+
     return [manaChangeAction];
   }
 

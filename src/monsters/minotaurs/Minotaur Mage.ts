@@ -59,7 +59,7 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
 }
 
 function Minotaur_Mage() {
-  return Monster({ ...config, spell });
+  return Monster({ ...config, /**spell */ });
 }
 
 export default Minotaur_Mage;

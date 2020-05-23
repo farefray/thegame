@@ -5,12 +5,9 @@ import { RescheduleActorAction, ACTION_TYPE, Action } from '../../objects/Action
 
 function spell(unit: BattleUnit, battleContext: BattleContext) {
   const manaCost = 100;
-  const ticks = 2;
-  const tickValue = 100;
-  const tickDelay = 1000;
   if (unit.mana < manaCost) return null;
+
   return (function*() {
-    let counter = 0;
     const actions: Action[] = [];
     actions.push(unit.manaChange(-manaCost)[0]);
     const target = battleContext.targetPairPool.findTargetByUnitId(unit.id);
@@ -21,15 +18,12 @@ function spell(unit: BattleUnit, battleContext: BattleContext) {
         type: ACTION_TYPE.RESCHEDULE_ACTOR,
         payload: {
           actorId: target.id,
-          timestamp: battleContext.currentTimestamp + 3000,
+          timestamp: 3000, // 3s stun?
         },
       };
       actions.push(rescheduleActorAction);
     }
     yield { actions };
-    while (ticks > counter++) {
-      yield { actionDelay: tickDelay, actions: unit.healthChange(tickValue) };
-    }
   })();
 }
 
@@ -47,10 +41,11 @@ function BigBoy() {
       max: 700,
     },
     mana: {
+      max: 100,
       regen: 10,
     },
     walkingSpeed: 1000,
-    spell,
+    // spell,
     specialty: {
       shopRestricted: true
     }
