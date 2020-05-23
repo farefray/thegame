@@ -91,8 +91,10 @@ BattleBoardWrapper.propTypes = {
  * @returns
  */
 function BattleBoardWrapper({ gameboardState, playerState }) {
-  /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
-  const [count, setCount] = useState(0.0); // used to determine battle run time and sync animation
+/** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
+  // used to determine battle run time and sync animation
+  // @ts-ignore
+  const [count, setCount] = useState(0.0);
 
   // Get all passed down props which we will use, from gameboard state
   const {
@@ -109,7 +111,7 @@ function BattleBoardWrapper({ gameboardState, playerState }) {
       type: 'BOARD_UPDATE',
       board
     });
-  }, []);
+  }, [board]);
 
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change

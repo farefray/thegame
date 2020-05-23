@@ -120,6 +120,9 @@ export default class Unit extends React.Component<IProps, IState> {
           this.death(() => resolve(action));
           break;
         }
+        case ACTION.CAST: {
+          this.spellCast(action.spellName, () => resolve(action));
+        }
         default: {
           console.warn('Unhandled action!', action);
           throw new Error('Unhandled action for Unit!');
@@ -128,7 +131,17 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
-  death(callback) {
+  private spellCast(spellName, callback) {
+    this.addEffect({
+      type: 'text',
+      text: spellName,
+      classes: 'green'
+    });
+
+    callback();
+  }
+
+  private death(callback) {
     const { top, left } = this.state;
 
     this.addEffect({
@@ -147,6 +160,25 @@ export default class Unit extends React.Component<IProps, IState> {
           () => callback()
         )
     });
+  }
+
+  // todo options is not used? investigate
+  private move(stepPayload, callback, options: MoveOptions = {}) {
+    const { to, stepDuration } = stepPayload;
+    const { top, left } = this.getPositionFromCoordinates(to.x, to.y);
+
+    this.setState(
+      {
+        x: to.x,
+        y: to.y,
+        top,
+        left,
+        transition: !options.instant ? `transform ${stepDuration}ms linear` : 'auto',
+        direction: options.direction || this.getDirectionToTarget(to.x, to.y),
+        isMoving: !options.instant ? true : false
+      },
+      () => callback()
+    );
   }
 
   getPositionFromCoordinates(x, y) {
@@ -175,25 +207,6 @@ export default class Unit extends React.Component<IProps, IState> {
       return DIRECTION.NORTH;
     }
     return direction;
-  }
-
-  // todo options is not used? investigate
-  move(stepPayload, callback, options: MoveOptions = {}) {
-    const { to, stepDuration } = stepPayload;
-    const { top, left } = this.getPositionFromCoordinates(to.x, to.y);
-
-    this.setState(
-      {
-        x: to.x,
-        y: to.y,
-        top,
-        left,
-        transition: !options.instant ? `transform ${stepDuration}ms linear` : 'auto',
-        direction: options.direction || this.getDirectionToTarget(to.x, to.y),
-        isMoving: !options.instant ? true : false
-      },
-      () => callback()
-    );
   }
 
   onEffectDone(effectID) {

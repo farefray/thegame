@@ -218,6 +218,9 @@ export default class Battle {
       case ACTION_TYPE.ATTACK:
         this.addToActionStack(action, ACTION.ATTACK);
         break;
+      case ACTION_TYPE.CAST:
+        this.addToActionStack(action, ACTION.CAST);
+        break;
       case ACTION_TYPE.HEALTH_CHANGE:
         this.addToActionStack(action, ACTION.HEALTH_CHANGE);
         break;
@@ -243,18 +246,19 @@ export default class Battle {
         const { actorId, timestamp } = action.payload;
         const actor = this.actorQueue.find(actor => actor.id === actorId);
         if (actor) {
-          actor.timestamp = timestamp;
+          actor.timestamp = actor.timestamp + timestamp;
         }
         break;
       default:
-        console.log(action, 'default');
-        break;
+        console.error(action)
+        throw new Error('Unhandled action on backend:' + action.type);
     }
   }
 
   addToActionStack(action, type): void {
     const { unitID, payload } = action;
     const actionStackItem: any = { type, unitID, payload, time: this.currentTimestamp };
+    // ? Cant we just destruct object into actionStackItem? TODO
     if (action.effects) {
       actionStackItem.effects = action.effects;
     }
@@ -265,6 +269,10 @@ export default class Battle {
 
     if (action.parent) {
       actionStackItem.parent = action.parent;
+    }
+
+    if (action.spellName) {
+      actionStackItem.spellName = action.spellName;
     }
 
     this.actionStack.push(actionStackItem);

@@ -49,6 +49,22 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "cwd":"${workspaceFolder}/backend"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha Debug only",
+      "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
+      "args": [
+        "{,!(node_modules)/}*/debug.test.ts"
+      ],
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "cwd":"${workspaceFolder}/backend"
     }
   ]
 }
