@@ -12,8 +12,8 @@
         "max": 450
     },
     "mana": {
-        "max": 0,
-        "regen": 0
+        "max": 100,
+        "regen": 10
     },
     "walkingSpeed": 1000
 }

@@ -1,7 +1,7 @@
 import BattleUnit from '../objects/BattleUnit';
-import { Position } from '../objects/Position';
 import BattleUnitList from '../objects/BattleUnit/BattleUnitList';
 import cloneDeep from './cloneDeep';
+import Position from '../shared/Position';
 
 export default class BoardMatrix {
   private sizeX: number;
@@ -132,7 +132,7 @@ export default class BoardMatrix {
     const freeSpots: Position[] = [];
     this.forEach((spot, [x, y]) => {
       if (spot === null) {
-        freeSpots.push({ x, y });
+        freeSpots.push(new Position(x, y));
       }
     });
 

@@ -41,10 +41,6 @@ Position.prototype.isMyHandPosition = function () {
   return this.y === -1;
 };
 
-Position.prototype.isBoard = function () {
-  return (this.y !== -1);
-};
-
 /**
  * @description Determines is current position belongs to my hand or my bord part
  */

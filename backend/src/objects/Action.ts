@@ -1,6 +1,7 @@
-import { Position } from './Position';
+
 import BattleUnit from './BattleUnit';
 import { IEffect } from '../utils/effects';
+import Position from '../shared/Position';
 
 export enum ACTION_TYPE {
   INIT,
@@ -17,10 +18,10 @@ export enum ACTION_TYPE {
 }
 
 interface ActionBase {
-  unitID: string;
+  unitID: string; /** Represents unit id affected by that Actor */
   effects?: Array<IEffect>;
-  uid?: string; // in order to create relationships between actions, we may use uids
-  parent?: string;
+  uid?: string; /** unique id for action, in order to create relationships */
+  parent?: string; /** parent unique id if exists */
 }
 
 export interface MoveAction extends ActionBase {
@@ -85,7 +86,7 @@ export interface AcquireTargetAction extends ActionBase {
 export interface RescheduleActorAction extends ActionBase {
   type: ACTION_TYPE.RESCHEDULE_ACTOR;
   payload: {
-    actorId: string;
+    targetId: string; /** Represents unit id affected by that Actor */
     timestamp: number;
   };
 }

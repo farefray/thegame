@@ -1,7 +1,7 @@
 import { getDistanceBetweenCoordinates } from '../utils/pathUtils';
 import Step from './Pathfinder/Step';
-import { Position } from './Position';
 import BinaryHeap from './Pathfinder/BinaryHeap';
+import Position from '../shared/Position';
 
 /* Normalize number value to -1, 0 or 1 */
 const normalize = number => number < 0 ? -1 : (number > 0 ? 1 : 0);
@@ -200,10 +200,10 @@ export default class Pathfinder {
   findStepToTarget(unit, targetUnit) {
     const aStarStep = this.getFirstStepInValidPath(unit, targetUnit);
     if (aStarStep) {
-      return {
+      return new Step({
         x: aStarStep.x,
         y: aStarStep.y,
-      };
+      });
     }
 
     // todo make this human readable
@@ -263,10 +263,10 @@ export default class Pathfinder {
 
     const optimalStep = possibleSteps.reduce((previous, current) => (previous.resistance > current.resistance ? current : previous));
 
-    return {
+    return new Step({
       x: optimalStep.x,
       y: optimalStep.y,
-    };
+    });
   }
 
   getUnitPossibleSteps(unit) {
@@ -285,10 +285,10 @@ export default class Pathfinder {
     })].filter(step => {
       const isOutOfBounds = unit.x + step.x < 0 || unit.x + step.x >= this.gridWidth || unit.y + step.y < 0 || unit.y + step.y >= this.gridHeight;
       if (isOutOfBounds) return false;
-      if (this.isTaken({
+      if (this.isTaken(new Position({
         x: unit.x + step.x,
         y: unit.y + step.y,
-      })) return false;
+      }))) return false;
       return true;
     });
   }
@@ -297,16 +297,16 @@ export default class Pathfinder {
    * Returning possible nearby directions(N/W/S/E) coordinates based on tile coordinates
    */
   getGridNeighbours({ x, y }: { x: number, y: number }): Array<Position> {
-    return [{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -0, y: 1 }]
+    return [new Position({ x: -1, y: 0 }), new Position({ x: 1, y: 0 }), new Position({ x: 0, y: -1 }), new Position({ x: -0, y: 1 })]
       .filter((step) => {
         const isOutOfBounds = (x + step.x < 0 || x + step.x >= this.gridWidth || y + step.y < 0 || y + step.y >= this.gridHeight);
 
         if (isOutOfBounds) return false;
 
-        if (this.isTaken({
+        if (this.isTaken(new Position({
           x: x + step.x,
           y: y + step.y,
-        })) return false;
+        }))) return false;
 
         return true;
       });

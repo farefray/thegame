@@ -123,21 +123,22 @@ export default class Battle {
 
   updateUnits() {
     this.units.filter(unit => unit.isAlive, true);
+    console.log("Battle -> updateUnits -> updateUnits", this.units)
 
     if (!this.units.byTeam(TEAM.A).size || !this.units.byTeam(TEAM.B).size) {
+      console.log('is over ', this.currentTimestamp);
       this.isOver = true;
       this.battleTimeEndTime = this.currentTimestamp + 2500; // we ends battle in 2.5 seconds, in order to finish attacks, particles, animations
     }
   }
 
   async proceedBattle() {
-    let isOver = false;
-    while (!isOver) {
+    while (!this.isOver) {
       // action was generated already, so we dont need to execute another next() here
       const { done, value } = await this.actionGeneratorInstance.next();
 
       if (done) {
-        isOver = done;
+        this.isOver = done;
       }
     }
 
@@ -203,12 +204,16 @@ export default class Battle {
 
   processAction(action: Action) {
     if (!action ||
-      (this.isOver && action.type !== ACTION_TYPE.HEALTH_CHANGE && action.type !== ACTION_TYPE.DEATH)) {
-      // dont proceed new actions if battle is finished, we only need old queued damage actors to finish
+      (this.isOver /* && !([ACTION_TYPE.DEATH].includes(action.type)) */)) {
+      // ? dont proceed new actions if battle is finished, we only need old queued damage actors to finish
+      // TODO why isOver not handling this?
       return;
     }
 
     switch (action.type) {
+      /*
+        TODO: action.type === ACTION_TYPE. === ACTION.; It could be same variable
+      */
       case ACTION_TYPE.MOVE:
         const { from, to } = action.payload;
         this.pathfinder.free(from);
@@ -242,16 +247,20 @@ export default class Battle {
         this.targetPairPool.removeByAttackerId(attacker.id);
         this.targetPairPool.add({ attacker, target });
         break;
-      case ACTION_TYPE.RESCHEDULE_ACTOR:
-        const { actorId, timestamp } = action.payload;
-        const actor = this.actorQueue.find(actor => actor.id === actorId);
+      case ACTION_TYPE.RESCHEDULE_ACTOR: // ? I dont feel thats a best way to make stun. Maybe consider some conditions mechanics?
+        const { timestamp, targetId } = action.payload;
+        console.log("Battle -> processAction -> action", action)
+        const actor = this.actorQueue.find(actor => actor.id === targetId);
+        console.log("Battle -> processAction -> actor", actor)
         if (actor) {
           actor.timestamp = actor.timestamp + timestamp;
         }
+
+        this.addToActionStack(action, ACTION.EFFECT);
         break;
       default:
         console.error(action)
-        throw new Error('Unhandled action on backend:' + action.type);
+        throw new Error('Unhandled action on backend:' + action);
     }
   }
 
