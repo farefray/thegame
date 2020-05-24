@@ -3,8 +3,8 @@
     "cost": 6,
     "lookType": 63,
     "attack": {
-        "value": 60,
-        "speed": 2000,
+        "value": 50,
+        "speed": 1250,
         "range": 4,
         "particleID": "holy_missile"
     },

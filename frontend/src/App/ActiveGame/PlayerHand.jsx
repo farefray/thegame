@@ -9,13 +9,11 @@ PlayerHand.propTypes = {
 };
 
 function PlayerHand({ handUnits }) {
-  const [gameboardKey, setGameboardKey] = useState(1);
   const [board, setBoard] = useState([]);
 
   // If board is being updated by backend, update board state for this component
   useEffect(() => {
     setBoard([...handUnits]);
-    setGameboardKey(gameboardKey + 1)
   }, [handUnits]);
 
   return <GameBoard hasDnD={true} render={

@@ -3,8 +3,8 @@
     "cost": 1,
     "lookType": 69,
     "attack": {
-        "value": 35,
-        "speed": 2000,
+        "value": 25,
+        "speed": 1000,
         "range": 1,
         "particleID": ""
     },
