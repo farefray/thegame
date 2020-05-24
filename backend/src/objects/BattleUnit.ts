@@ -133,6 +133,21 @@ export default class BattleUnit {
     this.isShopRestricted = !!unitStats?.specialty?.shopRestricted;
   }
 
+  /** Socket representation for unit which not requires most of the data */
+  /** 
+   * TODO some better and more productive approach.
+   * Maybe we need to rewrite monsters to classes or objects with non-
+   * enumerable properties to exclude those which we dont need or maybe Symbols */
+  toJSON() {
+    const json = {};
+    Object.keys(this).map(key => {
+      if (key !== 'spell') { // hardcode to avoid spell functions to be sent over socket
+        json[key] = this[key];
+      }
+    });
+    return json;
+  }
+
   get position(): Position {
     return new Position(this.x, this.y);
   }
@@ -246,7 +261,8 @@ export default class BattleUnit {
           timestamp: battleContext.currentTimestamp,
           actionGenerator: spellActionGenerator
         })
-      ]
+      ],
+      actionDelay: 1000
     };
   }
 

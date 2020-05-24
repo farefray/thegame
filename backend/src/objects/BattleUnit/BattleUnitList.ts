@@ -4,7 +4,7 @@ import Position from '../../shared/Position';
 export default class BattleUnitList {
   private _list: BattleUnit[];
 
-  constructor(battleUnitArray: BattleUnit[]) {
+  constructor(battleUnitArray?: BattleUnit[]) {
     this._list = battleUnitArray ?? [];
   }
 
@@ -26,7 +26,15 @@ export default class BattleUnitList {
     }
   }
 
-  /** Getters */
+/** Getters */
+  get(index) {
+    return this._list[index];
+  }
+
+  delete(index) {
+    delete this._list[index];
+  }
+
   get unitNames() {
     return this._list.reduce((prev: string[], cur) => {
       prev.push(cur.name);
@@ -115,7 +123,9 @@ export default class BattleUnitList {
 
   /** Output methods */
   toJSON() {
-    // TODO optimize for socket transfer
-    return this._list;
+    return this._list.reduce((prev: any[], cur) => {
+      prev.push(cur.toJSON());
+      return prev;
+    }, []);
   }
 }

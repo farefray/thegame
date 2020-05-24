@@ -90,7 +90,7 @@ BattleBoardWrapper.propTypes = {
  * @param {gameboard.reducer} gameboardState
  * @returns
  */
-function BattleBoardWrapper({ gameboardState, playerState }) {
+function BattleBoardWrapper({ gameboardState }) {
 /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   // used to determine battle run time and sync animation
   // @ts-ignore
@@ -134,7 +134,7 @@ function BattleBoardWrapper({ gameboardState, playerState }) {
           if (possibleNextAction) {
             const action = () => {
               const currentAction = actionStack.shift();
-              process.env.REACT_APP_DEBUGMODE && console.log(currentAction);
+              // process.env.REACT_APP_DEBUGMODE && console.log(currentAction);
               dispatchUnitLifecycle(currentAction);
             }
 

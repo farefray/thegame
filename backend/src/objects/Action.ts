@@ -17,7 +17,7 @@ export enum ACTION_TYPE {
   RESCHEDULE_ACTOR,
 }
 
-interface ActionBase {
+export interface ActionBase {
   unitID: string; /** Represents unit id affected by that Actor */
   effects?: Array<IEffect>;
   uid?: string; /** unique id for action, in order to create relationships */
