@@ -19,6 +19,7 @@ export default function EffectComponent({ instance, onDone }) {
     left: `${dims === 32 ? 32 : 0}px`
   };
 
+  /** TODO make it appear based on position 'from' */
   return (
     <img
       ref={ref}

@@ -7,7 +7,7 @@ const defaultBoard = [{
   owner: 'first_player',
   units: new BattleUnitList([
     new BattleUnit({
-      name: 'minotaur_guard',
+      name: 'minotaur',
       x: 5,
       y: 0
     })
@@ -17,10 +17,20 @@ const defaultBoard = [{
   owner: 'second_player',
   units: new BattleUnitList([
     new BattleUnit({
-      name: 'dwarf_geomancer',
-      x: 5,
+      name: 'dwarf',
+      x: 4,
       y: 7
     }),
+    new BattleUnit({
+      name: 'dwarf',
+      x: 6,
+      y: 7
+    })
+  ])
+},
+{
+  owner: 'neutral_player',
+  units: new BattleUnitList([
     new BattleUnit({
       name: 'stone',
       x: 5,

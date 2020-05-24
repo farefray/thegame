@@ -122,6 +122,11 @@ export default class Unit extends React.Component<IProps, IState> {
         }
         case ACTION.CAST: {
           this.spellCast(action.spellName, () => resolve(action));
+          break;
+        }
+        case ACTION.EFFECT: {
+          action.effects.forEach((effect) => this.addEffect(effect));
+          break;
         }
         default: {
           console.warn('Unhandled action!', action);
