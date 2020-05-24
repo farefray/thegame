@@ -40,9 +40,12 @@ const MyReduxContext = () => {
         newState: newState
       });
 
+      const player = newState.players[PLAYER_INDEX];
+      const unit = player.board[0];
+      console.log("MyReduxContext -> player", player)
       dispatch({
         type: 'UPDATE_PLAYER',
-        player: newState.players[PLAYER_INDEX]
+        player: player
       });
     });
   }, [dispatch]);

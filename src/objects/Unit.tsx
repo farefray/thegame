@@ -79,15 +79,15 @@ export default class Unit extends React.Component<IProps, IState> {
       const { payload, effects } = action;
 
       if (effects && effects.length) {
-        effects.forEach((e) => {
-          const { top, left } = this.getPositionFromCoordinates(e.from.x, e.from.y);
+        effects.forEach((eff) => {
+          const { top, left } = this.getPositionFromCoordinates(eff.from.x, eff.from.y, true);
           this.addEffect({
             type: 'effect',
-            from: {
+            ...eff,
+            from: { // rewriting from.x and from.y with from.top/left
               top,
               left
             },
-            ...e
           });
         });
       }
@@ -125,7 +125,7 @@ export default class Unit extends React.Component<IProps, IState> {
           break;
         }
         case ACTION.EFFECT: {
-          action.effects.forEach((effect) => this.addEffect(effect));
+          // already processed before switch statement
           break;
         }
         default: {
@@ -154,8 +154,8 @@ export default class Unit extends React.Component<IProps, IState> {
       id: 'ghost',
       duration: 500,
       from: {
-        top: top,
-        left: left
+        top: 0,
+        left: 0
       },
       callback: () =>
         this.setState(
@@ -186,7 +186,24 @@ export default class Unit extends React.Component<IProps, IState> {
     );
   }
 
-  getPositionFromCoordinates(x, y) {
+  /**
+   * @param relative is position should be relative to unit position?
+   */
+  getPositionFromCoordinates(x, y, relative = false) {
+    if (relative) {
+      const { x: unitPosX, y: unitPosY } = this.state;
+      if (x === unitPosX && y === unitPosY) {
+        return { top: 0, left: 0 }
+      }
+
+      const currentPos = this.getPositionFromCoordinates(unitPosX, unitPosY);
+      const requestedPos = this.getPositionFromCoordinates(x, y);
+      return {
+        top: requestedPos.top - currentPos.top,
+        left: requestedPos.left - currentPos.left
+      };
+    }
+
     const spriteDims = this.state ? this.state.unitSpriteDimensions : 64;
     const unitDimsCorrection = (ONE_CELL_HEIGHT - spriteDims) / 2;
     const isInHand = y === -1;
