@@ -248,6 +248,7 @@ export default class Battle {
         this.targetPairPool.add({ attacker, target });
         break;
       case ACTION_TYPE.RESCHEDULE_ACTOR: // ? I dont feel thats a best way to make stun. Maybe consider some conditions mechanics?
+        // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
         const { timestamp, targetId } = action.payload;
         console.log("Battle -> processAction -> action", action)
         const actor = this.actorQueue.find(actor => actor.id === targetId);
@@ -259,8 +260,8 @@ export default class Battle {
         this.addToActionStack(action, ACTION.EFFECT);
         break;
       default:
-        console.error(action)
-        throw new Error('Unhandled action on backend:' + action);
+        // thats actionBase only left and it has no type, just side effects(spell animation for example)
+        this.addToActionStack(action, ACTION.EFFECT);
     }
   }
 

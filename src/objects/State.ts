@@ -116,7 +116,7 @@ export default class State {
         health: player.health,
         hand: player.hand.toJSON(),
         board: player.board.toJSON(),
-        shopUnits: player.shopUnits
+        shopUnits: player.shopUnits.toJSON()
       };
     })
 

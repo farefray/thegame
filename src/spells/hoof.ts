@@ -1,22 +1,21 @@
 /** globals: this: BattleUnit */
 import { BattleContext } from '../objects/Battle';
 import BattleUnit from '../objects/BattleUnit';
-import { RescheduleActorAction, ACTION_TYPE } from '../objects/Action';
+import { RescheduleActorAction, ACTION_TYPE, ActionBase } from '../objects/Action';
 
 /** Stuns front units for `ticks` ms. */
 export default function hoof(this: BattleUnit, battleContext: BattleContext) {
   // @ts-ignore
-  const { ticks, effectId } = this.spell.config;
+  const { ticks } = this.spell.config;
   const caster = this;
   return (function* () {
-    // TODO display spell effect on tiles
     const affectedTiles = caster.getLookingDirectionTiles(battleContext);
     const targets = battleContext.units.fromPositions(affectedTiles);
     if (!targets.size) {
       return null; // todo test
     }
 
-    const actions: RescheduleActorAction[] = [];
+    const actions: ActionBase[] = [];
     targets.forEach(unit => {
       const rescheduleActorAction: RescheduleActorAction = {
         unitID: unit.id,
@@ -26,7 +25,7 @@ export default function hoof(this: BattleUnit, battleContext: BattleContext) {
           timestamp: ticks
         },
         effects: [{
-          id: effectId,
+          id: 'stars',
           duration: ticks,
           from: {
             x: unit.x,
@@ -37,6 +36,24 @@ export default function hoof(this: BattleUnit, battleContext: BattleContext) {
 
       actions.push(rescheduleActorAction);
     });
+
+    // if spell properly casted, add spell effects
+    const effects: ActionBase['effects'] = [];
+    affectedTiles.forEach((position) => {
+      effects.push({
+        id: 'poff',
+        duration: 500,
+        from: {
+          x: position.x,
+          y: position.y
+        }
+      });
+    })
+
+    actions.push({
+      unitID: caster.id,
+      effects
+    })
 
     yield {
       actions

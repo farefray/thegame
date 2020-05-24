@@ -9,8 +9,7 @@ function Minotaur() {
       manacost: 100,
       execute: hoof,
       config: {
-        ticks: 5000,
-        effectId: 'stars'
+        ticks: 4000
       }
     }
   });

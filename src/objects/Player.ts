@@ -5,6 +5,7 @@ import BattleUnit from './BattleUnit';
 import AppError from './AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import Monsters from '../utils/monsters';
 import { EventEmitter } from 'events';
+import BattleUnitList from './BattleUnit/BattleUnitList';
 
 export const BOARD_UNITS_LIMIT = 8;
 
@@ -19,13 +20,13 @@ export default class Player {
   public level: number = 1;
   public exp: number = 0;
   public gold: number = 1;
-  public shopUnits: Array<BattleUnit>;
+  public shopUnits: BattleUnitList;
   public hand: BoardMatrix;
   public board: BoardMatrix;
 
   constructor (id: string) {
     this.index = id;
-    this.shopUnits = [];
+    this.shopUnits = new BattleUnitList();
     this.hand = new BoardMatrix(8, 1);
     this.board = new BoardMatrix(8, 8);
 
@@ -33,7 +34,7 @@ export default class Player {
   }
 
   refreshShop() {
-    const newShop: Array<BattleUnit> = [];
+    const newShop = new BattleUnitList();
     for (let i = 0; i <= SHOP_UNITS; i++) {
       const shopUnit = Monsters.getRandomUnit({
         cost: this.getLevel()
@@ -219,7 +220,7 @@ export default class Player {
       return new AppError('warning', "Sorry, you're already dead");
     }
 
-    const unit = this.shopUnits[pieceIndex];
+    const unit = this.shopUnits.get(pieceIndex);
     if (!unit || !unit.name || this.hand.units().size >= HAND_UNITS_LIMIT) {
       return new AppError('warning', 'Your hand is full');
     }
@@ -228,7 +229,7 @@ export default class Player {
       return new AppError('warning', 'Not enough money');
     }
 
-    delete this.shopUnits[pieceIndex];
+    this.shopUnits.delete(pieceIndex);
     this.gold -= unit.cost;
 
     const addToHandResult = this.addToHand(unit.name);
@@ -254,7 +255,7 @@ export default class Player {
       health: this.health,
       hand: this.hand.toJSON(),
       board: this.board.toJSON(),
-      shopUnits: this.shopUnits
+      shopUnits: this.shopUnits.toJSON()
     }
   }
 }
