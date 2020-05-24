@@ -4,7 +4,7 @@
     "lookType": 23,
     "attack": {
         "value": 50,
-        "speed": 2000,
+        "speed": 1500,
         "range": 2,
         "particleID": "fireball"
     },

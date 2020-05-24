@@ -3,7 +3,7 @@
     "cost": 8,
     "lookType": 108,
     "attack": {
-        "value": 95,
+        "value": 80,
         "speed": 2000,
         "range": 3,
         "particleID": "large_death_missile"

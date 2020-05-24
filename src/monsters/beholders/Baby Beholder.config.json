@@ -3,8 +3,8 @@
     "cost": 2,
     "lookType": 109,
     "attack": {
-        "value": 50,
-        "speed": 2000,
+        "value": 35,
+        "speed": 1500,
         "range": 2,
         "particleID": "poison"
     },
