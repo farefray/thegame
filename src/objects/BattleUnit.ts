@@ -3,11 +3,13 @@ import * as PathUtil from '../utils/pathUtils';
 import Pathfinder from './Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from './Action';
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from './Action';
-import { Position } from './Position';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
 import Monsters from '../utils/monsters';
 import { IEffect, EFFECTS } from '../utils/effects';
+import { DIRECTION } from '../shared/constants';
+import Position from '../shared/Position';
+import Step from './Pathfinder/Step';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
 
@@ -19,7 +21,7 @@ export interface UnitConfig {
   name: string;
   x: number;
   y: number;
-  teamId?: number;
+  teamId: number;
 }
 
 interface ActionOptions {
@@ -31,13 +33,14 @@ interface HealthChangeOptions extends ActionOptions {
 
 interface ManaChangeOptions extends ActionOptions { }
 
-interface SpellOptions {
+export interface SpellOptions {
   manacost: number;
   execute: Function;
   config?: {
     ticks?: number;
     tickValue?: number;
     tickDelay?: number;
+    effectId?: string;
   }
 }
 
@@ -46,7 +49,7 @@ export default class BattleUnit {
   public name: string;
   public x: number;
   public y: number;
-  public teamId: number | undefined;
+  public teamId: number;
   public attack: {
     value?: number;
     range?: number;
@@ -57,7 +60,7 @@ export default class BattleUnit {
     };
   };
   public lookType: number;
-  public previousStep?: Object;
+  public previousStep?: Step;
   public armor: number;
   public spell?: SpellOptions;
   public cost: number;
@@ -131,7 +134,7 @@ export default class BattleUnit {
   }
 
   get position(): Position {
-    return { x: this.x, y: this.y };
+    return new Position(this.x, this.y);
   }
 
   get stringifiedPosition(): string {
@@ -195,6 +198,21 @@ export default class BattleUnit {
     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
   }
 
+  get stepDuration() {
+    // slow and root conditions may be introduced here
+    return this.walkingSpeed;
+  }
+
+  get attackValue() {
+    const value = this.attack.value;
+    if (value && value > 0) {
+      const minRoll = Math.ceil(value * 0.9);
+      return Math.floor(Math.random() * (Math.floor(value * 1.1) - minRoll + 1)) + minRoll;
+    }
+
+    return 0;
+  }
+
   /**
    * Moving battle unit starting position
    * @param toPosition
@@ -246,7 +264,7 @@ export default class BattleUnit {
         return {};
       }
 
-      let targetUnit = targetPairPool.findTargetByUnitId(this.id); // ? :)
+      let targetUnit = targetPairPool.findTargetByUnitId(this.id);
       const closestTarget = this.getClosestTarget(units);
       if (closestTarget && (!targetUnit || Pathfinder.getDistanceBetweenUnits(this, closestTarget) < Pathfinder.getDistanceBetweenUnits(this, targetUnit))) {
         yield { actions: this.acquireTarget(closestTarget) };
@@ -306,12 +324,7 @@ export default class BattleUnit {
     return [spawnAction];
   }
 
-  get stepDuration() {
-    // slow and root conditions may be introduced here
-    return this.walkingSpeed;
-  }
-
-  doMove(step: Position): [MoveAction] {
+  doMove(step: Step): [MoveAction] {
     this.previousStep = step;
 
     const from = this.position;
@@ -329,16 +342,6 @@ export default class BattleUnit {
         }
       }
     ];
-  }
-
-  get attackValue() {
-    const value = this.attack.value;
-    if (value && value > 0) {
-      const minRoll = Math.ceil(value * 0.9);
-      return Math.floor(Math.random() * (Math.floor(value * 1.1) - minRoll + 1)) + minRoll;
-    }
-
-    return 0;
   }
 
   isMelee() {
@@ -488,6 +491,64 @@ export default class BattleUnit {
     ];
   }
 
+  getDirectionToTarget(battleContext: BattleContext) {
+    const { targetPairPool } = battleContext;
+    const targetUnit = targetPairPool.findTargetByUnitId(this.id);
+    if (targetUnit) {
+      const { x: currentX, y: currentY } = this;
+      const { x: targetX, y: targetY } = targetUnit;
+      if (targetX > currentX) {
+        return DIRECTION.WEST;
+      }
+
+      if (targetX < currentX) {
+        return DIRECTION.EAST;
+      }
+
+      if (targetY > currentY) {
+        return DIRECTION.SOUTH;
+      }
+
+      if (targetY < currentY) {
+        return DIRECTION.NORTH;
+      }
+    }
+
+    return null;
+  }
+
+  getLookingDirectionTiles(battleContext: BattleContext) {
+    const directionTiles: Array<Position> = [];
+    const direction = this.getDirectionToTarget(battleContext);
+
+    const { x: currentX, y: currentY } = this;
+    switch (direction) {
+      case DIRECTION.NORTH: {
+        directionTiles.push(new Position(currentX - 1, currentY - 1), new Position(currentX, currentY - 1), new Position(currentX + 1, currentY - 1));
+        break;
+      }
+
+      case DIRECTION.SOUTH: {
+        directionTiles.push(new Position(currentX - 1, currentY + 1), new Position(currentX, currentY + 1), new Position(currentX + 1, currentY + 1));
+        break;
+      }
+
+      case DIRECTION.EAST: {
+        directionTiles.push(new Position(currentX - 1, currentY + 1), new Position(currentX - 1, currentY), new Position(currentX - 1, currentY - 1));
+        break;
+      }
+
+      case DIRECTION.WEST: {
+        directionTiles.push(new Position(currentX + 1, currentY + 1), new Position(currentX + 1, currentY), new Position(currentX + 1, currentY - 1));
+        break;
+      }
+
+      default:
+    }
+
+    return directionTiles.filter(pos => pos.isValid());
+  }
+
   getClosestTarget(units) {
     const closestTarget = <BattleUnit[]>PathUtil.getClosestTargets({
       x: this.x,
@@ -533,7 +594,7 @@ export default class BattleUnit {
         const bestXMatch = xPositions.reduce((prev, curr) => (Math.abs(curr - bestX) < Math.abs(prev - bestX) ? curr : prev));
 
         if (bestXMatch) {
-          bestMatch = { x: bestXMatch, y: pickedY };
+          bestMatch = new Position({ x: bestXMatch, y: pickedY });
           break;
         }
       }

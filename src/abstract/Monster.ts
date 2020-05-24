@@ -1,3 +1,5 @@
+import { SpellOptions } from "../objects/BattleUnit";
+
 export interface MonsterInterface {
   name?: string; // auto-generated later
   lookType: number;
@@ -19,15 +21,7 @@ export interface MonsterInterface {
   };
   armor?: number;
   walkingSpeed?: number;
-  spell?: {
-    manacost: number;
-    execute: Function;
-    config?: {
-      ticks?: number;
-      tickValue?: number;
-      tickDelay?: number;
-    }
-  };
+  spell?: SpellOptions;
   specialty?: {
     targetable?: boolean, // can be taken as a target by other units
     passive?: boolean, // ignores lifecycle loop targeting/moving actions

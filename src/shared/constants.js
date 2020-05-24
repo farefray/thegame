@@ -1,3 +1,7 @@
+/** 
+ * ! CODE DUPLICATION WITH FRONTEND. Until its solved, need to maintain same code changes =(
+ * ? Maybe git symlinks?
+ */
 module.exports = {
   DIRECTION: {
     SOUTH: 1,
@@ -10,16 +14,17 @@ module.exports = {
     A: 0,
     B: 1
   },
-  ACTION: {
+  ACTION: { /** TODO Make this enum, to save size? */
     INIT: 'init',
     MOVE: 'move',
     ATTACK: 'attack',
-    CAST: 'cast', // maybe not needed
+    CAST: 'cast',
     HEALTH_CHANGE: 'healthchange',
     MANA_CHANGE: 'manachange',
     SPAWN: 'spawn',
     REGENERATION: 'regen',
-    DEATH: 'death'
+    DEATH: 'death',
+    EFFECT: 'effect'
   },
   STATE: {
     COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000

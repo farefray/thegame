@@ -6,8 +6,7 @@ export default function regeneration(this: BattleUnit, battleContext: BattleCont
   // @ts-ignore
   const { ticks, tickValue, tickDelay } = this.spell.config;
 
-  const target = battleContext.units.filter(u => u.teamId === this.teamId && u.isAlive && u.health < u.maxHealth).random;
-
+  const target = battleContext.units.byTeam(this.teamId).areDamaged().random;
   if (!target) return null;
 
   return (function* () {
