@@ -123,16 +123,18 @@ export default class Battle {
 
   updateUnits() {
     this.units.filter(unit => unit.isAlive, true);
-    console.log("Battle -> updateUnits -> updateUnits", this.units)
 
     if (!this.units.byTeam(TEAM.A).size || !this.units.byTeam(TEAM.B).size) {
-      console.log('is over ', this.currentTimestamp);
       this.isOver = true;
       this.battleTimeEndTime = this.currentTimestamp + 2500; // we ends battle in 2.5 seconds, in order to finish attacks, particles, animations
     }
   }
 
   async proceedBattle() {
+    /**
+     * TODO such case is possible - we start battle against no units, and manaregen/casts will be executed for units, while there will be no targets and so on. 
+     * !FIX THIS
+     */
     while (!this.isOver) {
       // action was generated already, so we dont need to execute another next() here
       const { done, value } = await this.actionGeneratorInstance.next();
@@ -250,9 +252,7 @@ export default class Battle {
       case ACTION_TYPE.RESCHEDULE_ACTOR: // ? I dont feel thats a best way to make stun. Maybe consider some conditions mechanics?
         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
         const { timestamp, targetId } = action.payload;
-        console.log("Battle -> processAction -> action", action)
         const actor = this.actorQueue.find(actor => actor.id === targetId);
-        console.log("Battle -> processAction -> actor", actor)
         if (actor) {
           actor.timestamp = actor.timestamp + timestamp;
         }

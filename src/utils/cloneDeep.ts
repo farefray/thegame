@@ -1,13 +1,13 @@
 function cloneDeep(val) {
-  switch (typeof val) {
-    case 'object':
-      return cloneObjectDeep(val);
-    case 'array':
-      return cloneArrayDeep(val);
-    default: {
-      return val;
-    }
+  if (Array.isArray(val)) {
+    return cloneArrayDeep(val);
   }
+
+  if (typeof val === 'object') {
+    return cloneObjectDeep(val);
+  }
+
+  return val;
 }
 
 function cloneObjectDeep(val) {
@@ -16,7 +16,7 @@ function cloneObjectDeep(val) {
    * ? investigate some other cloning technique?
    */
   const res = new val.constructor(val);
-  for (let key in val) {
+  for (const key in val) {
     res[key] = cloneDeep(val[key]);
   }
 

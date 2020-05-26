@@ -81,8 +81,8 @@ describe('Battle logic tests', () => {
       action.type.should.be.equal('attack');
 
       let { from, to } = action.payload;
-      from = new Position(from);
-      to = new Position(to);
+      from = Position.fromString(from);
+      to = Position.fromString(to);
 
       const distanceToTarget = Math.max(Math.abs(from.x - to.x), Math.abs(from.y - to.y));
       distanceToTarget.should.be.equal(1);
@@ -129,7 +129,7 @@ describe('Battle logic tests', () => {
     battleResult.should.be.ok();
     battleResult.actionStack.should.be.an.Array();
     battleResult.actionStack.length.should.be.above(0);
-    battleResult.actionStack.length.should.be.below(40);
+    battleResult.actionStack.length.should.be.below(100);
 
     // we should detect that no moves was done into stone
     const moveActions = battleResult.actionStack.filter((a) => a.type === 'move');
@@ -185,7 +185,7 @@ describe('Battle logic tests', () => {
     battleResult.should.be.ok();
     battleResult.actionStack.should.be.an.Array();
     battleResult.actionStack.length.should.be.above(0);
-    battleResult.actionStack.length.should.be.below(100);
+    battleResult.actionStack.length.should.be.below(150);
 
     // we should detect that no moves was done into stone
     const attackActions = battleResult.actionStack.filter((a) => a.type === 'attack').splice(2, 2);

@@ -1,7 +1,3 @@
-/** 
- * ! CODE DUPLICATION WITH FRONTEND. Until its solved, need to maintain same code changes =(
- * ? Maybe git symlinks?
- */
 module.exports = {
   DIRECTION: {
     SOUTH: 1,

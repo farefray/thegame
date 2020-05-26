@@ -1,6 +1,6 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle.ts';
-import Monsters from '../src/utils/Monsters';
+import Monsters from '../src/utils/monsters';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '../src/objects/BattleUnit';
 

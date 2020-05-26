@@ -7,6 +7,16 @@ import { BattleResult } from '../src/objects/Battle';
 import Monsters from '../src/utils/monsters';
 import BattleUnit from '../src/objects/BattleUnit';
 
+import { Container } from 'typedi';
+
+const mockedEventEmitter = {
+  emit: (...args) => {
+    // console.info("mockedEventEmitter args", args)
+  }
+};
+
+Container.set('event.emitter', mockedEventEmitter);
+
 @suite
 class AI {
   @test
@@ -78,7 +88,7 @@ class Minor_AI_functionality {
 
       const freeSpots = playerOne.board.freeSpots(); // todo make player.freeSpots and filter positions which are not in scope
       const prefereablePosition = unit.getPreferablePosition(freeSpots);
-      playerOne.movePawn(unit.stringifiedPosition, prefereablePosition);
+      playerOne.movePawn(unit.position, prefereablePosition);
     }
   }
 }
