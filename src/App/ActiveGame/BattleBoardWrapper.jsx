@@ -94,7 +94,7 @@ function BattleBoardWrapper({ gameboardState }) {
 /** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   // used to determine battle run time and sync animation
   // @ts-ignore
-  const [count, setCount] = useState(0.0);
+  const [, setCount] = useState(0.0);
 
   // Get all passed down props which we will use, from gameboard state
   const {
@@ -169,7 +169,7 @@ function BattleBoardWrapper({ gameboardState }) {
 
     // starting battle animations on frontend
     animationRef.current = requestAnimationFrame(animate);
-  }, []);
+  }, [actionStack]);
 
   // stop any animations on unmount
   useEffect(() => {

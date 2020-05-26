@@ -7,6 +7,7 @@ import ActiveGame from '../ActiveGame';
 import State from '../../../../backend/src/objects/State';
 
 import { Container } from '../../../../backend/node_modules/typedi'; // to use same DI container as backend
+import Position from 'shared/Position';
 
 const mockedEventEmitter = {
   emit: (...args) => {
@@ -23,7 +24,7 @@ const generateGameState = async function() {
   const player = state.getPlayer(PLAYER_INDEX);
   player.gold = 5;
   player.purchasePawn(0);
-  player.movePawn({ x: 0, y: -1 }, { x: 0, y: 1 });
+  player.movePawn(new Position({ x: 0, y: -1 }), new Position({ x: 0, y: 1 }));
   player.purchasePawn(1);
   return state && state.toSocket();
 };
