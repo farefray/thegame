@@ -1,15 +1,15 @@
 .rs-panel {
+  background: transparent;
   border-color: #413b2d;
   border-style: inset;
   border-width: 60px;
-  background: transparent;
   display: block;
   height: auto;
   margin: 0 auto;
   padding: 0;
 
   &-default {
-    border-image: url('./res/panel/stage_frame_default.png') 95 95 95 95 stretch stretch; 
+    border-image: url('./res/panel/stage_frame_default.png') 95 95 95 95 stretch stretch;
   }
 
   &-heading,
@@ -19,13 +19,31 @@
 
   &-heading {
     background: url('./res/panel/title.png'), transparent;
-    background-repeat: no-repeat;
     background-position: center;
+    background-repeat: no-repeat;
     background-size: contain;
-    position: absolute;
-    top: -15px;
     left: 0;
-    width: 100%;
+    position: absolute;
     text-align: center;
+    top: -15px;
+    width: 100%;
+  }
+}
+
+@media (max-width: @screen-lg-desktop) {
+  .rs-panel {
+    border-width: 24px;
+
+    &-heading {
+      top: -35px;
+    }
+
+    &-title {
+      font-size: 1.75em;
+    }
+
+    &-body {
+      padding: 10px 4px;
+    }
   }
 }

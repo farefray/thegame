@@ -58,7 +58,6 @@ class LoginForm extends Component {
         formValue={formValue}
         model={model}
       >
-        <div className="test"></div>
         <FormGroup className="ic_user">
           <ControlLabel>Email</ControlLabel>
           <FormControl name="email" errorPlacement="topStart"/>
@@ -67,12 +66,13 @@ class LoginForm extends Component {
           <ControlLabel>Password</ControlLabel>
           <FormControl name="password" type="password" errorPlacement="bottomStart" errorMessage={loginError}/>
         </FormGroup>
+        <div>*Any login credentials working at this point</div>
         <FormGroup>
           <ButtonToolbar>
             <Button appearance="primary" onClick={this.handleSignIn}>
               Sign in
             </Button>
-            <Button appearance="link">Forgot password?</Button>
+            {/* <Button appearance="link">Forgot password?</Button> */}
           </ButtonToolbar>
         </FormGroup>
       </Form>

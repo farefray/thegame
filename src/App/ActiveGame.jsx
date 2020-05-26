@@ -25,11 +25,11 @@ function ActiveGame() {
         <Timer initialTimerValue={appState.countdown} />
         {notification && <Notification notificationObject={notification} />}
       </Header>
-      <Container>
+      <Container className="gamecontainer">
         <Sidebar>
           <LeftSidebar shopUnits={playerState.shopUnits} />
         </Sidebar>
-        <Content>
+        <Content className="gameboard-wrapper">
           <div className="gameboard">
             <div className="gameboard-background"></div>
             <div className="gameboard-wrapper">
