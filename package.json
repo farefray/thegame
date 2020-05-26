@@ -7,6 +7,7 @@
   "author": "Maksym Fedan <maksym.fedan@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "release": "git subtree push --prefix frontend heroku-frontend master && git subtree push --prefix backend heroku-backend master",
     "publish:frontend": "git subtree push --prefix frontend heroku-frontend master",
     "publish:backend": "git subtree push --prefix backend heroku-backend master",
     "logs:backend": "heroku logs --tail --app thegame-backend",

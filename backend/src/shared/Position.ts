@@ -2,21 +2,19 @@ export default class Position {
   x: number;
   y: number;
 
-  constructor(firstParam: any, secondParam?: any) {
-    if (typeof firstParam === 'object' && typeof firstParam.x === 'number') {
-      this.x = firstParam.x;
-      this.y = firstParam.y;
-    } else if (typeof firstParam === 'string' && !Number(firstParam)) {
-      const splitted = firstParam.split(',');
-      this.x = parseInt(splitted[0], 2);
-      this.y = parseInt(splitted[1], 2);
-    } else {
-      this.x = firstParam;
-      this.y = secondParam;
+  constructor(x: any, y = -1) {
+    if (typeof x === 'object') {
+      y = x.y;
+      x = x.x;
     }
 
-    this.x = Number(this.x);
-    this.y = Number(this.y);
+    this.x = x;
+    this.y = y;
+  }
+
+  static fromString(str) {
+    const splitted = str.split(',');
+    return new Position(Number(splitted[0]), Number(splitted[1]))
   }
 
   isValid() {
@@ -27,6 +25,9 @@ export default class Position {
     return this.y === -1;
   }
 
+  isMyPosition() {
+    return this.y >= -1 && this.y < 4 && this.x >= 0 && this.x < 8;
+  }
 
   toBoardPosition() {
     return `${this.x},${this.y}`;
