@@ -12,10 +12,6 @@ function heuristic(pos0, pos1) { // switch to getDistanceBetweenCoordinates
   return d1 + d2;
 }
 
-function getHeap() {
-  return new BinaryHeap(node => node.f);
-}
-
 class Node {
   x: number;
   y: number;
@@ -70,7 +66,7 @@ export default class Pathfinder {
     this._occupiedTileSet.delete(`${pos.x},${pos.y}`);
   }
 
-  isTaken(pos: Position) {
+  isTaken(pos: Step) {
     return this._occupiedTileSet.has(`${pos.x},${pos.y}`);
   }
 
@@ -98,7 +94,7 @@ export default class Pathfinder {
   getFirstStepInValidPath(unit, target, closest = true) {
     this.cleanDirty();
 
-    const openHeap = getHeap();
+    const openHeap = new BinaryHeap(node => node.f);
     const startNode:Node = this.grid[unit.x][unit.y];
     let closestNode = startNode;  // set the start node to be the closest if required
 
@@ -285,7 +281,7 @@ export default class Pathfinder {
     })].filter(step => {
       const isOutOfBounds = unit.x + step.x < 0 || unit.x + step.x >= this.gridWidth || unit.y + step.y < 0 || unit.y + step.y >= this.gridHeight;
       if (isOutOfBounds) return false;
-      if (this.isTaken(new Position({
+      if (this.isTaken(new Step({
         x: unit.x + step.x,
         y: unit.y + step.y,
       }))) return false;
@@ -296,14 +292,14 @@ export default class Pathfinder {
   /**
    * Returning possible nearby directions(N/W/S/E) coordinates based on tile coordinates
    */
-  getGridNeighbours({ x, y }: { x: number, y: number }): Array<Position> {
-    return [new Position({ x: -1, y: 0 }), new Position({ x: 1, y: 0 }), new Position({ x: 0, y: -1 }), new Position({ x: -0, y: 1 })]
+  getGridNeighbours({ x, y }: { x: number, y: number }): Array<Step> {
+    return [new Step({ x: -1, y: 0 }), new Step({ x: 1, y: 0 }), new Step({ x: 0, y: -1 }), new Step({ x: -0, y: 1 })]
       .filter((step) => {
         const isOutOfBounds = (x + step.x < 0 || x + step.x >= this.gridWidth || y + step.y < 0 || y + step.y >= this.gridHeight);
 
         if (isOutOfBounds) return false;
 
-        if (this.isTaken(new Position({
+        if (this.isTaken(new Step({
           x: x + step.x,
           y: y + step.y,
         }))) return false;

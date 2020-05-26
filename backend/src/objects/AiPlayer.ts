@@ -73,7 +73,7 @@ export default class AiPlayer extends Player {
 
       if (unit) {
         const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
-        this.movePawn(unit.stringifiedPosition, prefereablePosition);
+        this.movePawn(unit.position, prefereablePosition);
       }
     }
   }
@@ -84,7 +84,11 @@ export default class AiPlayer extends Player {
     // consider buying new units
     const unit = this.considerUnitsPurchase();
     if (unit) {
-      this.purchasePawn(this.shopUnits.findIndex(({ name }) => name === unit.name));
+      const shopUnit = this.shopUnits.findByName(unit.name);
+
+      if (shopUnit) {
+        this.purchasePawn(shopUnit.x);
+      }
     }
 
     if (this.hand.units().size) {
@@ -93,6 +97,6 @@ export default class AiPlayer extends Player {
   }
 
   getAffortableShopUnits() {
-    return new BattleUnitList(this.shopUnits.filter(unit => unit.cost <= this.gold));
+    return this.shopUnits.filter(unit => unit.cost <= this.gold);
   }
 }

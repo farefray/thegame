@@ -147,8 +147,6 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   private death(callback) {
-    const { top, left } = this.state;
-
     this.addEffect({
       type: 'effect',
       id: 'ghost',

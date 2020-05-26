@@ -18,12 +18,10 @@ PlayerBoardWrapper.propTypes = {
  * @returns
  */
 function PlayerBoardWrapper({ boardUnits }) {
-  const [gameboardKey, setGameboardKey] = useState(1);
   const [board, setBoard] = useState([]);
 
   useEffect(() => {
     setBoard([...boardUnits]);
-    setGameboardKey(gameboardKey + 1)
   }, [boardUnits]);
 
   return <GameBoard hasDnD={true} render={

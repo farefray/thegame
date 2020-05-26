@@ -1,17 +1,14 @@
 import { suite, test, only } from '@testdeck/mocha';
 import { expect } from 'chai';
 
-import Session from '../src/objects/Session';
-import AiPlayer from '../src/objects/AiPlayer';
-import Battle, { BattleResult } from '../src/objects/Battle';
-import Monsters from '../src/utils/monsters';
+import Battle from '../src/objects/Battle';
 import BattleUnit from '../src/objects/BattleUnit';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 
 @suite
 class Debug {
   @test
-  async debugCase(done) {
+  async debugCase() {
     const npcBoard = new BattleUnitList([
       new BattleUnit({
         name: 'dwarf_geomancer',
@@ -33,6 +30,5 @@ class Debug {
     const battleResult = await battle.proceedBattle();
     expect(battleResult).to.be.a('object');
     expect(battleResult.actionStack.length).to.be.above(0);
-    done()
   }
 }

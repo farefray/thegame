@@ -141,7 +141,7 @@ export default class Player {
   }
 
   sellPawn(fromBoardPosition) {
-    const fromPosition = new Position(fromBoardPosition);
+    const fromPosition = Position.fromString(fromBoardPosition);
     const piece:BattleUnit|null = fromPosition.isMyHandPosition()
       ? this.hand.getCell(fromPosition.x)
       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
@@ -161,10 +161,7 @@ export default class Player {
     this.sendUpdate();
   }
 
-  movePawn(fromBoardPosition, toBoardPosition) {
-    const fromPosition = new Position(fromBoardPosition);
-    const toPosition = new Position(toBoardPosition);
-
+  movePawn(fromPosition: Position, toPosition: Position) {
     // todo validate positions and actually move to boardMatrix maybe?
 
     let battleUnit:BattleUnit|null = null;
@@ -184,10 +181,10 @@ export default class Player {
     let unitToSwap:BattleUnit|null = null; // todo test this
     // place on new position
     if (toPosition.isMyHandPosition()) {
-      unitToSwap = this.hand.getCell(toBoardPosition.x);
+      unitToSwap = this.hand.getCell(toPosition.x);
       this.hand.setCell(toPosition.x, 0, battleUnit);
     } else {
-      unitToSwap = this.board.getCell(toBoardPosition.x, toBoardPosition.y);
+      unitToSwap = this.board.getCell(toPosition.x, toPosition.y);
       this.board.setCell(toPosition.x, toPosition.y, battleUnit);
     }
 

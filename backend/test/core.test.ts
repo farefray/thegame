@@ -1,3 +1,4 @@
+import {describe} from 'mocha';
 import should from 'should';
 import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
@@ -9,6 +10,17 @@ import Customer from '../src/objects/Customer';
 import Player from '../src/objects/Player';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '../src/objects/BattleUnit';
+import Position from '../src/shared/Position';
+
+import { Container } from 'typedi';
+
+const mockedEventEmitter = {
+  emit: (...args) => {
+    // console.info("mockedEventEmitter args", args)
+  }
+};
+
+Container.set('event.emitter', mockedEventEmitter);
 
 describe('Core Modules', () => {
   const connectedPlayers = new ConnectedPlayers();
@@ -21,7 +33,6 @@ describe('Core Modules', () => {
 
   let gameState:State;
   const firstHandPosition = 0;
-  const secondHandPosition = 1;
 
   describe('ConnectedPlayers Storage and Game start', () => {
     it('Can add customer', () => {
@@ -74,50 +85,41 @@ describe('Core Modules', () => {
   });
 
   describe('Game Mechanics', () => {
-    it('can buy pawn', (done) => {
-      const player = gameState.getPlayer(MOCK_SOCKETID_1);
+    it('can buy pawn', () => {
+      const player = new Player(MOCK_SOCKETID_1);
       player.purchasePawn(0);
-      gameState.should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition).should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition).should.have.property('lookType');
-      done();
+      should.exist(player.hand.getCell(0))
     });
 
-    it('can refill shop', (done) => {
-      gameState.refreshShopForPlayers();
-      gameState.should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition).should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].shopUnits[0].should.be.an.Object();
-      done();
+    it('can refill shop', () => {
+      const player = new Player(MOCK_SOCKETID_1);
+      player.purchasePawn(0);
+      player.refreshShop();
+      player.shopUnits.unitNames.length.should.be.equal(5);
     });
 
-    it('cannot buy pawn when no gold', (done) => {
-      gameState.players[MOCK_SOCKETID_1].gold.should.be.equal(0); // this all gonna go wrong when more expensive units will appear
-      const player = gameState.getPlayer(MOCK_SOCKETID_1);
+    it('cannot buy pawn when no gold', () => {
+      const player = new Player(MOCK_SOCKETID_1);
+      player.gold = 0;
+      player.gold.should.be.equal(0);
       const result = player.purchasePawn(0);
       should(result).instanceOf(AppError);
-      done();
     });
 
-    it('can buy second pawn pawn', (done) => {
-      gameState.players[MOCK_SOCKETID_1].gold = 1;
-      const player = gameState.getPlayer(MOCK_SOCKETID_1);
+    it('can buy second pawn pawn', () => {
+      const player = new Player(MOCK_SOCKETID_1);
+      player.gold = 10;
+      player.purchasePawn(0);
       player.purchasePawn(1);
-      gameState.should.be.an.Object();
-      (gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition)).should.be.an.Object();
-      (gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition)).should.have.property('lookType');
-      (gameState.players[MOCK_SOCKETID_1].hand.getCell(secondHandPosition)).should.be.an.Object();
-      (gameState.players[MOCK_SOCKETID_1].hand.getCell(secondHandPosition)).should.have.property('lookType');
-      done();
+      should.exist(player.hand.getCell(0));
+      should.exist(player.hand.getCell(1));
     });
 
-    it('move pawn to board', async (done) => {
-      const player:Player = gameState.getPlayer(MOCK_SOCKETID_1); // TODO replace all with new Player();
-      player.movePawn({ x: 0, y: -1}, { x: 0, y: 1});
-      should(gameState.players[MOCK_SOCKETID_1].hand.getCell(firstHandPosition)).null();
-      gameState.players[MOCK_SOCKETID_1].board.getCell(0, 1).should.be.an.Object();
-      gameState.players[MOCK_SOCKETID_1].board.getCell(0, 1).should.have.property('lookType');
-      done();
+    it('move pawn to board', () => {
+      const player: Player = new Player(MOCK_SOCKETID_1);
+      player.purchasePawn(0);
+      player.movePawn(new Position({ x: 0, y: -1}), new Position({ x: 0, y: 1}));
+      should.exist(player.board.getCell(0, 1))
     });
 
     it('can sell pawn', () => {
@@ -125,7 +127,7 @@ describe('Core Modules', () => {
       const result = player.purchasePawn(0);
       should(result).not.instanceOf(AppError);
       player.gold.should.be.equal(0);
-      player.sellPawn({ x: 0, y: -1});
+      player.sellPawn('0,-1');
       player.gold.should.be.equal(1);
       should(player.hand.getCell(firstHandPosition)).null();
     });

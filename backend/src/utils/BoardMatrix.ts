@@ -107,11 +107,11 @@ export default class BoardMatrix {
       const newY = Math.abs(this.sizeY - y - 1);
 
       reversedUnit.rearrange({
-          x: newX,
-          y: newY
+        x: newX,
+        y: newY
       });
 
-      reversedMatrix.setCell(newX, newY, reversedUnit)
+      reversedMatrix.setCell(newX, newY, reversedUnit);
     }
 
     return reversedMatrix;

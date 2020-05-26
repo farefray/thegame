@@ -9,6 +9,7 @@ import GameService from './GameService';
 import Player from '../objects/Player';
 import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
+import Position from '../shared/Position';
 
 // Dependency container
 Container.set('session.store', new SessionStore());
@@ -152,7 +153,7 @@ function SocketController(socket) {
     const session = sessionsStore.get(sessionID);
     const state = session.getState();
     const player:Player = state.getPlayer(socket.id);
-    player.movePawn(fromBoardPosition, toBoardPosition);
+    player.movePawn(Position.fromString(fromBoardPosition), Position.fromString(toBoardPosition));
 
     // ? do we really need this?
     // session.updateState(state);
