@@ -22,10 +22,8 @@ class Lobby extends Component {
     return (
       <FlexboxGrid className="lobby">
         <FlexboxGrid.Item colspan={11} className="lobby-profile">
-          Account: {customer.email}
-          Level: 0 
-          Active lootboxes: 0 
-          Gold: 0
+          Account: {customer.email} <br/>
+          |TODO account information|
         </FlexboxGrid.Item>
         <FlexboxGrid.Item>
           <Divider vertical />
@@ -35,9 +33,9 @@ class Lobby extends Component {
           <Button appearance="default" onClick={this.handlePlayVsAI}>
             Play vs AI
           </Button>
-          <Button appearance="primary" onClick={this.handlePlayVsHuman}>
+          {/* <Button appearance="primary" onClick={this.handlePlayVsHuman}>
             Play vs Human
-          </Button>
+          </Button> */}
         </ButtonToolbar>
         </FlexboxGrid.Item>
       </FlexboxGrid>
