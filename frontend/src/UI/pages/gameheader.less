@@ -1,70 +1,54 @@
 @import '../utils/mixins.less';
 
+@lineheight: 2em;
+
 .gameheader {
-  display: flex;
-  margin: 2em;
+  margin: 1em 0;
 
-  .timer {
-    background: #21180e;
-    border-radius: 1em;
-    text-align: center;
-    width: 10em;
-
-    &-value {
-      font-size: 17px;
-      text-shadow: black 3px 3px;
-      line-height: 2.4;
-    }
-
-    &-active {
-      .background-icon(url('../res/misc/sandglass.png'));
-      min-height: 3em;
-    }
-  }
-
-  .player {
-    display: flex;
-    justify-content: flex-end;
-    width: 52em;
-
-    &-data {
+  .playerstats {
+    > div {
       background: #21180e;
       border-radius: 1em;
-      display: flex;
-      flex-wrap: wrap;
-      width: 10em;
-      margin: 0 2em 0 1em;
-
-      &__hp {
-        .background-icon(url('../res/misc/status_icon_soul_gem.png'));
-        min-width: 3em;
-      }
-
-      &__coin {
-        .background-icon(url('../res/misc/status_icon_coin.png'));
-        min-width: 3em;
-      }
-
-      &__level {
-        .background-icon(url('../res/icons/icon_sword_A.png'));
-        min-width: 3em;
-      }
-
-      &__value {
-        text-align: center;
-        line-height: 2.4;
-        font-size: 17px;
-        min-width: 4em;
-      }
+      display: inline-block;
+      font-size: 1.4em;
+      line-height: @lineheight;
+      margin: 1em 2em 0 1em;
+      padding-left: @lineheight;
+      text-align: center;
+      width: 8em;
     }
-  }
-}
 
-@media (max-width: @screen-lg-desktop) {
-  .gameheader {
-    .player {
-      flex-direction: column;
-      width: auto;
+    .timer::before,
+    &-units::before,
+    &-level::before,
+    &-gold::before,
+    &-health::before {
+      background-size: @lineheight;
+      content: '';
+      height: @lineheight;
+      margin-left: -@lineheight*2;
+      position: absolute;
+      width: @lineheight;
+    }
+
+    .timer::before {
+      .background-icon(url('../res/misc/sandglass.png'));
+    }
+
+    &-health::before {
+      .background-icon(url('../res/misc/status_icon_soul_gem.png'));
+    }
+
+    &-gold::before {
+      .background-icon(url('../res/misc/status_icon_coin.png'));
+    }
+
+    &-units::before {
+      .background-icon(url('../res/icons/icon_sword_A.png'));
+    }
+
+    &-level::before {
+      .background-icon(url('../res/icons/icon_laurel.png'));
     }
   }
 }

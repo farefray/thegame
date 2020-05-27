@@ -4,7 +4,7 @@ import _ from 'lodash';
 import ShopPawn from './RightSidebar/ShopPawn';
 import { SocketConnector } from '@/socketConnector';
 
-class Sidebar extends Component {
+class UnitShop extends Component {
   constructor(props) {
     super(props);
 
@@ -42,4 +42,4 @@ class Sidebar extends Component {
   }
 }
 
-export default Sidebar;
+export default UnitShop;

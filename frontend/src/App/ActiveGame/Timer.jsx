@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Col } from 'rsuite';
 
 function InternalTimer({ value, onTick }) {
   useEffect(() => {
@@ -32,7 +33,7 @@ function Timer({ initialTimerValue }) {
     [counter]
   );
 
-  return <div className="timer">{(counter && MemoizedTimer) || <div className="timer-active"></div>}</div>;
+  return <Col className="timer">{(counter && MemoizedTimer) || <div className="timer-active">-</div>}</Col>;
 }
 
 export default Timer;
