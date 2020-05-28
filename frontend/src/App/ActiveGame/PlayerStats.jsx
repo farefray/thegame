@@ -2,20 +2,22 @@ import React from 'react';
 import { Col } from 'rsuite';
 
 function PlayerStats({ playerStats }) {
-  return (<React.Fragment>
-      <Col className="playerstats-health">
-        {playerStats.health}
+  return (
+    <React.Fragment>
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__health">{playerStats.health}</div>
       </Col>
-      <Col className="playerstats-gold">
-        {playerStats.gold}
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__gold">{playerStats.gold}</div>
       </Col>
-      <Col className="playerstats-units">
-        {`${playerStats.unitsAmount} / ${playerStats.level}`}
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__units">{`${playerStats.unitsAmount} / ${playerStats.level}`}</div>
       </Col>
-      <Col className="playerstats-level">
-        {playerStats.level}
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__level">{playerStats.level}</div>
       </Col>
-      </React.Fragment>);
+    </React.Fragment>
+  );
 }
 
 export default PlayerStats;
