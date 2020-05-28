@@ -25,7 +25,7 @@ function Timer({ initialTimerValue }) {
     () => (
       <InternalTimer
         value={counter}
-        onTick={val => {
+        onTick={(val) => {
           setCounter(val);
         }}
       />
@@ -33,7 +33,11 @@ function Timer({ initialTimerValue }) {
     [counter]
   );
 
-  return <Col className="timer">{(counter && MemoizedTimer) || <div className="timer-active">-</div>}</Col>;
+  return (
+    <Col xs={24} sm={24} md={24} lg={4}>
+      <div className="timer">{(counter && MemoizedTimer) || <div className="timer-active">-</div>}</div>
+    </Col>
+  );
 }
 
 export default Timer;

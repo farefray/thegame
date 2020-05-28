@@ -6,23 +6,19 @@
   margin: 1em 0;
 
   .playerstats {
-    > div {
+    &-frame,
+    .timer {
       background: #21180e;
       border-radius: 1em;
-      display: inline-block;
       font-size: 1.4em;
       line-height: @lineheight;
-      margin: 1em 2em 0 1em;
-      padding-left: @lineheight;
+      margin: 1em auto 0;
       text-align: center;
       width: 8em;
     }
 
     .timer::before,
-    &-units::before,
-    &-level::before,
-    &-gold::before,
-    &-health::before {
+    &-frame::before {
       background-size: @lineheight;
       content: '';
       height: @lineheight;
@@ -35,20 +31,30 @@
       .background-icon(url('../res/misc/sandglass.png'));
     }
 
-    &-health::before {
+    &-frame__health::before {
       .background-icon(url('../res/misc/status_icon_soul_gem.png'));
     }
 
-    &-gold::before {
+    &-frame__gold::before {
       .background-icon(url('../res/misc/status_icon_coin.png'));
     }
 
-    &-units::before {
+    &-frame__units::before {
       .background-icon(url('../res/icons/icon_sword_A.png'));
     }
 
-    &-level::before {
+    &-frame__level::before {
       .background-icon(url('../res/icons/icon_laurel.png'));
     }
   }
 }
+
+// @media (max-width: @screen-phone-max) {
+//   .gameheader {
+//     .playerstats {
+//       &-frame {
+//         margin: 0.5em 1em;
+//       }
+//     }
+//   }
+// }
