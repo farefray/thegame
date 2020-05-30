@@ -1,70 +1,60 @@
 @import '../utils/mixins.less';
 
+@lineheight: 2em;
+
 .gameheader {
-  display: flex;
-  margin: 2em;
+  margin: 1em 0;
 
-  .timer {
-    background: #21180e;
-    border-radius: 1em;
-    text-align: center;
-    width: 10em;
-
-    &-value {
-      font-size: 17px;
-      text-shadow: black 3px 3px;
-      line-height: 2.4;
-    }
-
-    &-active {
-      .background-icon(url('../res/misc/sandglass.png'));
-      min-height: 3em;
-    }
-  }
-
-  .player {
-    display: flex;
-    justify-content: flex-end;
-    width: 52em;
-
-    &-data {
+  .playerstats {
+    &-frame,
+    .timer {
       background: #21180e;
       border-radius: 1em;
-      display: flex;
-      flex-wrap: wrap;
-      width: 10em;
-      margin: 0 2em 0 1em;
+      font-size: 1.4em;
+      line-height: @lineheight;
+      margin: 1em auto 0;
+      text-align: center;
+      width: 8em;
+    }
 
-      &__hp {
-        .background-icon(url('../res/misc/status_icon_soul_gem.png'));
-        min-width: 3em;
-      }
+    .timer::before,
+    &-frame::before {
+      background-size: @lineheight;
+      content: '';
+      height: @lineheight;
+      margin-left: -@lineheight*2;
+      position: absolute;
+      width: @lineheight;
+    }
 
-      &__coin {
-        .background-icon(url('../res/misc/status_icon_coin.png'));
-        min-width: 3em;
-      }
+    .timer::before {
+      .background-icon(url('../res/misc/sandglass.png'));
+    }
 
-      &__level {
-        .background-icon(url('../res/icons/icon_sword_A.png'));
-        min-width: 3em;
-      }
+    &-frame__health::before {
+      .background-icon(url('../res/misc/status_icon_soul_gem.png'));
+    }
 
-      &__value {
-        text-align: center;
-        line-height: 2.4;
-        font-size: 17px;
-        min-width: 4em;
-      }
+    &-frame__gold::before {
+      .background-icon(url('../res/misc/status_icon_coin.png'));
+    }
+
+    &-frame__units::before {
+      .background-icon(url('../res/icons/icon_sword_A.png'));
+    }
+
+    &-frame__level::before {
+      .background-icon(url('../res/icons/icon_laurel.png'));
     }
   }
 }
 
-@media (max-width: @screen-lg-desktop) {
-  .gameheader {
-    .player {
-      flex-direction: column;
-      width: auto;
-    }
-  }
-}
+// @media (max-width: @screen-phone-max) {
+//   .gameheader {
+//     .playerstats {
+//       &-frame {
+//         margin: 0.5em 1em;
+//       }
+//     }
+//   }
+// }

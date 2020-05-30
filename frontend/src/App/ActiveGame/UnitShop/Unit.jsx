@@ -1,10 +1,9 @@
 import React from 'react';
 import UnitImage from '../../../objects/Unit/UnitImage.tsx';
-import Frame from 'components/Frame';
 
-function ShopPawn({ unit, index, onPurchase }) {
+function Unit({ unit, index, onPurchase }) {
   return (
-    <Frame className="shopunit" header={unit.name} onClick={() => onPurchase(index)} type="default">
+    <div className="shopunit" header={unit.name} onClick={() => onPurchase(index)} type="default">
       <div className="shopunit-stats__wrapper">
       <div className="shopunit-stats">
         <span className="shopunit-stats-stat shopunit-stats-stat__hp">{unit.hp}</span>
@@ -16,8 +15,8 @@ function ShopPawn({ unit, index, onPurchase }) {
       <div className="shopunit-image">
         <UnitImage direction="3" isMoving={false} lookType={unit.lookType} extraClass="shop"/>
       </div>
-    </Frame>
+    </div>
   );
 }
 
-export default ShopPawn;
+export default Unit;

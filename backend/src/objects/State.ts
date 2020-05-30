@@ -110,13 +110,15 @@ export default class State {
   toSocket() {
     const dataToSend = JSON.parse(JSON.stringify(this));
     dataToSend.players = this.getPlayers().map((player) => {
+      // TODO \/ this supposed to be send on update_player, not on state sending
       return {
         index: player.index,
         level: player.level,
         health: player.health,
         hand: player.hand.toJSON(),
         board: player.board.toJSON(),
-        shopUnits: player.shopUnits.toJSON()
+        shopUnits: player.shopUnits.toJSON(),
+        gold: player.gold
       };
     })
 

@@ -1,14 +1,14 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 
-import { Container, Header, Content, Footer, Sidebar } from 'rsuite';
+import { Grid, Row, Col, Sidenav, Nav, Icon, Sidebar } from 'rsuite';
 
 import Timer from './ActiveGame/Timer.jsx';
 import PlayerStats from './ActiveGame/PlayerStats.jsx';
 import BattleBoardWrapper from './ActiveGame/BattleBoardWrapper.jsx';
 
 import RightSidebar from './ActiveGame/RightSidebar.jsx';
-import LeftSidebar from './ActiveGame/LeftSidebar.jsx';
+import UnitShop from './ActiveGame/UnitShop.jsx';
 import Notification from './ActiveGame/Notification.jsx';
 import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import PlayerHand from './ActiveGame/PlayerHand.jsx';
@@ -17,19 +17,36 @@ function ActiveGame() {
   const appState = useSelector((state) => state.app, shallowEqual);
   const gameboardState = useSelector((state) => state.gameboard, shallowEqual);
   const playerState = useSelector((state) => state.player, shallowEqual);
-  const { notification } = appState;
+  const { notification, countdown, players } = appState;
+
   return (
-    <Container className="activegame">
-      <Header className="gameheader">
-        <PlayerStats playerStats={{ health: playerState.health, level: playerState.level, unitsAmount: playerState.boardUnits.length, gold: playerState.gold }} />
-        <Timer initialTimerValue={appState.countdown} />
-        {notification && <Notification notificationObject={notification} />}
-      </Header>
-      <Container className="gamecontainer">
-        <Sidebar>
-          <LeftSidebar shopUnits={playerState.shopUnits} />
-        </Sidebar>
-        <Content className="gameboard-wrapper">
+    <Grid fluid>
+      <Row className="gameheader">
+        <Col>
+          {notification && <Notification notificationObject={notification} />}
+          <Row className="playerstats">
+            <PlayerStats playerStats={{ health: playerState.health, level: playerState.level, unitsAmount: playerState.boardUnits.length, gold: playerState.gold }} />
+            <Timer initialTimerValue={countdown} />
+          </Row>
+        </Col>
+      </Row>
+
+      <Row className="gamecontainer">
+        <Col xs={24} sm={6} md={6} lg={6} smPush={14} lgPush={0}>
+          <Sidebar
+            width={260}
+          >
+            <Sidenav expanded={true} appearance="subtle" >
+              <Sidenav.Body className="unitshop">
+                <Nav>
+                  <UnitShop className="unitshop-units" shopUnits={playerState.shopUnits} />
+                </Nav>
+              </Sidenav.Body>
+            </Sidenav>
+          </Sidebar>
+        </Col>
+
+        <Col xs={24} sm={14} md={12} lg={12} smPull={6} lgPull={0}>
           <div className="gameboard">
             <div className="gameboard-background"></div>
             <div className="gameboard-wrapper">
@@ -41,13 +58,13 @@ function ActiveGame() {
               <PlayerHand handUnits={playerState.handUnits} />
             </div>
           </div>
-        </Content>
-        <Sidebar>
-          <RightSidebar players={appState.players} />
-        </Sidebar>
-      </Container>
-      <Footer></Footer>
-    </Container>
+        </Col>
+
+        <Col xs={24} sm={24} md={6} lg={6}>
+          <RightSidebar players={players} />
+        </Col>
+      </Row>
+    </Grid>
   );
 }
 

@@ -1,21 +1,22 @@
 import React from 'react';
+import { Col } from 'rsuite';
 
 function PlayerStats({ playerStats }) {
   return (
-    <div className="player">
-      <div className="player-data">
-        <div className="player-data__hp"></div>
-        <div className="player-data__value">{playerStats.health}</div>
-      </div>
-      <div className="player-data">
-        <div className="player-data__coin"></div>
-        <div className="player-data__value">{playerStats.gold}</div>
-      </div>
-      <div className="player-data">
-        <div className="player-data__level"></div>
-        <div className="player-data__value">{`${playerStats.unitsAmount} / ${playerStats.level}`}</div>
-      </div>
-    </div>
+    <React.Fragment>
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__health">{playerStats.health}</div>
+      </Col>
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__gold">{playerStats.gold}</div>
+      </Col>
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__units">{`${playerStats.unitsAmount} / ${playerStats.level}`}</div>
+      </Col>
+      <Col xs={12} sm={6} md={6} lg={4}>
+        <div className="playerstats-frame playerstats-frame__level">{playerStats.level}</div>
+      </Col>
+    </React.Fragment>
   );
 }
 
