@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 
-import { Grid, Row, Col, Sidenav, Nav, Icon, Sidebar } from 'rsuite';
+import { Grid, Row, Col, Sidenav, Nav, Sidebar } from 'rsuite';
 
 import Timer from './ActiveGame/Timer.jsx';
 import PlayerStats from './ActiveGame/PlayerStats.jsx';
