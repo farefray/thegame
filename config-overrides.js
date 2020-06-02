@@ -7,11 +7,6 @@ const { overridePassedProcessEnv } = require("cra-define-override");
 const { addReactRefresh } = require("customize-cra-react-refresh");
 const path = require('path');
 
-const rewiredMap = () => config => {
-  config.devtool = config.mode === 'development' ? 'cheap-module-source-map' : false;
-  return config;
-};
-
 // Babel enchanting with some imba hacks :(
 const enchantBabelForTypescript = () => config => {
   // create-react-app defines two babel configurations, one for js files found in src/ and another for any js files found outside that directory
@@ -43,11 +38,10 @@ module.exports = override(
   addLessLoader({
     modifyVars: require('./src/UI/ui-overrides.js'),
     env: process.env.NODE_ENV,
-    useFileCache: false,
-    sourceMap: {},
+    useFileCache: true, // enabled 02.06 to speedup compilation. Seems makes no isses
+    sourceMap: process.env.NODE_ENV !== 'production',
     javascriptEnabled: true, // required for rsuite
   }),
-  rewiredMap(),
   process.env.NODE_ENV !== 'production' ? enchantBabelForTypescript() : (config) => config,
   addWebpackAlias({
     backend: path.resolve(__dirname, '..', 'backend'),

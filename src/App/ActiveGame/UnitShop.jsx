@@ -10,7 +10,7 @@ function UnitShop({ shopUnits }) {
   };
 
   return (
-    <React.Fragment>
+    <div className="unitshop">
       {shopUnits.map((unit, index) => {
         return (
           <Nav.Item>
@@ -18,7 +18,7 @@ function UnitShop({ shopUnits }) {
           </Nav.Item>
         );
       })}
-    </React.Fragment>
+    </div>
   );
 }
 

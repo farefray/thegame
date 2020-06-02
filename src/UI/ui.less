@@ -39,21 +39,25 @@
 
 // custom modifications for rsuite
 
-@import 'Alert.less';
-@import 'Button.less';
-@import 'FlexboxGrid.less';
-@import 'Frame.less';
-@import 'Input.less';
-@import 'Panel.less';
+@import './rewrites/Alert.less';
+@import './rewrites/Button.less';
+@import './rewrites/FlexboxGrid.less';
+@import './rewrites/Nav.less';
+@import './rewrites/Frame.less';
+@import './rewrites/Input.less';
+@import './rewrites/Panel.less';
 
 // Theme with final variables values
+
 @import 'theme.less';
 
 // Include per page styles
+
 @import './pages/startscreen.less';
 @import './pages/lobby.less';
-
 @import './pages/activegame.less';
 @import './pages/gameheader.less';
+
+// Debug styles
 
 @import './debug.less';

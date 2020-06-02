@@ -1,26 +1,25 @@
 .rs-input {
-  border-width: 3px;
-  border-style: inset;
   background-color: @B700;
+  border-style: inset;
+  border-width: 3px;
   min-height: 3em;
   position: relative;
 }
 
 // Thats a rought way to make FormGroup to have icons like grouped inputs has...
 .customInputIcon() {
-  font-family: 'rsuite-icon-font' !important;
-  font-style: normal;
-  font-weight: 400;
-  font-variant: normal;
-  text-transform: none;
   color: @base-color;
-  position: absolute;
-  z-index: 1;
-  top: 4px;
-  left: 8px;
+  font-family: 'rsuite-icon-font' !important;
   font-size: 24px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  left: 8px;
+  position: absolute;
+  text-transform: none;
+  top: 4px;
+  z-index: 1;
 }
-
 
 .rs-form-group {
   &.ic_pw, &.ic_user {
@@ -48,7 +47,6 @@
   }
 }
 
-
 /* Change autocomplete styles in WebKit */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
@@ -59,10 +57,10 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  border: 3px solid @B500;
-  font-weight: bold;
   -webkit-text-fill-color: @B300;
-  box-shadow: 0 0 0px 1000px @B700 inset;
-  transition: background-color 5000s ease-in-out 0s;
   border-radius: 6px;
+  border: 3px solid @B500;
+  box-shadow: 0 0 0px 1000px @B700 inset;
+  font-weight: bold;
+  transition: background-color 5000s ease-in-out 0s;
 }
