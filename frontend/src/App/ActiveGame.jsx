@@ -37,9 +37,9 @@ function ActiveGame() {
             width={260}
           >
             <Sidenav expanded={true} appearance="subtle" >
-              <Sidenav.Body className="unitshop">
+              <Sidenav.Body>
                 <Nav>
-                  <UnitShop className="unitshop-units" shopUnits={playerState.shopUnits} />
+                  <UnitShop shopUnits={playerState.shopUnits} />
                 </Nav>
               </Sidenav.Body>
             </Sidenav>
