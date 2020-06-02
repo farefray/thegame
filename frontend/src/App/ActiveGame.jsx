@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 
-import { Grid, Row, Col, Sidenav, Nav, Icon, Sidebar } from 'rsuite';
+import { Grid, Row, Col, Sidenav, Nav, Sidebar } from 'rsuite';
 
 import Timer from './ActiveGame/Timer.jsx';
 import PlayerStats from './ActiveGame/PlayerStats.jsx';
@@ -37,9 +37,9 @@ function ActiveGame() {
             width={260}
           >
             <Sidenav expanded={true} appearance="subtle" >
-              <Sidenav.Body className="unitshop">
+              <Sidenav.Body>
                 <Nav>
-                  <UnitShop className="unitshop-units" shopUnits={playerState.shopUnits} />
+                  <UnitShop shopUnits={playerState.shopUnits} />
                 </Nav>
               </Sidenav.Body>
             </Sidenav>
