@@ -7,6 +7,10 @@ const { overridePassedProcessEnv } = require("cra-define-override");
 const { addReactRefresh } = require("customize-cra-react-refresh");
 const path = require('path');
 
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+
+const smp = new SpeedMeasurePlugin({ disable: !process.env.MEASURE });
+
 // Babel enchanting with some imba hacks :(
 const enchantBabelForTypescript = () => config => {
   // create-react-app defines two babel configurations, one for js files found in src/ and another for any js files found outside that directory
@@ -26,7 +30,7 @@ const enchantBabelForTypescript = () => config => {
   return config;
 };
 
-module.exports = override(
+const webpackConfig = override(
   overridePassedProcessEnv(["REACT_APP_DEBUGMODE", "REACT_APP_STEPBYSTEP"]),
   process.env.APP_COSMOS ? (config) => config : addReactRefresh({ disableRefreshCheck: true }), // react-refresh for yarn dev, but not for cosmos
   removeModuleScopePlugin(),
@@ -36,11 +40,14 @@ module.exports = override(
     postTransformPublicPath: (p) => `__webpack_public_path__ + ${p}`,
   }}]}),
   addLessLoader({
-    modifyVars: require('./src/UI/ui-overrides.js'),
-    env: process.env.NODE_ENV,
-    useFileCache: true, // enabled 02.06 to speedup compilation. Seems makes no isses
-    sourceMap: process.env.NODE_ENV !== 'production',
-    javascriptEnabled: true, // required for rsuite
+    lessOptions: {
+      modifyVars: require('./src/UI/ui-overrides.js'),
+      env: process.env.NODE_ENV,
+      useFileCache: true, // enabled 02.06 to speedup compilation. Seems makes no isses
+      sourceMap: false,
+      javascriptEnabled: true, // required for rsuite
+      relativeUrls: false
+    },
   }),
   process.env.NODE_ENV !== 'production' ? enchantBabelForTypescript() : (config) => config,
   addWebpackAlias({
@@ -51,3 +58,4 @@ module.exports = override(
   })
 );
 
+module.exports = smp.wrap(webpackConfig);
