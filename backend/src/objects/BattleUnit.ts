@@ -228,13 +228,9 @@ export default class BattleUnit {
     return 0;
   }
 
-  /**
-   * Moving battle unit starting position
-   * @param toPosition
-   */
-  rearrange(toPosition: Position) {
-    this.y = toPosition.y;
-    this.x = toPosition.x;
+  rearrangeToPos(pos: Position) {
+    this.y = pos.y;
+    this.x = pos.x;
     this.id = this.stringifiedPosition; // we update id for this unit aswell
   }
 

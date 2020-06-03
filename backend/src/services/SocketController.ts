@@ -153,7 +153,7 @@ function SocketController(socket) {
     const session = sessionsStore.get(sessionID);
     const state = session.getState();
     const player:Player = state.getPlayer(socket.id);
-    player.movePawn(Position.fromString(fromBoardPosition), Position.fromString(toBoardPosition));
+    player.moveUnitBetweenPositions(Position.fromString(fromBoardPosition), Position.fromString(toBoardPosition));
 
     // ? do we really need this?
     // session.updateState(state);

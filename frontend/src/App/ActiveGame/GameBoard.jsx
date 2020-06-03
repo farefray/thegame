@@ -1,5 +1,10 @@
 import React from 'react';
 import BoardSquare from './GameBoard/BoardSquare.jsx';
+/**
+ * TODO: consider using hooks from umihooks
+ * import { useDrop, useDrag } from '@umijs/hooks';
+ * or consider having 'react-use' repository instead of umihooks
+ */
 import { DndProvider } from 'react-dnd';
 // import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';

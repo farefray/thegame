@@ -25,7 +25,7 @@ reporter-option:
   - foo=bar
   - baz=quux
 require: 'ts-node/register'
-retries: 1
+retries: 0
 slow: 75
 sort: false
 timeout: 5000 # same as "no-timeout: true" or "timeout: 0"

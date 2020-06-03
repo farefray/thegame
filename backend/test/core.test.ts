@@ -84,7 +84,7 @@ describe('Core Modules', () => {
     });
   });
 
-  describe('Game Mechanics', () => {
+  describe.only('Game Mechanics', () => {
     it('can buy pawn', () => {
       const player = new Player(MOCK_SOCKETID_1);
       player.purchasePawn(0);
@@ -118,7 +118,7 @@ describe('Core Modules', () => {
     it('move pawn to board', () => {
       const player: Player = new Player(MOCK_SOCKETID_1);
       player.purchasePawn(0);
-      player.movePawn(new Position({ x: 0, y: -1}), new Position({ x: 0, y: 1}));
+      player.moveUnitBetweenPositions(new Position({ x: 0, y: -1}), new Position({ x: 0, y: 1}));
       should.exist(player.board.getCell(0, 1))
     });
 
@@ -130,6 +130,58 @@ describe('Core Modules', () => {
       player.sellPawn('0,-1');
       player.gold.should.be.equal(1);
       should(player.hand.getCell(firstHandPosition)).null();
+    });
+
+    it('can swap pawn', () => {
+      const player: Player = new Player('test_swap', false);
+      player.gold = 10;
+      player.shopUnits.push(new BattleUnit({
+        name: 'minotaur',
+        x: 0,
+        y: -1,
+        teamId: 0
+      }));
+
+      player.shopUnits.push(new BattleUnit({
+        name: 'dwarf',
+        x: 1,
+        y: -1,
+        teamId: 0
+      }));
+
+      const result = player.purchasePawn(0);
+      should(result).not.instanceOf(AppError);
+
+      const secondResult = player.purchasePawn(1);
+      should(secondResult).not.instanceOf(AppError);
+
+      player.hand.getCell(0)?.name.should.be.equal('minotaur');
+      player.hand.getCell(1)?.name.should.be.equal('dwarf');
+
+      // Hand to hand move
+      player.moveUnitBetweenPositions(new Position({ x: 0, y: -1 }), new Position({ x: 1, y: -1 }));
+
+      player.hand.getCell(0)?.name.should.be.equal('dwarf');
+      player.hand.getCell(1)?.name.should.be.equal('minotaur');
+
+      // move to board
+      player.moveUnitBetweenPositions(new Position({ x: 0, y: -1 }), new Position({ x: 1, y: 1 }));
+      player.board.getCell(1, 1)?.name.should.be.equal('dwarf');
+
+      // swap with hand
+      player.moveUnitBetweenPositions(new Position({ x: 1, y: -1 }), new Position({ x: 1, y: 1 }));
+      player.board.getCell(1, 1)?.name.should.be.equal('minotaur');
+      player.hand.getCell(1)?.name.should.be.equal('dwarf');
+
+      // move all to board
+      player.moveUnitBetweenPositions(new Position({ x: 1, y: -1 }), new Position({ x: 2, y: 1 }));
+      player.board.getCell(1, 1)?.name.should.be.equal('minotaur');
+      player.board.getCell(2, 1)?.name.should.be.equal('dwarf');
+
+      // swap on board
+      player.moveUnitBetweenPositions(new Position({ x: 1, y: 1 }), new Position({ x: 2, y: 1 }));
+      player.board.getCell(1, 1)?.name.should.be.equal('dwarf');
+      player.board.getCell(2, 1)?.name.should.be.equal('minotaur');
     });
 
   });

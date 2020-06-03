@@ -24,7 +24,7 @@ const generateGameState = async function() {
   const player = state.getPlayer(PLAYER_INDEX);
   player.gold = 5;
   player.purchasePawn(0);
-  player.movePawn(new Position({ x: 0, y: -1 }), new Position({ x: 0, y: 1 }));
+  player.moveUnitBetweenPositions(new Position({ x: 0, y: -1 }), new Position({ x: 0, y: 1 }));
   player.purchasePawn(1);
   return state && state.toSocket();
 };

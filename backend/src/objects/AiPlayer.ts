@@ -73,7 +73,7 @@ export default class AiPlayer extends Player {
 
       if (unit) {
         const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
-        this.movePawn(unit.position, prefereablePosition);
+        this.moveUnitBetweenPositions(unit.position, prefereablePosition);
       }
     }
   }
