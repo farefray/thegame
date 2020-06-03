@@ -24,13 +24,15 @@ export default class Player {
   public hand: BoardMatrix;
   public board: BoardMatrix;
 
-  constructor (id: string) {
+  constructor(id: string, fillShop = true) {
     this.index = id;
     this.shopUnits = new BattleUnitList();
     this.hand = new BoardMatrix(8, 1);
     this.board = new BoardMatrix(8, 8);
 
-    this.refreshShop();
+    if (fillShop) {
+      this.refreshShop();
+    }
   }
 
   refreshShop() {
@@ -42,9 +44,9 @@ export default class Player {
 
       newShop.push(new BattleUnit({
         name: shopUnit.name || 'Monster',
-        x: i,
-        y: -1,
-        teamId: 0,
+        x: i, // todo get rid of this for shop units
+        y: -1, // todo get rid of this for shop units
+        teamId: 0, // todo get rid of this for shop units
       }));
     }
 
@@ -142,14 +144,14 @@ export default class Player {
 
   sellPawn(fromBoardPosition) {
     const fromPosition = Position.fromString(fromBoardPosition);
-    const piece:BattleUnit|null = fromPosition.isMyHandPosition()
+    const piece:BattleUnit|null = fromPosition.isHand()
       ? this.hand.getCell(fromPosition.x)
       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
     if (piece) {
       this.gold += piece.cost;
 
-      if (fromPosition.isMyHandPosition()) {
+      if (fromPosition.isHand()) {
         this.hand.setCell(fromPosition.x);
       } else {
         this.board.setCell(fromPosition.x, fromPosition.y);
@@ -161,49 +163,40 @@ export default class Player {
     this.sendUpdate();
   }
 
-  movePawn(fromPosition: Position, toPosition: Position) {
-    // todo validate positions and actually move to boardMatrix maybe?
+  getUnitFromPos(pos: Position) {
+    const matrix = pos.isHand() ? this.hand : this.board;
+    // hand position has y === -1, however handMatrix has y === 0. We need to consider this.
+    return matrix.getCell(pos.x, pos.isHand() ? 0 : pos.y);
+  }
 
-    let battleUnit:BattleUnit|null = null;
-    // retrieve units from positions
-    if (fromPosition.isMyHandPosition()) {
-      battleUnit = this.hand.getCell(fromPosition.x);
+  setUnitToPos(pos, unit) {
+    unit.rearrangeToPos(pos);
+
+    const matrix = pos.isHand() ? this.hand : this.board;
+    // hand position has y === -1, however handMatrix has y === 0. We need to consider this.
+    matrix.setCell(pos.x, pos.isHand() ? 0 : pos.y, unit);
+  }
+
+  removeUnitFromPos(pos) {
+    const matrix = pos.isHand() ? this.hand : this.board;
+    matrix.setCell(pos.x, pos.isHand() ? 0 : pos.y, null);
+  }
+
+  moveUnitBetweenPositions(fromPosition: Position, toPosition: Position) {
+    const unit = this.getUnitFromPos(fromPosition);
+
+    if (!unit) {
+      throw new Error('Trying to move not existance pawn'); // ? todo backendError? validation? logging?
+    }
+
+    const swapUnit = this.getUnitFromPos(toPosition);
+    if (swapUnit) {
+      this.setUnitToPos(unit.position, swapUnit);
     } else {
-      battleUnit = this.board.getCell(fromPosition.x, fromPosition.y);
+      this.removeUnitFromPos(fromPosition);
     }
 
-    if (battleUnit) {
-      battleUnit.rearrange(toPosition);
-    } else {
-      throw new Error('Trying to move not existance pawn');
-    }
-
-    let unitToSwap:BattleUnit|null = null; // todo test this
-    // place on new position
-    if (toPosition.isMyHandPosition()) {
-      unitToSwap = this.hand.getCell(toPosition.x);
-      this.hand.setCell(toPosition.x, 0, battleUnit);
-    } else {
-      unitToSwap = this.board.getCell(toPosition.x, toPosition.y);
-      this.board.setCell(toPosition.x, toPosition.y, battleUnit);
-    }
-
-    if (unitToSwap) {
-      unitToSwap.rearrange(fromPosition);
-
-      if (fromPosition.isMyHandPosition()) {
-        this.board.setCell(fromPosition.x, 0, unitToSwap);
-      } else {
-        this.board.setCell(fromPosition.x, fromPosition.y, unitToSwap);
-      }
-    }
-
-    // clean from old position
-    if (fromPosition.isMyHandPosition()) {
-      this.hand.setCell(fromPosition.x);
-    } else {
-      this.board.setCell(fromPosition.x, fromPosition.y, null);
-    }
+    this.setUnitToPos(toPosition, unit);
 
     this.sendUpdate();
   }
@@ -212,7 +205,6 @@ export default class Player {
    * TODO handle AppError differently, to not pass into SocketController
    */
   purchasePawn(pieceIndex): void|AppError {
-
     if (this.isDead()) {
       return new AppError('warning', "Sorry, you're already dead");
     }
@@ -250,6 +242,7 @@ export default class Player {
       index: this.index,
       level: this.level,
       health: this.health,
+      gold: this.gold,
       hand: this.hand.toJSON(),
       board: this.board.toJSON(),
       shopUnits: this.shopUnits.toJSON()

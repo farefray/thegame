@@ -21,7 +21,7 @@ export default class Position {
     return this.x >= 0 && this.x < 8 && this.y >= -1 && this.y < 8;
   }
 
-  isMyHandPosition () {
+  isHand () {
     return this.y === -1;
   }
 

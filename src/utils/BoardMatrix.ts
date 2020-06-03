@@ -106,7 +106,7 @@ export default class BoardMatrix {
       const newX = Math.abs(x);
       const newY = Math.abs(this.sizeY - y - 1);
 
-      reversedUnit.rearrange({
+      reversedUnit.rearrangeToPos({
         x: newX,
         y: newY
       });

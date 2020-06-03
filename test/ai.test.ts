@@ -88,7 +88,7 @@ class Minor_AI_functionality {
 
       const freeSpots = playerOne.board.freeSpots(); // todo make player.freeSpots and filter positions which are not in scope
       const prefereablePosition = unit.getPreferablePosition(freeSpots);
-      playerOne.movePawn(unit.position, prefereablePosition);
+      playerOne.moveUnitBetweenPositions(unit.position, prefereablePosition);
     }
   }
 }
