@@ -6,6 +6,9 @@ import EffectComponent from './EffectsWrapper/EffectComponent';
 import ParticleComponent from './EffectsWrapper/ParticleComponent';
 import TextComponent from './EffectsWrapper/TextComponent';
 
+/**
+ * ? Consider using pixijs - https://github.com/pixijs/pixi.js sprites over div for particles
+ */
 const EffectsFactory = {
   create: (config) => {
     switch (config.type) {

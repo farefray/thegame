@@ -15,6 +15,7 @@ if (process.env.NODE_ENV !== 'production') {
 // setup socket connection
 SocketConnector.init(store.dispatch);
 
+// react-helmet use here?
 ReactDOM.render(
   <Provider store={store}>
     <App />
