@@ -24,9 +24,9 @@ export default class State {
     this.amountOfPlayers = clients.length;
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
-    const players: Array<Player|AiPlayer> = [];
+    const players: Array<Player | AiPlayer> = [];
     // create players
-    clients.forEach(index => {
+    clients.forEach((index) => {
       players.push(new Player(index));
     });
 
@@ -35,19 +35,17 @@ export default class State {
       players.push(new AiPlayer(`ai_player_${players.length}`));
     }
 
-    // this is dirty
+    // this is dirty [todo better way?]
     for (let index = 0; index < players.length; index++) {
       const playerEntity = players[index];
       this.players[playerEntity.index] = playerEntity;
     }
-
-    this.refreshShopForPlayers();
   }
 
   refreshShopForPlayers() {
-    for (const index in this.players) {
-      this.players[index].refreshShop();
-    }
+    this.getPlayers().forEach((player) => {
+        player.refreshShop();
+    });
   }
 
   endRound(winners) {
@@ -59,10 +57,10 @@ export default class State {
     this.round = this.round + 1;
 
     for (const uid in this.players) {
-      // FOR REWORK!!
+      // todo FOR REWORK!!
       const gold: number = this.players[uid].gold;
       const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
-      this.players[uid].gold = (gold + this.incomeBase + bonusGold);
+      this.players[uid].gold = gold + this.incomeBase + bonusGold;
 
       if (this.round <= MAX_LEVEL) {
         this.players[uid].level = this.round;
@@ -70,7 +68,7 @@ export default class State {
 
       if (!winners.includes(uid)) {
         // player lost battle, remove health
-        const newHealth: number = (this.players[uid].health - this.round);
+        const newHealth: number = this.players[uid].health - this.round;
         this.players[uid].health = newHealth;
 
         if (newHealth < 1) {
@@ -105,31 +103,36 @@ export default class State {
 
   /**
    * Prepare only data which is required for socket transfer
-   * ! TODO
    */
   toSocket() {
-    const dataToSend = JSON.parse(JSON.stringify(this));
-    dataToSend.players = this.getPlayers().map((player) => {
-      // TODO \/ this supposed to be send on update_player, not on state sending
-      return {
-        index: player.index,
-        level: player.level,
-        health: player.health,
-        hand: player.hand.toJSON(),
-        board: player.board.toJSON(),
-        shopUnits: player.shopUnits.toJSON(),
-        gold: player.gold
-      };
-    })
-
-    return dataToSend;
+    return {
+      round: this.round,
+      countdown: this.countdown,
+      // tslint:disable-next-line: ter-arrow-body-style
+      players: this.getPlayers().map((player) => {
+        return {
+          index: player.index,
+          level: player.level,
+          health: player.health
+        };
+      })
+    };
   }
 
   getRound() {
     return this.round;
   }
 
-  getPlayers(): Array<Player|AiPlayer> {
+  getPlayers(): Array<Player | AiPlayer> {
     return Object.values(this.players);
+  }
+
+  syncPlayers() {
+    this.getPlayers().forEach((player) => {
+      console.log("State -> syncPlayers -> player.isSynced()", player.isSynced())
+      if (!player.isSynced()) {
+        player.update(true);
+      }
+    });
   }
 }

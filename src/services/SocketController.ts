@@ -10,6 +10,7 @@ import Player from '../objects/Player';
 import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
 import Position from '../shared/Position';
+import { Socket } from 'dgram';
 
 // Dependency container
 Container.set('session.store', new SessionStore());
@@ -43,9 +44,13 @@ eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) =>
   io.to(uid).emit('START_BATTLE', playerBattleResult);
 });
 
-eventEmitter.on('stateUpdate', (sessionID, state: State) => {
+eventEmitter.on('stateUpdate', (uid, state: State) => {
   const io:SocketIO.Server = Container.get('socket.io');
-  io.to(sessionID).emit('UPDATED_STATE', state.toSocket()); // do we need to send whole state?
+  io.to(uid).emit('UPDATED_STATE', state.toSocket());
+
+  // if we are sending whole state, thats game start or round update.
+  // We need to deliver all the changes to our players
+  state.syncPlayers();
 });
 
 /**
@@ -64,7 +69,31 @@ function SocketController(socket) {
   socket.on('ON_CONNECTION', async () => {
     socket.join('WAITING_ROOM'); // place new customers to waiting room
     connectedPlayers.set(socket.id, new Customer(socket.id));
-    // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
+  });
+
+  socket.on('START_GAME', async () => {
+    io.in('WAITING_ROOM').clients(async (err, clients) => {
+      if (err) {
+        throw new Error(err);
+      }
+
+      // TODO 'Ready' button on lobby, so only clients with ready status are getting game started
+      const session = gameService.initGameSession(clients);
+
+      // Update players, to notify them that they are in game and countdown till round start
+      const _eventEmitter: EventEmitter = Container.get('event.emitter');
+      const state = session.getState();
+      clients.forEach((socketID) => {
+        connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers. Investigate if we still need this?
+
+        io.to(socketID).emit('INITIALIZE', socketID); // TODO consistency in socket order. state update, player update are coming before initialize
+
+        _eventEmitter.emit('stateUpdate', socketID, state);
+      });
+
+
+      gameService.startGameSession(session);
+    });
   });
 
   socket.on('disconnect', () => {
@@ -97,40 +126,13 @@ function SocketController(socket) {
     if (email && password && email !== 'false@gmail.com') {
       connectedPlayers.setIn(socket.id, ['isLoggedIn', true]);
       io.to(socket.id).emit('CUSTOMER_LOGIN_SUCCESS', {
-        email,
-        index: socket.id,
+        email
       });
 
       return callback(true);
     }
 
     return callback(false);
-  });
-
-  socket.on('START_GAME', async () => {
-    io.in('WAITING_ROOM').clients(async (err, clients) => {
-      if (err) {
-        throw new Error(err);
-      }
-
-      // creating session
-      const session = gameService.initGameSession(clients);
-      // Update players, to notify them that they are in game and countdown till round start
-      clients.forEach((socketID) => {
-        connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers. Investigate if we still need this?
-
-        io.to(socketID).emit('INITIALIZE', socketID);
-
-        // TODO
-        socket.join(session.ID, () => {
-          const rooms = Object.keys(socket.rooms);
-          console.log(rooms); // [ <socket.id>, 'room 237' ]
-          io.to(session.ID).emit('UPDATED_STATE', session.getState().toSocket()); // sending whole state isnt good?
-        });
-      });
-
-      gameService.startGameSession(session);
-    });
   });
 
   socket.on('PURCHASE_UNIT', async (pieceIndex) => {

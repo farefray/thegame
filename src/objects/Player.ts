@@ -20,22 +20,22 @@ export default class Player {
   public level: number = 1;
   public exp: number = 0;
   public gold: number = 1;
-  public shopUnits: BattleUnitList;
-  public hand: BoardMatrix;
-  public board: BoardMatrix;
+  public shopUnits: BattleUnitList = new BattleUnitList();
+  public hand: BoardMatrix = new BoardMatrix(8, 1);
+  public board: BoardMatrix = new BoardMatrix(8, 8);
+  private _invalidated = true;
 
-  constructor(id: string, fillShop = true) {
+  constructor(id: string) {
     this.index = id;
-    this.shopUnits = new BattleUnitList();
-    this.hand = new BoardMatrix(8, 1);
-    this.board = new BoardMatrix(8, 8);
 
-    if (fillShop) {
-      this.refreshShop();
-    }
+    this.fillShop();
   }
 
-  refreshShop() {
+  isSynced() {
+    return !this._invalidated;
+  }
+
+  private fillShop() {
     const newShop = new BattleUnitList();
     for (let i = 0; i <= SHOP_UNITS; i++) {
       const shopUnit = Monsters.getRandomUnit({
@@ -51,7 +51,11 @@ export default class Player {
     }
 
     this.shopUnits = newShop;
-    this.sendUpdate();
+  }
+
+  refreshShop() {
+    this.fillShop();
+    this.update(true);
   }
 
   get availableHandPosition () {
@@ -160,7 +164,7 @@ export default class Player {
       throw new Error('Trying to sell not existance pawn')
     }
 
-    this.sendUpdate();
+    this.update(true);
   }
 
   getUnitFromPos(pos: Position) {
@@ -198,7 +202,7 @@ export default class Player {
 
     this.setUnitToPos(toPosition, unit);
 
-    this.sendUpdate();
+    this.update(true);
   }
 
   /**
@@ -226,15 +230,24 @@ export default class Player {
       return addToHandResult;
     }
 
-    this.sendUpdate();
+    this.update(true);
   }
 
   /**
    * Emitting event to update this player via socket
+   * @param {Boolean} sync should be transffered to socket instantly
    */
-  private sendUpdate() {
-    const eventEmitter: EventEmitter = Container.get('event.emitter');
-    eventEmitter.emit('playerUpdate', this.index, this.toSocket());
+  public update(sync = false) {
+    console.log("Player -> update -> sync", sync)
+    if (sync) {
+      const eventEmitter: EventEmitter = Container.get('event.emitter');
+      eventEmitter.emit('playerUpdate', this.index, this.toSocket());
+
+      this._invalidated = false;
+    } else {
+      // this can be improved, in order to mark invalidated parts, so only they will be sent to frontend during sync update
+      this._invalidated = true;
+    }
   }
 
   toSocket() {

@@ -133,7 +133,7 @@ describe('Core Modules', () => {
     });
 
     it('can swap pawn', () => {
-      const player: Player = new Player('test_swap', false);
+      const player: Player = new Player('test_swap');
       player.gold = 10;
       player.shopUnits.push(new BattleUnit({
         name: 'minotaur',
