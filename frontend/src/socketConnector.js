@@ -1,6 +1,9 @@
 // src/socketConnector.js
 import io from 'socket.io-client';
 
+/**
+ * ToDo implement socket.io Manager for reconnections and so on.
+ */
 const url = window.location.href;
 const ip = url.split(':3000')[0].split('http://')[1];
 const ipAdress = process.env.NODE_ENV === 'production' ? 'https://thegame-backend.herokuapp.com/' : 'http://' + ip + '';

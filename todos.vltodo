@@ -1,4 +1,4 @@
-42 search results found
+47 search results found
 
 file:///d:\thegame\backend\src\abstract\Monster.ts
   10:     regen?: number, // TODO if we need this
@@ -8,6 +8,7 @@ file:///d:\thegame\backend\src\objects\AiPlayer.ts
 
 file:///d:\thegame\backend\src\objects\Battle.ts
   27:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
+  50:   private units: BattleUnitList; // temporaly public for ai needs
   211:       // TODO why isOver not handling this?
   253:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
   296:       this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
@@ -28,26 +29,28 @@ file:///d:\thegame\backend\src\objects\Player.ts
   47:         x: i, // todo get rid of this for shop units
   48:         y: -1, // todo get rid of this for shop units
   49:         teamId: 0, // todo get rid of this for shop units
-  128:       // TODO: Inform Client about update
-  149:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
+  121:         // Todo check if this will be covered for leveled up units
+  132:       // TODO: Inform Client about update
+  153:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
 file:///d:\thegame\backend\src\objects\State.ts
-  113:       // TODO \/ this supposed to be send on update_player, not on state sending
+  60:       // todo FOR REWORK!!
 
 file:///d:\thegame\backend\src\services\AIService.ts
   28:   // todo get rid of dynamic imports. Preload those buckets and neurals!
+  63:         // Todo make it output array of units
   68:     // todo pick combination with biggest predicted output
 
 file:///d:\thegame\backend\src\services\GameService.ts
   21:       // TODO [P0] rounds going even if all disconnected!
 
 file:///d:\thegame\backend\src\services\SocketController.ts
-  67:     // TODO: Handle many connected players (thats old comment, I'm not sure what does it means)
-  73:     // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
-  87:     } // todo case when no customer?
-  95:     // TODO auth, check email/pasw for current user, load him from database.
-  124:         // TODO
-  147:     // todo check consistency
+  79:       // TODO 'Ready' button on lobby, so only clients with ready status are getting game started
+  88:         io.to(socketID).emit('INITIALIZE', socketID); // TODO consistency in socket order. state update, player update are coming before initialize
+  101:     // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
+  115:     } // todo case when no customer?
+  123:     // TODO auth, check email/pasw for current user, load him from database.
+  148:     // todo check consistency
 
 file:///d:\thegame\backend\src\spells\hoof.ts
   15:       return null; // todo test
@@ -56,6 +59,7 @@ file:///d:\thegame\backend\src\utils\effects.ts
   1: // todo review format for those, as its ugly and too big
 
 file:///d:\thegame\frontend\src\App\ActiveGame\BattleBoardWrapper.jsx
+  58:       // Todo: Investigate why there's cases when no component exist.
   161:         // TODO: test state change here from backend.
 
 file:///d:\thegame\frontend\src\App\ActiveGame\GameBoard\BoardSquareDnD.jsx
@@ -72,6 +76,9 @@ file:///d:\thegame\frontend\src\App\StartScreen\LoginForm.jsx
 
 file:///d:\thegame\frontend\src\UI\custom-core.less
   1: // TODO better font include
+
+file:///d:\thegame\frontend\src\UI\ui.less
+  61: // Debug styles
 
 file:///d:\thegame\frontend\src\objects\Unit.d.ts
   10:   effects: Array<any>; // TODO
