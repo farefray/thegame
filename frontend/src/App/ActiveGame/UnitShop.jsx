@@ -13,7 +13,7 @@ function UnitShop({ shopUnits }) {
     <div className="unitshop">
       {shopUnits.map((unit, index) => {
         return (
-          <Nav.Item>
+          <Nav.Item key={index}>
             <Unit key={index} unit={unit} index={index} onPurchase={onPurchase} />
           </Nav.Item>
         );
