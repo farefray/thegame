@@ -33,7 +33,7 @@ SocketConnector.init = function (dispatch) {
   });
 
   socket.on('UPDATED_STATE', state => {
-    dispatch({ type: 'UPDATED_STATE', newState: state });
+    dispatch({ type: 'UPDATED_STATE', state });
   });
 
   socket.on('UPDATE_PLAYER', (player) => {

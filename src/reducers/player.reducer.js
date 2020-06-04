@@ -1,5 +1,4 @@
 const basePlayerState = {
-  index: -1, // revise
   health: 100,
   mana: 0,
   level: -1,
@@ -13,12 +12,6 @@ const basePlayerState = {
 
 export default function player(state = basePlayerState, action) {
   switch (action.type) {
-    case 'CUSTOMER_LOGIN_SUCCESS': {
-      return {
-        ...state,
-        index: action.customer.index
-      };
-    }
     case 'UPDATE_PLAYER':
       return state = {
         ...state,

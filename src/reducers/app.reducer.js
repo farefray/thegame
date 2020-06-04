@@ -1,7 +1,7 @@
 export function app(
   state = {
+    playerIndex: null,
     gameIsLive: false,
-    index: -1,
     players: [],
     isDead: true,
     round: 1,
@@ -12,12 +12,6 @@ export function app(
   action
 ) {
   switch (action.type) {
-    case 'CUSTOMER_LOGIN_SUCCESS': {
-      return {
-        ...state,
-        index: action.customer.index
-      };
-    }
     case 'INIT': {
       // Used for cosmos fixtures
       state.isDead = false;
@@ -41,9 +35,9 @@ export function app(
     case 'UPDATED_STATE': {
       return {
         ...state,
-        players: action.newState.players,
-        round: action.newState.round,
-        countdown: Math.ceil(action.newState.countdown / 1000.)
+        players: action.state.players,
+        round: action.state.round,
+        countdown: Math.ceil(action.state.countdown / 1000.)
       };
     }
     case 'START_BATTLE': {
@@ -56,7 +50,8 @@ export function app(
       return {
         ...state,
         gameIsLive: true,
-        isDead: false
+        isDead: false,
+        playerIndex: action.index
       };
     }
     case 'END_GAME': {
@@ -74,16 +69,11 @@ export function app(
       break;
     }
     case 'DEAD_PLAYER': {
-      if (action.pid === state.index) {
-        state = {
-          ...state,
-          isDead: true
-        };
-      }
-      console.log('Before: Removing player ' + action.pid, state.players);
-      const players = state.players;
-      delete players[action.pid];
-      break;
+      return {
+        ...state,
+        gameIsLive: false,
+        isDead: true
+      };
     }
     default:
       break;
