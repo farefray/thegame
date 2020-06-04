@@ -10,7 +10,6 @@ import Player from '../objects/Player';
 import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
 import Position from '../shared/Position';
-import { Socket } from 'dgram';
 
 // Dependency container
 Container.set('session.store', new SessionStore());
