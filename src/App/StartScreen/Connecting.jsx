@@ -14,6 +14,9 @@ function Connecting() {
     };
   }, [dots]);
 
+  /**
+   * TODO consider sending some message after X seconds of no connection
+   */
   return (
     <div className="startscreen-loading">
       <img src={Sandglass} alt="Loading" className="startscreen-loading__image" />

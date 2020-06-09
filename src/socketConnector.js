@@ -80,6 +80,8 @@ SocketConnector.login = (customerData) => new Promise((resolve) => {
 });
 
 SocketConnector.startGame = () => {
+  // Thats actualyl emits start event on backend
+  // TODO investigate if this can be abused, maybe we need another approach or at least validation
   socket.emit('START_GAME');
 }
 
