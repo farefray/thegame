@@ -5,7 +5,7 @@
  * @returns {ConnectedPlayers}
  */
 function ConnectedPlayers() {
-  this.storage = {};
+  this.storage = {}; // todo consider using Map here
   return this;
 }
 

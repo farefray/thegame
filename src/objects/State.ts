@@ -14,7 +14,7 @@ export default class State {
   public incomeBase: number;
   public amountOfPlayers: number;
   public countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
-  public players = {};
+  public players = {};  // todo consider using Map here
   public clients: Array<String>;
 
   constructor(clients) {
