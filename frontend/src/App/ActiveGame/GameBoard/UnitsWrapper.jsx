@@ -8,7 +8,7 @@ class UnitsWrapper extends Component {
 
     this.state = {
       isMounted: false,
-      unitComponents: {},
+      unitComponents: {},  // todo consider using Map here?
       boardRef: props.boardRef
     };
   }

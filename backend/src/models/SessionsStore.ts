@@ -4,7 +4,7 @@ export default class SessionsStore {
   private storage: Object;
 
   constructor() {
-    this.storage = {};
+    this.storage = {}; // todo consider using Map here
   }
 
   store(session) {
