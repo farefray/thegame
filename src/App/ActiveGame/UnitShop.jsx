@@ -1,12 +1,11 @@
 import React from 'react';
 import Unit from './UnitShop/Unit';
 import { Nav } from 'rsuite';
-import { SocketConnector } from '@/socketConnector';
 
 function UnitShop({ shopUnits }) {
   const onPurchase = (unitIndex) => {
     // ! shall we validate it on frontend at least just a lil bit? TODO
-    SocketConnector.purchaseUnit(unitIndex);
+    //SocketConnector.purchaseUnit(unitIndex);
   };
 
   return (

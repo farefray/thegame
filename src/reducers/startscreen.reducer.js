@@ -1,6 +1,7 @@
 export function startscreen(
   state = {
-    isConnected: false
+    isConnected: false,
+    isReady: false
   },
   action
 ) {
@@ -11,6 +12,12 @@ export function startscreen(
         isConnected: action.isConnected
       };
     }
+    case 'SET_READY': {
+      return {
+        ...state,
+        isReady: action.isReady
+      };
+      }
     default:
       return state;
   }
