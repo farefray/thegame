@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
 import { EventEmitter } from 'events';
+import { v4 as uuidv4 } from 'uuid';
 
 import AppError from '../objects/AppError';
 
@@ -26,19 +27,7 @@ const ConnectedPlayers = require('../models/ConnectedPlayers');
 // Init connected players models
 const connectedPlayers = new ConnectedPlayers();
 
-/*
-  Example io code
-  io.on('connection', function(socket){
-      socket.emit('request', ); // emit an event to the socket
-      io.emit('broadcast', ); // emit an event to all connected sockets
-      socket.on('reply', function(){  }); // listen to the event
-      socket.broadcast.emit('UPDATED_PIECES', state); (Didn't work, check)
-  });
-*/
 
-/**
- * TODO ! We need to review what we are sending to socket. Many objects can be simplified with toJson and removing unnessesary big parts
- */
 eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) => {
   const io: SocketIO.Server = Container.get('socket.io');
   io.to(uid).emit('START_BATTLE', playerBattleResult);
@@ -63,6 +52,10 @@ eventEmitter.on('playerUpdate', (uid, player: Player) => {
   io.to(uid).emit('UPDATE_PLAYER', player);
 });
 
+const SOCKETROOMS = {
+  WAITING: 'WAITING_ROOM'
+}
+
 class SocketController {
   private socket;
   private id;
@@ -73,6 +66,7 @@ class SocketController {
     console.log('constructor');
 
     socket.on('ON_CONNECTION', this.onConnection);
+    socket.on('PLAYER_READY', this.playerReady);
     socket.on('START_GAME', this.startGame);
     socket.on('disconnect', this.disconnect);
     socket.on('CUSTOMER_LOGIN_TRY', this.loginAttempt);
@@ -83,14 +77,20 @@ class SocketController {
 
   onConnection = () => {
     console.log('@onConnection', this.id)
-    this.socket.join('WAITING_ROOM'); // place new customers to waiting room
     connectedPlayers.set(this.id, new Customer(this.id));
+  }
+
+  playerReady = (fn) => {
+    console.log('Player with socket ID: ' + this.id + ' is ready to start a game');
+    this.socket.join(SOCKETROOMS.WAITING); // place new customers to waiting room
+    this.socket.emit('IS_READY', true)
+    fn('true:)')
   }
 
   startGame = () => {
     const io: SocketIO.Server = Container.get('socket.io');
 
-    io.in('WAITING_ROOM').clients(async (err, clients) => {
+    io.in(SOCKETROOMS.WAITING).clients(async (err, clients) => {
       if (err) {
         throw new Error(err);
       }
@@ -107,8 +107,20 @@ class SocketController {
         connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers. Investigate if we still need this?
 
         console.log('INITIALIZE');
-        io.to(socketID).emit('INITIALIZE', socketID);
-        _eventEmitter.emit('stateUpdate', socketID, state);
+        const _socket = io.sockets.connected[socketID];
+        _socket.emit('INITIALIZE', {}, function (answer) {
+          console.log('answer', answer);
+        });
+
+        _socket.send('INITIALIZE', () => {
+          console.log('callback after initialize')
+          _socket.leave(SOCKETROOMS.WAITING);
+          _socket.join('LOBBY_' + session.ID);
+          console.log('sending state to player _socket')
+          _socket.emit('UPDATED_STATE', state.toSocket(), () => {
+            console.log('callback after updated state')
+          });
+        })
       }
 
       console.log('startGameSession');
@@ -138,6 +150,8 @@ class SocketController {
   }
 
   loginAttempt = (customerData, callback) => {
+    console.log("loginAttempt -> callback", callback)
+    console.log("loginAttempt -> customerData", customerData)
     const { email, password } = customerData;
     // TODO auth, check email/pasw for current user, load him from database.
     // false@gmail.com is used to test failed login
