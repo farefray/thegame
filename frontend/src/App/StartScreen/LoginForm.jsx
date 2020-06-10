@@ -1,83 +1,65 @@
-import React, { Component } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { Schema, Form, Button, FormGroup, ControlLabel, ButtonToolbar, FormControl } from 'rsuite';
-import { SocketConnector } from '../../socketConnector';
+import { WebSocketContext } from '../../socket.context';
 
 const { StringType } = Schema.Types;
 
-const model = Schema.Model({
+const LoginFormModel = Schema.Model({
   email: StringType()
     .isEmail('Please enter a valid email address.')
     .isRequired('This field is required.'),
   password: StringType().isRequired('This field is required.')
 });
 
-class LoginForm extends Component {
-  constructor(props) {
-    super(props);
+function LoginForm() {
+  const ws = useContext(WebSocketContext);
+  const [loginError, setLoginError] = useState(null);
+  const [email, ] = useState();
+  const [password, ] = useState();
 
-    this.state = {
-      formValue: {
-        email: '',
-        password: ''
-      },
-      loginError: null
-    };
+  let loginFormRef = useRef();
 
-    this.handleSignIn = this.handleSignIn.bind(this);
-  }
+  const handleSignIn = async () => {
+    setLoginError(null);
 
-  handleSignIn() {
-    this.setState({
-      loginError: null
-    });
-
-    const { formValue:customerData } = this.state;
+    const customerData = { email, password }; // todo hash
     // TODO: some loader for form
-    const isFormValid = this.form.check();
+    const isFormValid = loginFormRef.check();
     if (isFormValid) {
-      SocketConnector.login(customerData).then((result) => {
-        if (!result) {
-          this.setState({
-            loginError: 'Sorry, your login or password is incorrect.'
-          })
-        }
-      });
+      // todo constants
+      const loginResult = await ws.emitMessage('CUSTOMER_LOGIN_TRY', customerData);
+      console.log("handleSignIn -> loginResult", loginResult)
+      if (!loginResult) {
+        setLoginError('Sorry, your login or password is incorrect.');
+      }
     }
   }
 
-  render() {
-    const { formValue, loginError } = this.state;
-
-    return (
-      <Form
-        fluid
-        ref={ref => (this.form = ref)}
-        onChange={formValue => {
-          this.setState({ formValue });
-        }}
-        formValue={formValue}
-        model={model}
-      >
-        <FormGroup className="ic_user">
-          <ControlLabel>Email</ControlLabel>
-          <FormControl name="email" errorPlacement="topStart"/>
-        </FormGroup>
-        <FormGroup className="ic_pw">
-          <ControlLabel>Password</ControlLabel>
-          <FormControl name="password" type="password" errorPlacement="bottomStart" errorMessage={loginError}/>
-        </FormGroup>
-        <div>*Any login credentials working at this point</div>
-        <FormGroup>
-          <ButtonToolbar>
-            <Button appearance="primary" onClick={this.handleSignIn}>
-              Sign in
-            </Button>
-            {/* <Button appearance="link">Forgot password?</Button> */}
-          </ButtonToolbar>
-        </FormGroup>
-      </Form>
-    );
-  }
+  return (
+    <Form
+      fluid
+      ref={ref => (loginFormRef = ref)}
+      model={LoginFormModel}
+    >
+      <FormGroup className="ic_user">
+        <ControlLabel>Email</ControlLabel>
+        <FormControl name="email" errorPlacement="topStart"/>
+      </FormGroup>
+      <FormGroup className="ic_pw">
+        <ControlLabel>Password</ControlLabel>
+        <FormControl name="password" type="password" errorPlacement="bottomStart" errorMessage={loginError}/>
+      </FormGroup>
+      <div>*Any login credentials working at this point</div>
+      <FormGroup>
+        <ButtonToolbar>
+          <Button appearance="primary" onClick={handleSignIn}>
+            Sign in
+          </Button>
+          <Button appearance="link">Registration</Button>
+        </ButtonToolbar>
+      </FormGroup>
+    </Form>
+  );
 }
 
 export default LoginForm;
