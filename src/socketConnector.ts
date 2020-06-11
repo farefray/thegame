@@ -27,10 +27,6 @@ import React, { createContext } from 'react';
 //       console.log('disconnected');
 //     });
 
-//     socket.on('CUSTOMER_LOGIN_SUCCESS', (customer) => {
-//       dispatch({ type: 'CUSTOMER_LOGIN_SUCCESS', customer });
-//     });
-
 //     socket.on('IS_READY', (isReady) => {
 //       dispatch({ type: 'SET_READY', isReady });
 //     });
@@ -73,12 +69,6 @@ import React, { createContext } from 'react';
 // // the following are functions that our client side uses
 // // to emit actions to everyone connected to our web socket
 
-// SocketConnector.login = (customerData) =>
-//   new Promise((resolve) => {
-//     socket.emit('CUSTOMER_LOGIN_TRY', customerData, (response) => {
-//       resolve(response);
-//     });
-//   });
 
 // SocketConnector.startGame = () => {
 //   // Thats actualyl emits start event on backend
