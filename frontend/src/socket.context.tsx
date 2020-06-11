@@ -15,9 +15,11 @@ export default ({ children }) => {
   const dispatch = useDispatch();
 
   const emitMessage = (type, payload) => {
-    console.log("emitMessage -> type", type)
     return new Promise((resolve) => {
       socket.emit(type, payload, (response) => {
+        // on every message response, we execute dispatch to our store for backend callback. Consider, maybe this is not really needed and we only need to execute those eventually
+        dispatch({ type: type, response });
+
         resolve(response);
       });
     });
@@ -37,10 +39,6 @@ export default ({ children }) => {
       dispatch({ type: 'SET_CONNECTED', isConnected: false });
       window.location.reload();
       console.log('disconnected');
-    });
-
-    socket.on('CUSTOMER_LOGIN_SUCCESS', (customer) => {
-      dispatch({ type: 'CUSTOMER_LOGIN_SUCCESS', customer });
     });
 
     socket.on('IS_READY', (isReady) => {

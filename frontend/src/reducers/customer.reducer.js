@@ -4,12 +4,14 @@ const defaultCustomer = {
 };
 
 export default function customer(state = defaultCustomer, action) {
+  console.log("customer -> action", action)
   switch (action.type) {
-    case 'CUSTOMER_LOGIN_SUCCESS':
+    /** After emitting event, backend response being dispatched to store */
+    case 'CUSTOMER_LOGIN_TRY':
       return state = {
         ...state,
-        isLoggedIn: true,
-        email: action.customer.email
+        isLoggedIn: action.response?.success,
+        email: action.response?.email
       };
     default:
       return state

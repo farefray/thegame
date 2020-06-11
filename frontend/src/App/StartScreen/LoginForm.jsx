@@ -14,23 +14,23 @@ const LoginFormModel = Schema.Model({
 function LoginForm() {
   const ws = useContext(WebSocketContext);
   const [loginError, setLoginError] = useState(null);
-  const [email, ] = useState();
-  const [password, ] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
 
   let loginFormRef = useRef();
 
   const handleSignIn = async () => {
     setLoginError(null);
 
-    const customerData = { email, password }; // todo hash
+    const customerData = { email, password }; // todo hash?
     // TODO: some loader for form
     const isFormValid = loginFormRef.check();
     if (isFormValid) {
       // todo constants
       const loginResult = await ws.emitMessage('CUSTOMER_LOGIN_TRY', customerData);
       console.log("handleSignIn -> loginResult", loginResult)
-      if (!loginResult) {
-        setLoginError('Sorry, your login or password is incorrect.');
+      if (!loginResult || !loginResult.success) {
+        setLoginError(loginResult?.message || 'Sorry, your login or password is incorrect.');
       }
     }
   }
@@ -40,6 +40,10 @@ function LoginForm() {
       fluid
       ref={ref => (loginFormRef = ref)}
       model={LoginFormModel}
+      onChange={(formValue) => {
+        setEmail(formValue.email);
+        setPassword(formValue.password);
+      }}
     >
       <FormGroup className="ic_user">
         <ControlLabel>Email</ControlLabel>

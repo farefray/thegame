@@ -150,23 +150,22 @@ class SocketController {
   }
 
   loginAttempt = (customerData, callback) => {
-    console.log("loginAttempt -> callback", callback)
-    console.log("loginAttempt -> customerData", customerData)
     const { email, password } = customerData;
     // TODO auth, check email/pasw for current user, load him from database.
     // false@gmail.com is used to test failed login
     if (email && password && email !== 'false@gmail.com') {
       connectedPlayers.setIn(this.id, ['isLoggedIn', true]);
-      const io: SocketIO.Server = Container.get('socket.io');
 
-      io.to(this.id).emit('CUSTOMER_LOGIN_SUCCESS', {
+      return callback({
+        success: true,
         email
       });
-
-      return callback(true);
     }
 
-    return callback(false);
+    return callback({
+      success: false,
+      message: 'Wrong email or password'
+    });
   }
 
   unitPurchase = (pieceIndex) => {
