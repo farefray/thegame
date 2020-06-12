@@ -53,8 +53,8 @@ export default ({ children }) => {
       dispatch({ type: 'UPDATE_PLAYER', player: player });
     });
 
-    socket.on('NOTIFICATION', (index, notification) => {
-      dispatch({ type: 'NOTIFICATION', index: index, notification: notification });
+    socket.on('NOTIFICATION', (notification) => {
+      dispatch({ type: 'NOTIFICATION', notification: notification });
     });
 
     socket.on('INITIALIZE', (index) => {

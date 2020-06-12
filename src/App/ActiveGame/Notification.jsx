@@ -10,7 +10,7 @@ function Notification({ notificationObject }) {
           Alert.error(message, 5000);
           break;
         }
-      
+
         case 'warning': {
           Alert.warning(message, 5000);
           break;

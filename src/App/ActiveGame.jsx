@@ -9,7 +9,6 @@ import BattleBoardWrapper from './ActiveGame/BattleBoardWrapper.jsx';
 
 import RightSidebar from './ActiveGame/RightSidebar.jsx';
 import UnitShop from './ActiveGame/UnitShop.jsx';
-import Notification from './ActiveGame/Notification.jsx';
 import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import PlayerHand from './ActiveGame/PlayerHand.jsx';
 
@@ -17,13 +16,12 @@ function ActiveGame() {
   const appState = useSelector((state) => state.app, shallowEqual);
   const gameboardState = useSelector((state) => state.gameboard, shallowEqual);
   const playerState = useSelector((state) => state.player, shallowEqual);
-  const { notification, countdown, players } = appState;
+  const { countdown, players } = appState;
 
   return (
     <Grid fluid>
       <Row className="gameheader">
         <Col>
-          {notification && <Notification notificationObject={notification} />}
           <Row className="playerstats">
             <PlayerStats playerStats={{ health: playerState.health, level: playerState.level, unitsAmount: playerState.boardUnits.length, gold: playerState.gold }} />
             <Timer initialTimerValue={countdown} />
