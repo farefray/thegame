@@ -5,40 +5,36 @@
     background: url('../res/skillbar/skill_bar_n.png')
   }
 
-  &-warning {
-    .rs-alert-item-content {
-      div {
-        color: @B000;
-      }
+  .rs-alert-item-content {
+    color: @B000;
+  }
 
-      .rs-icon.rs-icon-remind {
-        position: absolute;
-        top: 17px;
-        left: 15px;
+  .rs-icon.rs-icon-remind {
+    height: 22px;
+    left: 15px;
+    position: absolute;
+    top: 17px;
+    width: 22px;
 
-        &:before {
-          content: ''; // to remove default icon
-        }
-
-        .background-icon(url('../res/misc/notification_alert.png'));
-        height: 22px;
-        width: 22px;
-      }
+    &::before {
+      content: ''; // to remove default icon
     }
+
+    .background-icon(url('../res/misc/notification_alert.png'));
   }
 
   .rs-alert-item-close-x {
     display: block;
-    top: -15px;
+    height: 22px;
     position: absolute;
     right: -5px;
+    top: -15px;
+    width: 22px;
 
-    &:before {
+    &::before {
       content: '';
     }
 
     .background-icon(url('../res/misc/popup_btn_close.png'));
-    height: 22px;
-    width: 22px;
   }
 }

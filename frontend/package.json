@@ -27,6 +27,7 @@
     "cross-env": "^7.0.2",
     "customize-cra": "1.0.0",
     "customize-cra-react-refresh": "^1.0.1",
+    "firebase": "^7.15.0",
     "hyperid": "^2.0.4",
     "less": "^3.10.3",
     "less-loader": "6.1.0",

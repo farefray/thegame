@@ -1,8 +1,6 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
 import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
-
 import AppError from '../objects/AppError';
 
 import SessionStore from '../models/SessionsStore';
@@ -12,6 +10,11 @@ import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
 import Position from '../shared/Position';
 import { Socket } from 'socket.io';
+
+// const admin = require('firebase-admin')
+
+// // Initialize Firebase
+// firebase.initializeApp(firebaseConfig);
 
 // Dependency container
 Container.set('session.store', new SessionStore());
@@ -70,6 +73,7 @@ class SocketController {
     socket.on('START_GAME', this.startGame);
     socket.on('disconnect', this.disconnect);
     socket.on('CUSTOMER_LOGIN_TRY', this.loginAttempt);
+    socket.on('NEW_CUSTOMER_REGISTRATION', this.newRegistration)
     socket.on('PURCHASE_UNIT', this.unitPurchase);
     socket.on('PLACE_PIECE', this.placeUnit);
     socket.on('SELL_PIECE', this.sellUnit);
@@ -78,6 +82,11 @@ class SocketController {
   onConnection = () => {
     console.log('@onConnection', this.id)
     connectedPlayers.set(this.id, new Customer(this.id));
+
+    this.socket.emit('NOTIFICATION', {
+      type: 'success',
+      message: 'Connection established!'
+    });
   }
 
   playerReady = (fn) => {
@@ -111,6 +120,8 @@ class SocketController {
         _socket.emit('INITIALIZE', {}, function (answer) {
           console.log('answer', answer);
         });
+
+        
 
         _socket.send('INITIALIZE', () => {
           console.log('callback after initialize')
@@ -149,24 +160,34 @@ class SocketController {
     } // todo case when no customer?
   }
 
-  loginAttempt = (customerData, callback) => {
+  loginAttempt = (customerData, cb) => {
     const { email, password } = customerData;
     // TODO auth, check email/pasw for current user, load him from database.
     // false@gmail.com is used to test failed login
     if (email && password && email !== 'false@gmail.com') {
       connectedPlayers.setIn(this.id, ['isLoggedIn', true]);
 
-      return callback({
+      return cb({
         success: true,
         email
       });
     }
 
-    return callback({
+    return cb({
       success: false,
       message: 'Wrong email or password'
     });
   }
+
+  // ? Maybe some validation is required here from firebase?
+  newRegistration = (customerData, cb) => {
+    this.socket.emit('NOTIFICATION', {
+      type: 'success',
+      message: 'Account was successfully created. See you in game!'
+    });
+
+    cb({ ok: true })
+  };
 
   unitPurchase = (pieceIndex) => {
     const sessionID = connectedPlayers.getSessionID(this.id);
@@ -177,7 +198,7 @@ class SocketController {
     const result = player.purchasePawn(pieceIndex);
     const io: SocketIO.Server = Container.get('socket.io');
     if (result instanceof AppError) {
-      io.to(`${this.id}`).emit('NOTIFICATION', this.id, result);
+      io.to(`${this.id}`).emit('NOTIFICATION', result);
       return;
     }
 
