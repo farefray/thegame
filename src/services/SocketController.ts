@@ -29,6 +29,7 @@ const ConnectedPlayers = require('../models/ConnectedPlayers');
 
 // Init connected players models
 const connectedPlayers = new ConnectedPlayers();
+console.log("connectedPlayers", connectedPlayers)
 
 
 eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) => {
@@ -72,21 +73,35 @@ class SocketController {
     socket.on('PLAYER_READY', this.playerReady);
     socket.on('START_GAME', this.startGame);
     socket.on('disconnect', this.disconnect);
-    socket.on('CUSTOMER_LOGIN_TRY', this.loginAttempt);
+    socket.on('CUSTOMER_LOGIN', this.login);
     socket.on('NEW_CUSTOMER_REGISTRATION', this.newRegistration)
     socket.on('PURCHASE_UNIT', this.unitPurchase);
     socket.on('PLACE_PIECE', this.placeUnit);
     socket.on('SELL_PIECE', this.sellUnit);
   }
 
-  onConnection = () => {
+  onConnection = (firebaseUser, cb) => {
+    let message = 'Connection established!';
+    if (firebaseUser) {
+      // upon connection, our user is already authentificated, we can restore his session
+      message = 'Connection restored';
+    }
+
     console.log('@onConnection', this.id)
     connectedPlayers.set(this.id, new Customer(this.id));
+    console.log("SocketController -> onConnection -> connectedPlayers", connectedPlayers)
 
     this.socket.emit('NOTIFICATION', {
       type: 'success',
-      message: 'Connection established!'
+      message
     });
+    
+    cb({ ok: true })
+  }
+
+  login = (firebaseUser, cb) => {
+    // ? todo set user.uid to current session
+    cb({ ok: true })
   }
 
   playerReady = (fn) => {
@@ -160,27 +175,7 @@ class SocketController {
     } // todo case when no customer?
   }
 
-  loginAttempt = (customerData, cb) => {
-    const { email, password } = customerData;
-    // TODO auth, check email/pasw for current user, load him from database.
-    // false@gmail.com is used to test failed login
-    if (email && password && email !== 'false@gmail.com') {
-      connectedPlayers.setIn(this.id, ['isLoggedIn', true]);
-
-      return cb({
-        success: true,
-        email
-      });
-    }
-
-    return cb({
-      success: false,
-      message: 'Wrong email or password'
-    });
-  }
-
-  // ? Maybe some validation is required here from firebase?
-  newRegistration = (customerData, cb) => {
+  newRegistration = (firebaseUser, cb) => {
     this.socket.emit('NOTIFICATION', {
       type: 'success',
       message: 'Account was successfully created. See you in game!'
