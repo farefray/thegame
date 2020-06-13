@@ -1,6 +1,7 @@
 import React, { createContext } from 'react';
 import io from 'socket.io-client';
 import { useDispatch } from 'react-redux';
+import { auth } from '@/firebase';
 
 const WebSocketContext = createContext(null);
 const isProduction = process.env.NODE_ENV === 'production';
@@ -31,10 +32,11 @@ export default ({ children }) => {
     // socket listeners
     socket.on('connect', () => {
       console.log('Socket connected');
-      dispatch({ type: 'SET_CONNECTED', isConnected: true });
-      socket.emit('ON_CONNECTION');
+      console.log('auth', auth);
+      emitMessage('ON_CONNECTION', auth.currentUser);
     });
 
+    // TODO
     socket.on('disconnect', () => {
       dispatch({ type: 'SET_CONNECTED', isConnected: false });
       window.location.reload();

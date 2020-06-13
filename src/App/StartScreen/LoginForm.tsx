@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef } from 'react';
 import { Schema, Form, Button, FormGroup, ControlLabel, ButtonToolbar, FormControl, Loader } from 'rsuite';
-import { WebSocketContext } from '../../socket.context';
-import { newCustomerRegistration } from '@/firebase';
+import { WebSocketContext, } from '../../socket.context';
+import { newCustomerRegistration, customerLogin } from '@/firebase';
 
 const { StringType } = Schema.Types;
 
@@ -32,16 +32,23 @@ function LoginForm() {
     // @ts-ignore
     const isFormValid = formRef.check();
     if (isFormValid) {
-      // todo constants
-      // @ts-ignore
-      const loginResult = await websocket.emitMessage('CUSTOMER_LOGIN_TRY', { email, password });
-      if (!loginResult || !loginResult.success) {
-        setFormMessage('Sorry, your login or password is incorrect.');
+      busy(true);
+
+      const [error, user] = await customerLogin({ email, password });
+
+      if (error) {
+        setFormMessage(error);
+        busy(false);
+      } else {
+        // @ts-ignore
+        await websocket.emitMessage('CUSTOMER_LOGIN', { user });
       }
     }
   };
 
   const handleRegistration = async () => {
+    setFormMessage('');
+
     // @ts-ignore
     const isFormValid = formRef.check();
     if (isFormValid) {
@@ -53,12 +60,8 @@ function LoginForm() {
         setFormMessage(error);
       } else {
         // @ts-ignore
-        const registrationResult = await websocket.emitMessage('NEW_CUSTOMER_REGISTRATION', user);
-        if (!registrationResult.ok) {
-          setFormMessage(registrationResult?.message);
-        } else {
-          setViewMode(VIEWMODE.LOGIN);
-        }
+        await websocket.emitMessage('NEW_CUSTOMER_REGISTRATION', user);
+        setViewMode(VIEWMODE.LOGIN);
       }
 
       busy(false);

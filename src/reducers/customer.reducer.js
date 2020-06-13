@@ -6,10 +6,11 @@ const defaultCustomer = {
 export default function customer(state = defaultCustomer, action) {
   switch (action.type) {
     /** After emitting event, backend response being dispatched to store */
-    case 'CUSTOMER_LOGIN_TRY':
+    case 'CUSTOMER_LOGIN':
+      console.log('action', action);
       return state = {
         ...state,
-        isLoggedIn: action.response?.success,
+        isLoggedIn: true,
         email: action.response?.email
       };
     default:
