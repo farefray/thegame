@@ -23,7 +23,7 @@ const mockedEventEmitter = {
 Container.set('event.emitter', mockedEventEmitter);
 
 describe('Core Modules', () => {
-  const connectedPlayers = new ConnectedPlayers();
+  const connectedPlayers = ConnectedPlayers.getInstance();
   const MOCK_SOCKETID_1 = 'MOCK_SOCKETID_1';
   const MOCK_SOCKETID_2 = 'MOCK_SOCKETID_2';
   const MOCK_SOCKETID_3 = 'MOCK_SOCKETID_3';

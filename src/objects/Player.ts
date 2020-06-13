@@ -206,7 +206,7 @@ export default class Player {
   }
 
   /**
-   * TODO handle AppError differently, to not pass into SocketController
+   * TODO handle AppError differently, to not pass into SocketService
    */
   purchasePawn(pieceIndex): void|AppError {
     if (this.isDead()) {
