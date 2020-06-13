@@ -1,10 +1,10 @@
-53 search results found
+55 search results found
 
 file:///d:\thegame\backend\src\abstract\Monster.ts
   10:     regen?: number, // TODO if we need this
 
-file:///d:\thegame\backend\src\models\ConnectedPlayers.js
-  8:   this.storage = {}; // todo consider using Map here
+file:///d:\thegame\backend\src\models\ConnectedPlayers.ts
+  32:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
 
 file:///d:\thegame\backend\src\models\SessionsStore.ts
   7:     this.storage = {}; // todo consider using Map here
@@ -39,6 +39,9 @@ file:///d:\thegame\backend\src\objects\Player.ts
   132:       // TODO: Inform Client about update
   153:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
+file:///d:\thegame\backend\src\objects\Session.ts
+  15:     this.clients = this.state.clients; // todo ? was connectedPlayers, so handle this in case
+
 file:///d:\thegame\backend\src\objects\State.ts
   17:   public players = {};  // todo consider using Map here
   60:       // todo FOR REWORK!!
@@ -51,12 +54,11 @@ file:///d:\thegame\backend\src\services\AIService.ts
 file:///d:\thegame\backend\src\services\GameService.ts
   20:     // TODO [P0] rounds going even if all disconnected!
 
-file:///d:\thegame\backend\src\services\SocketController.ts
-  107:       // TODO 'Ready' button on lobby, so only clients with ready status are getting game started
-  145:     // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
-  160:     } // todo case when no customer?
-  165:     // TODO auth, check email/pasw for current user, load him from database.
-  205:     // todo check consistency
+file:///d:\thegame\backend\src\services\SocketService.ts
+  118:       // TODO 'Ready' button on lobby, so only clients with ready status are getting game started
+  157:       // TODO !!!
+  170:     } // todo case when no customer?
+  195:     // todo check consistency
 
 file:///d:\thegame\backend\src\spells\hoof.ts
   15:       return null; // todo test
@@ -80,9 +82,6 @@ file:///d:\thegame\frontend\src\App\ActiveGame\RightSidebar.fixture.jsx
 file:///d:\thegame\frontend\src\App\ActiveGame\timeouts_test.js
   278:   const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
 
-file:///d:\thegame\frontend\src\App\StartScreen\LoginForm.tsx
-  35:       // todo constants
-
 file:///d:\thegame\frontend\src\UI\custom-core.less
   1: // TODO better font include
   2: // TODO replace font with better variant
@@ -91,7 +90,7 @@ file:///d:\thegame\frontend\src\UI\ui.less
   62: // Debug styles
 
 file:///d:\thegame\frontend\src\firebase.js
-  34:     // TODO profiles and displayName
+  35:     // TODO profiles and displayName
 
 file:///d:\thegame\frontend\src\objects\Unit.d.ts
   10:   effects: Array<any>; // TODO
@@ -102,5 +101,12 @@ file:///d:\thegame\frontend\src\objects\Unit.tsx
   294:       callback(); // todo this callback should be actually linked to created particle (:
   366:       'm-in-battle': false // todo
 
+file:///d:\thegame\frontend\src\reducers\customer.reducer.js
+  14:         email: action.response?.email // todo check if its working. Seems not :)
+
+file:///d:\thegame\frontend\src\socket.context.tsx
+  38:       // TODO consider if we need auth.onAuthChanged
+  41:     // TODO
+
 file:///d:\thegame\frontend\src\socketConnector.ts
-  75: //   // TODO investigate if this can be abused, maybe we need another approach or at least validation
+  62: //   // TODO investigate if this can be abused, maybe we need another approach or at least validation

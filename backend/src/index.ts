@@ -1,5 +1,5 @@
 import { Container } from 'typedi';
-import SocketController from './services/SocketController';
+import SocketService from './services/SocketService';
 
 const cors = require('cors');
 
@@ -19,4 +19,4 @@ app.use(cors());
 // Dependencies container
 Container.set('socket.io', io);
 
-io.on('connection', socket => new SocketController(socket));
+io.on('connection', socket => new SocketService(socket));

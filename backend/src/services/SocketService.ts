@@ -10,7 +10,7 @@ import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
 import Position from '../shared/Position';
 import { Socket } from 'socket.io';
-
+import ConnectedPlayers, { SocketID } from '../models/ConnectedPlayers';
 // const admin = require('firebase-admin')
 
 // // Initialize Firebase
@@ -22,15 +22,6 @@ Container.set('session.store', new SessionStore());
 // Event emitter
 const eventEmitter: EventEmitter = new EventEmitter();
 Container.set('event.emitter', eventEmitter);
-
-const Customer = require('../objects/Customer');
-
-const ConnectedPlayers = require('../models/ConnectedPlayers');
-
-// Init connected players models
-const connectedPlayers = new ConnectedPlayers();
-console.log("connectedPlayers", connectedPlayers)
-
 
 eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) => {
   const io: SocketIO.Server = Container.get('socket.io');
@@ -58,11 +49,11 @@ eventEmitter.on('playerUpdate', (uid, player: Player) => {
 
 const SOCKETROOMS = {
   WAITING: 'WAITING_ROOM'
-}
+};
 
-class SocketController {
-  private socket;
-  private id;
+class SocketService {
+  private socket: Socket;
+  private id: SocketID;
 
   constructor(socket: Socket) {
     this.socket = socket;
@@ -74,7 +65,7 @@ class SocketController {
     socket.on('START_GAME', this.startGame);
     socket.on('disconnect', this.disconnect);
     socket.on('CUSTOMER_LOGIN', this.login);
-    socket.on('NEW_CUSTOMER_REGISTRATION', this.newRegistration)
+    socket.on('NEW_CUSTOMER_REGISTRATION', this.newRegistration);
     socket.on('PURCHASE_UNIT', this.unitPurchase);
     socket.on('PLACE_PIECE', this.placeUnit);
     socket.on('SELL_PIECE', this.sellUnit);
@@ -85,31 +76,36 @@ class SocketController {
     if (firebaseUser) {
       // upon connection, our user is already authentificated, we can restore his session
       message = 'Connection restored';
-    }
 
-    console.log('@onConnection', this.id)
-    connectedPlayers.set(this.id, new Customer(this.id));
-    console.log("SocketController -> onConnection -> connectedPlayers", connectedPlayers)
+      const connectedPlayers = ConnectedPlayers.getInstance();
+      connectedPlayers.login(firebaseUser, this.id);
+
+      cb({
+        ok: true,
+        user: firebaseUser.uid
+      });
+    }
 
     this.socket.emit('NOTIFICATION', {
       type: 'success',
       message
     });
-    
-    cb({ ok: true })
-  }
+
+    cb({ ok: true });
+  };
 
   login = (firebaseUser, cb) => {
-    // ? todo set user.uid to current session
-    cb({ ok: true })
-  }
+    const connectedPlayers = ConnectedPlayers.getInstance();
+    connectedPlayers.login(firebaseUser, this.id);
+    cb({ ok: true });
+  };
 
   playerReady = (fn) => {
     console.log('Player with socket ID: ' + this.id + ' is ready to start a game');
     this.socket.join(SOCKETROOMS.WAITING); // place new customers to waiting room
-    this.socket.emit('IS_READY', true)
-    fn('true:)')
-  }
+    this.socket.emit('IS_READY', true);
+    fn('true:)');
+  };
 
   startGame = () => {
     const io: SocketIO.Server = Container.get('socket.io');
@@ -136,30 +132,29 @@ class SocketController {
           console.log('answer', answer);
         });
 
-        
-
         _socket.send('INITIALIZE', () => {
-          console.log('callback after initialize')
+          console.log('callback after initialize');
           _socket.leave(SOCKETROOMS.WAITING);
           _socket.join('LOBBY_' + session.ID);
-          console.log('sending state to player _socket')
+          console.log('sending state to player _socket');
           _socket.emit('UPDATED_STATE', state.toSocket(), () => {
-            console.log('callback after updated state')
+            console.log('callback after updated state');
           });
-        })
+        });
       }
 
       console.log('startGameSession');
       GameService.startGameSession(session);
     });
-  }
+  };
 
   disconnect = () => {
     console.log('@disconnect', this.id);
-    const customer = connectedPlayers.get(this.id);
-    // todo peft test, need to make sure no links to this customer left in memory, else garbage collector will not clean this...
+    const connectedPlayers = ConnectedPlayers.getInstance();
+    const customer = connectedPlayers.disconnect(this.id);
 
     if (customer) {
+      // TODO !!!
       const sessionsStore: SessionStore = Container.get('session.store');
       // update rooms
       const sessionID = customer.get('sessionID'); // ? this.id?
@@ -173,7 +168,7 @@ class SocketController {
         sessionsStore.destroy(sessionID);
       }
     } // todo case when no customer?
-  }
+  };
 
   newRegistration = (firebaseUser, cb) => {
     this.socket.emit('NOTIFICATION', {
@@ -181,7 +176,7 @@ class SocketController {
       message: 'Account was successfully created. See you in game!'
     });
 
-    cb({ ok: true })
+    cb({ ok: true });
   };
 
   unitPurchase = (pieceIndex) => {
@@ -199,7 +194,7 @@ class SocketController {
 
     // todo check consistency
     // sessionsStore.store(session);
-  }
+  };
 
   sellUnit = (fromBoardPosition) => {
     const sessionsStore: SessionStore = Container.get('session.store');
@@ -208,7 +203,7 @@ class SocketController {
     const state = session.getState();
     const player: Player = state.getPlayer(this.id);
     player.sellPawn(fromBoardPosition);
-  }
+  };
 
   placeUnit = (fromBoardPosition, toBoardPosition) => {
     const sessionID = connectedPlayers.getSessionID(this.id);
@@ -221,7 +216,7 @@ class SocketController {
     // ? do we really need this?
     // session.updateState(state);
     // sessionsStore.store(session);
-  }
+  };
 }
 
-export default SocketController;
+export default SocketService;

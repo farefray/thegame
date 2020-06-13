@@ -15,6 +15,9 @@ enum VIEWMODE {
   REGISTRATION
 }
 
+/**
+ * TODO confirmPassword and displayName upon registration
+ */
 function LoginForm() {
   const websocket = useContext(WebSocketContext);
 

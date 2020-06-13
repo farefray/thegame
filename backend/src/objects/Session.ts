@@ -12,7 +12,7 @@ export default class Session {
 
   constructor(clients) {
     this.state = new State(clients);
-    this.clients = this.state.clients; // was connectedPlayers, so handle this in case
+    this.clients = this.state.clients; // todo ? was connectedPlayers, so handle this in case
   }
 
   get ID() {
