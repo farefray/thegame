@@ -7,8 +7,9 @@ if (!firebase.apps.length) {
   firebase.initializeApp(JSON.parse(config));
 }
 
-const auth = firebase.auth();
 const firestore = firebase.firestore();
+
+export const auth = firebase.auth();
 
 const DEFAULT_ERROR = 'Sorry, something went wrong. Try again later.';
 export const newCustomerRegistration = async ({ email, password }, additionalData) => {
@@ -47,27 +48,28 @@ export const newCustomerRegistration = async ({ email, password }, additionalDat
   return [false, firebaseUser];
 };
 
-export const getUserDocument = async (uid) => {
-  if (!uid) {
-    return null;
-  }
-
+export const customerLogin = async ({ email, password }) => {
   try {
-    const userDocument = await firestore.doc(`users/${uid}`).get();
-    return {
-      uid,
-      ...userDocument.data()
-    };
-  } catch (error) {
-    console.error("Error fetching user", error);
+    let { user } = await auth.signInWithEmailAndPassword(email, password);
+
+    return [null, user]
+  } catch (e) {
+    return [e.message || DEFAULT_ERROR, null];
   }
 };
 
+// export const getUserDocument = async (uid) => {
+//   if (!uid) {
+//     return null;
+//   }
 
-// const signInWithEmailAndPasswordHandler = (event, email, password) => {
-//   event.preventDefault();
-//   auth.signInWithEmailAndPassword(email, password).catch(error => {
-//     // setError("Error signing in with password and email!");
-//     console.error("Error signing in with password and email", error);
-//   });
+//   try {
+//     const userDocument = await firestore.doc(`users/${uid}`).get();
+//     return {
+//       uid,
+//       ...userDocument.data()
+//     };
+//   } catch (error) {
+//     console.error("Error fetching user", error);
+//   }
 // };

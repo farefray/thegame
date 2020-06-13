@@ -13,19 +13,6 @@ import React, { createContext } from 'react';
 //     this.dispatch = dispatch;
 //     this.endpoint = isProduction ? 'https://thegame-backend.herokuapp.com/' : 'http://' + window.location.href.split(':3000')[0].split('http://')[1] + '';
 
-//     console.log('Connecting to ' + this.endpoint + ' ...');
-//     const socket = io(this.endpoint);
-//     socket.on('connect', () => {
-//       console.log('Socket connected');
-//       dispatch({ type: 'SET_CONNECTED', isConnected: true });
-//       socket.emit('ON_CONNECTION');
-//     });
-
-//     socket.on('disconnect', () => {
-//       dispatch({ type: 'SET_CONNECTED', isConnected: false });
-//       window.location.reload();
-//       console.log('disconnected');
-//     });
 
 //     socket.on('IS_READY', (isReady) => {
 //       dispatch({ type: 'SET_READY', isReady });

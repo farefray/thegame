@@ -6,10 +6,10 @@ export function startscreen(
   action
 ) {
   switch (action.type) {
-    case 'SET_CONNECTED': {
+    case 'ON_CONNECTION': {
       return {
         ...state,
-        isConnected: action.isConnected
+        isConnected: true
       };
     }
     case 'SET_READY': {
