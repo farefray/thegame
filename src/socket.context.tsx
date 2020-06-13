@@ -34,6 +34,8 @@ export default ({ children }) => {
       console.log('Socket connected');
       console.log('auth', auth);
       emitMessage('ON_CONNECTION', auth.currentUser);
+
+      // TODO consider if we need auth.onAuthChanged
     });
 
     // TODO
