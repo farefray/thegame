@@ -2,20 +2,23 @@ import { v4 as uuidv4 } from 'uuid';
 import State from './State';
 import Battle, { BattleBoard, BattleResult } from './Battle';
 import Player from './Player';
+import SessionsStore from '../singletons/SessionsStore';
+import { SocketID } from '../utils/types';
 
 const MAX_ROUND = 25;
 
 export default class Session {
   private _id = uuidv4();
-  public clients: Array<String>; // reivew
   public state: State;
 
-  constructor(clients) {
+  constructor(clients: Array<SocketID>) {
     this.state = new State(clients);
-    this.clients = this.state.clients; // todo ? was connectedPlayers, so handle this in case
+
+    const sessionStore = SessionsStore.getInstance();
+    sessionStore.store(this);
   }
 
-  get ID() {
+  getID() {
     return this._id;
   }
 
@@ -86,12 +89,13 @@ export default class Session {
   }
 
   disconnect(clientID) {
-    if (this.clients.includes(clientID)) {
-      this.clients = this.clients.filter((index) => index !== clientID);
-    }
+    // todo
+    // if (this.clients.includes(clientID)) {
+    //   this.clients = this.clients.filter((index) => index !== clientID);
+    // }
   }
 
   hasClients() {
-    return this.clients.length > 0;
+    return this.state.clients.length > 0;
   }
 }

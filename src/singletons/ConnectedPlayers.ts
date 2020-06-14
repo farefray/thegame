@@ -1,10 +1,10 @@
 import Customer from "../objects/Customer";
+import { SocketID } from "../utils/types";
 
 export type FirebaseUser = {
   uid: string;
 }
 
-export type SocketID = string;
 
 /**
  * Instance for storing connected players and their sessions.
@@ -13,7 +13,9 @@ export type SocketID = string;
 export default class ConnectedPlayers {
   private static instance: ConnectedPlayers;
 
+  /** Map which is storing relationship between connected firebase userids and Customers */
   private _connectedPlayers: Map<FirebaseUser["uid"], Customer>;
+  /** Map stores relationship between socketIds and firebase connected users */
   private _socketsMap: Map<SocketID, FirebaseUser["uid"]>;
 
   private constructor() {
@@ -75,5 +77,12 @@ export default class ConnectedPlayers {
     }
 
     return null;
+  }
+
+  public getBySocket(socketID: SocketID) {
+    const uid = this._socketsMap.get(socketID);
+    if (uid) {
+      return this._connectedPlayers.get(uid);
+    }
   }
 }
