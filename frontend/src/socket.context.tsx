@@ -16,12 +16,15 @@ export default ({ children }) => {
   const dispatch = useDispatch();
 
   const emitMessage = (type, payload) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       socket.emit(type, payload, (response) => {
-        // on every message response, we execute dispatch to our store for backend callback. Consider, maybe this is not really needed and we only need to execute those eventually
-        dispatch({ type: type, response });
+        // on every message response, we execute dispatch to our store for backend callback
+        if (response.ok) {
+          dispatch({ type: type, response });
+          return resolve(response);
+        }
 
-        resolve(response);
+        reject(response);
       });
     });
   };
@@ -45,10 +48,6 @@ export default ({ children }) => {
       console.log('disconnected');
     });
 
-    socket.on('IS_READY', (isReady) => {
-      dispatch({ type: 'SET_READY', isReady });
-    });
-
     socket.on('UPDATED_STATE', (state) => {
       dispatch({ type: 'UPDATED_STATE', state });
     });
@@ -59,10 +58,6 @@ export default ({ children }) => {
 
     socket.on('NOTIFICATION', (notification) => {
       dispatch({ type: 'NOTIFICATION', notification: notification });
-    });
-
-    socket.on('INITIALIZE', (index) => {
-      dispatch({ type: 'INITIALIZE', index: index });
     });
 
     socket.on('START_BATTLE', ({ actionStack, startBoard, winner, countdown }) => {

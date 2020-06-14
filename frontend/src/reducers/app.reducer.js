@@ -1,6 +1,5 @@
 export function app(
   state = {
-    playerIndex: null,
     gameIsLive: false,
     players: [],
     isDead: true,
@@ -27,6 +26,7 @@ export function app(
         ...action.newState.app
       };
     }
+    // Real actions
     case 'NOTIFICATION':
       return state = {
         ...state,
@@ -37,21 +37,15 @@ export function app(
         ...state,
         players: action.state.players,
         round: action.state.round,
-        countdown: Math.ceil(action.state.countdown / 1000.)
+        countdown: Math.ceil(action.state.countdown / 1000.),
+        gameIsLive: true,
+        isDead: false
       };
     }
     case 'START_BATTLE': {
       return {
         ...state,
         countdown: Math.ceil(action.countdown / 1000)
-      };
-    }
-    case 'INITIALIZE': {
-      return {
-        ...state,
-        gameIsLive: true,
-        isDead: false,
-        playerIndex: action.index
       };
     }
     case 'END_GAME': {

@@ -1,13 +1,7 @@
-55 search results found
+54 search results found
 
 file:///d:\thegame\backend\src\abstract\Monster.ts
   10:     regen?: number, // TODO if we need this
-
-file:///d:\thegame\backend\src\models\ConnectedPlayers.ts
-  32:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
-
-file:///d:\thegame\backend\src\models\SessionsStore.ts
-  7:     this.storage = {}; // todo consider using Map here
 
 file:///d:\thegame\backend\src\objects\AiPlayer.ts
   61:     // todo magic logic here to find any good units in pocket
@@ -40,11 +34,11 @@ file:///d:\thegame\backend\src\objects\Player.ts
   153:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
 file:///d:\thegame\backend\src\objects\Session.ts
-  15:     this.clients = this.state.clients; // todo ? was connectedPlayers, so handle this in case
+  92:     // todo
 
 file:///d:\thegame\backend\src\objects\State.ts
-  17:   public players = {};  // todo consider using Map here
-  60:       // todo FOR REWORK!!
+  18:   public players = {};  // todo consider using Map here
+  61:       // todo FOR REWORK!!
 
 file:///d:\thegame\backend\src\services\AIService.ts
   28:   // todo get rid of dynamic imports. Preload those buckets and neurals!
@@ -52,13 +46,16 @@ file:///d:\thegame\backend\src\services\AIService.ts
   68:     // todo pick combination with biggest predicted output
 
 file:///d:\thegame\backend\src\services\GameService.ts
-  20:     // TODO [P0] rounds going even if all disconnected!
+  31:   // todo This seems wrong. Need some better implementation, lets say using event emitted from SessionService
+  37:     // TODO [P0] rounds going even if all disconnected!
 
 file:///d:\thegame\backend\src\services\SocketService.ts
-  118:       // TODO 'Ready' button on lobby, so only clients with ready status are getting game started
-  157:       // TODO !!!
-  170:     } // todo case when no customer?
-  195:     // todo check consistency
+  158:       // TODO !!!
+  171:     } // todo case when no customer?
+  196:     // todo check consistency
+
+file:///d:\thegame\backend\src\singletons\ConnectedPlayers.ts
+  34:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
 
 file:///d:\thegame\backend\src\spells\hoof.ts
   15:       return null; // todo test
@@ -102,11 +99,11 @@ file:///d:\thegame\frontend\src\objects\Unit.tsx
   366:       'm-in-battle': false // todo
 
 file:///d:\thegame\frontend\src\reducers\customer.reducer.js
-  14:         email: action.response?.email // todo check if its working. Seems not :)
+  15:         email: action.response?.email // todo check if its working. Seems not :)
 
 file:///d:\thegame\frontend\src\socket.context.tsx
-  38:       // TODO consider if we need auth.onAuthChanged
-  41:     // TODO
+  41:       // TODO consider if we need auth.onAuthChanged
+  44:     // TODO
 
 file:///d:\thegame\frontend\src\socketConnector.ts
-  62: //   // TODO investigate if this can be abused, maybe we need another approach or at least validation
+  55: //   // TODO investigate if this can be abused, maybe we need another approach or at least validation

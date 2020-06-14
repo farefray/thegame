@@ -1,17 +1,34 @@
 import { Container } from 'typedi';
 import Session from '../objects/Session';
-import SessionsStore from '../models/SessionsStore';
 import { EventEmitter } from 'events';
+import ConnectedPlayers from '../singletons/ConnectedPlayers';
+import { SocketID } from '../utils/types';
+
+const connectedPlayers = ConnectedPlayers.getInstance();
 
 const GameService = {
-  initGameSession: (clients) => {
+  startGame(clients: Array<SocketID>) {
+    const eventEmitter: EventEmitter = Container.get('event.emitter');
+
     const session = new Session(clients);
-    const sessionStore: SessionsStore = Container.get('session.store');
-    sessionStore.store(session);
-    return session;
+
+    // Update players, to notify them that they are in game and countdown till round start
+    const state = session.getState();
+    console.log('start');
+    for (let index = 0; index < clients.length; index++) {
+      const socketID = clients[index];
+
+      connectedPlayers.getBySocket(socketID)?.setToSession(session.getID());
+
+      console.log('stateUpdate');
+      eventEmitter.emit('stateUpdate', socketID, state);
+    }
+
+    console.log('startGameSession');
+    GameService.startGameSession(session);
   },
 
-  // This seems wrong. Need some better implementation, lets say using event emitted from SessionService
+  // todo This seems wrong. Need some better implementation, lets say using event emitted from SessionService
   startGameSession: async (session: Session) => {
     const eventEmitter: EventEmitter = Container.get('event.emitter');
     const state = session.getState();

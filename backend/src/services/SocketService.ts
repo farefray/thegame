@@ -3,22 +3,21 @@ import { Container } from 'typedi';
 import { EventEmitter } from 'events';
 import AppError from '../objects/AppError';
 
-import SessionStore from '../models/SessionsStore';
+import SessionStore from '../singletons/SessionsStore';
 import GameService from './GameService';
 import Player from '../objects/Player';
 import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
 import Position from '../shared/Position';
 import { Socket } from 'socket.io';
-import ConnectedPlayers, { SocketID } from '../models/ConnectedPlayers';
+import ConnectedPlayers from '../singletons/ConnectedPlayers';
+import { SocketID } from '../utils/types';
 // const admin = require('firebase-admin')
 
 // // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
 
 // Dependency container
-Container.set('session.store', new SessionStore());
-
 // Event emitter
 const eventEmitter: EventEmitter = new EventEmitter();
 Container.set('event.emitter', eventEmitter);
@@ -51,6 +50,8 @@ const SOCKETROOMS = {
   WAITING: 'WAITING_ROOM'
 };
 
+const connectedPlayers = ConnectedPlayers.getInstance();
+
 class SocketService {
   private socket: Socket;
   private id: SocketID;
@@ -60,24 +61,28 @@ class SocketService {
     this.id = socket.id;
     console.log('constructor');
 
-    socket.on('ON_CONNECTION', this.onConnection);
-    socket.on('PLAYER_READY', this.playerReady);
-    socket.on('START_GAME', this.startGame);
+    /**
+     * * Event handlers description
+     * Every event supposed to have callback function, which later will be dispatched on storefront as handled event response
+     * Example: Frontend login > firebase auth > socket emiting event > backend retrieves event > executes callback after backend part is done > on callback frontend executes dispatch into redux store to update frontend app state.
+     */
+    socket.on('ON_CONNECTION', this.ON_CONNECTION);
+    socket.on('PLAYER_READY', this.PLAYER_READY);
+    socket.on('START_GAME', this.START_GAME);
     socket.on('disconnect', this.disconnect);
-    socket.on('CUSTOMER_LOGIN', this.login);
-    socket.on('NEW_CUSTOMER_REGISTRATION', this.newRegistration);
+    socket.on('CUSTOMER_LOGIN', this.CUSTOMER_LOGIN);
+    socket.on('NEW_CUSTOMER_REGISTRATION', this.NEW_CUSTOMER_REGISTRATION);
     socket.on('PURCHASE_UNIT', this.unitPurchase);
     socket.on('PLACE_PIECE', this.placeUnit);
     socket.on('SELL_PIECE', this.sellUnit);
   }
 
-  onConnection = (firebaseUser, cb) => {
+  ON_CONNECTION = (firebaseUser, cb) => {
     let message = 'Connection established!';
     if (firebaseUser) {
       // upon connection, our user is already authentificated, we can restore his session
       message = 'Connection restored';
 
-      const connectedPlayers = ConnectedPlayers.getInstance();
       connectedPlayers.login(firebaseUser, this.id);
 
       cb({
@@ -94,20 +99,33 @@ class SocketService {
     cb({ ok: true });
   };
 
-  login = (firebaseUser, cb) => {
-    const connectedPlayers = ConnectedPlayers.getInstance();
+  CUSTOMER_LOGIN = (firebaseUser, cb) => {
     connectedPlayers.login(firebaseUser, this.id);
     cb({ ok: true });
   };
 
-  playerReady = (fn) => {
+  PLAYER_READY = (cb) => {
     console.log('Player with socket ID: ' + this.id + ' is ready to start a game');
-    this.socket.join(SOCKETROOMS.WAITING); // place new customers to waiting room
-    this.socket.emit('IS_READY', true);
-    fn('true:)');
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (customer) {
+      this.socket.join(SOCKETROOMS.WAITING);
+      customer.setReady(true);
+      cb({ ok: true });
+
+      const io: SocketIO.Server = Container.get('socket.io');
+      io.in(SOCKETROOMS.WAITING).clients(async (err, clients) => {
+        if (clients.length >= 2) {
+          this.startGame(clients);
+        }
+      });
+
+      return;
+    }
+
+    cb({ ok: false });
   };
 
-  startGame = () => {
+  START_GAME = () => {
     const io: SocketIO.Server = Container.get('socket.io');
 
     io.in(SOCKETROOMS.WAITING).clients(async (err, clients) => {
@@ -115,37 +133,20 @@ class SocketService {
         throw new Error(err);
       }
 
-      // TODO 'Ready' button on lobby, so only clients with ready status are getting game started
-      const session = GameService.initGameSession(clients);
-
-      // Update players, to notify them that they are in game and countdown till round start
-      const _eventEmitter: EventEmitter = Container.get('event.emitter');
-      const state = session.getState();
-      console.log('start');
-      for (let index = 0; index < clients.length; index++) {
-        const socketID = clients[index];
-        connectedPlayers.setIn(socketID, ['sessionID', session.ID]); // maybe overkill, especially when a lot of customers. Investigate if we still need this?
-
-        console.log('INITIALIZE');
-        const _socket = io.sockets.connected[socketID];
-        _socket.emit('INITIALIZE', {}, function (answer) {
-          console.log('answer', answer);
-        });
-
-        _socket.send('INITIALIZE', () => {
-          console.log('callback after initialize');
-          _socket.leave(SOCKETROOMS.WAITING);
-          _socket.join('LOBBY_' + session.ID);
-          console.log('sending state to player _socket');
-          _socket.emit('UPDATED_STATE', state.toSocket(), () => {
-            console.log('callback after updated state');
-          });
-        });
-      }
-
-      console.log('startGameSession');
-      GameService.startGameSession(session);
+      this.startGame(clients);
     });
+  };
+
+  startGame(clients) {
+    const io: SocketIO.Server = Container.get('socket.io');
+
+    for (let index = 0; index < clients.length; index++) {
+      const socketID = clients[index];
+      const _socket = io.sockets.connected[socketID];
+      _socket.leave(SOCKETROOMS.WAITING);
+    }
+
+    GameService.startGame(clients);
   };
 
   disconnect = () => {
@@ -170,7 +171,7 @@ class SocketService {
     } // todo case when no customer?
   };
 
-  newRegistration = (firebaseUser, cb) => {
+  NEW_CUSTOMER_REGISTRATION = (firebaseUser, cb) => {
     this.socket.emit('NOTIFICATION', {
       type: 'success',
       message: 'Account was successfully created. See you in game!'

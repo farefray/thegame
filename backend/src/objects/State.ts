@@ -2,6 +2,7 @@ import { promisify } from 'util';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
 import AppError from './AppError';
+import { SocketID } from '../utils/types';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
@@ -15,7 +16,7 @@ export default class State {
   public amountOfPlayers: number;
   public countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
   public players = {};  // todo consider using Map here
-  public clients: Array<String>;
+  public clients: Array<SocketID>;
 
   constructor(clients) {
     this.clients = clients;
@@ -135,4 +136,5 @@ export default class State {
       }
     });
   }
+
 }
