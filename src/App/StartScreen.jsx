@@ -7,7 +7,7 @@ import Lobby from './StartScreen/Lobby';
 
 class StartScreen extends Component {
   render() {
-    const { isConnected, isReady, customer } = this.props;
+    const { isConnected, customer } = this.props;
     const { isLoggedIn } = customer;
     return (
       <Container style={{ minHeight: '100vh' }}>
@@ -31,7 +31,7 @@ class StartScreen extends Component {
           <FlexboxGrid align="middle" justify="center" className="startscreen-flexbox">
             <FlexboxGrid.Item colspan={isLoggedIn ? 18 : 12}>
               <Panel header={<h3>{isLoggedIn ? 'Lobby' : 'Login'}</h3>} bordered>
-                {!isConnected ? <Connecting className="startscreen-loading"></Connecting> : (isLoggedIn && <Lobby customer={customer} isReady={isReady} />) || <LoginForm />}
+                {!isConnected ? <Connecting className="startscreen-loading"></Connecting> : (isLoggedIn && <Lobby />) || <LoginForm />}
               </Panel>
             </FlexboxGrid.Item>
           </FlexboxGrid>
@@ -43,11 +43,10 @@ class StartScreen extends Component {
 }
 
 function mapStateToProps(state) {
-  const { isConnected, isReady } = state.startscreen;
+  const { isConnected } = state.startscreen;
   return {
     isConnected,
-    customer: state.customer,
-    isReady
+    customer: state.customer
   };
 }
 

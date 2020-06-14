@@ -1,5 +1,6 @@
 const defaultCustomer = {
   isLoggedIn: false,
+  isReady: false,
   email: ''
 };
 
@@ -19,7 +20,13 @@ export default function customer(state = defaultCustomer, action) {
           ...state,
           isLoggedIn: !!action.response?.user
         };
-      }
+    }
+    case 'PLAYER_READY': {
+      return {
+        ...state,
+        isReady: !!action.response?.ready
+      };
+    }
     default:
       return state
   }

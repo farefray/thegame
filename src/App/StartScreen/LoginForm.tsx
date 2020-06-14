@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef } from 'react';
 import { Schema, Form, Button, FormGroup, ControlLabel, ButtonToolbar, FormControl, Loader } from 'rsuite';
-import { WebSocketContext, } from '../../socket.context';
+import { WebSocketContext } from '../../socket.context';
 import { newCustomerRegistration, customerLogin } from '@/firebase';
 
 const { StringType } = Schema.Types;

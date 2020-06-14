@@ -14,9 +14,6 @@ import React, { createContext } from 'react';
 //     this.endpoint = isProduction ? 'https://thegame-backend.herokuapp.com/' : 'http://' + window.location.href.split(':3000')[0].split('http://')[1] + '';
 
 
-//     socket.on('IS_READY', (isReady) => {
-//       dispatch({ type: 'SET_READY', isReady });
-//     });
 
 //     socket.on('UPDATED_STATE', (state) => {
 //       dispatch({ type: 'UPDATED_STATE', state });
@@ -28,10 +25,6 @@ import React, { createContext } from 'react';
 
 //     socket.on('NOTIFICATION', (index, notification) => {
 //       dispatch({ type: 'NOTIFICATION', index: index, notification: notification });
-//     });
-
-//     socket.on('INITIALIZE', (index) => {
-//       dispatch({ type: 'INITIALIZE', index: index });
 //     });
 
 //     socket.on('START_BATTLE', ({ actionStack, startBoard, winner, countdown }) => {
@@ -61,12 +54,6 @@ import React, { createContext } from 'react';
 //   // Thats actualyl emits start event on backend
 //   // TODO investigate if this can be abused, maybe we need another approach or at least validation
 //   socket.emit('START_GAME');
-// };
-
-// SocketConnector.ready = () => {
-//   socket.emit('PLAYER_READY', (data) => {
-//     console.log('SocketConnector.ready -> data', data);
-//   });
 // };
 
 // SocketConnector.purchaseUnit = (unitIndex) => {
