@@ -31,6 +31,10 @@ export default class Player {
     this.fillShop();
   }
 
+  get socketID() {
+    return this.index;
+  }
+
   isSynced() {
     return !this._invalidated;
   }
@@ -141,7 +145,7 @@ export default class Player {
       // if (newBoard.size > level) {
       //   await _mutateStateByFixingUnitLimit(state, playerIndex);
       // }
-      
+
     }
     */
   }
@@ -241,7 +245,7 @@ export default class Player {
     console.log("Player -> update -> sync", sync)
     if (sync) {
       const eventEmitter: EventEmitter = Container.get('event.emitter');
-      eventEmitter.emit('playerUpdate', this.index, this.toSocket());
+      eventEmitter.emit('playerUpdate', this);
 
       this._invalidated = false;
     } else {
