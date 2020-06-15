@@ -47,11 +47,11 @@ export default class Session {
   async nextRound() {
     // process with battles
     const playersBattleResults: {
-      countdown: number;
+      roundCountdown: number;
       battles: Array<BattleResult>;
       winners: Array<string>;
     } = {
-      countdown: Number.MIN_VALUE,
+      roundCountdown: Number.MIN_VALUE,
       battles: [],
       winners: []
     };
@@ -76,15 +76,14 @@ export default class Session {
 
       const battle = new Battle(battleBoards);
       const battleResult = await battle.proceedBattle();
-      if (battleResult.battleTime > playersBattleResults.countdown) {
-        playersBattleResults.countdown = battleResult.battleTime;
+      if (battleResult.battleTime > playersBattleResults.roundCountdown) {
+        playersBattleResults.roundCountdown = battleResult.battleTime;
       }
 
       playersBattleResults.winners.push(battleResult.winner);
       playersBattleResults.battles.push(battleResult);
     }
 
-    this.state.endRound(playersBattleResults.winners);
     return playersBattleResults;
   }
 

@@ -90,7 +90,7 @@ export default class State {
     }
   }
 
-  async scheduleNextRound() {
+  async waitUntilNextRound() {
     await sleep(this.countdown);
   }
 
