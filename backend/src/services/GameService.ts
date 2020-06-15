@@ -29,9 +29,12 @@ const GameService = {
 
       await state.wait(roundCountdown);
 
-      await state.endRound(winners);
+      state.endRound(winners);
 
-      eventEmitter.emit('stateUpdate', session.getID(), state);
+      for (const uid in state.players) {
+        eventEmitter.emit('stateUpdate', uid, state);
+      }
+
       await state.waitUntilNextRound();
     }
   }
