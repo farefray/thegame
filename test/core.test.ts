@@ -4,9 +4,7 @@ import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
 import AppError from '../src/objects/AppError';
 import Session from '../src/objects/Session';
-import ConnectedPlayers from '../src/models/ConnectedPlayers';
-import SessionsStore from '../src/models/SessionsStore';
-import Customer from '../src/objects/Customer';
+import SessionsStore from '../src/singletons/SessionsStore';
 import Player from '../src/objects/Player';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '../src/objects/BattleUnit';
@@ -23,41 +21,15 @@ const mockedEventEmitter = {
 Container.set('event.emitter', mockedEventEmitter);
 
 describe('Core Modules', () => {
-  const connectedPlayers = new ConnectedPlayers();
   const MOCK_SOCKETID_1 = 'MOCK_SOCKETID_1';
   const MOCK_SOCKETID_2 = 'MOCK_SOCKETID_2';
   const MOCK_SOCKETID_3 = 'MOCK_SOCKETID_3';
 
-  const sessionsStore = new SessionsStore();
+  const sessionsStore = SessionsStore.getInstance();
   const MOCK_CLIENTS = [MOCK_SOCKETID_1, MOCK_SOCKETID_2, MOCK_SOCKETID_3];
 
   let gameState:State;
   const firstHandPosition = 0;
-
-  describe('ConnectedPlayers Storage and Game start', () => {
-    it('Can add customer', () => {
-      connectedPlayers.set(MOCK_SOCKETID_1, new Customer(MOCK_SOCKETID_1));
-      const savedCustomer = connectedPlayers.get(MOCK_SOCKETID_1);
-      savedCustomer.socketID.should.equal(MOCK_SOCKETID_1);
-    });
-
-    it('Can add second customer', () => {
-      connectedPlayers.set(MOCK_SOCKETID_2, new Customer(MOCK_SOCKETID_2));
-      const savedCustomer = connectedPlayers.get(MOCK_SOCKETID_2);
-      savedCustomer.socketID.should.equal(MOCK_SOCKETID_2);
-    });
-
-    it('Can add third customer', () => {
-      connectedPlayers.set(MOCK_SOCKETID_3, new Customer(MOCK_SOCKETID_3));
-      const savedCustomer = connectedPlayers.get(MOCK_SOCKETID_3);
-      savedCustomer.socketID.should.equal(MOCK_SOCKETID_3);
-    });
-
-    it('Can retrieve customer 1 sessionID', () => {
-      const sessionID = connectedPlayers.getSessionID(MOCK_SOCKETID_1);
-      should(sessionID).null();
-    });
-  });
 
   describe('Sessions and game init', () => {
     let session:Session;
@@ -72,19 +44,32 @@ describe('Core Modules', () => {
 
     it('Can create session', () => {
       session = new Session(MOCK_CLIENTS);
-      session.should.have.property('ID');
-      session.clients.length.should.be.equal(MOCK_CLIENTS.length);
+      should.exist(session)
     });
 
-    it('Can store and retrieve session', () => {
-      const sessID = session.ID;
-      sessionsStore.store(session);
-      const savedSession = sessionsStore.get(sessID);
-      savedSession.ID.should.equal(sessID);
+    it('Can retrieve session by ID', () => {
+      const sessID = session.getID();
+      console.log("sessionsStore", sessionsStore)
+      const savedSession = sessionsStore.getByID(sessID);
+      should.exist(savedSession)
+
+      if (savedSession) {
+        savedSession.getID().should.equal(sessID);
+      }
+    });
+
+    it('Can retrieve session by customers socket ID', () => {
+      const savedSession = sessionsStore.getBySocket(MOCK_CLIENTS[0]);
+      should.exist(savedSession)
+      const sessID = session.getID();
+
+      if (savedSession) {
+        savedSession.getID().should.equal(sessID);
+      }
     });
   });
 
-  describe.only('Game Mechanics', () => {
+  describe('Game Mechanics', () => {
     it('can buy pawn', () => {
       const player = new Player(MOCK_SOCKETID_1);
       player.purchasePawn(0);
@@ -133,21 +118,21 @@ describe('Core Modules', () => {
     });
 
     it('can swap pawn', () => {
-      const player: Player = new Player('test_swap', false);
+      const player: Player = new Player('test_swap');
       player.gold = 10;
-      player.shopUnits.push(new BattleUnit({
+      player.shopUnits[0] = new BattleUnit({
         name: 'minotaur',
         x: 0,
         y: -1,
         teamId: 0
-      }));
+      });
 
-      player.shopUnits.push(new BattleUnit({
+      player.shopUnits[1] = new BattleUnit({
         name: 'dwarf',
         x: 1,
         y: -1,
         teamId: 0
-      }));
+      });
 
       const result = player.purchasePawn(0);
       should(result).not.instanceOf(AppError);

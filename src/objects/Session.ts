@@ -2,20 +2,23 @@ import { v4 as uuidv4 } from 'uuid';
 import State from './State';
 import Battle, { BattleBoard, BattleResult } from './Battle';
 import Player from './Player';
+import SessionsStore from '../singletons/SessionsStore';
+import { SocketID } from '../utils/types';
 
 const MAX_ROUND = 25;
 
 export default class Session {
   private _id = uuidv4();
-  public clients: Array<String>; // reivew
   public state: State;
 
-  constructor(clients) {
+  constructor(clients: Array<SocketID>) {
     this.state = new State(clients);
-    this.clients = this.state.clients; // was connectedPlayers, so handle this in case
+
+    const sessionStore = SessionsStore.getInstance();
+    sessionStore.store(this, clients);
   }
 
-  get ID() {
+  getID() {
     return this._id;
   }
 
@@ -44,11 +47,11 @@ export default class Session {
   async nextRound() {
     // process with battles
     const playersBattleResults: {
-      countdown: number;
+      roundCountdown: number;
       battles: Array<BattleResult>;
       winners: Array<string>;
     } = {
-      countdown: Number.MIN_VALUE,
+      roundCountdown: Number.MIN_VALUE,
       battles: [],
       winners: []
     };
@@ -73,25 +76,25 @@ export default class Session {
 
       const battle = new Battle(battleBoards);
       const battleResult = await battle.proceedBattle();
-      if (battleResult.battleTime > playersBattleResults.countdown) {
-        playersBattleResults.countdown = battleResult.battleTime;
+      if (battleResult.battleTime > playersBattleResults.roundCountdown) {
+        playersBattleResults.roundCountdown = battleResult.battleTime;
       }
 
       playersBattleResults.winners.push(battleResult.winner);
       playersBattleResults.battles.push(battleResult);
     }
 
-    this.state.endRound(playersBattleResults.winners);
     return playersBattleResults;
   }
 
   disconnect(clientID) {
-    if (this.clients.includes(clientID)) {
-      this.clients = this.clients.filter((index) => index !== clientID);
-    }
+    // todo
+    // if (this.clients.includes(clientID)) {
+    //   this.clients = this.clients.filter((index) => index !== clientID);
+    // }
   }
 
   hasClients() {
-    return this.clients.length > 0;
+    return this.state.clients.length > 0;
   }
 }
