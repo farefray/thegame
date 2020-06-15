@@ -11,7 +11,7 @@ export default function EffectComponent({ instance, onDone }) {
   const ref = React.useRef<HTMLImageElement>(null);
 
   const { id, duration, from } = instance;
-  console.log("EffectComponent -> instance", instance)
+  // console.log("EffectComponent -> instance", instance)
 
   React.useEffect(() => {
     setTimeout(() => {

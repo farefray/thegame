@@ -49,18 +49,18 @@
 
 /* Change autocomplete styles in WebKit */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
 select:-webkit-autofill,
+select:-webkit-autofill:focus,
 select:-webkit-autofill:hover,
-select:-webkit-autofill:focus {
-  -webkit-text-fill-color: @B300;
-  border-radius: 6px;
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:hover {
   border: 3px solid @B500;
-  box-shadow: 0 0 0px 1000px @B700 inset;
-  font-weight: bold;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1000px @B700 inset;
+  font-weight: normal;
+  -webkit-text-fill-color: @B300;
   transition: background-color 5000s ease-in-out 0s;
 }

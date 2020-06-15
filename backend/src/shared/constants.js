@@ -23,6 +23,7 @@ module.exports = {
     EFFECT: 'effect'
   },
   STATE: {
+    FIRST_ROUND_COUNTDOWN: 25 * 1000,
     COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000
   }
 };

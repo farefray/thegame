@@ -13,7 +13,7 @@ export default class Position {
   }
 
   static fromString(str) {
-    const splitted = str.split(',');
+    const splitted = str.toString().split(',');
     return new Position(Number(splitted[0]), Number(splitted[1]))
   }
 

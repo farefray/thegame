@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Unit from './UnitShop/Unit';
 import { Nav } from 'rsuite';
-import { SocketConnector } from '@/socketConnector';
+import { WebSocketContext } from '@/socket.context';
 
 function UnitShop({ shopUnits }) {
+  const websocket = useContext(WebSocketContext);
+
   const onPurchase = (unitIndex) => {
-    // ! shall we validate it on frontend at least just a lil bit? TODO
-    SocketConnector.purchaseUnit(unitIndex);
+    websocket.emitMessage('PURCHASE_UNIT', unitIndex);
   };
 
   return (
     <div className="unitshop">
       {shopUnits.map((unit, index) => {
         return (
-          <Nav.Item>
+          <Nav.Item key={index}>
             <Unit key={index} unit={unit} index={index} onPurchase={onPurchase} />
           </Nav.Item>
         );

@@ -1,14 +1,14 @@
 export function startscreen(
   state = {
-    isConnected: false
+    isConnected: false,
   },
   action
 ) {
   switch (action.type) {
-    case 'SET_CONNECTED': {
+    case 'ON_CONNECTION': {
       return {
         ...state,
-        isConnected: action.isConnected
+        isConnected: true
       };
     }
     default:

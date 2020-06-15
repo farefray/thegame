@@ -1,46 +1,45 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import { Divider, FlexboxGrid, Button, ButtonToolbar } from 'rsuite';
-import { SocketConnector } from '../../socketConnector';
+import { WebSocketContext } from '@/socket.context';
 
-class Lobby extends Component {
-  constructor(props) {
-    super(props);
+function Lobby() {
+  const websocket = useContext(WebSocketContext);
+  const { email, isReady } = useSelector(state => state.customer, shallowEqual);
 
-    this.state = {};
+  const handlePlayVsHuman = async () => {
+    await websocket.emitMessage('PLAYER_READY');
+  };
+
+  const handlePlayVsAI = async () => {
+    await websocket.emitMessage('START_AI_GAME');
   }
 
-  handlePlayVsAI() {
-    // ? DO we really need import socketConnector here? It seems like starting socket connection cuz of that(cosmos)
-    SocketConnector.startGame();
-  }
-
-  handlePlayVsHuman() {}
-
-  render() {
-    const { customer } = this.props;
-
-    return (
-      <FlexboxGrid className="lobby">
-        <FlexboxGrid.Item colspan={11} className="lobby-profile">
-          Account: {customer.email} <br/>
-          |TODO account information|
-        </FlexboxGrid.Item>
-        <FlexboxGrid.Item>
-          <Divider vertical />
-        </FlexboxGrid.Item>
-        <FlexboxGrid.Item colspan={11} className="lobby-controls">
+  return (
+    <FlexboxGrid className="lobby">
+      <FlexboxGrid.Item colspan={11} className="lobby-profile">
+        Account: {email} <br />
+        |TODO account information|
+      </FlexboxGrid.Item>
+      <FlexboxGrid.Item>
+        <Divider vertical />
+      </FlexboxGrid.Item>
+      <FlexboxGrid.Item colspan={11} className="lobby-controls">
         <ButtonToolbar>
-          <Button appearance="default" onClick={this.handlePlayVsAI}>
+          {!isReady && <Button appearance="default" onClick={handlePlayVsAI}>
             Play vs AI
-          </Button>
-          {/* <Button appearance="primary" onClick={this.handlePlayVsHuman}>
-            Play vs Human
-          </Button> */}
+          </Button>}
+          {isReady ? (
+            <h2>Waiting for start</h2>
+          ) : (
+            <Button appearance="primary" onClick={handlePlayVsHuman}>
+              Play vs Human
+            </Button>
+          )}
         </ButtonToolbar>
-        </FlexboxGrid.Item>
-      </FlexboxGrid>
-    );
-  }
+      </FlexboxGrid.Item>
+    </FlexboxGrid>
+  );
 }
 
 export default Lobby;

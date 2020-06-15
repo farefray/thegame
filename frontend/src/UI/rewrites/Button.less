@@ -3,30 +3,32 @@
   color: @B000;
   padding: 20px 22px 24px;
 
+  &:active,
+  &:focus {
+    background-color: inherit;
+    transform: scale(1);
+  }
+
   &-primary,
-  &-primary:active {
+  &-primary:active,
+  &-primary:focus {
     background: url('../res/button/common_btn_color_green.png') no-repeat center center;
     background-size: 100% 70%;
-    transition: all 0.5s;
+    transition: all 0.25s;
   }
 
   &-default,
-  &-default:active {
+  &-default:active,
+  &-default:focus {
     background: url('../res/button/common_btn_color_brown.png') no-repeat center center;
     background-size: 100% 70%;
-    transition: all 0.5s;
+    transition: all 0.25s;
   }
 
   &:not(.rs-btn-disabled):hover {
     background-color: inherit;
-    color: @B050;
+    color: @B200;
     font-size: @font-size-base;
-    transform: scale(1.05);
-  }
-
-  &:active {
-    background-color: inherit;
-    transform: scale(1);
   }
 
   &-link {

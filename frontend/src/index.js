@@ -4,21 +4,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './service-worker';
-import { SocketConnector } from './socketConnector';
 import store from './store';
 import { Provider } from 'react-redux';
+import WebSocketProvider from './socket.context';
 
 if (process.env.NODE_ENV !== 'production') {
   require('./console.log.tweaks.js');
 }
 
-// setup socket connection
-SocketConnector.init(store.dispatch);
-
 // react-helmet use here?
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <WebSocketProvider>
+      <App />
+    </WebSocketProvider>
   </Provider>,
   document.getElementById('root')
 );

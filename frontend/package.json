@@ -27,6 +27,7 @@
     "cross-env": "^7.0.2",
     "customize-cra": "1.0.0",
     "customize-cra-react-refresh": "^1.0.1",
+    "firebase": "^7.15.0",
     "hyperid": "^2.0.4",
     "less": "^3.10.3",
     "less-loader": "6.1.0",
@@ -44,7 +45,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-logger": "^3.0.6",
     "rsuite": "^4.4.1",
-    "socket.io-client": "^2.3.0",
+    "socket.io-client": "2.3.0",
     "styled-components": "^4.4.0"
   },
   "heroku-run-build-script": true,

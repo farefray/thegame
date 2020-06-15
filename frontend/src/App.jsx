@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect, useSelector, shallowEqual } from 'react-redux';
 
 // import 'rsuite/lib/styles/themes/dark/index.less'; //The default style file.
 import './UI/ui.less';
@@ -8,13 +8,15 @@ import Layout from './Layout';
 
 import StartScreen from './App/StartScreen.jsx';
 import ActiveGame from './App/ActiveGame.jsx';
+import Notification from './App/ActiveGame/Notification.jsx';
 
 const App = () => {
-  const gameIsLive = useSelector(state => state.app.gameIsLive);
+  const {gameIsLive, notification} = useSelector(state => state.app, shallowEqual);
   const activeApp = !gameIsLive ? <StartScreen /> : <ActiveGame />;
   return (
     <Layout>
-        {activeApp}
+      {notification && <Notification notificationObject={notification} />}
+      {activeApp}
     </Layout>
   );
 };
