@@ -14,8 +14,6 @@ forbid-only: false
 forbid-pending: false
 full-trace: false
 growl: false
-ignore:
-  - /path/to/some/ignored/file
 inline-diffs: false
 # needs to be used with grep or fgrep
 # invert: false

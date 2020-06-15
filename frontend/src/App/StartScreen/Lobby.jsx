@@ -12,7 +12,7 @@ function Lobby() {
   };
 
   const handlePlayVsAI = async () => {
-    await websocket.emitMessage('START_GAME');
+    await websocket.emitMessage('START_AI_GAME');
   }
 
   return (

@@ -17,6 +17,7 @@ export default ({ children }) => {
 
   const emitMessage = (type, payload) => {
     return new Promise((resolve, reject) => {
+
       socket.emit(type, payload, (response) => {
         // on every message response, we execute dispatch to our store for backend callback
         if (response.ok) {
@@ -26,6 +27,7 @@ export default ({ children }) => {
 
         reject(response);
       });
+
     });
   };
 

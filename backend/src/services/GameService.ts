@@ -3,8 +3,10 @@ import Session from '../objects/Session';
 import { EventEmitter } from 'events';
 import ConnectedPlayers from '../singletons/ConnectedPlayers';
 import { SocketID } from '../utils/types';
+import SessionsStore from '../singletons/SessionsStore';
 
 const connectedPlayers = ConnectedPlayers.getInstance();
+const sessionsStore = SessionsStore.getInstance();
 
 const GameService = {
   startGame(clients: Array<SocketID>) {
@@ -16,12 +18,8 @@ const GameService = {
     const state = session.getState();
     console.log('start');
     for (let index = 0; index < clients.length; index++) {
-      const socketID = clients[index];
-
-      connectedPlayers.getBySocket(socketID)?.setToSession(session.getID());
-
       console.log('stateUpdate');
-      eventEmitter.emit('stateUpdate', socketID, state);
+      eventEmitter.emit('stateUpdate', clients[index], state);
     }
 
     console.log('startGameSession');
@@ -46,7 +44,7 @@ const GameService = {
 
       await state.wait(roundResults.countdown); // this is a hotfix, has to be done better way
 
-      eventEmitter.emit('stateUpdate', session.ID, state);
+      eventEmitter.emit('stateUpdate', session.getID(), state);
       await state.scheduleNextRound();
     }
   }

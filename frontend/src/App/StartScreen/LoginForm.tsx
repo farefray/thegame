@@ -44,7 +44,7 @@ function LoginForm() {
         busy(false);
       } else {
         // @ts-ignore
-        await websocket.emitMessage('CUSTOMER_LOGIN', { user });
+        await websocket.emitMessage('CUSTOMER_LOGIN', user);
       }
     }
   };

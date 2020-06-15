@@ -15,7 +15,7 @@ export default class Session {
     this.state = new State(clients);
 
     const sessionStore = SessionsStore.getInstance();
-    sessionStore.store(this);
+    sessionStore.store(this, clients);
   }
 
   getID() {
