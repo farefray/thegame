@@ -33,12 +33,10 @@ eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) =>
 
 eventEmitter.on('stateUpdate', (uid, state: State) => {
   const io: SocketIO.Server = Container.get('socket.io');
-  console.log('updating state');
   io.to(uid).emit('UPDATED_STATE', state.toSocket());
 
   // if we are sending whole state, thats game start or round update.
   // We need to deliver all the changes to our players
-  console.log('updating state callback');
   state.syncPlayers();
 });
 
@@ -47,7 +45,6 @@ eventEmitter.on('stateUpdate', (uid, state: State) => {
  */
 eventEmitter.on('playerUpdate', (player: Player) => {
   const io: SocketIO.Server = Container.get('socket.io');
-  console.log('---- Updating player')
   io.to(player.socketID).emit('UPDATE_PLAYER', player.toSocket());
 });
 
@@ -69,7 +66,8 @@ class SocketService {
     /**
      * * Event handlers description
      * Every event supposed to have callback function, which later will be dispatched on storefront as handled event response
-     * Example: Frontend login > firebase auth > socket emiting event > backend retrieves event > executes callback after backend part is done > on callback frontend executes dispatch into redux store to update frontend app state.
+     * Example:
+     * Frontend login > firebase auth > socket emiting event > backend retrieves event > executes callback after backend part is done > on callback frontend executes dispatch into redux store to update frontend app state.
      * TODO this is unsafe, callback can crash the app if not exists for example
      */
     socket.on('ON_CONNECTION', this.ON_CONNECTION);

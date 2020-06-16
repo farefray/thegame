@@ -23,7 +23,7 @@ module.exports = {
     EFFECT: 'effect'
   },
   STATE: {
-    FIRST_ROUND_COUNTDOWN: 25 * 1000,
+    FIRST_ROUND_COUNTDOWN: 15 * 1000, // todo make it work differently from countdown between rounds
     COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000
   }
 };

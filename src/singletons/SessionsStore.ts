@@ -29,9 +29,7 @@ export default class SessionsStore {
   }
 
   getBySocket(socketID) {
-    console.log("SessionsStore -> getBySocket -> socketID", socketID)
     const sessionID = this._sockets.get(socketID);
-    console.log("SessionsStore -> getBySocket -> this._sockets", this._sockets)
     if (sessionID) {
       return this.getByID(sessionID);
     }
