@@ -9,7 +9,6 @@ class UnitsWrapper extends Component {
     this.state = {
       isMounted: false,
       unitComponents: {},  // todo consider using Map here?
-      boardRef: props.boardRef
     };
   }
 
@@ -32,9 +31,9 @@ class UnitsWrapper extends Component {
   }
 
   render() {
-    const { unitComponents, boardRef } = this.state;
+    const { unitComponents } = this.state;
 
-    return boardRef?.current && Object.keys(unitComponents).map(pos => {
+    return Object.keys(unitComponents).map(pos => {
       const unit = unitComponents[pos];
       return (
         <Unit

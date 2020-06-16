@@ -24,9 +24,9 @@ function PlayerBoardWrapper({ boardUnits }) {
     setBoard([...boardUnits]);
   }, [boardUnits]);
 
-  return <GameBoard hasDnD={true} render={
-    () => board.map((unit) => <Unit key={unit.id} unit={unit} isDraggable={true}/>)
-  } width="8" height="8" />;
+  return <GameBoard hasDnD={true} width="8" height="8">
+    {board.map((unit) => <Unit key={unit.id} unit={unit} isDraggable={true}/>)}
+  </GameBoard>;
 }
 
   export default PlayerBoardWrapper;

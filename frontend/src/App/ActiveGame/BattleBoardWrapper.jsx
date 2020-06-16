@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer, useRef } from 'react';
+import React, { useState, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useUnmount, useMount } from 'react-use';
 import GameBoard from './GameBoard.jsx';
@@ -90,7 +90,7 @@ function BattleBoardWrapper({ gameboardState }) {
 
   // If board being updated(active battle start/finish), update units to re-render them
   useMount(() => {
-    console.log('board update hook');
+    //console.log('board update hook');
     dispatchUnitLifecycle({
       type: 'BOARD_UPDATE',
       board: battleStartBoard
@@ -108,9 +108,9 @@ function BattleBoardWrapper({ gameboardState }) {
   };
 
   useMount(() => {
-    console.log('before animate hook');
+    //console.log('before animate hook');
     const animate = (time) => {
-      console.log('animate function itself');
+      //console.log('animate function itself');
       // Pass on a function to the setter of the state
       // to make sure we always have the latest state
       setCount((timePassed) => {
@@ -159,7 +159,9 @@ function BattleBoardWrapper({ gameboardState }) {
 
   return (
     <React.Fragment>
-      <GameBoard hasDnD={false} render={(boardRef) => <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />} width="8" height="8" />
+      <GameBoard hasDnD={false} width="8" height="8" >
+        <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} />
+      </GameBoard>
     </React.Fragment>
   );
 }

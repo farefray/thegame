@@ -16,9 +16,13 @@ function PlayerHand({ handUnits }) {
     setBoard([...handUnits]);
   }, [handUnits]);
 
-  return <GameBoard hasDnD={true} render={
-    () => board.map((unit) => <Unit key={unit.id} unit={unit} isDraggable={true}/>)
-  } width="8" height="1" startingY={-1}/>;
+  return (
+    <GameBoard hasDnD={true} width="8" height="1" startingY={-1}>
+      {board.map((unit) => (
+        <Unit key={unit.id} unit={unit} isDraggable={true} />
+      ))}
+    </GameBoard>
+  );
 }
 
 export default PlayerHand;
