@@ -3,7 +3,7 @@ import React from 'react';
 function Sidebar({ players }) {
   return players.sort((a, b) => a.heath - b.health).map(player => {
     return (
-      <div> {player.index} - {player.health} </div>
+      <div key={player.index}> {player.index} - {player.health} </div>
     );
   });
 }

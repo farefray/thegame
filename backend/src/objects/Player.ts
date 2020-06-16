@@ -242,7 +242,6 @@ export default class Player {
    * @param {Boolean} sync should be transffered to socket instantly
    */
   public update(sync = false) {
-    console.log("Player -> update -> sync", sync)
     if (sync) {
       const eventEmitter: EventEmitter = Container.get('event.emitter');
       eventEmitter.emit('playerUpdate', this);

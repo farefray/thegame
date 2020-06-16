@@ -4,7 +4,7 @@
  */
 const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader, addWebpackModuleRule, adjustStyleLoaders } = require('customize-cra');
 const { overridePassedProcessEnv } = require("cra-define-override");
-const { addReactRefresh } = require("customize-cra-react-refresh"); // todo test if thats works 
+const { addReactRefresh } = require("customize-cra-react-refresh"); // todo test if thats works
 const path = require('path');
 
 // Build performance measuring. If not running with MEASURE var, just doing nothing
@@ -34,7 +34,7 @@ const enchantBabelForTypescript = () => config => {
 const isDev = process.env.NODE_ENV !== 'production';
 
 const webpackConfig = override(
-  overridePassedProcessEnv(["REACT_APP_DEBUGMODE", "REACT_APP_STEPBYSTEP", "REACT_APP_FIREBASE_CONFIG"]),
+  overridePassedProcessEnv(["REACT_APP_DEBUGMODE", "REACT_APP_FIREBASE_CONFIG"]),
   process.env.APP_COSMOS ? (config) => config : addReactRefresh({ disableRefreshCheck: true }), // react-refresh for yarn dev, but not for cosmos
   (config) => {
     config.devtool = 'eval-cheap-module-source-map';

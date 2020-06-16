@@ -52,24 +52,24 @@ class GameBoard extends React.Component {
         innerContent
       );
 
-    /** TODO use memo for board tiles once its in battle */
     return dndDecorator(
       <div className="gameboard-board">
         <div ref={this.boardRef}>
+          {/* Using render props in order to render */}
           {this.props.render(this.boardRef)}
 
           {gameBoard.map((boardRow, index) => {
             return (
               <div className="gameboard-board-row" key={index}>
                 {boardRow.map((cellPosition) => {
-                  const innerDebugContent = process.env.REACT_APP_DEBUGMODE ? cellPosition.toBoardPosition() : '';
+                  const debugContent = process.env.REACT_APP_DEBUGMODE === 'true' ? cellPosition.toBoardPosition() : '';
                   const boardSquare = hasDnD ? (
                     <BoardSquareDnD key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                      {innerDebugContent}
+                      {debugContent}
                     </BoardSquareDnD>
                   ) : (
                     <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                      {innerDebugContent}
+                      {debugContent}
                     </BoardSquare>
                   );
 

@@ -130,7 +130,6 @@ export default class State {
 
   syncPlayers() {
     this.getPlayers().forEach((player) => {
-      console.log("State -> syncPlayers -> player.isSynced()", player.isSynced())
       if (!player.isSynced()) {
         player.update(true);
       }
