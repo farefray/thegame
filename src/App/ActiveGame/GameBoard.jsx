@@ -21,8 +21,6 @@ class GameBoard extends React.Component {
       gameBoard: this.createGameBoard(parseInt(width), parseInt(height), startingY),
       hasDnD: props.hasDnD
     };
-
-    this.boardRef = React.createRef();
   }
 
   componentDidMount() {}
@@ -54,10 +52,7 @@ class GameBoard extends React.Component {
 
     return dndDecorator(
       <div className="gameboard-board">
-        <div ref={this.boardRef}>
-          {/* Using render props in order to render */}
-          {this.props.render(this.boardRef)}
-
+        <div>
           {gameBoard.map((boardRow, index) => {
             return (
               <div className="gameboard-board-row" key={index}>
@@ -78,6 +73,7 @@ class GameBoard extends React.Component {
               </div>
             );
           })}
+          {this.props.children}
         </div>
       </div>
     );
