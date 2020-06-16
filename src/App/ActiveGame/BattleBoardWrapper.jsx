@@ -1,17 +1,11 @@
-import React, {
-  useEffect,
-  useState,
-  useReducer,
-  useRef
-} from 'react';
+import React, { useEffect, useState, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useUnmount, useMount } from 'react-use';
 import GameBoard from './GameBoard.jsx';
 import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
 
-const stepByStep = process.env.REACT_APP_STEPBYSTEP === 'true';
 const uuidv1 = require('uuid/v1');
 
-let nextActionReady = null;
 /**
  * Handles previously stored actions(actionStack) as well as frontend generated events
  * contains unit itself in case its frontend generated event or unitID in case its backend event
@@ -22,12 +16,10 @@ let nextActionReady = null;
 function dispatchUnitLifecycleReducer(unitComponents, action) {
   if (action.type === 'BOARD_UPDATE') {
     const _unitComponents = {};
-    const {
-      board
-    } = action;
+    const { board } = action;
 
     if (board && board.length) {
-      board.forEach(unit => {
+      board.forEach((unit) => {
         _unitComponents[unit.id] = {
           ...unit,
           key: uuidv1(),
@@ -42,17 +34,13 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
   switch (action.type) {
     // Lifecycle events which are being triggered by frontend events for Unit components
     case 'SPAWN': {
-      const {
-        component
-      } = action;
+      const { component } = action;
 
       unitComponents[component.id] && (unitComponents[component.id].component = component);
       return unitComponents;
     }
     case 'DESTROY': {
-      const {
-        component
-      } = action;
+      const { component } = action;
 
       // this one is a quick hotfix
       // Todo: Investigate why there's cases when no component exist.
@@ -91,27 +79,23 @@ BattleBoardWrapper.propTypes = {
  * @returns
  */
 function BattleBoardWrapper({ gameboardState }) {
-/** Gameboard key is used in order to fully rebuild gameboard during rounds by changing 'key' of gameboard(to re-init units) */
   // used to determine battle run time and sync animation
-  // @ts-ignore
   const [, setCount] = useState(0.0);
 
   // Get all passed down props which we will use, from gameboard state
-  const {
-    battleStartBoard: board,
-    actionStack
-  } = gameboardState;
+  const { battleStartBoard, actionStack } = gameboardState;
 
   // When board is being updated, we update units [units is object which will be later rendered into 'Unit' components and saved into ref into that array, also processing unit actions and events by this ref]
   const [unitComponents, dispatchUnitLifecycle] = useReducer(dispatchUnitLifecycleReducer, {});
 
   // If board being updated(active battle start/finish), update units to re-render them
-  useEffect(() => {
+  useMount(() => {
+    console.log('board update hook');
     dispatchUnitLifecycle({
       type: 'BOARD_UPDATE',
-      board
+      board: battleStartBoard
     });
-  }, [board]);
+  });
 
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
@@ -123,8 +107,10 @@ function BattleBoardWrapper({ gameboardState }) {
     previousTimeRef.current = null;
   };
 
-  useEffect(() => {
-    const animate = time => {
+  useMount(() => {
+    console.log('before animate hook');
+    const animate = (time) => {
+      console.log('animate function itself');
       // Pass on a function to the setter of the state
       // to make sure we always have the latest state
       setCount((timePassed) => {
@@ -136,28 +122,25 @@ function BattleBoardWrapper({ gameboardState }) {
               const currentAction = actionStack.shift();
               // process.env.REACT_APP_DEBUGMODE && console.log(currentAction);
               dispatchUnitLifecycle(currentAction);
-            }
+            };
 
-            if (stepByStep) {
-              nextActionReady && action();
-              nextActionReady = false;
-            } else if (possibleNextAction.time <= timePassed) {
+            if (possibleNextAction.time <= timePassed) {
               action();
             }
           }
 
-          return (timePassed + deltaTime)
+          return timePassed + deltaTime;
         } else {
           // Nulled time in order for next round to use timePassed correctly
           return 0.0;
         }
-      })
+      });
 
       if (actionStack.length === 0 && previousTimeRef.current) {
         // last iteration to null out time
         previousTimeRef.current = null;
       } else if (actionStack.length === 0 && !previousTimeRef.current) {
-        // Battle is done on frontend. It's supposed to be finished nearly that time by backend also. 
+        // Battle is done on frontend. It's supposed to be finished nearly that time by backend also.
         // TODO: test state change here from backend.
         return animationCleanup();
       } else {
@@ -165,26 +148,20 @@ function BattleBoardWrapper({ gameboardState }) {
       }
 
       animationRef.current = requestAnimationFrame(animate);
-    }
+    };
 
     // starting battle animations on frontend
     animationRef.current = requestAnimationFrame(animate);
-  }, [actionStack]);
+  });
 
   // stop any animations on unmount
-  useEffect(() => {
-    return () => {
-      animationCleanup();
-    }
-  }, [])
+  useUnmount(() => animationCleanup());
 
-  const stepByStepLink = stepByStep ?? <a href="#0" onClick={() => nextActionReady = true}>Debug next action</a>;
-  return (<React.Fragment>
-      {stepByStepLink}
-      <GameBoard hasDnD={false} render={ boardRef =>
-        <UnitsWrapper unitComponents={ unitComponents } onLifecycle={ dispatchUnitLifecycle } boardRef={ boardRef } />
-      } width="8" height="8"
-    /></React.Fragment>);
-  }
+  return (
+    <React.Fragment>
+      <GameBoard hasDnD={false} render={(boardRef) => <UnitsWrapper unitComponents={unitComponents} onLifecycle={dispatchUnitLifecycle} boardRef={boardRef} />} width="8" height="8" />
+    </React.Fragment>
+  );
+}
 
-  export default BattleBoardWrapper;
+export default BattleBoardWrapper;
