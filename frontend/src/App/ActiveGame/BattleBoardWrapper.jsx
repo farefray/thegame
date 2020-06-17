@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import GameBoard from './GameBoard.jsx';
-import UnitsWrapper from './GameBoard/UnitsWrapper.jsx';
+import BattleBoardLogic from './GameBoard/BattleBoardLogic.jsx';
 
 BattleBoardWrapper.propTypes = {
   gameboardState: PropTypes.shape({
@@ -20,8 +20,8 @@ function BattleBoardWrapper({ gameboardState }) {
 
   return (
     <React.Fragment>
-      <GameBoard hasDnD={false} width="8" height="8" >
-        <UnitsWrapper battleStartBoard={battleStartBoard} actionStack={actionStack} />
+      <GameBoard hasDnD={false} width="8" height="8">
+        <BattleBoardLogic battleStartBoard={battleStartBoard} actionStack={actionStack} />
       </GameBoard>
     </React.Fragment>
   );

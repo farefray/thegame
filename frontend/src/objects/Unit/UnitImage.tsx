@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import fallbackImage from '../../assets/monsters/default.png';
 
 /**
- * 
+ *
  * @todo refactor this
  * preload and cache images somehow
  * once fire onUnitSpriteLoaded to determine unit dimensions
