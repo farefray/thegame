@@ -81,6 +81,8 @@ class SocketService {
 
     // todo
     socket.on('SELL_PIECE', this.sellUnit);
+
+    // TODO P0 when cb is not sent, backend just crashes!!
   }
 
   ON_CONNECTION = (firebaseUser, cb) => {

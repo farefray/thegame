@@ -7,7 +7,7 @@
   "author": "Maksym Fedan <maksym.fedan@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "deploy": "yarn deploy:backend && yarn deploy:frontend",
+    "release": "yarn deploy:backend && yarn deploy:frontend && yarn publish:frontend && yarn publish:backend",
     "deploy:frontend": "git subtree push --prefix frontend origin release/frontend",
     "deploy:backend": "git subtree push --prefix backend origin release/backend",
     "publish:frontend": "git subtree push --prefix frontend heroku-frontend master",
