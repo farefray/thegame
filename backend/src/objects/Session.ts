@@ -7,6 +7,7 @@ import { SocketID } from '../utils/types';
 
 const MAX_ROUND = 25;
 
+// TODO consider using https://github.com/expressjs/session#readme for socket.io
 export default class Session {
   private _id = uuidv4();
   public state: State;
