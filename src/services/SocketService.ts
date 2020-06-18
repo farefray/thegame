@@ -61,31 +61,42 @@ class SocketService {
   constructor(socket: Socket) {
     this.socket = socket;
     this.id = socket.id;
-    console.log('constructor');
 
     /**
+     * Magical handler for all frontend events. This may be wrong concept, need to be revised.
      * * Event handlers description
      * Every event supposed to have callback function, which later will be dispatched on storefront as handled event response
      * Example:
-     * Frontend login > firebase auth > socket emiting event > backend retrieves event > executes callback after backend part is done > on callback frontend executes dispatch into redux store to update frontend app state.
-     * TODO this is unsafe, callback can crash the app if not exists for example
+     * Frontend login >
+     * firebase auth >
+     * socket emiting event to backend >
+     * backend retrieves event and executes handler >
+     * after handler executes callback if exists >
+     * if callback was executed, frontend dispatch into redux store to update frontend app state.
      */
-    socket.on('ON_CONNECTION', this.ON_CONNECTION);
-    socket.on('PLAYER_READY', this.PLAYER_READY);
-    socket.on('START_AI_GAME', this.START_AI_GAME);
-    socket.on('disconnect', this.disconnect);
-    socket.on('CUSTOMER_LOGIN', this.CUSTOMER_LOGIN);
-    socket.on('NEW_CUSTOMER_REGISTRATION', this.NEW_CUSTOMER_REGISTRATION);
-    socket.on('PURCHASE_UNIT', this.PURCHASE_UNIT);
-    socket.on('PLACE_PIECE', this.PLACE_PIECE);
+    socket.use((packet, next) => {
+      const [...packetDetails] = packet;
 
-    // todo
-    socket.on('SELL_PIECE', this.sellUnit);
+      if (packetDetails.length >= 2) {
+        // thats the correct package, got event name and at least param/callback
+        const handlerName = (packetDetails.shift() + '').toUpperCase(); // first param is always event name
 
-    // TODO P0 when cb is not sent, backend just crashes!!
+        if (handlerName && this.hasOwnProperty(handlerName.toUpperCase())) {
+          const handleResult = this[handlerName](...packetDetails);
+
+          const callback = packetDetails.pop();
+          if (callback && typeof callback === 'function') {
+            callback({
+              ok: !!handleResult,
+              ...handleResult
+            })
+          }
+        }
+      }
+    });
   }
 
-  ON_CONNECTION = (firebaseUser, cb) => {
+  ON_CONNECTION = (firebaseUser) => {
     let message = 'Connection established!';
     if (firebaseUser) {
       // upon connection, our user is already authentificated, we can restore his session
@@ -93,10 +104,9 @@ class SocketService {
 
       connectedPlayers.login(firebaseUser, this.id);
 
-      cb({
-        ok: true,
+      return {
         user: firebaseUser.uid
-      });
+      };
     }
 
     this.socket.emit('NOTIFICATION', {
@@ -104,12 +114,12 @@ class SocketService {
       message
     });
 
-    cb({ ok: true });
+    return true;
   };
 
-  CUSTOMER_LOGIN = (firebaseUser, cb) => {
+  CUSTOMER_LOGIN = (firebaseUser) => {
     connectedPlayers.login(firebaseUser, this.id);
-    cb({ ok: true });
+    return true;
   };
 
   /**
@@ -117,13 +127,12 @@ class SocketService {
    * * all ready players are in same room, while we need only 'X' amount into the game?
    * * dispatch waiting lobby to frontend also
    */
-  PLAYER_READY = (args, cb) => {
+  PLAYER_READY = () => {
     console.log('Player with socket ID: ' + this.id + ' is ready to start a game');
     const customer = connectedPlayers.getBySocket(this.id);
     if (customer) {
       this.socket.join(SOCKETROOMS.WAITING);
       // customer.setReady(true);
-      cb({ ok: true, ready: true });
 
       const io: SocketIO.Server = Container.get('socket.io');
       io.in(SOCKETROOMS.WAITING).clients(async (err, clients) => {
@@ -136,15 +145,15 @@ class SocketService {
         }
       });
 
-      return;
+      return { ready: true};
     }
 
-    cb({ ok: false });
+    return false;
   };
 
-  START_AI_GAME = (args, cb) => {
+  START_AI_GAME = () => {
     this.startGame([this.id]);
-    cb({ ok: true });
+    return true;
   };
 
   startGame(clients) {
@@ -180,15 +189,17 @@ class SocketService {
       //   sessionsStore.destroy(sessionID);
       // }
     } // todo case when no customer?
+
+    return true;
   };
 
-  NEW_CUSTOMER_REGISTRATION = (firebaseUser, cb) => {
+  NEW_CUSTOMER_REGISTRATION = () => {
     this.socket.emit('NOTIFICATION', {
       type: 'success',
       message: 'Account was successfully created. See you in game!'
     });
 
-    cb({ ok: true });
+    return true;
   };
 
   PURCHASE_UNIT = (pieceIndex, cb) => {
@@ -197,10 +208,10 @@ class SocketService {
     if (result instanceof AppError) {
       const io: SocketIO.Server = Container.get('socket.io');
       io.to(`${this.id}`).emit('NOTIFICATION', result);
-      return cb({ ok: false });
+      return false;
     }
 
-    cb({ ok: true });
+    return true;
   };
 
   PLACE_PIECE = (positions, cb) => {
@@ -209,7 +220,7 @@ class SocketService {
     const player = state?.getPlayer(this.id);
     player?.moveUnitBetweenPositions(Position.fromString(positions.from), Position.fromString(positions.to));
 
-    cb({ ok: true });
+    return true;
   };
 
   sellUnit = (fromBoardPosition) => {
