@@ -4,6 +4,7 @@ import Battle, { BattleBoard, BattleResult } from './Battle';
 import Player from './Player';
 import SessionsStore from '../singletons/SessionsStore';
 import { SocketID } from '../utils/types';
+import Customer from './Customer';
 
 const MAX_ROUND = 25;
 
@@ -12,11 +13,15 @@ export default class Session {
   private _id = uuidv4();
   public state: State;
 
-  constructor(clients: Array<SocketID>) {
-    this.state = new State(clients);
+  constructor(customers: Array<Customer>) {
+    this.state = new State(customers);
+
+    customers.forEach(customer => {
+      customer.setSessionID(this._id);
+    })
 
     const sessionStore = SessionsStore.getInstance();
-    sessionStore.store(this, clients);
+    sessionStore.store(this);
   }
 
   getID() {
@@ -68,7 +73,7 @@ export default class Session {
 
         // now we need to reverse second player board in order for it to appear properly
         const battleBoard: BattleBoard = {
-          owner: player.index,
+          owner: player.getUID(),
           units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units()
         };
 
@@ -95,7 +100,4 @@ export default class Session {
     // }
   }
 
-  hasClients() {
-    return this.state.clients.length > 0;
-  }
 }

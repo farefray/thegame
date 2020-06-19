@@ -58,7 +58,7 @@ function BattleBoardLogic({ battleStartBoard, actionStack }) {
   const overallBattleTimeRef = useRef();
 
   const animate = (time) => {
-    if (previousTimeRef.current != undefined) {
+    if (previousTimeRef.current !== undefined) {
       const deltaTime = time - previousTimeRef.current;
       const possibleNextAction = actionStack[0];
       if (possibleNextAction && possibleNextAction.time <= overallBattleTimeRef.current) {

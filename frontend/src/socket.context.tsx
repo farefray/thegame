@@ -34,10 +34,8 @@ export default ({ children }) => {
     // socket listeners
     socket.on('connect', () => {
       console.log('Socket connected');
-      console.log('auth', auth);
+      console.log('auth', auth.currentUser);
       emitMessage('ON_CONNECTION', auth.currentUser);
-
-      // TODO consider if we need auth.onAuthChanged
     });
 
     // TODO
@@ -78,6 +76,11 @@ export default ({ children }) => {
       socket: socket,
       emitMessage
     };
+
+    // users presence
+    auth.onAuthStateChanged((user) => {
+      emitMessage('CUSTOMER_LOGIN', user);
+    });
   }
 
   return <WebSocketContext.Provider value={ws}>{children}</WebSocketContext.Provider>;

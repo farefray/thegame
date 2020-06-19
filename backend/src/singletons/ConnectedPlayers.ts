@@ -38,16 +38,22 @@ export default class ConnectedPlayers {
       const customer = this._connectedPlayers.get(firebaseUser.uid);
 
       if (customer) {
-        this.updateSockets(customer.getSocket(), socketID);
+        this.updateSockets(customer.getSocketID(), socketID);
         customer.updateSocket(socketID);
-        return customer;
+
+        return {
+          customer,
+          session: customer.getSession()
+        };
       }
     }
 
-    const customer = new Customer(socketID);
+    const customer = new Customer(socketID, firebaseUser);
     this._connectedPlayers.set(firebaseUser.uid, customer);
     this._socketsMap.set(socketID, firebaseUser.uid);
-    return customer;
+    return {
+      customer
+    };
   }
 
   private updateSockets(oldSocket, newSocket) {
@@ -82,7 +88,11 @@ export default class ConnectedPlayers {
   public getBySocket(socketID: SocketID) {
     const uid = this._socketsMap.get(socketID);
     if (uid) {
-      return this._connectedPlayers.get(uid);
+      return this.getByID(uid);
     }
+  }
+
+  public getByID(userID: FirebaseUser['uid']) {
+    return this._connectedPlayers.get(userID);
   }
 }

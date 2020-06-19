@@ -3,6 +3,7 @@ import Player from './Player';
 import AiPlayer from './AiPlayer';
 import AppError from './AppError';
 import { SocketID } from '../utils/types';
+import Customer from './Customer';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
@@ -15,20 +16,18 @@ export default class State {
   public incomeBase: number;
   public amountOfPlayers: number;
   public countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
-  public players = {};  // todo consider using Map here
-  public clients: Array<SocketID>;
+  public players = {};
 
-  constructor(clients) {
-    this.clients = clients;
+  constructor(customers: Array<Customer>) {
     this.round = 1;
     this.incomeBase = 1;
-    this.amountOfPlayers = clients.length;
+    this.amountOfPlayers = customers.length;
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
     const players: Array<Player | AiPlayer> = [];
     // create players
-    clients.forEach((index) => {
-      players.push(new Player(index));
+    customers.forEach((customer) => {
+      players.push(new Player(customer.ID));
     });
 
     // we need to have pairs, so fill rest of spots as AI
@@ -39,7 +38,7 @@ export default class State {
     // this is dirty [todo better way?]
     for (let index = 0; index < players.length; index++) {
       const playerEntity = players[index];
-      this.players[playerEntity.index] = playerEntity;
+      this.players[playerEntity.getUID()]= playerEntity;
     }
   }
 
@@ -112,7 +111,7 @@ export default class State {
       // tslint:disable-next-line: ter-arrow-body-style
       players: this.getPlayers().map((player) => {
         return {
-          index: player.index,
+          uid: player.getUID(),
           level: player.level,
           health: player.health
         };

@@ -3,56 +3,60 @@ import { Container } from 'typedi';
 import { EventEmitter } from 'events';
 import AppError from '../objects/AppError';
 
-import SessionStore from '../singletons/SessionsStore';
 import GameService from './GameService';
 import Player from '../objects/Player';
 import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
 import Position from '../shared/Position';
 import { Socket } from 'socket.io';
-import ConnectedPlayers from '../singletons/ConnectedPlayers';
+import ConnectedPlayers, { FirebaseUser } from '../singletons/ConnectedPlayers';
 import { SocketID } from '../utils/types';
-import { Session } from 'inspector';
 import SessionsStore from '../singletons/SessionsStore';
+import Customer from '../objects/Customer';
 // const admin = require('firebase-admin')
 
 // // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
 
-const sessionStore = SessionsStore.getInstance();
-
-// Dependency container
-// Event emitter
-const eventEmitter: EventEmitter = new EventEmitter();
-Container.set('event.emitter', eventEmitter);
-
-eventEmitter.on('roundBattleStarted', (uid, playerBattleResult: BattleResult) => {
-  const io: SocketIO.Server = Container.get('socket.io');
-  io.to(uid).emit('START_BATTLE', playerBattleResult);
-});
-
-eventEmitter.on('stateUpdate', (uid, state: State) => {
-  const io: SocketIO.Server = Container.get('socket.io');
-  io.to(uid).emit('UPDATED_STATE', state.toSocket());
-
-  // if we are sending whole state, thats game start or round update.
-  // We need to deliver all the changes to our players
-  state.syncPlayers();
-});
-
-/**
- * ! TODO need to batch those updates and not send instantly (@see gameplay console)
- */
-eventEmitter.on('playerUpdate', (player: Player) => {
-  const io: SocketIO.Server = Container.get('socket.io');
-  io.to(player.socketID).emit('UPDATE_PLAYER', player.toSocket());
-});
 
 const SOCKETROOMS = {
   WAITING: 'WAITING_ROOM'
 };
 
 const connectedPlayers = ConnectedPlayers.getInstance();
+
+// Dependency container
+// Event emitter
+const eventEmitter: EventEmitter = new EventEmitter();
+Container.set('event.emitter', eventEmitter);
+
+eventEmitter.on('roundBattleStarted', (uid: FirebaseUser['uid'], playerBattleResult: BattleResult) => {
+  const customer = connectedPlayers.getByID(uid);
+  if (customer) {
+    const io: SocketIO.Server = Container.get('socket.io');
+    io.to(customer.getSocketID()).emit('START_BATTLE', playerBattleResult);
+  }
+});
+
+eventEmitter.on('stateUpdate', (uid: FirebaseUser['uid'], state: State) => {
+  const customer = connectedPlayers.getByID(uid);
+  if (customer) {
+    const io: SocketIO.Server = Container.get('socket.io');
+    io.to(customer.getSocketID()).emit('UPDATED_STATE', state.toSocket());
+  }
+
+  // if we are sending whole state, thats game start or round update.
+  // We need to deliver all the changes to our players
+  state.syncPlayers();
+});
+
+eventEmitter.on('playerUpdate', (player: Player) => {
+  const customer = connectedPlayers.getByID(player.getUID());
+  if (customer) {
+    const io: SocketIO.Server = Container.get('socket.io');
+    io.to(customer.getSocketID()).emit('UPDATE_PLAYER', player.toSocket());
+  }
+});
 
 class SocketService {
   private socket: Socket;
@@ -93,6 +97,8 @@ class SocketService {
           }
         }
       }
+
+      next();
     });
   }
 
@@ -102,11 +108,7 @@ class SocketService {
       // upon connection, our user is already authentificated, we can restore his session
       message = 'Connection restored';
 
-      connectedPlayers.login(firebaseUser, this.id);
-
-      return {
-        user: firebaseUser.uid
-      };
+     this.CUSTOMER_LOGIN(firebaseUser);
     }
 
     this.socket.emit('NOTIFICATION', {
@@ -114,11 +116,24 @@ class SocketService {
       message
     });
 
-    return true;
+    return {
+      user: firebaseUser && firebaseUser.uid
+    };
   };
 
   CUSTOMER_LOGIN = (firebaseUser) => {
-    connectedPlayers.login(firebaseUser, this.id);
+    const loginResults = connectedPlayers.login(firebaseUser, this.id);
+    if (loginResults && loginResults.session) {
+      // restore player session
+      const { customer, session } = loginResults;
+      session.getState().getPlayer(customer.ID).update(false); // mark player as 'update needed'
+
+      // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
+      eventEmitter.emit('stateUpdate', customer.ID, session.getState());
+
+      // todo restore if he is in battle?
+    }
+
     return true;
   };
 
@@ -128,7 +143,6 @@ class SocketService {
    * * dispatch waiting lobby to frontend also
    */
   PLAYER_READY = () => {
-    console.log('Player with socket ID: ' + this.id + ' is ready to start a game');
     const customer = connectedPlayers.getBySocket(this.id);
     if (customer) {
       this.socket.join(SOCKETROOMS.WAITING);
@@ -165,7 +179,16 @@ class SocketService {
       _socket.leave(SOCKETROOMS.WAITING);
     }
 
-    GameService.startGame(clients);
+    const customers = clients.reduce((customers: Customer[], socketID) => {
+      const customer = connectedPlayers.getBySocket(socketID);
+      if (customer) {
+        customers.push(customer);
+      }
+
+      return customers;
+    }, []);
+
+    GameService.startGame(customers);
   };
 
   disconnect = () => {
@@ -202,32 +225,54 @@ class SocketService {
     return true;
   };
 
-  PURCHASE_UNIT = (pieceIndex, cb) => {
-    // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
-    const result = sessionStore.getBySocket(this.id)?.getState().getPlayer(this.id)?.purchasePawn(pieceIndex)
-    if (result instanceof AppError) {
-      const io: SocketIO.Server = Container.get('socket.io');
-      io.to(`${this.id}`).emit('NOTIFICATION', result);
-      return false;
+  PURCHASE_UNIT = (pieceIndex) => {
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (customer) {
+      const session = customer.getSession();
+
+      if (session) {
+        const result = session.getState().getPlayer(customer.ID)?.purchasePawn(pieceIndex);
+        if (result instanceof AppError) {
+          const io: SocketIO.Server = Container.get('socket.io');
+          io.to(`${this.id}`).emit('NOTIFICATION', result);
+          return false;
+        }
+
+        return true;
+      }
     }
 
-    return true;
+    return false;
   };
 
-  PLACE_PIECE = (positions, cb) => {
-    const session = sessionStore.getBySocket(this.id);
-    const state = session?.getState();
-    const player = state?.getPlayer(this.id);
-    player?.moveUnitBetweenPositions(Position.fromString(positions.from), Position.fromString(positions.to));
+  PLACE_PIECE = (positions) => {
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (customer) {
+      const session = customer.getSession();
 
-    return true;
+      if (session) {
+        session.getState().getPlayer(customer.ID)?.moveUnitBetweenPositions(Position.fromString(positions.from), Position.fromString(positions.to));
+
+        return true;
+      }
+    }
+
+    return false;
   };
 
   sellUnit = (fromBoardPosition) => {
-    const session = sessionStore.getBySocket(this.id);
-    const state = session?.getState();
-    const player = state?.getPlayer(this.id);
-    player?.sellPawn(fromBoardPosition);
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (customer) {
+      const session = customer.getSession();
+
+      if (session) {
+        session.getState().getPlayer(customer.ID)?.sellPawn(fromBoardPosition);
+
+        return true;
+      }
+    }
+
+    return false;
   };
 }
 
