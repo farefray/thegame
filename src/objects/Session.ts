@@ -4,6 +4,7 @@ import Battle, { BattleBoard, BattleResult } from './Battle';
 import Player from './Player';
 import SessionsStore from '../singletons/SessionsStore';
 import { SocketID } from '../utils/types';
+import Customer from './Customer';
 
 const MAX_ROUND = 25;
 
@@ -12,11 +13,18 @@ export default class Session {
   private _id = uuidv4();
   public state: State;
 
-  constructor(clients: Array<SocketID>) {
-    this.state = new State(clients);
+  constructor(customers: Array<Customer>) {
+    this.state = new State(customers.reduce((clients: string[], customer) => {
+      clients.push(customer.getSocketID());
+      return clients;
+    }, []));
+
+    customers.forEach(customer => {
+      customer.setSessionID(this._id);
+    })
 
     const sessionStore = SessionsStore.getInstance();
-    sessionStore.store(this, clients);
+    sessionStore.store(this);
   }
 
   getID() {

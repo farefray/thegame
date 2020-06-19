@@ -3,13 +3,14 @@ import Session from '../objects/Session';
 import { EventEmitter } from 'events';
 import { SocketID } from '../utils/types';
 import { STATE } from '../shared/constants';
+import Customer from '../objects/Customer';
 
 
 const GameService = {
-  async startGame(clients: Array<SocketID>) {
+  async startGame(customers: Array<Customer>) {
     const eventEmitter: EventEmitter = Container.get('event.emitter');
 
-    const session = new Session(clients);
+    const session = new Session(customers);
 
     // Update players, to notify them that they are in game and countdown till round start
     const state = session.getState();

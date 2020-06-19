@@ -76,6 +76,7 @@ class SocketService {
      */
     socket.use((packet, next) => {
       const [...packetDetails] = packet;
+      console.log("SocketService -> constructor -> packetDetails", packetDetails)
 
       if (packetDetails.length >= 2) {
         // thats the correct package, got event name and at least param/callback
@@ -93,20 +94,19 @@ class SocketService {
           }
         }
       }
+
+      next();
     });
   }
 
   ON_CONNECTION = (firebaseUser) => {
+    console.log("SocketService -> ON_CONNECTION -> firebaseUser", firebaseUser)
     let message = 'Connection established!';
     if (firebaseUser) {
       // upon connection, our user is already authentificated, we can restore his session
       message = 'Connection restored';
 
       connectedPlayers.login(firebaseUser, this.id);
-
-      return {
-        user: firebaseUser.uid
-      };
     }
 
     this.socket.emit('NOTIFICATION', {
@@ -114,7 +114,9 @@ class SocketService {
       message
     });
 
-    return true;
+    return {
+      user: firebaseUser && firebaseUser.uid
+    };
   };
 
   CUSTOMER_LOGIN = (firebaseUser) => {
@@ -202,32 +204,57 @@ class SocketService {
     return true;
   };
 
-  PURCHASE_UNIT = (pieceIndex, cb) => {
-    // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
-    const result = sessionStore.getBySocket(this.id)?.getState().getPlayer(this.id)?.purchasePawn(pieceIndex)
-    if (result instanceof AppError) {
-      const io: SocketIO.Server = Container.get('socket.io');
-      io.to(`${this.id}`).emit('NOTIFICATION', result);
-      return false;
+  PURCHASE_UNIT = (pieceIndex) => {
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (customer) {
+      const session = customer.getSession();
+
+      if (session) {
+        // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
+        const result = session.getState().getPlayer(this.id)?.purchasePawn(pieceIndex);
+        if (result instanceof AppError) {
+          const io: SocketIO.Server = Container.get('socket.io');
+          io.to(`${this.id}`).emit('NOTIFICATION', result);
+          return false;
+        }
+
+        return true;
+      }
     }
 
-    return true;
+    return false;
   };
 
-  PLACE_PIECE = (positions, cb) => {
-    const session = sessionStore.getBySocket(this.id);
-    const state = session?.getState();
-    const player = state?.getPlayer(this.id);
-    player?.moveUnitBetweenPositions(Position.fromString(positions.from), Position.fromString(positions.to));
+  PLACE_PIECE = (positions) => {
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (customer) {
+      const session = customer.getSession();
 
-    return true;
+      if (session) {
+        // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
+        session.getState().getPlayer(this.id)?.moveUnitBetweenPositions(Position.fromString(positions.from), Position.fromString(positions.to));
+
+        return true;
+      }
+    }
+
+    return false;
   };
 
   sellUnit = (fromBoardPosition) => {
-    const session = sessionStore.getBySocket(this.id);
-    const state = session?.getState();
-    const player = state?.getPlayer(this.id);
-    player?.sellPawn(fromBoardPosition);
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (customer) {
+      const session = customer.getSession();
+
+      if (session) {
+        // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
+        session.getState().getPlayer(this.id)?.sellPawn(fromBoardPosition);
+
+        return true;
+      }
+    }
+
+    return false;
   };
 }
 
