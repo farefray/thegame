@@ -18,7 +18,7 @@ export default class State {
   public players = {};  // todo consider using Map here
   public clients: Array<SocketID>;
 
-  constructor(clients) {
+  constructor(clients: Array<SocketID>) {
     this.clients = clients;
     this.round = 1;
     this.incomeBase = 1;

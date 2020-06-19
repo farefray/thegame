@@ -34,7 +34,8 @@ file:///d:\thegame\backend\src\objects\Player.ts
   157:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
 file:///d:\thegame\backend\src\objects\Session.ts
-  91:     // todo
+  11: // TODO consider using https://github.com/expressjs/session#readme for socket.io
+  100:     // todo
 
 file:///d:\thegame\backend\src\objects\State.ts
   18:   public players = {};  // todo consider using Map here
@@ -46,11 +47,11 @@ file:///d:\thegame\backend\src\services\AIService.ts
   68:     // todo pick combination with biggest predicted output
 
 file:///d:\thegame\backend\src\services\SocketService.ts
-  82:     // todo
-  85:     // TODO P0 when cb is not sent, backend just crashes!!
-  168:       // TODO !!!
-  182:     } // todo case when no customer?
-  195:     // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
+  179:       // TODO !!!
+  193:     } // todo case when no customer?
+  213:         // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
+  234:         // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
+  250:         // TODO player id should be unique, not socket based! (we will have troubles reconnecting)
 
 file:///d:\thegame\backend\src\shared\constants.js
   26:     FIRST_ROUND_COUNTDOWN: 15 * 1000, // todo make it work differently from countdown between rounds
@@ -59,7 +60,7 @@ file:///d:\thegame\backend\src\singletons\ConnectedPlayers.ts
   34:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
 
 file:///d:\thegame\backend\src\singletons\SessionsStore.ts
-  42:   // TODO session removale
+  29:   // TODO session removale
 
 file:///d:\thegame\backend\src\spells\hoof.ts
   15:       return null; // todo test
@@ -99,5 +100,4 @@ file:///d:\thegame\frontend\src\reducers\customer.reducer.js
   15:         email: action.response?.email // todo check if its working. Seems not :)
 
 file:///d:\thegame\frontend\src\socket.context.tsx
-  43:       // TODO consider if we need auth.onAuthChanged
-  46:     // TODO
+  41:     // TODO

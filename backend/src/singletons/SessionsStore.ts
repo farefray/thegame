@@ -1,15 +1,13 @@
 import Session from "../objects/Session";
-import { SocketID, SessionID } from "../utils/types";
+import { SessionID } from "../utils/types";
 
 export default class SessionsStore {
   private static instance: SessionsStore;
 
   private _sessions: Map<SessionID, Session>;
-  private _sockets: Map<SocketID, SessionID>;
 
   private constructor() {
     this._sessions = new Map();
-    this._sockets = new Map();
   }
 
   public static getInstance(): SessionsStore {
@@ -20,19 +18,8 @@ export default class SessionsStore {
     return SessionsStore.instance;
   }
 
-  store(session: Session, clients: Array<SocketID>) {
+  store(session: Session) {
     this._sessions.set(session.getID(), session);
-
-    clients.forEach(socketID => {
-      this._sockets.set(socketID, session.getID());
-    });
-  }
-
-  getBySocket(socketID) {
-    const sessionID = this._sockets.get(socketID);
-    if (sessionID) {
-      return this.getByID(sessionID);
-    }
   }
 
   getByID(sessionID) {
