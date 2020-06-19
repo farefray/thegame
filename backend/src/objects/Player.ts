@@ -6,6 +6,7 @@ import AppError from './AppError'; // refers to a value, but is being used as a 
 import Monsters from '../utils/monsters';
 import { EventEmitter } from 'events';
 import BattleUnitList from './BattleUnit/BattleUnitList';
+import { FirebaseUser } from '../singletons/ConnectedPlayers';
 
 export const BOARD_UNITS_LIMIT = 8;
 
@@ -14,7 +15,7 @@ const SHOP_UNITS = 4;
 
 // TODO move logic to service/controller and data to model
 export default class Player {
-  public index: string;
+  public userUID: FirebaseUser['uid'];
   public health: number = 100;
   public mana: number = 0;
   public level: number = 1;
@@ -25,14 +26,14 @@ export default class Player {
   public board: BoardMatrix = new BoardMatrix(8, 8);
   private _invalidated = true;
 
-  constructor(id: string) {
-    this.index = id;
+  constructor(id: FirebaseUser['uid']) {
+    this.userUID = id;
 
     this.fillShop();
   }
 
-  get socketID() {
-    return this.index;
+  getUID() {
+    return this.userUID;
   }
 
   isSynced() {
@@ -255,7 +256,7 @@ export default class Player {
 
   toSocket() {
     return {
-      index: this.index,
+      uid: this.userUID,
       level: this.level,
       health: this.health,
       gold: this.gold,

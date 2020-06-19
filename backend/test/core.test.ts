@@ -11,6 +11,8 @@ import BattleUnit from '../src/objects/BattleUnit';
 import Position from '../src/shared/Position';
 
 import { Container } from 'typedi';
+import Customer from '../src/objects/Customer';
+import { FirebaseUser } from '../src/singletons/ConnectedPlayers';
 
 const mockedEventEmitter = {
   emit: (...args) => {
@@ -35,7 +37,7 @@ describe('Core Modules', () => {
     let session:Session;
 
     it('Can initialize game', () => {
-      gameState = new State(MOCK_CLIENTS);
+      gameState = new State([new Customer(MOCK_SOCKETID_1, {} as FirebaseUser)]);
       gameState.should.be.an.Object();
       gameState.should.have.property('clients');
       gameState.should.have.property('players');
@@ -43,7 +45,7 @@ describe('Core Modules', () => {
     });
 
     it('Can create session', () => {
-      session = new Session(MOCK_CLIENTS);
+      session = new Session([new Customer(MOCK_SOCKETID_1, {} as FirebaseUser)]);
       should.exist(session)
     });
 
@@ -52,16 +54,6 @@ describe('Core Modules', () => {
       console.log("sessionsStore", sessionsStore)
       const savedSession = sessionsStore.getByID(sessID);
       should.exist(savedSession)
-
-      if (savedSession) {
-        savedSession.getID().should.equal(sessID);
-      }
-    });
-
-    it('Can retrieve session by customers socket ID', () => {
-      const savedSession = sessionsStore.getBySocket(MOCK_CLIENTS[0]);
-      should.exist(savedSession)
-      const sessID = session.getID();
 
       if (savedSession) {
         savedSession.getID().should.equal(sessID);

@@ -14,10 +14,7 @@ export default class Session {
   public state: State;
 
   constructor(customers: Array<Customer>) {
-    this.state = new State(customers.reduce((clients: string[], customer) => {
-      clients.push(customer.getSocketID());
-      return clients;
-    }, []));
+    this.state = new State(customers);
 
     customers.forEach(customer => {
       customer.setSessionID(this._id);
@@ -76,7 +73,7 @@ export default class Session {
 
         // now we need to reverse second player board in order for it to appear properly
         const battleBoard: BattleBoard = {
-          owner: player.index,
+          owner: player.getUID(),
           units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units()
         };
 
@@ -103,7 +100,4 @@ export default class Session {
     // }
   }
 
-  hasClients() {
-    return this.state.clients.length > 0;
-  }
 }

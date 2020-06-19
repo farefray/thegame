@@ -1,22 +1,24 @@
 import { Container } from 'typedi';
 import Session from '../objects/Session';
 import { EventEmitter } from 'events';
-import { SocketID } from '../utils/types';
 import { STATE } from '../shared/constants';
 import Customer from '../objects/Customer';
+import { SocketID } from '../utils/types';
 
 
 const GameService = {
   async startGame(customers: Array<Customer>) {
     const eventEmitter: EventEmitter = Container.get('event.emitter');
-
     const session = new Session(customers);
-
-    // Update players, to notify them that they are in game and countdown till round start
     const state = session.getState();
-    for (let index = 0; index < clients.length; index++) {
-      eventEmitter.emit('stateUpdate', clients[index], state);
-    }
+
+    const clients:Array<SocketID> = [];
+    customers.forEach(customer => {
+      clients.push(customer.getSocketID());
+
+      // Update players, to notify them that they are in game and countdown till round start
+      eventEmitter.emit('stateUpdate', customer.ID, state); // later there's overuse of getCustomer. Need to be fixed
+    });
 
     await state.wait(STATE.FIRST_ROUND_COUNTDOWN);
 

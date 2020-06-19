@@ -1,22 +1,25 @@
 import { SocketID, SessionID } from "../utils/types";
 import SessionsStore from "../singletons/SessionsStore";
+import { FirebaseUser } from "../singletons/ConnectedPlayers";
 
 /**
  * Represents logged in customer with attached firebase user uid
  */
 export default class Customer {
-  // private userUID;
+  private userUID: FirebaseUser["uid"];
   public socketID: SocketID;
   public sessionID: SessionID | null;
   // public isReady: boolean;
 
-  constructor(socketID/*, firebaseUser?*/) {
+  constructor(socketID, firebaseUser:FirebaseUser) {
     this.socketID = socketID;
     this.sessionID = null;
-    // if (firebaseUser && firebaseUser.uid) {
-    //   this.userUID = firebaseUser.uid;
-    // }
+    this.userUID = firebaseUser.uid;
     // this.isReady = false;
+  }
+
+  get ID() {
+    return this.userUID;
   }
 
   updateSocket(socketID) {
