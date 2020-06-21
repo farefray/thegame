@@ -21,7 +21,8 @@ export default function player(state = basePlayerState, action) {
         gold: action.player.gold,
         shopUnits: action.player.shopUnits,
         handUnits: action.player.hand,
-        boardUnits: action.player.board
+        boardUnits: action.player.board,
+        health: action.player.health
     }
     default:
       return state

@@ -14,7 +14,7 @@ export default class Customer {
   constructor(socketID, firebaseUser:FirebaseUser) {
     this.socketID = socketID;
     this.sessionID = null;
-    this.userUID = firebaseUser.uid;
+    this.userUID = firebaseUser?.uid;
     // this.isReady = false;
   }
 

@@ -108,7 +108,7 @@ class SocketService {
       // upon connection, our user is already authentificated, we can restore his session
       message = 'Connection restored';
 
-     this.CUSTOMER_LOGIN(firebaseUser);
+      this.CUSTOMER_LOGIN(firebaseUser);
     }
 
     this.socket.emit('NOTIFICATION', {
@@ -122,6 +122,11 @@ class SocketService {
   };
 
   CUSTOMER_LOGIN = (firebaseUser) => {
+    if (!firebaseUser) {
+      // no user exists on firebase onAuthChanged or thats a logout
+      return;
+    }
+
     const loginResults = connectedPlayers.login(firebaseUser, this.id);
     if (loginResults && loginResults.session) {
       // restore player session
