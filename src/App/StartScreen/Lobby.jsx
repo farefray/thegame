@@ -5,7 +5,7 @@ import { WebSocketContext } from '@/socket.context';
 
 function Lobby() {
   const websocket = useContext(WebSocketContext);
-  const { email, isReady } = useSelector(state => state.customer, shallowEqual);
+  const { email, isReady } = useSelector((state) => state.customer, shallowEqual);
 
   const handlePlayVsHuman = async () => {
     await websocket.emitMessage('PLAYER_READY');
@@ -13,7 +13,7 @@ function Lobby() {
 
   const handlePlayVsAI = async () => {
     await websocket.emitMessage('START_AI_GAME');
-  }
+  };
 
   return (
     <FlexboxGrid className="lobby">
@@ -26,11 +26,18 @@ function Lobby() {
       </FlexboxGrid.Item>
       <FlexboxGrid.Item colspan={11} className="lobby-controls">
         <ButtonToolbar>
-          {!isReady && <Button appearance="default" onClick={handlePlayVsAI}>
-            Play vs AI
-          </Button>}
+          {!isReady && (
+            <Button appearance="default" onClick={handlePlayVsAI}>
+              Play vs AI
+            </Button>
+          )}
           {isReady ? (
-            <h2>Waiting for start</h2>
+            <React.Fragment>
+              <h2>Searching for opponent...</h2>
+              <Button appearance="default" onClick={handlePlayVsHuman}>
+                Cancel
+              </Button>
+            </React.Fragment>
           ) : (
             <Button appearance="primary" onClick={handlePlayVsHuman}>
               Play vs Human
