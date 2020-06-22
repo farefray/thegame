@@ -1,5 +1,5 @@
 import { Container } from 'typedi';
-import SocketService from './services/SocketService';
+import SocketService from './services/Socket';
 
 const cors = require('cors');
 

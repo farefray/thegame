@@ -1,6 +1,6 @@
 /* global describe, it */
 import Battle from '../src/objects/Battle.ts';
-import Monsters from '../src/utils/monsters';
+import MonsterService from '../src/services/monsters';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '../src/objects/BattleUnit';
 
@@ -10,6 +10,7 @@ const {
 
 const should = require('should');
 
+const monsterService = MonsterService.getInstance();
 
 describe('Perf test', async () => {
   var t0 = performance.now();
@@ -19,7 +20,7 @@ describe('Perf test', async () => {
     // 50 runs for battle
     for (let runs = 0; runs < 10; runs++) {
       for (let x = 0; x < 8; x++) {
-        const monster = Monsters.getRandomUnit();
+        const monster = monsterService.getRandomUnit();
         npcBoard.push(new BattleUnit({
           name: monster.name,
           x: x,
@@ -29,7 +30,7 @@ describe('Perf test', async () => {
 
       const playerBoard = new BattleUnitList();
       for (let x = 0; x < 8; x++) {
-        const monster = Monsters.getRandomUnit();
+        const monster = monsterService.getRandomUnit();
         playerBoard.push(new BattleUnit({
           name: monster.name,
           x: x,

@@ -5,9 +5,8 @@ import { STATE } from '../shared/constants';
 import Customer from '../objects/Customer';
 import { SocketID } from '../utils/types';
 
-
-const GameService = {
-  async startGame(customers: Array<Customer>) {
+export default class GameController {
+  static async startGame(customers: Array<Customer>) {
     const eventEmitter: EventEmitter = Container.get('event.emitter');
     const session = new Session(customers);
     const state = session.getState();
@@ -41,6 +40,4 @@ const GameService = {
       await state.waitUntilNextRound();
     }
   }
-};
-
-export default GameService;
+}

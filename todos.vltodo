@@ -1,10 +1,13 @@
 50 search results found
 
-file:///d:\thegame\backend\src\abstract\Monster.ts
+file:///d:\thegame\backend\src\monsters\configs\abstract\Monster.ts
   10:     regen?: number, // TODO if we need this
 
+file:///d:\thegame\backend\src\monsters\spells\hoof.ts
+  15:       return null; // todo test
+
 file:///d:\thegame\backend\src\objects\AiPlayer.ts
-  61:     // todo magic logic here to find any good units in pocket
+  57:     // todo magic logic here to find any good units in pocket
 
 file:///d:\thegame\backend\src\objects\Battle.ts
   27:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
@@ -26,12 +29,12 @@ file:///d:\thegame\backend\src\objects\Pathfinder.ts
 
 file:///d:\thegame\backend\src\objects\Player.ts
   16: // TODO move logic to service/controller and data to model
-  52:         x: i, // todo get rid of this for shop units
-  53:         y: -1, // todo get rid of this for shop units
-  54:         teamId: 0, // todo get rid of this for shop units
-  126:         // Todo check if this will be covered for leveled up units
-  137:       // TODO: Inform Client about update
-  158:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
+  53:         x: i, // todo get rid of this for shop units
+  54:         y: -1, // todo get rid of this for shop units
+  55:         teamId: 0, // todo get rid of this for shop units
+  127:         // Todo check if this will be covered for leveled up units
+  138:       // TODO: Inform Client about update
+  159:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
 
 file:///d:\thegame\backend\src\objects\Session.ts
   11: // TODO consider using https://github.com/expressjs/session#readme for socket.io
@@ -40,28 +43,25 @@ file:///d:\thegame\backend\src\objects\Session.ts
 file:///d:\thegame\backend\src\objects\State.ts
   60:       // todo FOR REWORK!!
 
-file:///d:\thegame\backend\src\services\AIService.ts
+file:///d:\thegame\backend\src\services\AI.ts
   28:   // todo get rid of dynamic imports. Preload those buckets and neurals!
   63:         // Todo make it output array of units
   68:     // todo pick combination with biggest predicted output
 
-file:///d:\thegame\backend\src\services\SocketService.ts
-  131:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
-  134:       // todo restore if he is in battle?
-  200:       // TODO !!!
-  214:     } // todo case when no customer?
+file:///d:\thegame\backend\src\services\ConnectedPlayers.ts
+  34:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
+
+file:///d:\thegame\backend\src\services\Sessions.ts
+  29:   // TODO session removale
+
+file:///d:\thegame\backend\src\services\Socket.ts
+  132:       // TODO !!!
+  146:     } // todo case when no customer?
+  182:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
+  185:       // todo restore if he is in battle?
 
 file:///d:\thegame\backend\src\shared\constants.js
   26:     FIRST_ROUND_COUNTDOWN: 15 * 1000, // todo make it work differently from countdown between rounds
-
-file:///d:\thegame\backend\src\singletons\ConnectedPlayers.ts
-  34:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
-
-file:///d:\thegame\backend\src\singletons\SessionsStore.ts
-  29:   // TODO session removale
-
-file:///d:\thegame\backend\src\spells\hoof.ts
-  15:       return null; // todo test
 
 file:///d:\thegame\backend\src\utils\effects.ts
   1: // todo review format for those, as its ugly and too big
