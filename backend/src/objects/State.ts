@@ -97,8 +97,8 @@ export default class State {
     await sleep(time);
   }
 
-  getPlayer(playerIndex): Player {
-    return this.players[playerIndex];
+  getPlayer(playerUID): Player {
+    return this.players[playerUID];
   }
 
   /**
