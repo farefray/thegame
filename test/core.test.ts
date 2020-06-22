@@ -4,7 +4,7 @@ import Battle from '../src/objects/Battle';
 import State from '../src/objects/State';
 import AppError from '../src/objects/AppError';
 import Session from '../src/objects/Session';
-import SessionsStore from '../src/singletons/SessionsStore';
+import SessionsService from '../src/services/Sessions';
 import Player from '../src/objects/Player';
 import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
 import BattleUnit from '../src/objects/BattleUnit';
@@ -12,7 +12,7 @@ import Position from '../src/shared/Position';
 
 import { Container } from 'typedi';
 import Customer from '../src/objects/Customer';
-import { FirebaseUser } from '../src/singletons/ConnectedPlayers';
+import { FirebaseUser } from '../src/services/ConnectedPlayers';
 
 const mockedEventEmitter = {
   emit: (...args) => {
@@ -27,7 +27,7 @@ describe('Core Modules', () => {
   const MOCK_SOCKETID_2 = 'MOCK_SOCKETID_2';
   const MOCK_SOCKETID_3 = 'MOCK_SOCKETID_3';
 
-  const sessionsStore = SessionsStore.getInstance();
+  const sessionsService = SessionsService.getInstance();
 
   let gameState:State;
   const firstHandPosition = 0;
@@ -49,7 +49,7 @@ describe('Core Modules', () => {
 
     it('Can retrieve session by ID', () => {
       const sessID = session.getID();
-      const savedSession = sessionsStore.getByID(sessID);
+      const savedSession = sessionsService.getByID(sessID);
       should.exist(savedSession)
 
       if (savedSession) {

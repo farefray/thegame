@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import Session from '../src/objects/Session';
 import AiPlayer from '../src/objects/AiPlayer';
 import { BattleResult } from '../src/objects/Battle';
-import Monsters from '../src/utils/monsters';
+import MonsterService from '../src/services/monsters';
 import BattleUnit from '../src/objects/BattleUnit';
 
 import { Container } from 'typedi';
@@ -76,8 +76,9 @@ class Minor_AI_functionality {
   getPreferablePosition() {
     const playerOne = new AiPlayer('ai_1');
     playerOne.level = 10;
+    const monsterService = MonsterService.getInstance();
     while(!playerOne.isBoardFull()) {
-      const monsterInterface = Monsters.getRandomUnit();
+      const monsterInterface = monsterService.getRandomUnit();
       const unit = new BattleUnit({
         name: monsterInterface.name || 'dwarf',
         x: playerOne.availableHandPosition,

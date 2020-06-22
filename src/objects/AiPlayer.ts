@@ -1,7 +1,5 @@
 import Player from './Player';
-import BattleUnit from './BattleUnit';
-import AIService from '../services/AIService';
-import BattleUnitList from './BattleUnit/BattleUnitList';
+import AIService from '../services/AI';
 
 export enum StrategyFlags {
   PICK_BEST_UNITS = 1 << 0,
@@ -32,13 +30,11 @@ export class AIFlags {
 }
 
 export default class AiPlayer extends Player {
-  private AIService: AIService;
   public AIFlags: AIFlags;
 
   constructor(id: string) {
     super(id);
 
-    this.AIService = AIService.getInstance();
     this.AIFlags = new AIFlags();
   }
 
@@ -51,10 +47,10 @@ export default class AiPlayer extends Player {
     if (!this.isBoardFull()) {
       // we definately need to buy some unit, find most suitable
       const amount = Math.min(this.allowedBoardSize() - this.board.units().size, affortableUnits.size);
-      return this.AIService.mostSuitableUnit({
+      return AIService.getInstance().mostSuitableUnit({
         current: this.board.units(),
         proposed: affortableUnits,
-        amount: amount
+        amount
       }, this.AIFlags);
     }
 
@@ -65,7 +61,7 @@ export default class AiPlayer extends Player {
   considerUnitsPlacing() {
     if (!this.isBoardFull()) {
       // we need to place units for sure!
-      const unit = this.AIService.mostSuitableUnit({
+      const unit = AIService.getInstance().mostSuitableUnit({
         current: this.board.units(),
         proposed: this.hand.units(),
         amount: this.allowedBoardSize()

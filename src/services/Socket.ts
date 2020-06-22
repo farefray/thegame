@@ -3,15 +3,14 @@ import { Container } from 'typedi';
 import { EventEmitter } from 'events';
 import AppError from '../objects/AppError';
 
-import GameService from './GameService';
+import GameController from '../controllers/Game';
 import Player from '../objects/Player';
 import State from '../objects/State';
 import { BattleResult } from '../objects/Battle';
 import Position from '../shared/Position';
 import { Socket } from 'socket.io';
-import ConnectedPlayers, { FirebaseUser } from '../singletons/ConnectedPlayers';
+import ConnectedPlayers, { FirebaseUser } from './ConnectedPlayers';
 import { SocketID } from '../utils/types';
-import SessionsStore from '../singletons/SessionsStore';
 import Customer from '../objects/Customer';
 // const admin = require('firebase-admin')
 
@@ -102,6 +101,53 @@ class SocketService {
     });
   }
 
+  /** Private methods used in service */
+  private _startGame(clients) {
+    const io: SocketIO.Server = Container.get('socket.io');
+
+    for (let index = 0; index < clients.length; index++) {
+      const socketID = clients[index];
+      const _socket = io.sockets.connected[socketID];
+      _socket.leave(SOCKETROOMS.WAITING);
+    }
+
+    const customers = clients.reduce((customers: Customer[], socketID) => {
+      const customer = connectedPlayers.getBySocket(socketID);
+      if (customer) {
+        customers.push(customer);
+      }
+
+      return customers;
+    }, []);
+
+    GameController.startGame(customers);
+  };
+
+  disconnect = () => {
+    console.log('@disconnect', this.id);
+    const connectedPlayers = ConnectedPlayers.getInstance();
+    const customer = connectedPlayers.disconnect(this.id);
+
+    if (customer) {
+      // TODO !!!
+      // !!!
+      // const SessionsService: SessionStore = Container.get('session.store');
+      // // update rooms
+      // const sessionID = customer.get('sessionID'); // ? this.id?
+      // if (sessionID) {
+      //   const session = SessionsService.get(sessionID);
+      //   session.disconnect(this.id);
+      //   if (session.hasClients()) {
+      //     return; // notify about disconnect todo
+      //   }
+
+      //   SessionsService.destroy(sessionID);
+      // }
+    } // todo case when no customer?
+
+    return true;
+  };
+
   ON_CONNECTION = (firebaseUser) => {
     let message = 'Connection established!';
     if (firebaseUser) {
@@ -142,12 +188,13 @@ class SocketService {
     return true;
   };
 
-  /**
-   * TODO:
-   * * all ready players are in same room, while we need only 'X' amount into the game?
-   * * dispatch waiting lobby to frontend also
-   */
+  /** Methods which are responsible for socket events handling. Function name = Event name */
   PLAYER_READY = () => {
+    /**
+     * TODO:
+     * * all ready players are in same room, while we need only 'X' amount into the game?
+     * * dispatch waiting lobby to frontend also
+     */
     const customer = connectedPlayers.getBySocket(this.id);
     if (customer) {
       this.socket.join(SOCKETROOMS.WAITING);
@@ -160,7 +207,7 @@ class SocketService {
         }
 
         if (clients.length >= 2) {
-          this.startGame(clients);
+          this._startGame(clients);
         }
       });
 
@@ -171,53 +218,7 @@ class SocketService {
   };
 
   START_AI_GAME = () => {
-    this.startGame([this.id]);
-    return true;
-  };
-
-  startGame(clients) {
-    const io: SocketIO.Server = Container.get('socket.io');
-
-    for (let index = 0; index < clients.length; index++) {
-      const socketID = clients[index];
-      const _socket = io.sockets.connected[socketID];
-      _socket.leave(SOCKETROOMS.WAITING);
-    }
-
-    const customers = clients.reduce((customers: Customer[], socketID) => {
-      const customer = connectedPlayers.getBySocket(socketID);
-      if (customer) {
-        customers.push(customer);
-      }
-
-      return customers;
-    }, []);
-
-    GameService.startGame(customers);
-  };
-
-  disconnect = () => {
-    console.log('@disconnect', this.id);
-    const connectedPlayers = ConnectedPlayers.getInstance();
-    const customer = connectedPlayers.disconnect(this.id);
-
-    if (customer) {
-      // TODO !!!
-      // !!!
-      // const sessionsStore: SessionStore = Container.get('session.store');
-      // // update rooms
-      // const sessionID = customer.get('sessionID'); // ? this.id?
-      // if (sessionID) {
-      //   const session = sessionsStore.get(sessionID);
-      //   session.disconnect(this.id);
-      //   if (session.hasClients()) {
-      //     return; // notify about disconnect todo
-      //   }
-
-      //   sessionsStore.destroy(sessionID);
-      // }
-    } // todo case when no customer?
-
+    this._startGame([this.id]);
     return true;
   };
 

@@ -1,8 +1,8 @@
 import Session from "../objects/Session";
 import { SessionID } from "../utils/types";
 
-export default class SessionsStore {
-  private static instance: SessionsStore;
+export default class SessionsService {
+  private static instance: SessionsService;
 
   private _sessions: Map<SessionID, Session>;
 
@@ -10,12 +10,12 @@ export default class SessionsStore {
     this._sessions = new Map();
   }
 
-  public static getInstance(): SessionsStore {
-    if (!SessionsStore.instance) {
-      SessionsStore.instance = new SessionsStore();
+  public static getInstance(): SessionsService {
+    if (!SessionsService.instance) {
+      SessionsService.instance = new SessionsService();
     }
 
-    return SessionsStore.instance;
+    return SessionsService.instance;
   }
 
   store(session: Session) {

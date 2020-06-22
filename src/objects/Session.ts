@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import State from './State';
 import Battle, { BattleBoard, BattleResult } from './Battle';
 import Player from './Player';
-import SessionsStore from '../singletons/SessionsStore';
+import SessionsService from '../services/Sessions';
 import { SocketID } from '../utils/types';
 import Customer from './Customer';
 
@@ -20,7 +20,7 @@ export default class Session {
       customer.setSessionID(this._id);
     })
 
-    const sessionStore = SessionsStore.getInstance();
+    const sessionStore = SessionsService.getInstance();
     sessionStore.store(this);
   }
 

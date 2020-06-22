@@ -5,7 +5,7 @@ import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from './Action';
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from './Action';
 import Actor, { ActionGeneratorValue } from './Actor';
 import { BattleContext } from './Battle';
-import Monsters from '../utils/monsters';
+import MonstersService from '../services/monsters';
 import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';
@@ -90,7 +90,7 @@ export default class BattleUnit {
     this.id = this.stringifiedPosition; // id = is also a starting position for mob
     this.teamId = unitConfig.teamId;
 
-    const unitStats = Monsters.getMonsterStats(unitConfig.name);
+    const unitStats = MonstersService.getInstance().getMonsterStats(unitConfig.name);
 
     this.name = unitStats.name;
     this.cost = unitStats.cost;
@@ -134,7 +134,7 @@ export default class BattleUnit {
   }
 
   /** Socket representation for unit which not requires most of the data */
-  /** 
+  /**
    * TODO some better and more productive approach.
    * Maybe we need to rewrite monsters to classes or objects with non-
    * enumerable properties to exclude those which we dont need or maybe Symbols */

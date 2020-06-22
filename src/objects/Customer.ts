@@ -1,6 +1,6 @@
 import { SocketID, SessionID } from "../utils/types";
-import SessionsStore from "../singletons/SessionsStore";
-import { FirebaseUser } from "../singletons/ConnectedPlayers";
+import SessionsService from "../services/Sessions";
+import { FirebaseUser } from "../services/ConnectedPlayers";
 
 /**
  * Represents logged in customer with attached firebase user uid
@@ -36,7 +36,7 @@ export default class Customer {
 
   getSession() {
     if (this.sessionID) {
-      const sessionStore = SessionsStore.getInstance();
+      const sessionStore = SessionsService.getInstance();
       const session = sessionStore.getByID(this.sessionID);
       return session;
     }

@@ -3,10 +3,10 @@ import BoardMatrix from '../utils/BoardMatrix';
 import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from './AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
-import Monsters from '../utils/monsters';
+import MonstersService from '../services/monsters';
 import { EventEmitter } from 'events';
 import BattleUnitList from './BattleUnit/BattleUnitList';
-import { FirebaseUser } from '../singletons/ConnectedPlayers';
+import { FirebaseUser } from '../services/ConnectedPlayers';
 
 export const BOARD_UNITS_LIMIT = 8;
 
@@ -42,8 +42,9 @@ export default class Player {
 
   private fillShop() {
     const newShop = new BattleUnitList();
+    const monsterService = MonstersService.getInstance();
     for (let i = 0; i <= SHOP_UNITS; i++) {
-      const shopUnit = Monsters.getRandomUnit({
+      const shopUnit = monsterService.getRandomUnit({
         cost: this.getLevel()
       });
 
