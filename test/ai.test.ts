@@ -1,4 +1,4 @@
-import { suite, test, only } from '@testdeck/mocha';
+import { suite, test, only, skip } from '@testdeck/mocha';
 import { expect } from 'chai';
 
 import Session from '../src/objects/Session';
@@ -41,6 +41,7 @@ class AI {
   }
 
   @test
+  @skip
   async canProcessAIBattle() {
     const session = new Session([]);
     while (session.hasNextRound()) {
