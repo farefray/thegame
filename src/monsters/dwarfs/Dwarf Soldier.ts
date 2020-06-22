@@ -1,4 +1,4 @@
-import Monster from '../../abstract/Monster';
+import Monster from '../abstract/Monster';
 import config from './Dwarf Soldier.config.json';
 
 function Dwarf_Soldier() {

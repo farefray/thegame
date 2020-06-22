@@ -1,4 +1,4 @@
-import Monster from '../../abstract/Monster';
+import Monster from '../abstract/Monster';
 import config from './Minotaur Archer.config.json';
 
 function Minotaur_Archer() {

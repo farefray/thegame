@@ -1,4 +1,4 @@
-import Monster from '../../abstract/Monster';
+import Monster from '../abstract/Monster';
 
 export default function Stone() {
   return Monster({

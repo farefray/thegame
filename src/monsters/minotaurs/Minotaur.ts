@@ -1,4 +1,4 @@
-import Monster from '../../abstract/Monster';
+import Monster from '../abstract/Monster';
 import config from './Minotaur.config.json';
 import hoof from '../../spells/hoof';
 
