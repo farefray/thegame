@@ -1,4 +1,4 @@
-import Monster from '../../abstract/Monster';
+import Monster from '../abstract/Monster';
 import config from './Dwarf Geomancer.config.json';
 import regeneration from '../../spells/regeneration';
 

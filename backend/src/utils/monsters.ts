@@ -1,4 +1,4 @@
-import { MonsterInterface } from '../abstract/Monster';
+import { MonsterInterface } from '../monsters/abstract/Monster';
 import * as monsters from '../monsters';
 
 const randomProperty = function(obj) {

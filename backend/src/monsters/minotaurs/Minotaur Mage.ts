@@ -1,4 +1,4 @@
-import Monster from '../../abstract/Monster';
+import Monster from '../abstract/Monster';
 import BattleUnit from '../../objects/BattleUnit';
 import config from './Minotaur Mage.config.json';
 

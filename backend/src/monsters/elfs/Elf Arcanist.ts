@@ -1,4 +1,4 @@
-import Monster from '../../abstract/Monster';
+import Monster from '../abstract/Monster';
 import config from './Elf Arcanist.config.json';
 
 function Elf_Arcanist() {
