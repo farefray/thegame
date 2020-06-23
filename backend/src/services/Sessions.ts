@@ -1,4 +1,4 @@
-import Session from "../objects/Session";
+import Session from "../models/Session";
 import { SessionID } from "../utils/types";
 
 export default class SessionsService {

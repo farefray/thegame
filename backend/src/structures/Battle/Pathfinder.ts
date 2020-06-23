@@ -1,7 +1,7 @@
-import { getDistanceBetweenCoordinates } from '../utils/pathUtils';
+import { getDistanceBetweenCoordinates } from '../../utils/pathUtils';
 import Step from './Pathfinder/Step';
 import BinaryHeap from './Pathfinder/BinaryHeap';
-import Position from '../shared/Position';
+import Position from '../../shared/Position';
 
 /* Normalize number value to -1, 0 or 1 */
 const normalize = number => number < 0 ? -1 : (number > 0 ? 1 : 0);

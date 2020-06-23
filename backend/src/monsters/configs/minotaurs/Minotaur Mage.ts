@@ -1,10 +1,10 @@
 import Monster from '../abstract/Monster';
-import BattleUnit from '../../../objects/BattleUnit';
+import BattleUnit from '../../../structures/BattleUnit';
 import config from './Minotaur Mage.config.json';
 
-import { BattleContext } from '../../../objects/Battle';
+import { BattleContext } from '../../../structures/Battle';
 import { getSuitableTargets } from '../../../utils/pathUtils';
-import Actor from '../../../objects/Actor';
+import Actor from '../../../typings/Actor';
 
 // Example of AOE spell which hits target and neaby targets
 function spell(unit: BattleUnit, battleContext: BattleContext) {

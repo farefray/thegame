@@ -1,11 +1,11 @@
 import { suite, test, only, skip } from '@testdeck/mocha';
 import { expect } from 'chai';
 
-import Session from '../src/objects/Session';
-import AiPlayer from '../src/objects/AiPlayer';
-import { BattleResult } from '../src/objects/Battle';
-import MonsterService from '../src/services/monsters';
-import BattleUnit from '../src/objects/BattleUnit';
+import Session from '../src/models/Session';
+import AiPlayer from '../src/structures/AiPlayer';
+import { BattleResult } from '../src/structures/Battle';
+import MonsterService from '../src/services/Monsters';
+import BattleUnit from '../src/structures/BattleUnit';
 
 import { Container } from 'typedi';
 

@@ -1,5 +1,5 @@
-import BattleUnit from '../objects/BattleUnit';
-import BattleUnitList from '../objects/BattleUnit/BattleUnitList';
+import BattleUnit from '../structures/BattleUnit';
+import BattleUnitList from '../structures/Battle/BattleUnitList';
 
 export const getDistanceBetweenCoordinates = ({ x, y, x2, y2 }) => (Math.max(Math.abs(x2 - x), Math.abs(y2 - y)) - 1);
 

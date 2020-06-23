@@ -1,7 +1,7 @@
-import BattleUnit from '../objects/BattleUnit';
-import BattleUnitList from '../objects/BattleUnit/BattleUnitList';
-import cloneDeep from './cloneDeep';
-import Position from '../shared/Position';
+import BattleUnit from '../BattleUnit';
+import BattleUnitList from './BattleUnitList';
+import cloneDeep from '../../utils/cloneDeep';
+import Position from '../../shared/Position';
 
 export default class BoardMatrix {
   private sizeX: number;

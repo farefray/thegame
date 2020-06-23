@@ -1,9 +1,9 @@
 import { promisify } from 'util';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
-import AppError from './AppError';
+import AppError from '../typings/AppError';
 import { SocketID } from '../utils/types';
-import Customer from './Customer';
+import Customer from '../models/Customer';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');

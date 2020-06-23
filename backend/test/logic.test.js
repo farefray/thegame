@@ -1,9 +1,9 @@
 /* global describe, it */
 
 import Position from '../src/shared/Position';
-import Battle from '../src/objects/Battle';
-import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
-import BattleUnit from '../src/objects/BattleUnit';
+import Battle from '../src/structures/Battle';
+import BattleUnitList from '../src/structures/Battle/BattleUnitList';
+import BattleUnit from '../src/structures/BattleUnit';
 
 const should = require('should');
 

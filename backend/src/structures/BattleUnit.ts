@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as PathUtil from '../utils/pathUtils';
-import Pathfinder from './Pathfinder';
-import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from './Action';
-import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from './Action';
-import Actor, { ActionGeneratorValue } from './Actor';
+import Pathfinder from './Battle/Pathfinder';
+import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from '../typings/Action';
+import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from '../typings/Action';
+import Actor, { ActionGeneratorValue } from '../typings/Actor';
 import { BattleContext } from './Battle';
-import MonstersService from '../services/monsters';
+import MonstersService from '../services/Monsters';
 import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';
-import Step from './Pathfinder/Step';
+import Step from './Battle/Pathfinder/Step';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
 

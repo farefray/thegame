@@ -1,11 +1,11 @@
-import Pathfinder from './Pathfinder';
-import Actor from './Actor';
-import TargetPairPool from './TargetPairPool';
+import Pathfinder from './Battle/Pathfinder';
+import Actor from '../typings/Actor';
+import TargetPairPool from './Battle/TargetPairPool';
 import BattleUnit from './BattleUnit';
-import { ACTION_TYPE, Action } from './Action';
+import { ACTION_TYPE, Action } from '../typings/Action';
 import { ACTION, TEAM } from '../shared/constants';
-import BoardMatrix from '../utils/BoardMatrix';
-import BattleUnitList from './BattleUnit/BattleUnitList';
+import BoardMatrix from './Battle/BoardMatrix';
+import BattleUnitList from './Battle/BattleUnitList';
 
 /**
  * TODO: move this into Battle.d.ts, just need to investigate if thats fine to use classes in types,
@@ -132,7 +132,7 @@ export default class Battle {
 
   async proceedBattle() {
     /**
-     * TODO such case is possible - we start battle against no units, and manaregen/casts will be executed for units, while there will be no targets and so on. 
+     * TODO such case is possible - we start battle against no units, and manaregen/casts will be executed for units, while there will be no targets and so on.
      * !FIX THIS
      */
     while (!this.isOver) {

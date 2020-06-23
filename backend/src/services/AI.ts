@@ -1,8 +1,8 @@
 
-import { BOARD_UNITS_LIMIT as BUCKETS} from '../objects/Player';
+import { BOARD_UNITS_LIMIT as BUCKETS} from '../structures/Player';
 import { Normalizer } from "../ai/normalizer";
-import { AIFlags, StrategyFlags } from "../objects/AiPlayer";
-import BattleUnitList from "../objects/BattleUnit/BattleUnitList";
+import { AIFlags, StrategyFlags } from "../structures/AiPlayer";
+import BattleUnitList from "../structures/Battle/BattleUnitList";
 
 const neurals: Array<Function> = [];
 const dataNormalizers: Array<Normalizer> = [];

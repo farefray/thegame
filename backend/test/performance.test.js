@@ -1,8 +1,8 @@
 /* global describe, it */
-import Battle from '../src/objects/Battle.ts';
-import MonsterService from '../src/services/monsters';
-import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
-import BattleUnit from '../src/objects/BattleUnit';
+import Battle from '../src/structures/Battle.ts';
+import MonsterService from '../src/services/Monsters';
+import BattleUnitList from '../src/structures/Battle/BattleUnitList';
+import BattleUnit from '../src/structures/BattleUnit';
 
 const {
   performance

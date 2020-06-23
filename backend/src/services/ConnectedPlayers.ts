@@ -1,4 +1,4 @@
-import Customer from "../objects/Customer";
+import Customer from "../models/Customer";
 import { SocketID } from "../utils/types";
 
 export type FirebaseUser = {

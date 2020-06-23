@@ -1,17 +1,17 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
 import { EventEmitter } from 'events';
-import AppError from '../objects/AppError';
+import AppError from '../typings/AppError';
 
 import GameController from '../controllers/Game';
-import Player from '../objects/Player';
-import State from '../objects/State';
-import { BattleResult } from '../objects/Battle';
+import Player from '../structures/Player';
+import State from '../structures/State';
+import { BattleResult } from '../structures/Battle';
 import Position from '../shared/Position';
 import { Socket } from 'socket.io';
 import ConnectedPlayers, { FirebaseUser } from './ConnectedPlayers';
 import { SocketID } from '../utils/types';
-import Customer from '../objects/Customer';
+import Customer from '../models/Customer';
 // const admin = require('firebase-admin')
 
 // // Initialize Firebase
