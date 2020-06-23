@@ -1,9 +1,9 @@
 import { suite, test, only } from '@testdeck/mocha';
 import { expect } from 'chai';
 
-import Battle from '../src/objects/Battle';
-import BattleUnit from '../src/objects/BattleUnit';
-import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
+import Battle from '../src/structures/Battle';
+import BattleUnit from '../src/structures/BattleUnit';
+import BattleUnitList from '../src/structures/Battle/BattleUnitList';
 
 @suite
 class Debug {

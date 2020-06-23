@@ -1,4 +1,4 @@
-import BattleUnit from './BattleUnit';
+import BattleUnit from '../../BattleUnit';
 
 export interface TargetPairProps {
   target: BattleUnit;

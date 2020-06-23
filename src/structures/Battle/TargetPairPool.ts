@@ -1,4 +1,4 @@
-import TargetPair, { TargetPairProps } from './TargetPair';
+import TargetPair, { TargetPairProps } from './TargetPairPool/TargetPair';
 
 export default class TargetPairPool {
   private _targetPairs: TargetPair[];

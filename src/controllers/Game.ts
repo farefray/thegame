@@ -1,8 +1,8 @@
 import { Container } from 'typedi';
-import Session from '../objects/Session';
+import Session from '../models/Session';
 import { EventEmitter } from 'events';
 import { STATE } from '../shared/constants';
-import Customer from '../objects/Customer';
+import Customer from '../models/Customer';
 import { SocketID } from '../utils/types';
 
 export default class GameController {

@@ -1,11 +1,11 @@
 import { Container } from 'typedi';
-import BoardMatrix from '../utils/BoardMatrix';
+import BoardMatrix from './Battle/BoardMatrix';
 import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
-import AppError from './AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
-import MonstersService from '../services/monsters';
+import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
+import MonstersService from '../services/Monsters';
 import { EventEmitter } from 'events';
-import BattleUnitList from './BattleUnit/BattleUnitList';
+import BattleUnitList from './Battle/BattleUnitList';
 import { FirebaseUser } from '../services/ConnectedPlayers';
 
 export const BOARD_UNITS_LIMIT = 8;

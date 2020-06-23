@@ -1,7 +1,7 @@
 /** globals: this: BattleUnit */
-import { BattleContext } from '../../objects/Battle';
-import BattleUnit from '../../objects/BattleUnit';
-import { RescheduleActorAction, ACTION_TYPE, ActionBase } from '../../objects/Action';
+import { BattleContext } from '../../structures/Battle';
+import BattleUnit from '../../structures/BattleUnit';
+import { RescheduleActorAction, ACTION_TYPE, ActionBase } from '../../typings/Action';
 
 /** Stuns front units for `ticks` ms. */
 export default function hoof(this: BattleUnit, battleContext: BattleContext) {

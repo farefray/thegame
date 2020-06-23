@@ -1,5 +1,5 @@
 import { MonsterInterface } from '../monsters/configs/abstract/Monster';
-import * as monsters from '../monsters';
+import * as monsters from '../monsters/index';
 import { randomProperty } from '../utils/randomProperty';
 
 interface MonstersFilter {

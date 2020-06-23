@@ -1,9 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import State from './State';
-import Battle, { BattleBoard, BattleResult } from './Battle';
-import Player from './Player';
+import State from '../structures/State';
+import Battle, { BattleBoard, BattleResult } from '../structures/Battle';
+import Player from '../structures/Player';
 import SessionsService from '../services/Sessions';
-import { SocketID } from '../utils/types';
 import Customer from './Customer';
 
 const MAX_ROUND = 25;

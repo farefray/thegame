@@ -1,17 +1,17 @@
 import {describe} from 'mocha';
 import should from 'should';
-import Battle from '../src/objects/Battle';
-import State from '../src/objects/State';
-import AppError from '../src/objects/AppError';
-import Session from '../src/objects/Session';
+import Battle from '../src/structures/Battle';
+import State from '../src/structures/State';
+import AppError from '../src/typings/AppError';
+import Session from '../src/models/Session';
 import SessionsService from '../src/services/Sessions';
-import Player from '../src/objects/Player';
-import BattleUnitList from '../src/objects/BattleUnit/BattleUnitList';
-import BattleUnit from '../src/objects/BattleUnit';
+import Player from '../src/structures/Player';
+import BattleUnitList from '../src/structures/Battle/BattleUnitList';
+import BattleUnit from '../src/structures/BattleUnit';
 import Position from '../src/shared/Position';
 
 import { Container } from 'typedi';
-import Customer from '../src/objects/Customer';
+import Customer from '../src/models/Customer';
 import { FirebaseUser } from '../src/services/ConnectedPlayers';
 
 const mockedEventEmitter = {

@@ -1,6 +1,6 @@
 /** globals: this: BattleUnit */
-import { BattleContext } from '../../objects/Battle';
-import BattleUnit from '../../objects/BattleUnit';
+import { BattleContext } from '../../structures/Battle';
+import BattleUnit from '../../structures/BattleUnit';
 
 export default function regeneration(this: BattleUnit, battleContext: BattleContext) {
   // @ts-ignore

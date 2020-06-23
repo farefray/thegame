@@ -4,7 +4,7 @@ import { Normalizer } from './normalizer';
 import NeuralNetwork from './neuralNetwork';
 import { almostEqual, percentage } from '../utils/math';
 
-import { BOARD_UNITS_LIMIT as BUCKETS } from '../objects/Player';
+import { BOARD_UNITS_LIMIT as BUCKETS } from '../structures/Player';
 
 const run = async () => {
   console.time('TrainingTimer');

@@ -1,4 +1,4 @@
-import { SpellOptions } from "../../../objects/BattleUnit";
+import { SpellOptions } from "../../../structures/BattleUnit";
 
 export interface MonsterInterface {
   name?: string; // auto-generated later
