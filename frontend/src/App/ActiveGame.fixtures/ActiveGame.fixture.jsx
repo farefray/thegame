@@ -4,7 +4,7 @@ import rootReducer from '@/reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
 import ActiveGame from '../ActiveGame';
-import State from '../../../../backend/src/objects/State';
+import State from '../../../../backend/src/structures/State';
 
 import { Container } from '../../../../backend/node_modules/typedi'; // to use same DI container as backend
 import Position from 'shared/Position';

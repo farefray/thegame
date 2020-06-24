@@ -7,7 +7,7 @@ import { ReduxMock } from 'react-cosmos-redux';
 import rootReducer from '../../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import Battle from '../../../../backend/src/objects/Battle';
+import Battle from '../../../../backend/src/structures/Battle';
 
 const generateGameState = async function (boardDefinition) {
   const battle = new Battle([
