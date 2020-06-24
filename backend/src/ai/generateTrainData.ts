@@ -18,7 +18,7 @@ class Simulation {
 
   constructor() {
     this.session = new Session([]);
-    this.players  = this.session.getState().getPlayers() as AiPlayer[];
+    this.players  = this.session.getState().getPlayersArray() as AiPlayer[];
 
     /**
      * first player has to be random, second player will pick best opponents.

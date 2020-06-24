@@ -25,17 +25,17 @@ export default class GameController {
       const roundResults = await session.nextRound();
       const { battles, winners, roundCountdown } = roundResults;
 
-      for (const uid in state.players) {
-        eventEmitter.emit('roundBattleStarted', uid, battles.filter(battle => battle.participants.includes(uid)).shift());
-      }
+      state.getPlayers().forEach((player) => {
+        eventEmitter.emit('roundBattleStarted', player.getUID(), battles[0]); // this is a hotfix. TODO link battle to playerpair without participants property
+      });
 
       await state.wait(roundCountdown);
 
       state.endRound(winners);
 
-      for (const uid in state.players) {
-        eventEmitter.emit('stateUpdate', uid, state);
-      }
+      state.getPlayers().forEach((player) => {
+        eventEmitter.emit('stateUpdate', player.getUID(), state);
+      });
 
       await state.waitUntilNextRound();
     }

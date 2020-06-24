@@ -1,22 +1,20 @@
 import { promisify } from 'util';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
-import AppError from '../typings/AppError';
-import { SocketID } from '../utils/types';
 import Customer from '../models/Customer';
+import { FirebaseUser } from '../services/ConnectedPlayers';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
-const PLAYERS_MINIMUM = 2;
 const MAX_LEVEL = 8;
 
 export default class State {
-  public round: number;
-  public incomeBase: number;
-  public amountOfPlayers: number;
-  public countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
-  public players = {};
+  private incomeBase: number;
+  private amountOfPlayers: number;
+  private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
+  private round: number = 1;
+  private players: Map<FirebaseUser["uid"], Player>;
 
   constructor(customers: Array<Customer>) {
     this.round = 1;
@@ -24,27 +22,16 @@ export default class State {
     this.amountOfPlayers = customers.length;
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
-    const players: Array<Player | AiPlayer> = [];
-    // create players
-    customers.forEach((customer) => {
-      players.push(new Player(customer.ID));
-    });
+    this.players = new Map(customers.map(customer => [customer.ID, new Player(customer.ID)]));
 
-    // we need to have pairs, so fill rest of spots as AI
-    while (players.length < PLAYERS_MINIMUM || players.length % 2 > 0) {
-      players.push(new AiPlayer(`ai_player_${players.length}`));
-    }
-
-    // this is dirty [todo better way?]
-    for (let index = 0; index < players.length; index++) {
-      const playerEntity = players[index];
-      this.players[playerEntity.getUID()]= playerEntity;
+    if (this.players.size % 2 > 0) {
+      this.players.set('ai_player', new AiPlayer('ai_player'));
     }
   }
 
   refreshShopForPlayers() {
-    this.getPlayers().forEach((player) => {
-        player.refreshShop();
+    this.players.forEach((player) => {
+      player.refreshShop();
     });
   }
 
@@ -72,7 +59,7 @@ export default class State {
         this.players[uid].health = newHealth;
 
         if (newHealth < 1) {
-          this.dropPlayer(uid);
+          this.dropPlayer(uid); // todo death/lose
         }
       }
     }
@@ -81,7 +68,7 @@ export default class State {
   }
 
   dropPlayer(playerID) {
-    for (const uid in this.players) {
+    for (const [uid, player] of this.players) {
       if (uid === playerID) {
         delete this.players[uid];
         this.amountOfPlayers -= 1;
@@ -97,8 +84,8 @@ export default class State {
     await sleep(time);
   }
 
-  getPlayer(playerUID): Player {
-    return this.players[playerUID];
+  getPlayer(playerUID): Player|undefined {
+    return this.players.get(playerUID);
   }
 
   /**
@@ -108,14 +95,11 @@ export default class State {
     return {
       round: this.round,
       countdown: this.countdown,
-      // tslint:disable-next-line: ter-arrow-body-style
-      players: this.getPlayers().map((player) => {
-        return {
-          uid: player.getUID(),
-          level: player.level,
-          health: player.health
-        };
-      })
+      players: [...this.players.values()].map(player => ({
+        uid: player.getUID(),
+        level: player.level,
+        health: player.health
+      }))
     };
   }
 
@@ -123,12 +107,16 @@ export default class State {
     return this.round;
   }
 
-  getPlayers(): Array<Player | AiPlayer> {
-    return Object.values(this.players);
+  getPlayers() {
+    return this.players;
+  }
+
+  getPlayersArray() {
+    return [...this.players.values()];
   }
 
   syncPlayers() {
-    this.getPlayers().forEach((player) => {
+    this.players.forEach((player) => {
       if (!player.isSynced()) {
         player.update(true);
       }
