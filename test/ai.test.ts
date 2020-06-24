@@ -27,7 +27,7 @@ class AI {
 
     const gameState = session.getState();
     expect(gameState).to.be.a('object');
-    expect(Object.keys(gameState.players).length).to.be.equal(2);
+    expect(Object.keys(gameState.getPlayersArray()).length).to.be.equal(2);
   }
 
   @test
@@ -41,7 +41,6 @@ class AI {
   }
 
   @test
-  @skip
   async canProcessAIBattle() {
     const session = new Session([]);
     while (session.hasNextRound()) {
@@ -65,7 +64,7 @@ class AI {
     }
 
     const state = session.getState();
-    expect(state.getPlayers().length).to.be.equal(1);
+    expect(state.getPlayersArray().length).to.be.equal(1);
   }
 }
 

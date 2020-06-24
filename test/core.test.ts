@@ -39,7 +39,7 @@ describe('Core Modules', () => {
       gameState = new State([new Customer(MOCK_SOCKETID_1, { uid: MOCK_SOCKETID_1 } as FirebaseUser)]);
       gameState.should.be.an.Object();
       gameState.should.have.property('players');
-      gameState.getPlayer(MOCK_SOCKETID_1).getUID().should.be.equal(MOCK_SOCKETID_1);
+      gameState.getPlayer(MOCK_SOCKETID_1)?.getUID().should.be.equal(MOCK_SOCKETID_1);
     });
 
     it('Can create session', () => {

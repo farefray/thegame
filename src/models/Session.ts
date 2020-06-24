@@ -36,11 +36,11 @@ export default class Session {
   }
 
   hasNextRound() {
-    return Object.keys(this.state.getPlayers()).length > 1 && this.state.getRound() < MAX_ROUND;
+    return Object.keys(this.state.getPlayersArray()).length > 1 && this.state.getRound() < MAX_ROUND;
   }
 
   getPlayerPairs() {
-    return Object.keys(this.state.players).reduce((result: Array<Array<string>>, value, index, array: Array<string>) => {
+    return Object.keys(this.state.getPlayersArray()).reduce((result: Array<Array<string>>, value, index, array: Array<string>) => {
       if (index % 2 === 0) {
         result.push(array.slice(index, index + 2));
       }
@@ -61,22 +61,25 @@ export default class Session {
       winners: []
     };
 
-    const playersPairs = this.getPlayerPairs();
+    const playersPairs = this.getPlayerPairs(); // todo reworkt his
     for (const playerPair of playersPairs) {
       const battleBoards: Array<BattleBoard> = [];
       for (const uid of playerPair) {
-        const player: Player = this.state.players[uid];
+        const player = this.state.getPlayer(uid); // todo proper syntax
         const opponentUID: string = playerPair.filter((v) => v !== uid).shift() || '';
-        const opponentPlayer: Player = this.state.players[opponentUID];
-        player.beforeBattle(opponentPlayer);
+        const opponentPlayer = this.state.getPlayer(opponentUID);
 
-        // now we need to reverse second player board in order for it to appear properly
-        const battleBoard: BattleBoard = {
-          owner: player.getUID(),
-          units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units()
-        };
+        if (player && opponentPlayer) {
+          player.beforeBattle(opponentPlayer);
 
-        battleBoards.push(battleBoard);
+          // now we need to reverse second player board in order for it to appear properly
+          const battleBoard: BattleBoard = {
+            owner: player.getUID(),
+            units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units()
+          };
+
+          battleBoards.push(battleBoard);
+        }
       }
 
       const battle = new Battle(battleBoards);
