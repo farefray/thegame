@@ -15,7 +15,7 @@ export default ({ children }) => {
 
   const dispatch = useDispatch();
 
-  const emitMessage = (type, payload) => {
+  const emitMessage = (type, payload?) => {
     return new Promise((resolve) => {
 
       socket.emit(type, payload, (response) => {
@@ -79,7 +79,11 @@ export default ({ children }) => {
 
     // users presence
     auth.onAuthStateChanged((user) => {
-      emitMessage('CUSTOMER_LOGIN', user);
+      if (user) {
+        emitMessage('CUSTOMER_LOGIN', user);
+      } else {
+        emitMessage('CUSTOMER_LOGOUT');
+      }
     });
   }
 
