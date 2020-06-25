@@ -122,9 +122,9 @@ export default class BattleUnitList {
   }
 
   /** Output methods */
-  toJSON() {
+  toSocket() {
     return this._list.reduce((prev: any[], cur) => {
-      prev.push(cur.toJSON());
+      prev.push(cur.toSocket());
       return prev;
     }, []);
   }

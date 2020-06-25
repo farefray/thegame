@@ -11,14 +11,6 @@ export default class GameController {
     const session = new Session(customers);
     const state = session.getState();
 
-    const clients:Array<SocketID> = [];
-    customers.forEach(customer => {
-      clients.push(customer.getSocketID());
-
-      // Update players, to notify them that they are in game and countdown till round start
-      eventEmitter.emit('stateUpdate', customer.ID, state); // later there's overuse of getCustomer. Need to be fixed
-    });
-
     await state.wait(STATE.FIRST_ROUND_COUNTDOWN);
 
     while (session.hasNextRound()) {
@@ -32,10 +24,6 @@ export default class GameController {
       await state.wait(roundCountdown);
 
       state.endRound(winners);
-
-      state.getPlayers().forEach((player) => {
-        eventEmitter.emit('stateUpdate', player.getUID(), state);
-      });
 
       await state.waitUntilNextRound();
     }

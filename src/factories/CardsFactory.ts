@@ -3,27 +3,24 @@ import Card from '../structures/Card';
 import MonstersFactory from './MonstersFactory';
 import * as cardConfigs from './configs/cards';
 import { CardConfig } from '../typings/Card';
+import Player from '../structures/Player';
 
 class CardsFactory {
-  private static instance: CardsFactory;
   private _cardNames: Array<string> = [];
 
-  private constructor() {
+  constructor(players?: IterableIterator<Player>) {
+    // TODO[P3]: Player personal cards can be shuffled into deck
     const monsterNames = MonstersFactory.getAllMonsters();
 
     this._cardNames.push(...monsterNames);
   }
 
-  public static getInstance(): CardsFactory {
-    if (!CardsFactory.instance) {
-      CardsFactory.instance = new CardsFactory();
-    }
-
-    return CardsFactory.instance;
-  }
-
   public getRandomCardName() {
     return randomProperty(this._cardNames);
+  }
+
+  public getRandomCard() {
+    return this.createCard(randomProperty(this._cardNames));
   }
 
   public createCard(cardName: string) {

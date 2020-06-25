@@ -41,7 +41,11 @@ export default class MonstersFactory {
     return Object.keys(monsters);
   }
 
-  getRandomCard() {
+  static getMonsterStats(monsterName: string) {
+    return monsters[monsterName];
+  }
+
+  // getRandomCard() {
     // return randomProperty(this._monsters);
     // const monsterNames = Object.keys(this._monsters);
     // const filtered = {};
@@ -54,5 +58,5 @@ export default class MonstersFactory {
     //   filtered[monsterName] = mob;
     // }
     // return randomProperty(filtered) as MonsterInterface;
-  }
+  // }
 }
