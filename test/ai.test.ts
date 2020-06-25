@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import Session from '../src/models/Session';
 import AiPlayer from '../src/structures/AiPlayer';
 import { BattleResult } from '../src/structures/Battle';
-import MonsterService from '../src/services/Monsters';
+import MonsterService from '../src/factories/Cards';
 import BattleUnit from '../src/structures/BattleUnit';
 
 import { Container } from 'typedi';

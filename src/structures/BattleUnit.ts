@@ -5,7 +5,7 @@ import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from '../typings/Action
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from '../typings/Action';
 import Actor, { ActionGeneratorValue } from '../typings/Actor';
 import { BattleContext } from './Battle';
-import MonstersService from '../services/Monsters';
+import MonstersService from '../factories/Cards';
 import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';

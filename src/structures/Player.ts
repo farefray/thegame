@@ -3,17 +3,13 @@ import BoardMatrix from './Battle/BoardMatrix';
 import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
-import MonstersService from '../services/Monsters';
 import { EventEmitter } from 'events';
-import BattleUnitList from './Battle/BattleUnitList';
 import { FirebaseUser } from '../services/ConnectedPlayers';
 
 export const BOARD_UNITS_LIMIT = 8;
 
 const HAND_UNITS_LIMIT = 8;
-const SHOP_UNITS = 4;
 
-// TODO move logic to service/controller and data to model
 export default class Player {
   public userUID: FirebaseUser['uid'];
   public health: number = 100;
@@ -21,15 +17,12 @@ export default class Player {
   public level: number = 1;
   public exp: number = 0;
   public gold: number = 1;
-  public shopUnits: BattleUnitList = new BattleUnitList();
   public hand: BoardMatrix = new BoardMatrix(8, 1);
   public board: BoardMatrix = new BoardMatrix(8, 8);
   private _invalidated = true;
 
   constructor(id: FirebaseUser['uid']) {
     this.userUID = id;
-
-    this.fillShop();
   }
 
   getUID() {
@@ -38,30 +31,6 @@ export default class Player {
 
   isSynced() {
     return !this._invalidated;
-  }
-
-  private fillShop() {
-    const newShop = new BattleUnitList();
-    const monsterService = MonstersService.getInstance();
-    for (let i = 0; i <= SHOP_UNITS; i++) {
-      const shopUnit = monsterService.getRandomUnit({
-        cost: this.getLevel()
-      });
-
-      newShop.push(new BattleUnit({
-        name: shopUnit.name || 'Monster',
-        x: i, // todo get rid of this for shop units
-        y: -1, // todo get rid of this for shop units
-        teamId: 0, // todo get rid of this for shop units
-      }));
-    }
-
-    this.shopUnits = newShop;
-  }
-
-  refreshShop() {
-    this.fillShop();
-    this.update(true);
   }
 
   get availableHandPosition () {
@@ -219,24 +188,24 @@ export default class Player {
       return new AppError('warning', "Sorry, you're already dead");
     }
 
-    const unit = this.shopUnits.get(pieceIndex);
-    if (!unit || !unit.name || this.hand.units().size >= HAND_UNITS_LIMIT) {
-      return new AppError('warning', 'Your hand is full');
-    }
+    const unit = null; // todo this.shopUnits.get(pieceIndex);
+    // if (!unit || !unit.name || this.hand.units().size >= HAND_UNITS_LIMIT) {
+    //   return new AppError('warning', 'Your hand is full');
+    // }
 
-    if (this.gold < unit.cost) {
-      return new AppError('warning', 'Not enough money');
-    }
+    // if (this.gold < unit.cost) {
+    //   return new AppError('warning', 'Not enough money');
+    // }
 
-    this.shopUnits.delete(pieceIndex);
-    this.gold -= unit.cost;
+    // this.shopUnits.delete(pieceIndex);
+    // this.gold -= unit.cost;
 
-    const addToHandResult = this.addToHand(unit.name);
-    if (addToHandResult instanceof AppError) {
-      return addToHandResult;
-    }
+    // const addToHandResult = this.addToHand(unit.name);
+    // if (addToHandResult instanceof AppError) {
+    //   return addToHandResult;
+    // }
 
-    this.update(true);
+    // this.update(true);
   }
 
   /**
@@ -262,8 +231,7 @@ export default class Player {
       health: this.health,
       gold: this.gold,
       hand: this.hand.toJSON(),
-      board: this.board.toJSON(),
-      shopUnits: this.shopUnits.toJSON()
+      board: this.board.toJSON()
     }
   }
 }

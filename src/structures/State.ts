@@ -3,6 +3,7 @@ import Player from './Player';
 import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
 import { FirebaseUser } from '../services/ConnectedPlayers';
+import Merchantry from './Merchantry';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
@@ -15,6 +16,7 @@ export default class State {
   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
   private round: number = 1;
   private players: Map<FirebaseUser["uid"], Player>;
+  private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
     this.round = 1;
@@ -27,12 +29,8 @@ export default class State {
     if (this.players.size % 2 > 0) {
       this.players.set('ai_player', new AiPlayer('ai_player'));
     }
-  }
 
-  refreshShopForPlayers() {
-    this.players.forEach((player) => {
-      player.refreshShop();
-    });
+    this.merchantry = new Merchantry(this.players.values());
   }
 
   endRound(winners) {
@@ -63,8 +61,6 @@ export default class State {
         }
       }
     }
-
-    this.refreshShopForPlayers();
   }
 
   dropPlayer(playerID) {
