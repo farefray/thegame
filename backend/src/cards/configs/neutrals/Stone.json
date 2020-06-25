@@ -1,0 +1,14 @@
+{
+    "armor": 0,
+    "cost": 0,
+    "lookType": 1,
+    "health": {
+        "max": 100
+    },
+    "walkingSpeed": 0,
+    "specialty": {
+        "targetable": false,
+        "passive": true,
+        "shopRestricted": true
+    }
+}

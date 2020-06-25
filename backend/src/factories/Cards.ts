@@ -1,20 +1,18 @@
-import { MonsterInterface } from '../monsters/configs/abstract/Monster';
-import * as monsters from '../monsters/index';
+import { MonsterInterface } from '../typings/Monster';
+import * as monsters from '../cards/index';
 import { randomProperty } from '../utils/randomProperty';
+console.log("monsters", monsters)
 
-interface MonstersFilter {
-  cost?: number;
-}
-
-class MonstersService {
-  private static instance: MonstersService;
+class CardsFactory {
+  private static instance: CardsFactory;
   private _monsters: object;
 
   private constructor() {
-    console.log('Monsters service is being constructed.');
+    console.log('CardsFactory service is being constructed.');
 
     this._monsters = {};
     Object.keys(monsters).forEach((element) => {
+      console.log("CardsFactory -> constructor -> element", element)
       const monsterName = element.toLowerCase();
       const mob = new monsters[element]();
       this._monsters[monsterName] = Object.assign({
@@ -23,12 +21,12 @@ class MonstersService {
     });
   }
 
-  public static getInstance(): MonstersService {
-    if (!MonstersService.instance) {
-      MonstersService.instance = new MonstersService();
+  public static getInstance(): CardsFactory {
+    if (!CardsFactory.instance) {
+      CardsFactory.instance = new CardsFactory();
     }
 
-    return MonstersService.instance;
+    return CardsFactory.instance;
   }
 
   getAllUnits() {
@@ -39,17 +37,13 @@ class MonstersService {
     return this._monsters[name.toLowerCase()];
   }
 
-  getRandomUnit(filterObject?: MonstersFilter) {
+  getRandomUnit() {
     const monsterNames = Object.keys(this._monsters);
 
     const filtered = {};
     for (let i = 0; i < monsterNames.length; i++) {
       const monsterName = monsterNames[i];
       const mob: MonsterInterface = this._monsters[monsterName];
-
-      if (filterObject?.cost && mob.cost > filterObject?.cost) {
-        continue;
-      }
 
       if (mob.specialty?.shopRestricted) {
         continue;
@@ -62,4 +56,4 @@ class MonstersService {
   }
 }
 
-export default MonstersService;
+export default CardsFactory;

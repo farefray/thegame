@@ -78,21 +78,22 @@ export default class AiPlayer extends Player {
     super.beforeBattle(opponent);
 
     // consider buying new units
+    // todo
     const unit = this.considerUnitsPurchase();
-    if (unit) {
-      const shopUnit = this.shopUnits.findByName(unit.name);
+    // if (unit) {
+    //   const shopUnit = this.shopUnits.findByName(unit.name);
 
-      if (shopUnit) {
-        this.purchasePawn(shopUnit.x);
-      }
-    }
+    //   if (shopUnit) {
+    //     this.purchasePawn(shopUnit.x);
+    //   }
+    // }
 
-    if (this.hand.units().size) {
-      this.considerUnitsPlacing();
-    }
+    // if (this.hand.units().size) {
+    //   this.considerUnitsPlacing();
+    // }
   }
 
   getAffortableShopUnits() {
-    return this.shopUnits.filter(unit => unit.cost <= this.gold);
+    return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
   }
 }
