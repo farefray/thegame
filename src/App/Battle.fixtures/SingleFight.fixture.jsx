@@ -1,7 +1,7 @@
 import React from 'react';
 import ActiveGame from '../ActiveGame';
-import BattleUnitList from '@/../../backend/src/objects/BattleUnit/BattleUnitList';
-import BattleUnit from '@/../../backend/src/objects/BattleUnit';
+import BattleUnitList from '@/../../backend/src/structures/Battle/BattleUnitList';
+import BattleUnit from '@/../../backend/src/structures/BattleUnit';
 
 const defaultBoard = [{
   owner: 'first_player',

@@ -14,6 +14,11 @@ export default function customer(state = defaultCustomer, action) {
         isLoggedIn: true,
         email: action.response?.email // todo check if its working. Seems not :)
       };
+    case 'CUSTOMER_LOGOUT':
+      return state = {
+        ...state,
+        isLoggedIn: false,
+      };
     case 'ON_CONNECTION': {
         // When connected, user may be already authentificated and session may be restored
         return {
