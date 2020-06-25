@@ -154,6 +154,10 @@ class SocketService {
     return true;
   };
 
+  CUSTOMER_LOGOUT = () => {
+    return true;
+  };
+
   /** Methods which are responsible for socket events handling. Function name = Event name */
   PLAYER_READY = () => {
     /**
