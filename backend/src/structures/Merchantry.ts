@@ -1,26 +1,33 @@
-import BattleUnitList from "./Battle/BattleUnitList";
 import CardsFactory from '../factories/CardsFactory';
 import Player from "./Player";
-import { MonsterInterface } from "../typings/Monster";
+import Card from './Card';
 
-const DECK_SIZE = 48;
-const REVEALED_CARDS_SIZE = 5;
 export default class Merchantry {
-  private deck: Array<MonsterInterface> = [];
-  private revealedCards: Array<MonsterInterface> = [];
+  DECK_SIZE = 48;
+  REVEALED_CARDS_SIZE = 5;
+
+  private deck: Array<Card> = [];
+  private revealedCards: Array<Card> = [];
 
   constructor(players?: IterableIterator<Player>) {
-    const monsterService = MonstersService.getInstance();
-    for (let i = 0; i < DECK_SIZE; i++) {
-      const randomCard = monsterService.getRandomUnit();
-      this.deck.push(randomCard);
+    const cardsFactory = new CardsFactory(players);
+    for (let i = 0; i < this.DECK_SIZE; i++) {
+      this.deck.push(cardsFactory.getRandomCard());
     }
 
     this.revealCards();
   }
 
+  getDeck() {
+    return this.deck;
+  }
+
+  getRevealedCards() {
+    return this.revealedCards;
+  }
+
   revealCards() {
-    while (this.deck.length > 0 && this.revealedCards.length < REVEALED_CARDS_SIZE) {
+    while (this.deck.length > 0 && this.revealedCards.length < this.REVEALED_CARDS_SIZE) {
       const deckCard = this.deck.shift();
 
       if (deckCard) {
@@ -29,4 +36,9 @@ export default class Merchantry {
     }
   }
 
+  toSocket() {
+    return {
+      revealedCards: this.revealedCards
+    }
+  }
 }

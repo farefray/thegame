@@ -1,15 +1,12 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
-import { EventEmitter } from 'events';
 import AppError from '../typings/AppError';
 
 import GameController from '../controllers/Game';
-import Player from '../structures/Player';
-import State from '../structures/State';
-import { BattleResult } from '../structures/Battle';
+import EventBus from '../services/EventBus';
 import Position from '../shared/Position';
 import { Socket } from 'socket.io';
-import ConnectedPlayers, { FirebaseUser } from './ConnectedPlayers';
+import ConnectedPlayers from './ConnectedPlayers';
 import { SocketID } from '../utils/types';
 import Customer from '../models/Customer';
 // const admin = require('firebase-admin')
@@ -24,39 +21,6 @@ const SOCKETROOMS = {
 
 const connectedPlayers = ConnectedPlayers.getInstance();
 
-// Dependency container
-// Event emitter
-const eventEmitter: EventEmitter = new EventEmitter();
-Container.set('event.emitter', eventEmitter);
-
-eventEmitter.on('roundBattleStarted', (uid: FirebaseUser['uid'], playerBattleResult: BattleResult) => {
-  const customer = connectedPlayers.getByID(uid);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('START_BATTLE', playerBattleResult);
-  }
-});
-
-eventEmitter.on('stateUpdate', (uid: FirebaseUser['uid'], state: State) => {
-  const customer = connectedPlayers.getByID(uid);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATED_STATE', state.toSocket());
-  }
-
-  // if we are sending whole state, thats game start or round update.
-  // We need to deliver all the changes to our players
-  state.syncPlayers();
-});
-
-eventEmitter.on('playerUpdate', (player: Player) => {
-  const customer = connectedPlayers.getByID(player.getUID());
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATE_PLAYER', player.toSocket());
-  }
-});
-
 class SocketService {
   private socket: Socket;
   private id: SocketID;
@@ -64,6 +28,7 @@ class SocketService {
   constructor(socket: Socket) {
     this.socket = socket;
     this.id = socket.id;
+
 
     /**
      * Magical handler for all frontend events. This may be wrong concept, need to be revised.
@@ -177,9 +142,10 @@ class SocketService {
     if (loginResults && loginResults.session) {
       // restore player session
       const { customer, session } = loginResults;
-      session.getState().getPlayer(customer.ID)?.update(false); // mark player as 'update needed'
+      session.getState().getPlayer(customer.ID)?.invalidate(false); // mark player as 'update needed'
 
       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
+      const eventEmitter:EventBus = Container.get('event.emitter');
       eventEmitter.emit('stateUpdate', customer.ID, session.getState());
 
       // todo restore if he is in battle?

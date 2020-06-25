@@ -5,7 +5,7 @@ import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from '../typings/Action
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from '../typings/Action';
 import Actor, { ActionGeneratorValue } from '../typings/Actor';
 import { BattleContext } from './Battle';
-import MonstersService from '../factories/CardsFactory';
+import MonstersFactory from '../factories/MonstersFactory';
 import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';
@@ -90,7 +90,7 @@ export default class BattleUnit {
     this.id = this.stringifiedPosition; // id = is also a starting position for mob
     this.teamId = unitConfig.teamId;
 
-    const unitStats = MonstersService.getInstance().getMonsterStats(unitConfig.name);
+    const unitStats = MonstersFactory.getMonsterStats(unitConfig.name);
 
     this.name = unitStats.name;
     this.cost = unitStats.cost;
@@ -138,7 +138,7 @@ export default class BattleUnit {
    * TODO some better and more productive approach.
    * Maybe we need to rewrite monsters to classes or objects with non-
    * enumerable properties to exclude those which we dont need or maybe Symbols */
-  toJSON() {
+  toSocket() {
     const json = {};
     Object.keys(this).map(key => {
       if (key !== 'spell') { // hardcode to avoid spell functions to be sent over socket

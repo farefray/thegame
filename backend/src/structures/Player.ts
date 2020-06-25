@@ -1,16 +1,13 @@
-import { Container } from 'typedi';
 import BoardMatrix from './Battle/BoardMatrix';
 import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
-import { EventEmitter } from 'events';
 import { FirebaseUser } from '../services/ConnectedPlayers';
+import { SocketMessage } from './abstract/SocketMessage';
 
 export const BOARD_UNITS_LIMIT = 8;
 
-const HAND_UNITS_LIMIT = 8;
-
-export default class Player {
+export default class Player extends SocketMessage {
   public userUID: FirebaseUser['uid'];
   public health: number = 100;
   public mana: number = 0;
@@ -19,18 +16,16 @@ export default class Player {
   public gold: number = 1;
   public hand: BoardMatrix = new BoardMatrix(8, 1);
   public board: BoardMatrix = new BoardMatrix(8, 8);
-  private _invalidated = true;
 
   constructor(id: FirebaseUser['uid']) {
+    super('playerUpdate');
+
     this.userUID = id;
+    this.invalidate(true);
   }
 
   getUID() {
     return this.userUID;
-  }
-
-  isSynced() {
-    return !this._invalidated;
   }
 
   get availableHandPosition () {
@@ -139,7 +134,7 @@ export default class Player {
       throw new Error('Trying to sell not existance pawn')
     }
 
-    this.update(true);
+    this.invalidate(true);
   }
 
   getUnitFromPos(pos: Position) {
@@ -177,7 +172,7 @@ export default class Player {
 
     this.setUnitToPos(toPosition, unit);
 
-    this.update(true);
+    this.invalidate(true);
   }
 
   /**
@@ -205,23 +200,7 @@ export default class Player {
     //   return addToHandResult;
     // }
 
-    // this.update(true);
-  }
-
-  /**
-   * Emitting event to update this player via socket
-   * @param {Boolean} sync should be transffered to socket instantly
-   */
-  public update(sync = false) {
-    if (sync) {
-      const eventEmitter: EventEmitter = Container.get('event.emitter');
-      eventEmitter.emit('playerUpdate', this);
-
-      this._invalidated = false;
-    } else {
-      // this can be improved, in order to mark invalidated parts, so only they will be sent to frontend during sync update
-      this._invalidated = true;
-    }
+    // this.invalidate(true);
   }
 
   toSocket() {
@@ -230,8 +209,8 @@ export default class Player {
       level: this.level,
       health: this.health,
       gold: this.gold,
-      hand: this.hand.toJSON(),
-      board: this.board.toJSON()
+      hand: this.hand.toSocket(),
+      board: this.board.toSocket()
     }
   }
 }

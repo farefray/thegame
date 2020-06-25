@@ -1,47 +1,16 @@
-50 search results found
+56 search results found
 
-file:///d:\thegame\backend\src\monsters\configs\abstract\Monster.ts
-  10:     regen?: number, // TODO if we need this
+file:///d:\thegame\backend\src\factories\CardsFactory.ts
+  12:     // TODO[P3]: Player personal cards can be shuffled into deck
 
-file:///d:\thegame\backend\src\monsters\spells\hoof.ts
+file:///d:\thegame\backend\src\factories\configs\spells\hoof.ts
   15:       return null; // todo test
 
-file:///d:\thegame\backend\src\objects\AiPlayer.ts
-  57:     // todo magic logic here to find any good units in pocket
-
-file:///d:\thegame\backend\src\objects\Battle.ts
-  27:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
-  50:   private units: BattleUnitList; // temporaly public for ai needs
-  211:       // TODO why isOver not handling this?
-  253:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
-  296:       this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
-  320:             // TODO avoid such issues
-  343:       startBoard: this.startBoard, // todo unlink? matrix to json?
-
-file:///d:\thegame\backend\src\objects\BattleUnit.ts
-  107:         duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
-  213:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
-  576:   // todo review this one
-  615:     // todo also base to closest unit?
-
-file:///d:\thegame\backend\src\objects\Pathfinder.ts
-  205:     // todo make this human readable
-
-file:///d:\thegame\backend\src\objects\Player.ts
-  16: // TODO move logic to service/controller and data to model
-  53:         x: i, // todo get rid of this for shop units
-  54:         y: -1, // todo get rid of this for shop units
-  55:         teamId: 0, // todo get rid of this for shop units
-  127:         // Todo check if this will be covered for leveled up units
-  138:       // TODO: Inform Client about update
-  159:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
-
-file:///d:\thegame\backend\src\objects\Session.ts
-  11: // TODO consider using https://github.com/expressjs/session#readme for socket.io
-  97:     // todo
-
-file:///d:\thegame\backend\src\objects\State.ts
-  60:       // todo FOR REWORK!!
+file:///d:\thegame\backend\src\models\Session.ts
+  10: // TODO consider using https://github.com/expressjs/session#readme for socket.io
+  64:     const playersPairs = this.getPlayerPairs(); // todo reworkt his
+  68:         const player = this.state.getPlayer(uid); // todo proper syntax
+  99:     // todo
 
 file:///d:\thegame\backend\src\services\AI.ts
   28:   // todo get rid of dynamic imports. Preload those buckets and neurals!
@@ -55,13 +24,54 @@ file:///d:\thegame\backend\src\services\Sessions.ts
   29:   // TODO session removale
 
 file:///d:\thegame\backend\src\services\Socket.ts
-  132:       // TODO !!!
-  146:     } // todo case when no customer?
-  182:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
-  185:       // todo restore if he is in battle?
+  97:       // TODO !!!
+  111:     } // todo case when no customer?
+  147:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
+  151:       // todo restore if he is in battle?
 
 file:///d:\thegame\backend\src\shared\constants.js
   26:     FIRST_ROUND_COUNTDOWN: 15 * 1000, // todo make it work differently from countdown between rounds
+
+file:///d:\thegame\backend\src\structures\AiPlayer.ts
+  57:     // todo magic logic here to find any good units in pocket
+  81:     // todo
+  97:     return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
+
+file:///d:\thegame\backend\src\structures\Battle.ts
+  27:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
+  50:   private units: BattleUnitList; // temporaly public for ai needs
+  211:       // TODO why isOver not handling this?
+  253:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
+  296:       this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
+  320:             // TODO avoid such issues
+  343:       startBoard: this.startBoard, // todo unlink? matrix to json?
+
+file:///d:\thegame\backend\src\structures\BattleUnit.ts
+  107:         duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
+  213:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
+  576:   // todo review this one
+  615:     // todo also base to closest unit?
+
+file:///d:\thegame\backend\src\structures\Battle\Pathfinder.ts
+  205:     // todo make this human readable
+
+file:///d:\thegame\backend\src\structures\Player.ts
+  91:         // Todo check if this will be covered for leveled up units
+  102:       // TODO: Inform Client about update
+  123:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
+  186:     const unit = null; // todo this.shopUnits.get(pieceIndex);
+
+file:///d:\thegame\backend\src\structures\State.ts
+  17:   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
+  32:     // TODO P0
+  51:       // todo FOR REWORK!!
+  66:           this.dropPlayer(uid); // todo death/lose
+
+file:///d:\thegame\backend\src\structures\abstract\SocketMessage.ts
+  6:   private _invalidated = false; // TODO P1 make it possible to invalidate/send objects partially
+
+file:///d:\thegame\backend\src\typings\Monster.ts
+  10:     regen?: number, // TODO if we need this
 
 file:///d:\thegame\backend\src\utils\effects.ts
   1: // todo review format for those, as its ugly and too big

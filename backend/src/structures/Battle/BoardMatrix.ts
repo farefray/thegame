@@ -139,9 +139,8 @@ export default class BoardMatrix {
     return freeSpots;
   }
 
-  // For sending state via socket
-  toJSON() {
-    return this.units().toJSON();
+  toSocket() {
+    return this.units().toSocket();
   }
 
   /** For debug needs */

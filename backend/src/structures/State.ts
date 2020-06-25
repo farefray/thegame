@@ -4,21 +4,24 @@ import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
 import { FirebaseUser } from '../services/ConnectedPlayers';
 import Merchantry from './Merchantry';
+import { SocketMessage } from './abstract/SocketMessage';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 const MAX_LEVEL = 8;
 
-export default class State {
+export default class State extends SocketMessage {
   private incomeBase: number;
   private amountOfPlayers: number;
-  private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
+  private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
   private round: number = 1;
   private players: Map<FirebaseUser["uid"], Player>;
   private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
+    super('stateUpdate');
+
     this.round = 1;
     this.incomeBase = 1;
     this.amountOfPlayers = customers.length;
@@ -26,11 +29,14 @@ export default class State {
 
     this.players = new Map(customers.map(customer => [customer.ID, new Player(customer.ID)]));
 
-    if (this.players.size % 2 > 0) {
-      this.players.set('ai_player', new AiPlayer('ai_player'));
-    }
+    // TODO P0
+    // if (this.players.size % 2 > 0) {
+    //   this.players.set('ai_player', new AiPlayer('ai_player'));
+    // }
 
     this.merchantry = new Merchantry(this.players.values());
+
+    this.invalidate(true);
   }
 
   endRound(winners) {
@@ -61,6 +67,8 @@ export default class State {
         }
       }
     }
+
+    this.invalidate(true);
   }
 
   dropPlayer(playerID) {
@@ -95,7 +103,7 @@ export default class State {
         uid: player.getUID(),
         level: player.level,
         health: player.health
-      }))
+      })),
     };
   }
 
@@ -114,7 +122,7 @@ export default class State {
   syncPlayers() {
     this.players.forEach((player) => {
       if (!player.isSynced()) {
-        player.update(true);
+        player.invalidate(true);
       }
     });
   }
