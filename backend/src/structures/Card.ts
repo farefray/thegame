@@ -1,11 +1,12 @@
 import { MonsterInterface } from "../typings/Monster";
-import { CardConfiguration } from "../typings/Card";
+import { CardConfig } from "../typings/Card";
 
 export default class Card {
   private monster: MonsterInterface;
-  private configuration: CardConfiguration;
+  private config: CardConfig;
 
-  constructor() {
-
+  constructor(monster: MonsterInterface, cardConfig: CardConfig) {
+    this.monster = monster;
+    this.config = cardConfig;
   }
 }

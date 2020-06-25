@@ -1,0 +1,12 @@
+{
+  "instant": {
+    "health": 1,
+    "damage": 1,
+    "gold": 1
+  },
+  "extra": {
+    "health": 1,
+    "damage": 1,
+    "gold": 1
+  }
+}
