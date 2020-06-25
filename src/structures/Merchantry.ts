@@ -1,5 +1,5 @@
 import BattleUnitList from "./Battle/BattleUnitList";
-import CardsFactory from '../factories/Cards';
+import CardsFactory from '../factories/CardsFactory';
 import Player from "./Player";
 import { MonsterInterface } from "../typings/Monster";
 
