@@ -58,6 +58,15 @@ export const customerLogin = async ({ email, password }) => {
   }
 };
 
+export const customerLogout = async () => {
+  try {
+    return await auth.signOut();
+  } catch (e) {
+    return [e.message || DEFAULT_ERROR, null];
+  }
+};
+
+
 // export const getUserDocument = async (uid) => {
 //   if (!uid) {
 //     return null;
