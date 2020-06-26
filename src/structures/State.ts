@@ -4,14 +4,15 @@ import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
 import { FirebaseUser } from '../services/ConnectedPlayers';
 import Merchantry from './Merchantry';
-import { SocketMessage } from './abstract/SocketMessage';
+import { EventBusUpdater } from './abstract/EventBusUpdater';
+import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 const MAX_LEVEL = 8;
 
-export default class State extends SocketMessage {
+export default class State extends EventBusUpdater {
   private incomeBase: number;
   private amountOfPlayers: number;
   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
@@ -20,7 +21,11 @@ export default class State extends SocketMessage {
   private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
-    super('stateUpdate');
+    super(EVENTBUS_MESSAGE_TYPE.STATE_UPDATE,
+      customers.reduce((recipients: Array<FirebaseUser['uid']>, customer) => {
+        recipients.push(customer.ID);
+        return recipients;
+    }, []));
 
     this.round = 1;
     this.incomeBase = 1;

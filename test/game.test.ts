@@ -9,7 +9,24 @@ import Merchantry from '../src/structures/Merchantry';
 import State from '../src/structures/State';
 import Customer from '../src/models/Customer';
 import { FirebaseUser } from '../src/services/ConnectedPlayers';
+import Player from '../src/structures/Player';
+import { EVENTBUS_MESSAGE_TYPE } from '../src/typings/EventBus';
 
+
+const useruid = 'test_user';
+const socketid = 'socket_id';
+const CUSTOMERS = [new Customer(socketid, { uid: useruid } as FirebaseUser)];
+
+// state, player and merchantry after creation should be emitted
+const events = [EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE];
+
+const mockedEventEmitter = {
+  emitMessage: (type, recipient, message) => {
+    expect(type).to.satisfy((eventName) => events.includes(eventName));
+  }
+};
+
+Container.set('event.bus', mockedEventEmitter);
 
 @suite
 class GameTestSuite {
@@ -43,7 +60,7 @@ class GameTestSuite {
 
   @test
   canBuildMerchantry() {
-    const merchantry = new Merchantry();
+    const merchantry = new Merchantry(new Map(CUSTOMERS.map(customer => [customer.ID, new Player(customer.ID)])).values());
     expect(merchantry).to.be.a('object');
     expect(merchantry).to.be.an.instanceof(Merchantry);
     expect(merchantry).to.have.property('deck');
@@ -53,18 +70,7 @@ class GameTestSuite {
 
   @test
   canCreateStateWithCards() {
-    // state, as well as players after creation should be emitted
-    const mockedEventEmitter = {
-      emit: (...args) => {
-        expect(args[0]).to.satisfy((eventName) => ['playerUpdate', 'stateUpdate'].includes(eventName));
-      }
-    };
-
-    Container.set('event.emitter', mockedEventEmitter);
-
-    const useruid = 'test_user';
-    const socketid = 'socket_id';
-    const state = new State([new Customer(socketid, { uid: useruid } as FirebaseUser)]);
+    const state = new State(CUSTOMERS);
     expect(state).to.be.an.instanceof(State);
     expect(state.getPlayer(useruid)?.getUID()).to.be.equal(useruid);
   }

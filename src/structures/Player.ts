@@ -3,11 +3,12 @@ import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import { FirebaseUser } from '../services/ConnectedPlayers';
-import { SocketMessage } from './abstract/SocketMessage';
+import { EventBusUpdater } from './abstract/EventBusUpdater';
+import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 
 export const BOARD_UNITS_LIMIT = 8;
 
-export default class Player extends SocketMessage {
+export default class Player extends EventBusUpdater {
   public userUID: FirebaseUser['uid'];
   public health: number = 100;
   public mana: number = 0;
@@ -18,7 +19,7 @@ export default class Player extends SocketMessage {
   public board: BoardMatrix = new BoardMatrix(8, 8);
 
   constructor(id: FirebaseUser['uid']) {
-    super('playerUpdate');
+    super(EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, [id]);
 
     this.userUID = id;
     this.invalidate(true);

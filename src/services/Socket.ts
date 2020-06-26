@@ -145,8 +145,8 @@ class SocketService {
       session.getState().getPlayer(customer.ID)?.invalidate(false); // mark player as 'update needed'
 
       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
-      const eventEmitter:EventBus = Container.get('event.emitter');
-      eventEmitter.emit('stateUpdate', customer.ID, session.getState());
+      const eventBus:EventBus = Container.get('event.bus');
+      eventBus.emit('stateUpdate', customer.ID, session.getState());
 
       // todo restore if he is in battle?
     }
