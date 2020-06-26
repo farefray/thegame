@@ -1,13 +1,12 @@
 import { Container } from 'typedi';
 import Session from '../models/Session';
-import { EventEmitter } from 'events';
 import { STATE } from '../shared/constants';
 import Customer from '../models/Customer';
-import { SocketID } from '../utils/types';
+import EventBus from '../services/EventBus';
 
 export default class GameController {
   static async startGame(customers: Array<Customer>) {
-    const eventEmitter: EventEmitter = Container.get('event.emitter');
+    const eventEmitter: EventBus = Container.get('event.bus');
     const session = new Session(customers);
     const state = session.getState();
 

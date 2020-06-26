@@ -1,10 +1,9 @@
 import { EventEmitter } from 'events';
 import { Container } from 'typedi';
 import { v4 as uuidv4 } from 'uuid';
-import Player from '../structures/Player';
-import State from '../structures/State';
 import { BattleResult } from '../structures/Battle';
 import ConnectedPlayers, { FirebaseUser } from './ConnectedPlayers';
+import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 const connectedPlayers = ConnectedPlayers.getInstance();
 
 /** TODO P0 how will this work with multiple customers
@@ -17,36 +16,46 @@ export default class EventBus extends EventEmitter {
     console.log('Eventbus with uid ' + this.uid + ' is constructed');
   }
 
-  public emit(event: string, ...args: any[]) {
-    return super.emit(event, args)
+  public emitMessage(event: EVENTBUS_MESSAGE_TYPE, recipient: FirebaseUser['uid'], message) {
+    return super.emit(event, {
+      recipient,
+      message
+    })
   }
 }
 
-const eventEmitter: EventEmitter = new EventBus();
-Container.set('event.emitter', eventEmitter);
+const eventBus = new EventBus();
+Container.set('event.bus', eventBus);
 
-eventEmitter.on('stateUpdate', (uid: FirebaseUser['uid'], state: State) => {
-  const customer = connectedPlayers.getByID(uid);
+eventBus.on(EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, ({recipient, message}) => {
+  const customer = connectedPlayers.getByID(recipient);
   if (customer) {
     const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATED_STATE', state.toSocket());
+    io.to(customer.getSocketID()).emit('UPDATED_STATE', message);
   }
 
   // if we are sending whole state, thats game start or round update.
   // We need to deliver all the changes to our players
-  state.syncPlayers();
+  message.syncPlayers(); // stupid way, todo point its type somehow
 });
 
-eventEmitter.on('playerUpdate', (player: Player) => {
-  const customer = connectedPlayers.getByID(player.getUID());
+eventBus.on(EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, ({recipient, message}) => {
+  const customer = connectedPlayers.getByID(recipient);
   if (customer) {
     const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATE_PLAYER', player.toSocket());
+    io.to(customer.getSocketID()).emit('UPDATE_PLAYER', message);
   }
 });
 
+eventBus.on(EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, ({recipient, message}) => {
+  const customer = connectedPlayers.getByID(recipient);
+  if (customer) {
+    const io: SocketIO.Server = Container.get('socket.io');
+    io.to(customer.getSocketID()).emit('MERCHANTRY_UPDATE', message);
+  }
+})
 
-eventEmitter.on('roundBattleStarted', (uid: FirebaseUser['uid'], playerBattleResult: BattleResult) => {
+eventBus.on('roundBattleStarted', (uid: FirebaseUser['uid'], playerBattleResult: BattleResult) => {
   const customer = connectedPlayers.getByID(uid);
   if (customer) {
     const io: SocketIO.Server = Container.get('socket.io');

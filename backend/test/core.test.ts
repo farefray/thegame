@@ -20,7 +20,7 @@ const mockedEventEmitter = {
   }
 };
 
-Container.set('event.emitter', mockedEventEmitter);
+Container.set('event.bus', mockedEventEmitter);
 
 describe('Core Modules', () => {
   const MOCK_SOCKETID_1 = 'MOCK_SOCKETID_1';

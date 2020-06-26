@@ -1,10 +1,13 @@
-56 search results found
+57 search results found
 
 file:///d:\thegame\backend\src\factories\CardsFactory.ts
   12:     // TODO[P3]: Player personal cards can be shuffled into deck
 
 file:///d:\thegame\backend\src\factories\configs\spells\hoof.ts
   15:       return null; // todo test
+
+file:///d:\thegame\backend\src\models\Customer.ts
+  21:   get ID() { // todo rename to uid or smt, to not mislead
 
 file:///d:\thegame\backend\src\models\Session.ts
   10: // TODO consider using https://github.com/expressjs/session#readme for socket.io
@@ -56,19 +59,19 @@ file:///d:\thegame\backend\src\structures\Battle\Pathfinder.ts
   205:     // todo make this human readable
 
 file:///d:\thegame\backend\src\structures\Player.ts
-  91:         // Todo check if this will be covered for leveled up units
-  102:       // TODO: Inform Client about update
-  123:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
-  186:     const unit = null; // todo this.shopUnits.get(pieceIndex);
+  92:         // Todo check if this will be covered for leveled up units
+  103:       // TODO: Inform Client about update
+  124:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
+  187:     const unit = null; // todo this.shopUnits.get(pieceIndex);
 
 file:///d:\thegame\backend\src\structures\State.ts
-  17:   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
-  32:     // TODO P0
-  51:       // todo FOR REWORK!!
-  66:           this.dropPlayer(uid); // todo death/lose
+  18:   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
+  37:     // TODO P0
+  56:       // todo FOR REWORK!!
+  71:           this.dropPlayer(uid); // todo death/lose
 
-file:///d:\thegame\backend\src\structures\abstract\SocketMessage.ts
-  6:   private _invalidated = false; // TODO P1 make it possible to invalidate/send objects partially
+file:///d:\thegame\backend\src\structures\abstract\EventBusUpdater.ts
+  8:   private _invalidated = false; // TODO P2 make it possible to invalidate/send objects partially
 
 file:///d:\thegame\backend\src\typings\Monster.ts
   10:     regen?: number, // TODO if we need this

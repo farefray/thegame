@@ -9,4 +9,12 @@ export default class Card {
     this.monster = monster;
     this.config = cardConfig;
   }
+
+
+  toSocket() {
+    return {
+      monster: this.monster,
+      config: this.config
+    }
+  }
 }
