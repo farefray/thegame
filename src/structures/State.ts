@@ -44,7 +44,7 @@ export default class State extends EventBusUpdater {
     this.invalidate(true);
   }
 
-  endRound(winners) {
+  endRound(winners?) { // todo
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
     if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
       this.incomeBase = this.incomeBase + 1;
@@ -62,7 +62,7 @@ export default class State extends EventBusUpdater {
         this.players[uid].level = this.round;
       }
 
-      if (!winners.includes(uid)) {
+      if (winners && !winners.includes(uid)) {
         // player lost battle, remove health
         const newHealth: number = this.players[uid].health - this.round;
         this.players[uid].health = newHealth;
@@ -124,6 +124,7 @@ export default class State extends EventBusUpdater {
     return [...this.players.values()];
   }
 
+  // TODO
   syncPlayers() {
     this.players.forEach((player) => {
       if (!player.isSynced()) {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Loader } from './loader';
 import Session from '../models/Session';
 import AiPlayer, { StrategyFlags } from '../structures/AiPlayer';

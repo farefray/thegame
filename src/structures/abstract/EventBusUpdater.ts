@@ -13,7 +13,7 @@ export abstract class EventBusUpdater {
   private subscribers: Array<FirebaseUser['uid']>; // list of players who are supposed to receive updates for this structure
   private messageType: EVENTBUS_MESSAGE_TYPE;
 
-  constructor(messageType: EVENTBUS_MESSAGE_TYPE, subscribers: Array<FirebaseUser['uid']>) {
+  constructor(messageType: EVENTBUS_MESSAGE_TYPE, subscribers: Array<FirebaseUser['uid']> = []) {
     this.messageType = messageType;
     this.subscribers = subscribers;
   }
@@ -38,8 +38,8 @@ export abstract class EventBusUpdater {
 
   private emitEventBusMessage() {
     const eventBus: EventBus = Container.get('event.bus');
-    this.subscribers.forEach(recepient => {
-      eventBus.emitMessage(this.messageType, recepient, this.toSocket());
+    this.subscribers.forEach(recipient => {
+      eventBus.emitMessage(this.messageType, recipient, this.toSocket());
     });
   }
 

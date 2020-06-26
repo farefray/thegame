@@ -20,45 +20,47 @@ export default class EventBus extends EventEmitter {
     return super.emit(event, {
       recipient,
       message
-    })
+    });
+  }
+
+  /** block calls to native emit method */
+  emit(event, args) {
+    throw new Error('Strict calls to EventBus.emit are fobidden!');
+    return false;
+  }
+
+  static registerEvents(eventBus: EventBus) {
+    // todo simplify all those events to one. Maybe we dont need event emitter at all
+    eventBus.on(EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, ({ recipient, message }) => {
+      const customer = connectedPlayers.getByID(recipient);
+      if (customer) {
+        const io: SocketIO.Server = Container.get('socket.io');
+        io.to(customer.getSocketID()).emit('UPDATED_STATE', message);
+      }
+    });
+
+    eventBus.on(EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, ({ recipient, message }) => {
+      const customer = connectedPlayers.getByID(recipient);
+      if (customer) {
+        const io: SocketIO.Server = Container.get('socket.io');
+        io.to(customer.getSocketID()).emit('UPDATE_PLAYER', message);
+      }
+    });
+
+    eventBus.on(EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, ({ recipient, message }) => {
+      const customer = connectedPlayers.getByID(recipient);
+      if (customer) {
+        const io: SocketIO.Server = Container.get('socket.io');
+        io.to(customer.getSocketID()).emit('MERCHANTRY_UPDATE', message);
+      }
+    });
+
+    eventBus.on(EVENTBUS_MESSAGE_TYPE.BATTLE, ({ recipient, message }) => {
+      const customer = connectedPlayers.getByID(recipient);
+      if (customer) {
+        const io: SocketIO.Server = Container.get('socket.io');
+        io.to(customer.getSocketID()).emit('START_BATTLE', message);
+      }
+    });
   }
 }
-
-const eventBus = new EventBus();
-Container.set('event.bus', eventBus);
-
-eventBus.on(EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, ({recipient, message}) => {
-  const customer = connectedPlayers.getByID(recipient);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATED_STATE', message);
-  }
-
-  // if we are sending whole state, thats game start or round update.
-  // We need to deliver all the changes to our players
-  message.syncPlayers(); // stupid way, todo point its type somehow
-});
-
-eventBus.on(EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, ({recipient, message}) => {
-  const customer = connectedPlayers.getByID(recipient);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATE_PLAYER', message);
-  }
-});
-
-eventBus.on(EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, ({recipient, message}) => {
-  const customer = connectedPlayers.getByID(recipient);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('MERCHANTRY_UPDATE', message);
-  }
-})
-
-eventBus.on('roundBattleStarted', (uid: FirebaseUser['uid'], playerBattleResult: BattleResult) => {
-  const customer = connectedPlayers.getByID(uid);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('START_BATTLE', playerBattleResult);
-  }
-});

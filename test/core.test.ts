@@ -1,4 +1,5 @@
-import {describe} from 'mocha';
+// @ts-nocheck
+import { describe } from 'mocha';
 import should from 'should';
 import Battle from '../src/structures/Battle';
 import State from '../src/structures/State';
