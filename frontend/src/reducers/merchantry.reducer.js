@@ -2,7 +2,7 @@ const defaults = {
   revealedCards: []
 };
 
-export default function merchantry(state = defaultCustomer, action) {
+export default function merchantry(state = defaults, action) {
   switch (action.type) {
     case 'MERCHANTRY_UPDATE': {
       return {

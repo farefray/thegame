@@ -6,6 +6,9 @@ import { ACTION_TYPE, Action } from '../typings/Action';
 import { ACTION, TEAM } from '../shared/constants';
 import BoardMatrix from './Battle/BoardMatrix';
 import BattleUnitList from './Battle/BattleUnitList';
+import { EventBusUpdater } from './abstract/EventBusUpdater';
+import { FirebaseUser } from '../services/ConnectedPlayers';
+import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 
 /**
  * TODO: move this into Battle.d.ts, just need to investigate if thats fine to use classes in types,
@@ -42,7 +45,7 @@ export interface BattleBoard {
   owner: string;
 }
 
-export default class Battle {
+export default class Battle extends EventBusUpdater {
   private startBoard: BoardMatrix;
   private winner = TEAM.NONE;
   private readonly actionStack: UnitAction[];
@@ -55,7 +58,9 @@ export default class Battle {
   private actionGeneratorInstance: Generator;
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
-  constructor(unitBoards: Array<BattleBoard>) {
+  constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<FirebaseUser['uid']>) {
+    super(EVENTBUS_MESSAGE_TYPE.BATTLE, subscribers);
+
     this.startBoard = new BoardMatrix(8, 8);
     this[Symbol.for('owners')] = {};
 
@@ -145,8 +150,7 @@ export default class Battle {
     }
 
     this.setWinner();
-
-    return this.battleResult;
+    this.invalidate(true);
   }
 
   *generateActions() {
@@ -344,5 +348,10 @@ export default class Battle {
       participants: Object.values(this[Symbol.for('owners')]), // ??
       finalBoard: this.units // OMIT this!!
     }
+  }
+
+  toSocket() {
+    console.log('battle to socket')
+    return this.battleResult;
   }
 }

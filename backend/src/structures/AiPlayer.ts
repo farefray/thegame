@@ -44,14 +44,15 @@ export default class AiPlayer extends Player {
       return null;
     }
 
-    if (!this.isBoardFull()) {
+    if (!this.isBoardFull()) { // todo
       // we definately need to buy some unit, find most suitable
-      const amount = Math.min(this.allowedBoardSize() - this.board.units().size, affortableUnits.size);
-      return AIService.getInstance().mostSuitableUnit({
-        current: this.board.units(),
-        proposed: affortableUnits,
-        amount
-      }, this.AIFlags);
+      // const amount = Math.min(this.allowedBoardSize() - this.board.units().size, affortableUnits.size);
+      // return AIService.getInstance().mostSuitableUnit({
+      //   current: this.board.units(),
+      //   proposed: affortableUnits,
+      //   amount
+      // }, this.AIFlags);
+      return null;
     }
 
     // todo magic logic here to find any good units in pocket

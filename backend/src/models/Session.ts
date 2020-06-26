@@ -4,6 +4,7 @@ import Battle, { BattleBoard, BattleResult } from '../structures/Battle';
 import Player from '../structures/Player';
 import SessionsService from '../services/Sessions';
 import Customer from './Customer';
+import { FirebaseUser } from '../services/ConnectedPlayers';
 
 const MAX_ROUND = 25;
 
@@ -39,60 +40,34 @@ export default class Session {
     return Object.keys(this.state.getPlayersArray()).length > 1 && this.state.getRound() < MAX_ROUND;
   }
 
-  getPlayerPairs() {
-    return Object.keys(this.state.getPlayersArray()).reduce((result: Array<Array<string>>, value, index, array: Array<string>) => {
-      if (index % 2 === 0) {
-        result.push(array.slice(index, index + 2));
-      }
-
-      return result;
-    }, []);
-  }
-
   async nextRound() {
-    // process with battles
-    const playersBattleResults: {
-      roundCountdown: number;
-      battles: Array<BattleResult>;
-      winners: Array<string>;
-    } = {
-      roundCountdown: Number.MIN_VALUE,
-      battles: [],
-      winners: []
-    };
+    const players = this.getState().getPlayersArray();
 
-    const playersPairs = this.getPlayerPairs(); // todo reworkt his
-    for (const playerPair of playersPairs) {
+    if (players.length === 2) {
+      players[0].beforeBattle(players[1]);
+      players[1].beforeBattle(players[0]);
+
       const battleBoards: Array<BattleBoard> = [];
-      for (const uid of playerPair) {
-        const player = this.state.getPlayer(uid); // todo proper syntax
-        const opponentUID: string = playerPair.filter((v) => v !== uid).shift() || '';
-        const opponentPlayer = this.state.getPlayer(opponentUID);
+      battleBoards.push({
+        owner: players[0].getUID(),
+        units: players[0].board.units()
+      });
 
-        if (player && opponentPlayer) {
-          player.beforeBattle(opponentPlayer);
+      battleBoards.push({
+        owner: players[1].getUID(),
+        units: players[1].board.reverse().units()
+      });
 
-          // now we need to reverse second player board in order for it to appear properly
-          const battleBoard: BattleBoard = {
-            owner: player.getUID(),
-            units: uid === playerPair[1] ? player.board.reverse().units() : player.board.units()
-          };
+      const battle = new Battle(battleBoards, [players[0].getUID(), players[1].getUID()]);
+      await battle.proceedBattle();
+      // if (battleResult.battleTime > playersBattleResults.roundCountdown) {
+      //   playersBattleResults.roundCountdown = battleResult.battleTime;
+      // }
 
-          battleBoards.push(battleBoard);
-        }
-      }
-
-      const battle = new Battle(battleBoards);
-      const battleResult = await battle.proceedBattle();
-      if (battleResult.battleTime > playersBattleResults.roundCountdown) {
-        playersBattleResults.roundCountdown = battleResult.battleTime;
-      }
-
-      playersBattleResults.winners.push(battleResult.winner);
-      playersBattleResults.battles.push(battleResult);
+      return true;
     }
 
-    return playersBattleResults;
+    return false;
   }
 
   disconnect(clientID) {

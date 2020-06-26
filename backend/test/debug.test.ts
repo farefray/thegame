@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { suite, test, only } from '@testdeck/mocha';
 import { expect } from 'chai';
 

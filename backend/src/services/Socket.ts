@@ -14,7 +14,6 @@ import Customer from '../models/Customer';
 // // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
 
-
 const SOCKETROOMS = {
   WAITING: 'WAITING_ROOM'
 };
@@ -29,6 +28,12 @@ class SocketService {
     this.socket = socket;
     this.id = socket.id;
 
+    /**
+     * TODO investigate this. Upon connection, new event bus will be constructed, however it can be actually static/singletone or w/e
+     */
+    const eventBus = new EventBus();
+    EventBus.registerEvents(eventBus);
+    Container.set('event.bus', eventBus);
 
     /**
      * Magical handler for all frontend events. This may be wrong concept, need to be revised.
@@ -57,7 +62,7 @@ class SocketService {
             callback({
               ok: !!handleResult,
               ...handleResult
-            })
+            });
           }
         }
       }
@@ -85,8 +90,8 @@ class SocketService {
       return customers;
     }, []);
 
-    GameController.startGame(customers);
-  };
+    GameController.startGame(customers); // todo verify that there's max 2 players
+  }
 
   disconnect = () => {
     console.log('@disconnect', this.id);
@@ -105,7 +110,6 @@ class SocketService {
       //   if (session.hasClients()) {
       //     return; // notify about disconnect todo
       //   }
-
       //   SessionsService.destroy(sessionID);
       // }
     } // todo case when no customer?
@@ -145,8 +149,8 @@ class SocketService {
       session.getState().getPlayer(customer.ID)?.invalidate(false); // mark player as 'update needed'
 
       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
-      const eventBus:EventBus = Container.get('event.bus');
-      eventBus.emit('stateUpdate', customer.ID, session.getState());
+      // const eventBus:EventBus = Container.get('event.bus');
+      // eventBus.emit('stateUpdate', customer.ID, session.getState()); // todo
 
       // todo restore if he is in battle?
     }
@@ -181,7 +185,7 @@ class SocketService {
         }
       });
 
-      return { ready: true};
+      return { ready: true };
     }
 
     return false;
