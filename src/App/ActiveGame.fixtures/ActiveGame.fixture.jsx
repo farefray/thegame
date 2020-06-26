@@ -15,7 +15,7 @@ const mockedEventEmitter = {
   }
 };
 
-Container.set('event.emitter', mockedEventEmitter);
+Container.set('event.bus', mockedEventEmitter);
 
 const PLAYER_INDEX = 0;
 
