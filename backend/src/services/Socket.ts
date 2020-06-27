@@ -20,6 +20,9 @@ const SOCKETROOMS = {
 
 const connectedPlayers = ConnectedPlayers.getInstance();
 
+const eventBus = new EventBus();
+Container.set('event.bus', eventBus);
+
 class SocketService {
   private socket: Socket;
   private id: SocketID;
@@ -28,12 +31,7 @@ class SocketService {
     this.socket = socket;
     this.id = socket.id;
 
-    /**
-     * TODO investigate this. Upon connection, new event bus will be constructed, however it can be actually static/singletone or w/e
-     */
-    const eventBus = new EventBus();
-    EventBus.registerEvents(eventBus);
-    Container.set('event.bus', eventBus);
+
 
     /**
      * Magical handler for all frontend events. This may be wrong concept, need to be revised.
