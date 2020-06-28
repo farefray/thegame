@@ -6,10 +6,13 @@ export default class Card {
   private monster: MonsterInterface;
   private config: CardConfig;
 
+  public cost: number;
   constructor(cardName: string, monster: MonsterInterface, cardConfig: CardConfig) {
     this.name = cardName.replace('_', ' ');
-    this.monster = monster; // todo monster cost = card cost
+    this.monster = monster;
     this.config = cardConfig;
+
+    this.cost = monster.cost; // todo monster cost = card cost via card config
   }
 
 

@@ -1,4 +1,7 @@
-57 search results found
+62 search results found
+
+file:///d:\thegame\backend\src\controllers\Game.ts
+  18:       await state.wait(15000); // todo
 
 file:///d:\thegame\backend\src\factories\CardsFactory.ts
   12:     // TODO[P3]: Player personal cards can be shuffled into deck
@@ -10,10 +13,8 @@ file:///d:\thegame\backend\src\models\Customer.ts
   21:   get ID() { // todo rename to uid or smt, to not mislead
 
 file:///d:\thegame\backend\src\models\Session.ts
-  10: // TODO consider using https://github.com/expressjs/session#readme for socket.io
-  64:     const playersPairs = this.getPlayerPairs(); // todo reworkt his
-  68:         const player = this.state.getPlayer(uid); // todo proper syntax
-  99:     // todo
+  11: // TODO consider using https://github.com/expressjs/session#readme for socket.io
+  74:     // todo
 
 file:///d:\thegame\backend\src\services\AI.ts
   28:   // todo get rid of dynamic imports. Preload those buckets and neurals!
@@ -23,31 +24,37 @@ file:///d:\thegame\backend\src\services\AI.ts
 file:///d:\thegame\backend\src\services\ConnectedPlayers.ts
   34:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
 
+file:///d:\thegame\backend\src\services\EventBus.ts
+  36: // TODO
+
 file:///d:\thegame\backend\src\services\Sessions.ts
   29:   // TODO session removale
 
 file:///d:\thegame\backend\src\services\Socket.ts
-  97:       // TODO !!!
-  111:     } // todo case when no customer?
-  147:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
-  151:       // todo restore if he is in battle?
+  91:     GameController.startGame(customers); // todo verify that there's max 2 players
+  100:       // TODO !!!
+  113:     } // todo case when no customer?
+  149:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
+  151:       // eventBus.emit('stateUpdate', customer.ID, session.getState()); // todo
+  153:       // todo restore if he is in battle?
 
 file:///d:\thegame\backend\src\shared\constants.js
   26:     FIRST_ROUND_COUNTDOWN: 15 * 1000, // todo make it work differently from countdown between rounds
 
 file:///d:\thegame\backend\src\structures\AiPlayer.ts
-  57:     // todo magic logic here to find any good units in pocket
-  81:     // todo
-  97:     return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
+  47:     if (!this.isBoardFull()) { // todo
+  58:     // todo magic logic here to find any good units in pocket
+  82:     // todo
+  98:     return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
 
 file:///d:\thegame\backend\src\structures\Battle.ts
-  27:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
-  50:   private units: BattleUnitList; // temporaly public for ai needs
-  211:       // TODO why isOver not handling this?
-  253:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
-  296:       this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
-  320:             // TODO avoid such issues
-  343:       startBoard: this.startBoard, // todo unlink? matrix to json?
+  30:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
+  53:   private units: BattleUnitList; // temporaly public for ai needs
+  215:       // TODO why isOver not handling this?
+  257:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
+  300:       this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
+  324:             // TODO avoid such issues
+  347:       startBoard: this.startBoard, // todo unlink? matrix to json?
 
 file:///d:\thegame\backend\src\structures\BattleUnit.ts
   107:         duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
@@ -58,20 +65,21 @@ file:///d:\thegame\backend\src\structures\BattleUnit.ts
 file:///d:\thegame\backend\src\structures\Battle\Pathfinder.ts
   205:     // todo make this human readable
 
+file:///d:\thegame\backend\src\structures\Card.ts
+  15:     this.cost = monster.cost; // todo monster cost = card cost via card config
+
 file:///d:\thegame\backend\src\structures\Player.ts
-  92:         // Todo check if this will be covered for leveled up units
-  103:       // TODO: Inform Client about update
-  124:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
-  187:     const unit = null; // todo this.shopUnits.get(pieceIndex);
+  69:         // Todo check if this will be covered for leveled up units
+  80:       // TODO: Inform Client about update
 
 file:///d:\thegame\backend\src\structures\State.ts
   18:   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
   37:     // TODO P0
+  47:   endRound(winners?) { // todo
   56:       // todo FOR REWORK!!
-  71:           this.dropPlayer(uid); // todo death/lose
-
-file:///d:\thegame\backend\src\structures\abstract\EventBusUpdater.ts
-  8:   private _invalidated = false; // TODO P2 make it possible to invalidate/send objects partially
+  67:           this.dropPlayer(uid); // todo death/lose
+  105:         //  todo new AppError('warning', 'Not enough money');
+  128:   // TODO
 
 file:///d:\thegame\backend\src\typings\Monster.ts
   10:     regen?: number, // TODO if we need this
@@ -82,9 +90,6 @@ file:///d:\thegame\backend\src\utils\effects.ts
 file:///d:\thegame\frontend\src\App\ActiveGame\GameBoard\BoardSquareDnD.jsx
   11:   // TODO the same check must be added to backend[without repeating the code!]
 
-file:///d:\thegame\frontend\src\App\ActiveGame\RightSidebar.fixture.jsx
-  8: // todo make it share functionality with jest and core.test.js
-
 file:///d:\thegame\frontend\src\App\ActiveGame\timeouts_test.js
   278:   const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
 
@@ -92,11 +97,17 @@ file:///d:\thegame\frontend\src\UI\custom-core.less
   1: // TODO better font include
   2: // TODO replace font with better variant
 
+file:///d:\thegame\frontend\src\UI\pages\merchantry\card.less
+  29:           background: rgb(204, 191, 75); // todo colors
+
 file:///d:\thegame\frontend\src\UI\ui.less
-  62: // Debug styles
+  68: // Debug styles
 
 file:///d:\thegame\frontend\src\firebase.js
   35:     // TODO profiles and displayName
+
+file:///d:\thegame\frontend\src\fixtures\todo3.jsx
+  8: // todo make it share functionality with jest and core.test.js
 
 file:///d:\thegame\frontend\src\objects\Unit.d.ts
   10:   effects: Array<any>; // TODO

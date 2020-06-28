@@ -13,8 +13,8 @@ import Player from '../src/structures/Player';
 import { EVENTBUS_MESSAGE_TYPE } from '../src/typings/EventBus';
 
 
-const useruid = 'test_user';
-const socketid = 'socket_id';
+const useruid = 'test_userid';
+const socketid = 'test_socketid';
 const CUSTOMERS = [new Customer(socketid, { uid: useruid } as FirebaseUser)];
 
 // state, player and merchantry after creation should be emitted
@@ -66,8 +66,8 @@ class GameTestSuite {
     expect(merchantry).to.be.a('object');
     expect(merchantry).to.be.an.instanceof(Merchantry);
     expect(merchantry).to.have.property('deck');
-    expect(merchantry.getDeck().length).to.be.equal(merchantry.DECK_SIZE - merchantry.REVEALED_CARDS_SIZE);
-    expect(merchantry.getRevealedCards().length).to.be.equal(merchantry.REVEALED_CARDS_SIZE);
+    expect(merchantry.getDeck().size).to.be.equal(merchantry.DECK_SIZE - merchantry.REVEALED_CARDS_SIZE);
+    expect(merchantry.getRevealedCards().size).to.be.equal(merchantry.REVEALED_CARDS_SIZE);
   }
 
   @test
@@ -75,5 +75,18 @@ class GameTestSuite {
     const state = new State(CUSTOMERS);
     expect(state).to.be.an.instanceof(State);
     expect(state.getPlayer(useruid)?.getUID()).to.be.equal(useruid);
+  }
+
+  @test
+  canBuyCard() {
+    const state = new State(CUSTOMERS);
+    const player = state.getPlayer(useruid);
+    expect(player).to.be.an.instanceof(Player);
+
+    if (player) {
+      player.gold = 100;
+      state.purchaseCard(useruid, 0);
+      expect(player.discard.size).to.be.above(0);
+    }
   }
 }

@@ -6,6 +6,7 @@ check-leaks: false
 color: true
 delay: false
 diff: true
+diagnostics: false
 exit: false # could be expressed as "no-exit: true"
 extension:
   - js

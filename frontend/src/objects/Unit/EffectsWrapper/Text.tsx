@@ -5,6 +5,10 @@ type TextType = BaseEffectType & {
     speed?: number;
     classes?: string;
 }
+/**
+ * TODO animation via framer
+ * @see https://github.com/nicklemmon/react-deckbuilder/blob/master/src/components/Avatar/Avatar.tsx
+ */
 
 export class Text extends BaseEffect implements TextType {
     public text: string;

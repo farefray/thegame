@@ -9,10 +9,19 @@ import fallbackImage from '../../assets/monsters/default.png';
  * preload and cache images somehow
  * once fire onUnitSpriteLoaded to determine unit dimensions
  */
-export default function UnitImage ({ lookType, direction, isMoving, extraClass = '', onUnitSpriteLoaded }: {
-  lookType: number, direction: number, isMoving: boolean, extraClass: string, onUnitSpriteLoaded?: Function
+export default function UnitImage({
+  lookType,
+  direction,
+  isMoving,
+  extraClass = '',
+  onUnitSpriteLoaded
+}: {
+  lookType: number;
+  direction: number;
+  isMoving: boolean;
+  extraClass: string;
+  onUnitSpriteLoaded?: Function;
 }) {
-
   if (!lookType) {
     throw new Error('Looktype for monsters is missing');
   }
@@ -48,7 +57,7 @@ export default function UnitImage ({ lookType, direction, isMoving, extraClass =
         4: require(`../../assets/monsters/${lookType}/4.gif`)
       }
     });
-  }, [lookType])
+  }, [lookType]);
 
   // we make assumption that sprite size is same for all sprites of this monster.
   React.useEffect(() => {
@@ -62,11 +71,15 @@ export default function UnitImage ({ lookType, direction, isMoving, extraClass =
     setSprite(sprites[isMoving ? 'animated' : 'idle'][direction]);
   }, [direction, isMoving, sprites]);
 
-  const classes = classNames({
-    'unit-image': true
-  }, extraClass);
-
-  return (
-    <img src={sprite} onError={() => setSprite(fallbackImage)} alt="Unit" className={classes} style={{ bottom: 0, right: 0 }}/>
+  const classes = classNames(
+    {
+      'unit-image': true
+    },
+    extraClass
   );
+
+  return <img src={sprite} onError={() => setSprite(fallbackImage)} alt="Unit" className={classes} style={{
+    bottom: 0,
+    right: 0
+  }} />;
 }

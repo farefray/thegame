@@ -194,6 +194,9 @@ class SocketService {
     return true;
   };
 
+  /**
+   * Since registration is handled on frontend, we just send notification to backend that event successfully handled
+   */
   NEW_CUSTOMER_REGISTRATION = () => {
     this.socket.emit('NOTIFICATION', {
       type: 'success',
@@ -203,54 +206,13 @@ class SocketService {
     return true;
   };
 
-  PURCHASE_CARD = (pieceIndex) => {
+  PURCHASE_CARD = (cardIndex) => {
     const customer = connectedPlayers.getBySocket(this.id);
     if (customer) {
-      const session = customer.getSession();
-
-      if (session) {
-        const result = session.getState().getPlayer(customer.ID)?.purchasePawn(pieceIndex);
-        if (result instanceof AppError) {
-          const io: SocketIO.Server = Container.get('socket.io');
-          io.to(`${this.id}`).emit('NOTIFICATION', result);
-          return false;
-        }
-
-        return true;
-      }
+      return customer.getSession()?.getState()?.purchaseCard(customer.ID, cardIndex);
     }
 
-    return false;
-  };
-
-  PLACE_PIECE = (positions) => {
-    const customer = connectedPlayers.getBySocket(this.id);
-    if (customer) {
-      const session = customer.getSession();
-
-      if (session) {
-        session.getState().getPlayer(customer.ID)?.moveUnitBetweenPositions(Position.fromString(positions.from), Position.fromString(positions.to));
-
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  sellUnit = (fromBoardPosition) => {
-    const customer = connectedPlayers.getBySocket(this.id);
-    if (customer) {
-      const session = customer.getSession();
-
-      if (session) {
-        session.getState().getPlayer(customer.ID)?.sellPawn(fromBoardPosition);
-
-        return true;
-      }
-    }
-
-    return false;
+    return true;
   };
 }
 

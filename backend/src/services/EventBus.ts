@@ -32,3 +32,7 @@ export default class EventBus{
     }
   }
 }
+
+// TODO
+// const io: SocketIO.Server = Container.get('socket.io');
+// io.to(`${this.id}`).emit('NOTIFICATION', result);

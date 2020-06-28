@@ -58,10 +58,6 @@ export default class State extends EventBusUpdater {
       const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
       this.players[uid].gold = gold + this.incomeBase + bonusGold;
 
-      if (this.round <= MAX_LEVEL) {
-        this.players[uid].level = this.round;
-      }
-
       if (winners && !winners.includes(uid)) {
         // player lost battle, remove health
         const newHealth: number = this.players[uid].health - this.round;
@@ -93,24 +89,29 @@ export default class State extends EventBusUpdater {
     await sleep(time);
   }
 
-  getPlayer(playerUID): Player|undefined {
-    return this.players.get(playerUID);
+  getPlayer(playerUID) {
+    return this.players.get(playerUID)
   }
 
-  /**
-   * Prepare only data which is required for socket transfer
-   */
-  toSocket() {
-    return {
-      round: this.round,
-      countdown: this.countdown,
-      players: [...this.players.values()].map(player => ({
-        uid: player.getUID(),
-        level: player.level,
-        health: player.health
-      })),
-    };
+  /** TODO FirebaseUser['uid'] to be some easier type */
+  purchaseCard(playerUID: FirebaseUser['uid'], cardIndex: number) {
+    /**
+     * TODO Phase2, auction for cards?
+     */
+    const revealedCards = this.merchantry.getRevealedCards();
+    const player = this.getPlayer(playerUID);
+    if (player) {
+      if (player.gold < revealedCards.get(cardIndex).cost) {
+        //  todo new AppError('warning', 'Not enough money');
+        return false;
+      }
+
+      player.addToDiscard(revealedCards.eject(cardIndex));
+    }
+
+    return true;
   }
+
 
   getRound() {
     return this.round;
@@ -131,6 +132,17 @@ export default class State extends EventBusUpdater {
         player.invalidate(true);
       }
     });
+  }
+
+  toSocket() {
+    return {
+      round: this.round,
+      countdown: this.countdown,
+      players: [...this.players.values()].map(player => ({
+        uid: player.getUID(),
+        health: player.health
+      })),
+    };
   }
 
 }
