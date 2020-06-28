@@ -25,7 +25,7 @@ export default class Merchantry extends EventBusUpdater {
 
     this.revealCards();
 
-    this.invalidate(true);
+    this.invalidate();
   }
 
   getDeck() {

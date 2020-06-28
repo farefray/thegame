@@ -150,7 +150,7 @@ export default class Battle extends EventBusUpdater {
     }
 
     this.setWinner();
-    this.invalidate(true);
+    this.invalidate();
   }
 
   *generateActions() {

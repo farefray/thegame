@@ -29,6 +29,10 @@ export default class AbstractList<T> {
     }
   }
 
+  values() {
+    return this._list;
+  }
+
   map(callback) {
     const resultArray: Array<T> = [];
     for (let index = 0; index < this._list.length; index++) {
@@ -52,6 +56,7 @@ export default class AbstractList<T> {
 
   push(entity) {
     this._list.push(entity);
+    return this;
   }
 
   filter(conditionFn: Function, mutateInstance = false) {

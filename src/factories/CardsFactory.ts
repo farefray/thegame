@@ -14,6 +14,10 @@ class CardsFactory {
     this._cardNames.push(...cardNames);
   }
 
+  public getAllCards() {
+    return this._cardNames;
+  }
+
   public getRandomCardName() {
     return randomProperty(this._cardNames);
   }

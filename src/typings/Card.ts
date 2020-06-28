@@ -5,7 +5,7 @@ export interface CardConfig {
     damage?: number
     gold?: number
   }
-  extra?: {
+  victory?: {
     health?: number
     damage?: number
     gold?: number
@@ -15,4 +15,9 @@ export interface CardConfig {
 export enum CARD_TYPES {
   CARD_MONSTER,
   CARD_ITEM
+}
+
+export enum ABILITY_PHASE {
+  INSTANT,
+  VICTORY
 }
