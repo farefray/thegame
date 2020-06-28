@@ -11,10 +11,10 @@ function PlayerStats({ playerStats }) {
         <div className="playerstats-frame playerstats-frame__gold">{playerStats.gold}</div>
       </Col>
       <Col xs={12} sm={6} md={6} lg={4}>
-        <div className="playerstats-frame playerstats-frame__units">{`${playerStats.unitsAmount} / ${playerStats.level}`}</div>
+        <div className="playerstats-frame playerstats-frame__units">{`? / ?`}</div>
       </Col>
       <Col xs={12} sm={6} md={6} lg={4}>
-        <div className="playerstats-frame playerstats-frame__level">{playerStats.level}</div>
+        <div className="playerstats-frame playerstats-frame__level">?</div>
       </Col>
     </React.Fragment>
   );

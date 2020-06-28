@@ -23,7 +23,7 @@ function ActiveGame() {
       <Row className="gameheader">
         <Col>
           <Row className="playerstats">
-            <PlayerStats playerStats={{ health: playerState.health, level: playerState.level, unitsAmount: playerState.boardUnits.length, gold: playerState.gold }} />
+            <PlayerStats playerStats={{ health: playerState.health, level: 1 /** TODO? */, unitsAmount: playerState.boardUnits.length, gold: playerState.gold }} />
             <Timer initialTimerValue={countdown} />
           </Row>
         </Col>

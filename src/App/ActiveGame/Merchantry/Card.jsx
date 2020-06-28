@@ -2,6 +2,11 @@ import React from 'react';
 import UnitImage from '@/objects/Unit/UnitImage';
 import { Icon } from 'rsuite';
 
+/**
+ *
+ * TODO framer-motion animation to deck
+ * todo icon set - http://nagoshiashumari.github.io/Rpg-Awesome/
+ */
 function Card({ card }) {
   return (
     <div className="card">
