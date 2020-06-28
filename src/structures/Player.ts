@@ -7,8 +7,10 @@ import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
 import Card from './Card';
+import CardsFactory from '../factories/CardsFactory';
 
 export const BOARD_UNITS_LIMIT = 8;
+const BASE_DECK_CONFIG = ['Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 
 export default class Player extends EventBusUpdater {
   public userUID: FirebaseUser['uid'];
@@ -17,12 +19,18 @@ export default class Player extends EventBusUpdater {
   public gold: number = 1;
   public board: BoardMatrix = new BoardMatrix(8, 8);
 
-  private hand = new Deck();
-  private deck = new Deck();
+  public hand = new Deck();
+  public deck = new Deck();
   public discard = new Deck();
 
   constructor(id: FirebaseUser['uid']) {
     super(EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, [id]);
+
+    // fill starting deck
+    const cardsFactory = new CardsFactory();
+    for (let index = 0; index < BASE_DECK_CONFIG.length; index++) {
+      this.deck.push(cardsFactory.createCard(BASE_DECK_CONFIG[index]))
+    }
 
     this.userUID = id;
     this.invalidate(true);

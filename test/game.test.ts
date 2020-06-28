@@ -56,7 +56,7 @@ class GameTestSuite {
     const randomCardName = cardsFactory.getRandomCardName();
     const card = cardsFactory.createCard(randomCardName);
     expect(card).to.be.an.instanceof(Card);
-    expect(card).to.have.property('monster');
+    expect(card).to.have.property('cost');
     expect(card).to.have.property('config');
   }
 
@@ -74,7 +74,13 @@ class GameTestSuite {
   canCreateStateWithCards() {
     const state = new State(CUSTOMERS);
     expect(state).to.be.an.instanceof(State);
-    expect(state.getPlayer(useruid)?.getUID()).to.be.equal(useruid);
+    const player = state.getPlayer(useruid);
+    expect(player).to.be.an.instanceof(Player);
+
+    if (player) {
+      expect(player?.getUID()).to.be.equal(useruid);
+      expect(player?.deck.size).to.be.above(0);
+    }
   }
 
   @test

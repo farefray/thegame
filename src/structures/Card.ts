@@ -1,18 +1,28 @@
 import { MonsterInterface } from "../typings/Monster";
-import { CardConfig } from "../typings/Card";
+import { CardConfig, CARD_TYPES } from "../typings/Card";
 
 export default class Card {
   private name: string;
-  private monster: MonsterInterface;
+  private monster?: MonsterInterface;
   private config: CardConfig;
 
   public cost: number;
-  constructor(cardName: string, monster: MonsterInterface, cardConfig: CardConfig) {
+  constructor(cardName: string, cardConfig: CardConfig, monster?: MonsterInterface) {
     this.name = cardName.replace('_', ' ');
-    this.monster = monster;
     this.config = cardConfig;
+    this.cost = cardConfig.cost;
 
-    this.cost = monster.cost; // todo monster cost = card cost via card config
+    if (monster) {
+      this.monster = monster;
+    }
+  }
+
+  get type() {
+    if (this.monster) {
+      return CARD_TYPES.CARD_MONSTER;
+    }
+
+    return CARD_TYPES.CARD_ITEM;
   }
 
 
