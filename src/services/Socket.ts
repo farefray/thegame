@@ -203,7 +203,7 @@ class SocketService {
     return true;
   };
 
-  PURCHASE_UNIT = (pieceIndex) => {
+  PURCHASE_CARD = (pieceIndex) => {
     const customer = connectedPlayers.getBySocket(this.id);
     if (customer) {
       const session = customer.getSession();

@@ -23,6 +23,8 @@ const events = [EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, EVENTBUS_MESSAGE_TYPE.S
 const mockedEventEmitter = {
   emitMessage: (type, recipient, message) => {
     expect(type).to.satisfy((eventName) => events.includes(eventName));
+    expect(recipient).to.be.equal(useruid);
+    expect(message).to.be.a('object');
   }
 };
 

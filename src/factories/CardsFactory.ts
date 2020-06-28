@@ -30,7 +30,7 @@ class CardsFactory {
 
     const monster = MonstersFactory.createUnit(cardName);
     const cardConfig = (cardConfigs[cardName] ? cardConfigs[cardName] : cardConfigs.default) as CardConfig;
-    return new Card(monster, cardConfig);
+    return new Card(cardName, monster, cardConfig);
   }
 }
 

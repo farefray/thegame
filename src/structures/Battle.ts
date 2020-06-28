@@ -351,7 +351,6 @@ export default class Battle extends EventBusUpdater {
   }
 
   toSocket() {
-    console.log('battle to socket')
     return this.battleResult;
   }
 }
