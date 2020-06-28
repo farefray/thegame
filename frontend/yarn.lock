@@ -1393,6 +1393,11 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
+"@jedmao/redux-mock-store@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@jedmao/redux-mock-store/-/redux-mock-store-3.0.5.tgz#015fa4fc96bfc02b61ca221d9ea0476b78c70c97"
+  integrity sha512-zNcVCd5/ekSMdQWk64CqTPM24D9Lo59st9KvS+fljGpQXV4SliB7Vo0NFQIgvQJWPYeeobdngnrGy0XbCaARNw==
+
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
@@ -7952,6 +7957,11 @@ less-loader@6.1.0:
     loader-utils "^2.0.0"
     schema-utils "^2.6.6"
 
+less-plugin-functions@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/less-plugin-functions/-/less-plugin-functions-1.0.0.tgz#c4fe10f681aae0a806daf9f412d20f013e10d247"
+  integrity sha1-xP4Q9oGq4KgG2vn0EtIPAT4Q0kc=
+
 less@^3.10.3:
   version "3.11.1"
   resolved "https://registry.yarnpkg.com/less/-/less-3.11.1.tgz#c6bf08e39e02404fe6b307a3dfffafdc55bd36e2"
@@ -10705,11 +10715,6 @@ react-cosmos-playground2@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/react-cosmos-playground2/-/react-cosmos-playground2-5.3.0.tgz#fa6d3c373546121dab4a27a3a07ae26c5575bb2d"
   integrity sha512-rnxvK5AbSFOsriTVDmJOAv5b9bPi4+CP5ArAWhRIsesOzZ2NcVaqJ+CbroTUI1hPT2Hx3jaaxdHWWutCESzATg==
-
-react-cosmos-redux@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-cosmos-redux/-/react-cosmos-redux-2.0.0.tgz#8a5908f32ab99bb49400b22d817d30330429a00e"
-  integrity sha512-cEfnllqhb+t3RDgUCxtn2Pn7oqmOasC/HS7ct86irv0iYdu35qCiJ1lYmamo7K5DfFMXmEzFPpZgKsq69njAwQ==
 
 react-cosmos-shared2@^4.8.1:
   version "4.8.1"

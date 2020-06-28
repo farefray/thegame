@@ -8,7 +8,7 @@ import PlayerStats from './ActiveGame/PlayerStats.jsx';
 import BattleBoardWrapper from './ActiveGame/BattleBoardWrapper.jsx';
 
 import RightSidebar from './ActiveGame/RightSidebar.jsx';
-import UnitShop from './ActiveGame/UnitShop.jsx';
+import Merchantry from './ActiveGame/Merchantry.jsx';
 import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import PlayerHand from './ActiveGame/PlayerHand.jsx';
 
@@ -37,7 +37,7 @@ function ActiveGame() {
             <Sidenav expanded={true} appearance="subtle" >
               <Sidenav.Body>
                 <Nav>
-                  <UnitShop shopUnits={playerState.shopUnits} />
+                  <Merchantry />
                 </Nav>
               </Sidenav.Body>
             </Sidenav>

@@ -53,6 +53,10 @@ export default ({ children }) => {
       dispatch({ type: 'UPDATE_PLAYER', player: player });
     });
 
+    socket.on('MERCHANTRY_UPDATE', (merchantry) => {
+      dispatch({ type: 'MERCHANTRY_UPDATE', merchantry });
+    });
+
     socket.on('NOTIFICATION', (notification) => {
       dispatch({ type: 'NOTIFICATION', notification: notification });
     });
