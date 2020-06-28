@@ -5,6 +5,10 @@ const DEFAULT_WALKING_SPEED = 1000;
 
 export default class MonstersFactory {
   static createUnit(unitName: string) {
+    if (!monsters[unitName]) {
+      return undefined;
+    }
+
     const monsterConfig = monsters[unitName];
 
     const monsterDefaults = {} as MonsterInterface;
