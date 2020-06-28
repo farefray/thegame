@@ -11,11 +11,13 @@ import Customer from '../src/models/Customer';
 import { FirebaseUser } from '../src/services/ConnectedPlayers';
 import Player from '../src/structures/Player';
 import { EVENTBUS_MESSAGE_TYPE } from '../src/typings/EventBus';
+import { ABILITY_PHASE } from '../src/typings/Card';
 
 
 const useruid = 'test_userid';
 const socketid = 'test_socketid';
-const CUSTOMERS = [new Customer(socketid, { uid: useruid } as FirebaseUser)];
+const monsterCardExample = 'Dwarf';
+const CUSTOMERS = [new Customer(socketid, { uid: useruid } as FirebaseUser), new Customer(socketid + '_2', { uid: useruid + '_2' } as FirebaseUser)];
 
 // state, player and merchantry after creation should be emitted
 const events = [EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE];
@@ -23,7 +25,7 @@ const events = [EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, EVENTBUS_MESSAGE_TYPE.S
 const mockedEventEmitter = {
   emitMessage: (type, recipient, message) => {
     expect(type).to.satisfy((eventName) => events.includes(eventName));
-    expect(recipient).to.be.equal(useruid);
+    expect(recipient).to.be.a('string');
     expect(message).to.be.a('object');
   }
 };
@@ -43,9 +45,7 @@ class GameTestSuite {
 
   @test
   canConstructMonsterByFactory() {
-    const cardsFactory = new CardsFactory();
-    const randomCardName = cardsFactory.getRandomCardName();
-    const monster = MonstersFactory.createUnit(randomCardName);
+    const monster = MonstersFactory.createUnit(monsterCardExample);
     expect(monster).to.be.a('object');
     expect(monster.lookType).to.be.a('number');
   }
@@ -71,7 +71,7 @@ class GameTestSuite {
   }
 
   @test
-  canCreateStateWithCards() {
+  canCreateStateWithCardsAndPlayerWithDeck() {
     const state = new State(CUSTOMERS);
     expect(state).to.be.an.instanceof(State);
     const player = state.getPlayer(useruid);
@@ -94,5 +94,42 @@ class GameTestSuite {
       state.purchaseCard(useruid, 0);
       expect(player.discard.size).to.be.above(0);
     }
+  }
+
+  @test
+  canDealCards() {
+    const state = new State(CUSTOMERS);
+    const player = state.getPlayer(useruid);
+    expect(player).to.be.an.instanceof(Player);
+
+    if (player) {
+      player.dealCards();
+      expect(player.hand.size).to.be.equal(5);
+    }
+  }
+}
+
+
+@suite
+class CardsTestSuite {
+  @test
+  cardsArePlayedOverall() {
+    const state = new State(CUSTOMERS);
+    const player = state.getPlayer(useruid);
+    expect(player).to.be.an.instanceof(Player);
+
+    if (player) {
+      player.dealCards();
+      state.playCards(ABILITY_PHASE.INSTANT);
+    }
+  }
+
+  @test
+  everyCardFunctionalityTest() {
+    const cardsFactory = new CardsFactory();
+    const allCards = cardsFactory.getAllCards()
+    allCards.forEach(cardName => {
+      // CardsService.playCard(this, player, card, ABILITY_PHASE.INSTANT);
+    })
   }
 }

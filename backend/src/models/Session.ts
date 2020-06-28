@@ -41,11 +41,21 @@ export default class Session {
   }
 
   async nextRound() {
-    const players = this.getState().getPlayersArray();
+    const state = this.getState();
+    const players = state.getPlayersArray();
 
-    if (players.length === 2) {
-      players[0].beforeBattle(players[1]);
-      players[1].beforeBattle(players[0]);
+    if (players.length === 2) { // ? todo can be different or what?
+      // players[0].beforeBattle(players[1]);
+      // players[1].beforeBattle(players[0]);
+
+      const firstPlayer = players[0];
+      const secondPlayer = players[1];
+
+      players.forEach((player) => {
+        player.dealCards();
+      })
+
+      state.playCards();
 
       const battleBoards: Array<BattleBoard> = [];
       battleBoards.push({

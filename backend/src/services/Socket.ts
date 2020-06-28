@@ -144,7 +144,7 @@ class SocketService {
     if (loginResults && loginResults.session) {
       // restore player session
       const { customer, session } = loginResults;
-      session.getState().getPlayer(customer.ID)?.invalidate(false); // mark player as 'update needed'
+      session.getState().getPlayer(customer.ID)?.invalidate(); // mark player as 'update needed'
 
       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
       // const eventBus:EventBus = Container.get('event.bus');

@@ -6,6 +6,8 @@ import { FirebaseUser } from '../services/ConnectedPlayers';
 import Merchantry from './Merchantry';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { ABILITY_PHASE } from '../typings/Card';
+import Card from './Card';
 
 const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
@@ -17,22 +19,24 @@ export default class State extends EventBusUpdater {
   private amountOfPlayers: number;
   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
   private round: number = 1;
-  private players: Map<FirebaseUser["uid"], Player>;
+  private players: Map<FirebaseUser['uid'], Player>;
   private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
-    super(EVENTBUS_MESSAGE_TYPE.STATE_UPDATE,
+    super(
+      EVENTBUS_MESSAGE_TYPE.STATE_UPDATE,
       customers.reduce((recipients: Array<FirebaseUser['uid']>, customer) => {
         recipients.push(customer.ID);
         return recipients;
-    }, []));
+      }, [])
+    );
 
     this.round = 1;
     this.incomeBase = 1;
     this.amountOfPlayers = customers.length;
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
-    this.players = new Map(customers.map(customer => [customer.ID, new Player(customer.ID)]));
+    this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID)]));
 
     // TODO P0
     // if (this.players.size % 2 > 0) {
@@ -41,10 +45,21 @@ export default class State extends EventBusUpdater {
 
     this.merchantry = new Merchantry(this.players.values());
 
-    this.invalidate(true);
+    this.invalidate();
   }
 
-  endRound(winners?) { // todo
+  playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT) {
+    for (const card of this.firstPlayer.hand.values()) {
+      card.applyAbilities(this.firstPlayer, this.secondPlayer, phase);
+    }
+
+    for (const card of this.secondPlayer.hand.values()) {
+      card.applyAbilities(this.secondPlayer, this.firstPlayer, phase);
+    }
+  }
+
+  endRound(winners?) {
+    // todo
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
     if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
       this.incomeBase = this.incomeBase + 1;
@@ -69,7 +84,7 @@ export default class State extends EventBusUpdater {
       }
     }
 
-    this.invalidate(true);
+    this.invalidate();
   }
 
   dropPlayer(playerID) {
@@ -90,7 +105,7 @@ export default class State extends EventBusUpdater {
   }
 
   getPlayer(playerUID) {
-    return this.players.get(playerUID)
+    return this.players.get(playerUID);
   }
 
   /** TODO FirebaseUser['uid'] to be some easier type */
@@ -112,9 +127,16 @@ export default class State extends EventBusUpdater {
     return true;
   }
 
-
   getRound() {
     return this.round;
+  }
+
+  get firstPlayer(): Player {
+    return [...this.players.values()][0];
+  }
+
+  get secondPlayer(): Player {
+    return [...this.players.values()][1];
   }
 
   getPlayers() {
@@ -129,7 +151,7 @@ export default class State extends EventBusUpdater {
   syncPlayers() {
     this.players.forEach((player) => {
       if (!player.isSynced()) {
-        player.invalidate(true);
+        player.invalidate();
       }
     });
   }
@@ -138,11 +160,10 @@ export default class State extends EventBusUpdater {
     return {
       round: this.round,
       countdown: this.countdown,
-      players: [...this.players.values()].map(player => ({
+      players: [...this.players.values()].map((player) => ({
         uid: player.getUID(),
         health: player.health
-      })),
+      }))
     };
   }
-
 }

@@ -9,8 +9,10 @@ import Deck from './Card/Deck';
 import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
 
-export const BOARD_UNITS_LIMIT = 8;
 const BASE_DECK_CONFIG = ['Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
+const HAND_SIZE = 5;
+
+export const BOARD_UNITS_LIMIT = 8;
 
 export default class Player extends EventBusUpdater {
   public userUID: FirebaseUser['uid'];
@@ -33,16 +35,39 @@ export default class Player extends EventBusUpdater {
     }
 
     this.userUID = id;
-    this.invalidate(true);
+    this.invalidate();
   }
 
   getUID() {
     return this.userUID;
   }
 
-  public addToDiscard(cards: Card[]) {
+  public addToDiscard(cards: Card) {
     this.discard.push(cards);
   }
+
+  public dealCards() {
+    /** TODO some safety, so it wont go into 4ever loop */
+    while (this.hand.size < HAND_SIZE) {
+      if (!this.deck.isEmpty()) {
+        this.hand.push(this.deck.eject(0));
+      } else if (this.discard.size > 0) {
+        for (const card of this.discard) { // thats n(x) hardness function. Todo make it flat
+          this.deck.push(card);
+        }
+
+        this.deck.shuffle();
+        this.discard.clean();
+      } else {
+        throw new Error('No cards left in discard/deck, while hand is not yet full')
+      }
+    }
+
+    this.invalidate();
+  }
+
+
+  /////// OLD
 
   isDead () {
     return this.health <= 0;

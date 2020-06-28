@@ -6,7 +6,6 @@ import EventBus from '../../services/EventBus';
 
 /**
  * Abstract class which represents some data structure which sometimes need to be synchronized with frontend, by delivering its short representation via socket.
- * TODO P2 make it possible to invalidate/send objects partially
  */
 export abstract class EventBusUpdater {
   private _invalidated = false; // if structure is dirty and need to be synced with subscribers
@@ -24,16 +23,10 @@ export abstract class EventBusUpdater {
 
   /**
    * Emitting event to update this player via socket
-   * @param {Boolean} instant should be transfered to socket instantly
    */
-  public invalidate(sendInstantly = false) {
-    if (sendInstantly) {
-      this.emitEventBusMessage();
-      this._invalidated = false;
-    } else {
-      // this can be improved, in order to mark invalidated parts, so only they will be sent to frontend during sync update
-      this._invalidated = true;
-    }
+  public invalidate() {
+    this.emitEventBusMessage();
+    this._invalidated = false;
   }
 
   private emitEventBusMessage() {
