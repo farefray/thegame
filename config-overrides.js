@@ -5,6 +5,7 @@
 const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader, addWebpackModuleRule, adjustStyleLoaders } = require('customize-cra');
 const { overridePassedProcessEnv } = require("cra-define-override");
 const { addReactRefresh } = require("customize-cra-react-refresh"); // todo test if thats works
+const LessPluginFunctions = require('less-plugin-functions');
 const path = require('path');
 
 // Build performance measuring. If not running with MEASURE var, just doing nothing
@@ -27,7 +28,7 @@ const enchantBabelForTypescript = () => config => {
   outsideBabelOptions.plugins.push('@babel/proposal-optional-chaining');
   outsideBabelOptions.plugins.push('@babel/proposal-nullish-coalescing-operator');
   outsideBabelOptions.presets.push('@babel/typescript');
-  getBabelLoader(config, true).test = mainConfig.test;
+  getBabelLoader(config, true).test = mainConfig.test; // ?
   return config;
 };
 
@@ -41,11 +42,15 @@ const webpackConfig = override(
     return config;
   },
   removeModuleScopePlugin(),
-  addWebpackModuleRule({ test: /\.(gif|jpe?g|png|svg)$/, use: [{ loader: '@lesechos/image-size-loader', options: {
-    name: '[name].[contenthash].[ext]',
-    outputPath: 'static/assets/',
-    postTransformPublicPath: (p) => `__webpack_public_path__ + ${p}`,
-  }}]}),
+  addWebpackModuleRule({
+    test: /\.(gif|jpe?g|png|svg)$/, use: [{
+      loader: '@lesechos/image-size-loader', options: {
+        name: '[name].[contenthash].[ext]',
+        outputPath: 'static/assets/',
+        postTransformPublicPath: (p) => `__webpack_public_path__ + ${p}`,
+      }
+    }]
+  }),
   addLessLoader({
     lessOptions: {
       modifyVars: require('./src/UI/ui-overrides.js'),
@@ -53,7 +58,10 @@ const webpackConfig = override(
       useFileCache: true, // enabled 02.06.20 to speedup compilation. Seems makes no isses
       sourceMap: isDev,
       javascriptEnabled: true, // required for rsuite
-      relativeUrls: false
+      relativeUrls: false,
+      plugins: [
+        new LessPluginFunctions()
+      ]
     },
   }),
   adjustStyleLoaders(({ use: [ , css, postcss, resolve, processor ] }) => {

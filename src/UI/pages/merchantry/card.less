@@ -1,0 +1,58 @@
+.card {
+  background: @color-dark;
+  border: 1px inset @color-black;
+  border-radius: rh(6);
+  box-sizing: border-box;
+  font-size: @font-size-small;
+  height: rh(55);
+  width: rh(35);
+
+  &-container {
+    list-style: none;
+  }
+
+  &-frame {
+    border: 2px inset brown;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+
+    .frame {
+      &-header {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+
+        &_cost {
+          background: rgb(204, 191, 75); // todo colors
+          border: 1px solid rgb(226, 174, 4);
+          border-radius: 50%;
+          color: yellow;
+          position: absolute;
+          right: 0;
+          text-align: center;
+          top: 0;
+          width: rh(5);
+        }
+
+        &_icon {
+          left: 0;
+          position: absolute;
+          top: 0;
+        }
+      }
+
+      &-body {
+        white-space: initial;
+      }
+
+      &-image {
+        bottom: rh(2);
+        position: absolute;
+        right: rh(1);
+      }
+    }
+  }
+}

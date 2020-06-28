@@ -1,0 +1,21 @@
+/* # Rh (Indents rhythm)
+  This function is designed to keep consistence of project vertical and horizontal indents.
+  If we have in design `22px` - we should round it to main rhythm.
+  This is alternate approach to `$space-md: 10px; $space-lg: 20px;`.
+  ## Usage
+
+  .* {
+    width: rh(2)
+  }
+
+  TODO: rh(2 0) or similar
+*/
+
+/* stylelint-disable */
+@size-rhythm-step: 4;
+
+.function {
+  .rh(@param) {
+    return: @param * @size-rhythm-step * 1px;
+  }
+}

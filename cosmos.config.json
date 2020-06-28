@@ -1,7 +1,6 @@
 {
     "globalImports": [
-        "./src/UI/ui.less",
-        "./src/console.log.tweaks.js"
+        "./src/UI/ui.less"
     ],
     "watchDirs": [ "src" ],
     "webpack": {

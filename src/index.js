@@ -8,9 +8,6 @@ import store from './store';
 import { Provider } from 'react-redux';
 import WebSocketProvider from './socket.context';
 
-if (process.env.NODE_ENV !== 'production') {
-  require('./console.log.tweaks.js');
-}
 
 // react-helmet use here?
 ReactDOM.render(

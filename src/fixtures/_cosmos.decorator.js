@@ -4,10 +4,10 @@
 import React from 'react';
 import _ from 'lodash';
 import { ReduxMock } from 'react-cosmos-redux';
-import rootReducer from '../../reducers';
+import rootReducer from '../reducers';
 import { createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import Battle from '../../../../backend/src/structures/Battle';
+import Battle from '../../../backend/src/structures/Battle';
 
 const generateGameState = async function (boardDefinition) {
   const battle = new Battle([

@@ -7,7 +7,7 @@ export default function merchantry(state = defaults, action) {
     case 'MERCHANTRY_UPDATE': {
       return {
         ...state,
-        revealedCards: action.revealedCards
+        revealedCards: action.merchantry.revealedCards
       };
     }
     default:
