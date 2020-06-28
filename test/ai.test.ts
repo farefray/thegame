@@ -75,7 +75,6 @@ class Minor_AI_functionality {
   @test
   getPreferablePosition() {
     const playerOne = new AiPlayer('ai_1');
-    playerOne.level = 10;
     const monsterService = MonsterService.getInstance();
     while(!playerOne.isBoardFull()) {
       const monsterInterface = monsterService.getRandomUnit();

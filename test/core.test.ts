@@ -97,15 +97,6 @@ describe('Core Modules', () => {
       should.exist(player.board.getCell(0, 1))
     });
 
-    it('can sell pawn', () => {
-      const player:Player = new Player('test_sell');
-      const result = player.purchasePawn(0);
-      should(result).not.instanceOf(AppError);
-      player.gold.should.be.equal(0);
-      player.sellPawn('0,-1');
-      player.gold.should.be.equal(1);
-      should(player.hand.getCell(firstHandPosition)).null();
-    });
 
     it.skip('can swap pawn', () => {
       const player: Player = new Player('test_swap');

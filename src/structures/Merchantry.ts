@@ -1,16 +1,16 @@
 import CardsFactory from '../factories/CardsFactory';
 import Player from "./Player";
-import Card from './Card';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 import { FirebaseUser } from '../services/ConnectedPlayers';
+import Deck from './Card/Deck';
 
 export default class Merchantry extends EventBusUpdater {
   DECK_SIZE = 48;
   REVEALED_CARDS_SIZE = 5;
 
-  private deck: Array<Card> = [];
-  private revealedCards: Array<Card> = [];
+  private deck = new Deck();
+  private revealedCards = new Deck();
 
   constructor(players: IterableIterator<Player>) {
     super(EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, [...players].reduce((subscribers: Array<FirebaseUser['uid']>, player) => {
@@ -37,7 +37,7 @@ export default class Merchantry extends EventBusUpdater {
   }
 
   revealCards() {
-    while (this.deck.length > 0 && this.revealedCards.length < this.REVEALED_CARDS_SIZE) {
+    while (this.deck.size > 0 && this.revealedCards.size < this.REVEALED_CARDS_SIZE) {
       const deckCard = this.deck.shift();
 
       if (deckCard) {
