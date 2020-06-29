@@ -42,18 +42,14 @@ export default class GameController {
             units: state.secondPlayer.board.reverse().units()
           });
 
-          const battle = new Battle(battleBoards, [state.firstPlayer.getUID(), state.secondPlayer.getUID()]);
+          const battle = new Battle(battleBoards);
           await battle.proceedBattle();
+
+          state.playCards(ABILITY_PHASE.VICTORY);
         }
       }
 
-      // const { winners, roundCountdown } = roundResults;
-
-      await state.wait(15000); // todo
-
-      state.endRound();
-
-      await state.waitUntilNextRound();
+      await state.wait(STATE.FIRST_ROUND_COUNTDOWN);
     }
   }
 }

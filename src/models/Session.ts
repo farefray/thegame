@@ -1,11 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import State from '../structures/State';
-import Battle, { BattleBoard, BattleResult } from '../structures/Battle';
-import Player from '../structures/Player';
 import SessionsService from '../services/Sessions';
 import Customer from './Customer';
-import { FirebaseUser } from '../services/ConnectedPlayers';
-import { ABILITY_PHASE } from '../typings/Card';
 
 const MAX_ROUND = 25;
 

@@ -1,10 +1,11 @@
 import { MonsterInterface } from '../typings/Monster';
 import * as monsters from './configs/monsters';
+import BattleUnit from '../structures/BattleUnit';
 
 const DEFAULT_WALKING_SPEED = 1000;
 
 export default class MonstersFactory {
-  static createUnit(unitName: string) {
+  static getUnitConfiguration(unitName: string) {
     if (!monsters[unitName]) {
       return undefined;
     }
@@ -41,26 +42,15 @@ export default class MonstersFactory {
     return Object.assign({} as MonsterInterface, monsterDefaults, monsterConfig);
   }
 
+  static createBattleUnit(unitName: string) {
+    const configuration = MonstersFactory.getUnitConfiguration(unitName);
+    return new BattleUnit({
+      ...configuration,
+      name: unitName
+    })
+  }
+
   static getAllMonsters(): Array<string> {
     return Object.keys(monsters);
   }
-
-  static getMonsterStats(monsterName: string) {
-    return monsters[monsterName];
-  }
-
-  // getRandomCard() {
-    // return randomProperty(this._monsters);
-    // const monsterNames = Object.keys(this._monsters);
-    // const filtered = {};
-    // for (let i = 0; i < monsterNames.length; i++) {
-    //   const monsterName = monsterNames[i];
-    //   const mob: MonsterInterface = this._monsters[monsterName];
-    //   if (mob.specialty?.shopRestricted) {
-    //     continue;
-    //   }
-    //   filtered[monsterName] = mob;
-    // }
-    // return randomProperty(filtered) as MonsterInterface;
-  // }
 }

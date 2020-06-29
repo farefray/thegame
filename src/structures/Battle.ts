@@ -9,6 +9,7 @@ import BattleUnitList from './Battle/BattleUnitList';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { FirebaseUser } from '../services/ConnectedPlayers';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import sleep from '../utils/sleep';
 
 /**
  * TODO: move this into Battle.d.ts, just need to investigate if thats fine to use classes in types,
@@ -19,15 +20,6 @@ export interface BattleContext {
   pathfinder: Pathfinder;
   targetPairPool: TargetPairPool;
   units: BattleUnitList;
-}
-
-export interface BattleResult {
-  battleTime: number;
-  actionStack: Array<Object>;
-  startBoard: BoardMatrix;
-  participants: Array<string>;
-  winner: string;
-  finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
 }
 
 export interface UnitAction {
@@ -59,25 +51,27 @@ export default class Battle extends EventBusUpdater {
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
   constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<FirebaseUser['uid']>) {
-    super(EVENTBUS_MESSAGE_TYPE.BATTLE, subscribers);
+    super(EVENTBUS_MESSAGE_TYPE.BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<FirebaseUser['uid']>, battleBoard) => {
+      subs.push(battleBoard.owner);
+      return subs;
+    }, []));
 
     this.startBoard = new BoardMatrix(8, 8);
-    this[Symbol.for('owners')] = {};
+    this[Symbol.for('owners')] = {}; // todo not needed I guess
 
-    if (unitBoards.length) {
-      unitBoards.forEach((unitBoard, teamId) => {
-        if (unitBoard.owner) {
-          this[Symbol.for('owners')][teamId] = unitBoard.owner;
-        }
+    unitBoards.forEach((unitBoard, teamId) => {
+      if (unitBoard.owner) {
+        this[Symbol.for('owners')][teamId] = unitBoard.owner;
+      }
 
-        if (unitBoard.units.size) {
-          for (const unit of unitBoard.units) {
-            // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
-            this.startBoard.setCell(unit.x, unit.y, unit);
-          }
+      if (unitBoard.units.size) {
+        for (const unit of unitBoard.units) {
+          // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
+          unit.team = teamId;
+          this.startBoard.setCell(unit.x, unit.y, unit);
         }
-      });
-    }
+      }
+    });
 
     this.currentTimestamp = 0;
     this.actionStack = [];
@@ -90,7 +84,7 @@ export default class Battle extends EventBusUpdater {
     this.units = this.startBoard.units().shuffle();
 
     // dirty way to unlink units from startboard, need to be revised
-    this.startBoard = JSON.parse(JSON.stringify(this.startBoard));
+    this.startBoard = JSON.parse(JSON.stringify(this.startBoard.toSocket()));
 
     this.pathfinder = new Pathfinder();
 
@@ -124,7 +118,7 @@ export default class Battle extends EventBusUpdater {
     }
   }
 
-  async proceedBattle() {
+  async proceedBattle(wait = true) {
     /**
      * TODO such case is possible - we start battle against no units, and manaregen/casts will be executed for units, while there will be no targets and so on.
      * !FIX THIS
@@ -140,6 +134,10 @@ export default class Battle extends EventBusUpdater {
 
     this.setWinner();
     this.invalidate();
+
+    if (wait) {
+      await sleep(this.currentTimestamp);
+    }
   }
 
   *generateActions() {
@@ -327,19 +325,14 @@ export default class Battle extends EventBusUpdater {
   }
 
   // output for a battle execution
-  get battleResult(): BattleResult {
+  toSocket() {
     return {
       actionStack: this.optimizedActionStack,
-      battleTime: this.currentTimestamp,
       winner: this.winner,
 
-      startBoard: this.startBoard, // todo unlink? matrix to json?
+      startBoard: this.startBoard,
       participants: Object.values(this[Symbol.for('owners')]), // ??
       finalBoard: this.units // OMIT this!!
-    }
-  }
-
-  toSocket() {
-    return this.battleResult;
+    };
   }
 }
