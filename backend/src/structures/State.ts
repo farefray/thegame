@@ -1,4 +1,3 @@
-import { promisify } from 'util';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
@@ -7,15 +6,12 @@ import Merchantry from './Merchantry';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
-import Card from './Card';
+import sleep from '../utils/sleep';
 
-const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
-const MAX_LEVEL = 8;
 
 export default class State extends EventBusUpdater {
-  private incomeBase: number;
   private amountOfPlayers: number;
   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
   private round: number = 1;
@@ -32,7 +28,6 @@ export default class State extends EventBusUpdater {
     );
 
     this.round = 1;
-    this.incomeBase = 1;
     this.amountOfPlayers = customers.length;
     this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
@@ -52,6 +47,7 @@ export default class State extends EventBusUpdater {
   }
 
   playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT) {
+    // todo phase victory, to define which cards won the battle and play them. Discard all the others
     this.players.forEach((player) => {
       const opponent = this.getPlayersArray().filter(p => p.getUID() !== player.getUID())[0];
 
@@ -73,35 +69,6 @@ export default class State extends EventBusUpdater {
     });
   }
 
-  endRound(winners?) {
-    // todo
-    this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
-    if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
-      this.incomeBase = this.incomeBase + 1;
-    }
-
-    this.round = this.round + 1;
-
-    for (const uid in this.players) {
-      // todo FOR REWORK!!
-      const gold: number = this.players[uid].gold;
-      const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
-      this.players[uid].gold = gold + this.incomeBase + bonusGold;
-
-      if (winners && !winners.includes(uid)) {
-        // player lost battle, remove health
-        const newHealth: number = this.players[uid].health - this.round;
-        this.players[uid].health = newHealth;
-
-        if (newHealth < 1) {
-          this.dropPlayer(uid); // todo death/lose
-        }
-      }
-    }
-
-    this.invalidate();
-  }
-
   dropPlayer(playerID) {
     for (const [uid, player] of this.players) {
       if (uid === playerID) {
@@ -111,15 +78,8 @@ export default class State extends EventBusUpdater {
     }
   }
 
-  async waitUntilNextRound() {
-    await sleep(this.countdown);
-  }
-
   async wait(time) {
     // todo rework this
-    this.countdown = time;
-    this.invalidate();
-
     await sleep(time);
   }
 

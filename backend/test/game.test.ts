@@ -12,7 +12,10 @@ import { FirebaseUser } from '../src/services/ConnectedPlayers';
 import Player from '../src/structures/Player';
 import { EVENTBUS_MESSAGE_TYPE } from '../src/typings/EventBus';
 import { ABILITY_PHASE } from '../src/typings/Card';
-
+import BattleUnitList from '../src/structures/Battle/BattleUnitList';
+import BattleUnit from '../src/structures/BattleUnit';
+import Battle from '../src/structures/Battle';
+import Position from '../src/shared/Position';
 
 const useruid = 'test_userid';
 const socketid = 'test_socketid';
@@ -20,13 +23,17 @@ const monsterCardExample = 'Dwarf';
 const CUSTOMERS = [new Customer(socketid, { uid: useruid } as FirebaseUser), new Customer(socketid + '_2', { uid: useruid + '_2' } as FirebaseUser)];
 
 // state, player and merchantry after creation should be emitted
-const events = [EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE];
+const events = [EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, EVENTBUS_MESSAGE_TYPE.BATTLE];
 
 const mockedEventEmitter = {
   emitMessage: (type, recipient, message) => {
     expect(type).to.satisfy((eventName) => events.includes(eventName));
     expect(recipient).to.be.a('string');
     expect(message).to.be.a('object');
+
+    // if (type === EVENTBUS_MESSAGE_TYPE.BATTLE) {
+    //   console.log(('message'));
+    // }
   }
 };
 
@@ -45,8 +52,8 @@ class GameTestSuite {
 
   @test
   canConstructMonsterByFactory() {
-    const monster = MonstersFactory.createUnit(monsterCardExample);
-    expect(monster).to.be.a('object');
+    const monster = MonstersFactory.createBattleUnit(monsterCardExample);
+    expect(monster).to.be.an.instanceof(BattleUnit);
     expect(monster.lookType).to.be.a('number');
   }
 
@@ -127,8 +134,8 @@ class CardsTestSuite {
       state.playCards(ABILITY_PHASE.INSTANT);
 
       // first round, all cards are instantly played and moved to discard
-      expect(player.hand.size).to.be.equal(0);
-      expect(player.discard.size).to.be.equal(5);
+      expect(player.hand.size).to.be.below(5);
+      expect(player.discard.size).to.be.above(0);
     }
   }
 
@@ -141,5 +148,26 @@ class CardsTestSuite {
       const card = cardsFactory.createCard(cardName);
       card.applyAbilities(state.firstPlayer, state.secondPlayer, ABILITY_PHASE.INSTANT);
     })
+  }
+}
+
+@suite
+class BattleTestSuite {
+  @test
+  async canExecuteBattle() {
+    const battleUnit = MonstersFactory.createBattleUnit('Dwarf');
+    battleUnit.rearrangeToPos(new Position(4,4));
+    const npcBoard = new BattleUnitList([
+      battleUnit
+    ]);
+
+    const secondBattleUnit = MonstersFactory.createBattleUnit('Dwarf');
+    secondBattleUnit.rearrangeToPos(new Position(3,4));
+    const playerBoard = new BattleUnitList([
+      secondBattleUnit
+    ]);
+
+    const battle = new Battle([{ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' }]);
+    await battle.proceedBattle(false);
   }
 }

@@ -31,7 +31,7 @@ class CardsFactory {
       throw new Error('No such card exists');
     }
 
-    const monster = MonstersFactory.createUnit(cardName);
+    const monster = MonstersFactory.getUnitConfiguration(cardName);
     const cardConfig = (cardsConfigs[cardName] ? cardsConfigs[cardName] : cardsConfigs.default) as CardConfig;
     return new Card(cardName, cardConfig, monster);
   }

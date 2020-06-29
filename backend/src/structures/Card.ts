@@ -20,7 +20,7 @@ export default class Card extends EventBusUpdater {
     if (monster) {
       this.monster = {
         ...monster,
-        name: this.name
+        name: cardName
       };
     }
   }

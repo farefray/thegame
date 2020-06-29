@@ -8,6 +8,7 @@ import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
 import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
+import MonstersFactory from '../factories/MonstersFactory';
 
 const BASE_DECK_CONFIG = ['Dwarf', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
@@ -48,7 +49,7 @@ export default class Player extends EventBusUpdater {
   }
 
   public addToBoard(card) {
-    const unit = new BattleUnit(card.monster);
+    const unit = MonstersFactory.createBattleUnit(card.monster.name);
     const position = unit.getPreferablePosition(this.board.freeSpots())
     unit.rearrangeToPos(position);
     this.board.setCell(position.x, position.y, unit);

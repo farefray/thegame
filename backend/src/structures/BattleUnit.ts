@@ -72,47 +72,44 @@ export default class BattleUnit {
 
   constructor(monsterConfig: MonsterInterface) {
     const unitName = monsterConfig?.name || 'Unknown monster';
-    const unitStats = MonstersFactory.getMonsterStats(unitName);
 
     this.name = unitName;
-    this.cost = unitStats.cost;
-
-    const { attack } = unitStats;
+    this.cost = monsterConfig.cost;
 
     this.attack = {
-      ...attack
+      ...monsterConfig.attack
     };
 
-    if (attack.particleID) {
-      attack.particle = {
-        id: attack.particleID || null,
-        duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
+    if (monsterConfig.attack && monsterConfig.attack.particleID) {
+      this.attack.particle = {
+        id: monsterConfig.attack?.particleID || null,
+        duration: Math.floor((monsterConfig.attack?.speed ?? 0) / 10) // todo isnt this supposed to be varying on distance/atkspeed?
       };
     }
 
-    this.armor = unitStats.armor;
-    this.lookType = unitStats.lookType;
+    this.armor = monsterConfig.armor ?? 0;
+    this.lookType = monsterConfig.lookType;
 
-    if (unitStats.mana) {
+    if (monsterConfig.mana) {
       this._mana = {
         now: 0,
-        max: unitStats.mana.max || 0,
-        regen: unitStats.mana.regen || 0
+        max: monsterConfig.mana.max || 0,
+        regen: monsterConfig.mana.regen || 0
       };
     }
 
-    this.spell = unitStats.spell;
+    this.spell = monsterConfig.spell;
 
     this._health = {
-      now: unitStats.health.max,
-      max: unitStats.health.max
+      now: monsterConfig.health.max,
+      max: monsterConfig.health.max
     };
 
-    this.walkingSpeed = unitStats.walkingSpeed;
+    this.walkingSpeed = monsterConfig.walkingSpeed ?? 0;
 
-    this.isTargetable = unitStats?.specialty?.targetable !== undefined ? unitStats.specialty.targetable : true;
-    this.isPassive = unitStats?.specialty?.passive !== undefined ? unitStats.specialty.passive : false;
-    this.isShopRestricted = !!unitStats?.specialty?.shopRestricted;
+    this.isTargetable = monsterConfig?.specialty?.targetable !== undefined ? monsterConfig.specialty.targetable : true;
+    this.isPassive = monsterConfig?.specialty?.passive !== undefined ? monsterConfig.specialty.passive : false;
+    this.isShopRestricted = !!monsterConfig?.specialty?.shopRestricted;
   }
 
   /** Socket representation for unit which not requires most of the data */
@@ -208,6 +205,10 @@ export default class BattleUnit {
     }
 
     return 0;
+  }
+
+  set team(value) {
+    this.teamId = value;
   }
 
   rearrangeToPos(pos: Position) {
