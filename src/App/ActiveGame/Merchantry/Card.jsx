@@ -7,14 +7,14 @@ import { Icon } from 'rsuite';
  * TODO framer-motion animation to deck
  * todo icon set - http://nagoshiashumari.github.io/Rpg-Awesome/
  */
-function Card({ card }) {
+function Card({card}) {
   return (
     <div className="card">
       <div className="card-frame frame">
         <div className="frame-header">
           <div className="frame-header_icon"><Icon icon='star-half-o' /></div>
           <span className="frame-header_name">{card.name}</span>
-          <div className="frame-header_cost">{card.monster.cost}</div>
+          <div className="frame-header_cost">{card.cost}</div>
         </div>
 
         <div className="frame-body">
@@ -24,7 +24,7 @@ function Card({ card }) {
         </div>
 
         <div className="frame-image">
-          <UnitImage lookType={card.monster.lookType} direction={3} isMoving={false} />
+          {card.monster && <UnitImage lookType={card.monster.lookType} direction={3} isMoving={false} />}
         </div>
       </div>
     </div>
