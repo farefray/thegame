@@ -20,12 +20,11 @@ export default class Merchantry extends EventBusUpdater {
 
     const cardsFactory = new CardsFactory(players);
     for (let i = 0; i < this.DECK_SIZE; i++) {
-      this.deck.push(cardsFactory.getRandomCard());
+      const card = cardsFactory.getRandomCard();
+      this.deck.push(card);
     }
 
     this.revealCards();
-
-    this.invalidate();
   }
 
   getDeck() {
@@ -44,13 +43,13 @@ export default class Merchantry extends EventBusUpdater {
         this.revealedCards.push(deckCard);
       }
     }
+
+    this.invalidate();
   }
 
   toSocket() {
     return {
-      revealedCards: this.revealedCards.map(card => ({
-        card: card.toSocket()
-      }))
+      revealedCards: this.revealedCards.toSocket()
     }
   }
 }

@@ -94,6 +94,10 @@ class GameTestSuite {
       state.purchaseCard(useruid, 0);
       expect(player.discard.size).to.be.above(0);
     }
+
+    const merchantry = state.getMerchantry();
+    expect(merchantry.getRevealedCards().size).to.be.equal(merchantry.REVEALED_CARDS_SIZE);
+    expect(merchantry.getDeck().size).to.be.equal(merchantry.DECK_SIZE - merchantry.REVEALED_CARDS_SIZE - 1);
   }
 
   @test
@@ -113,7 +117,7 @@ class GameTestSuite {
 @suite
 class CardsTestSuite {
   @test
-  cardsArePlayedOverall() {
+  cardsArePlayedInstant() {
     const state = new State(CUSTOMERS);
     const player = state.getPlayer(useruid);
     expect(player).to.be.an.instanceof(Player);
@@ -121,15 +125,21 @@ class CardsTestSuite {
     if (player) {
       player.dealCards();
       state.playCards(ABILITY_PHASE.INSTANT);
+
+      // first round, all cards are instantly played and moved to discard
+      expect(player.hand.size).to.be.equal(0);
+      expect(player.discard.size).to.be.equal(5);
     }
   }
 
   @test
   everyCardFunctionalityTest() {
+    const state = new State(CUSTOMERS);
     const cardsFactory = new CardsFactory();
     const allCards = cardsFactory.getAllCards()
     allCards.forEach(cardName => {
-      // CardsService.playCard(this, player, card, ABILITY_PHASE.INSTANT);
+      const card = cardsFactory.createCard(cardName);
+      card.applyAbilities(state.firstPlayer, state.secondPlayer, ABILITY_PHASE.INSTANT);
     })
   }
 }

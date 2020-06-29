@@ -9,7 +9,7 @@ import Deck from './Card/Deck';
 import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
 
-const BASE_DECK_CONFIG = ['Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
+const BASE_DECK_CONFIG = ['Dwarf', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
 
 export const BOARD_UNITS_LIMIT = 8;
@@ -18,7 +18,7 @@ export default class Player extends EventBusUpdater {
   public userUID: FirebaseUser['uid'];
   public health: number = 50;
   public exp: number = 0;
-  public gold: number = 1;
+  public gold: number = 0;
   public board: BoardMatrix = new BoardMatrix(8, 8);
 
   public hand = new Deck();
@@ -42,8 +42,32 @@ export default class Player extends EventBusUpdater {
     return this.userUID;
   }
 
-  public addToDiscard(cards: Card) {
-    this.discard.push(cards);
+  public cardPurchase(card: Card) {
+    this.gold -= card.cost;
+    this.addToDiscard(card);
+  }
+
+  public addToBoard(card) {
+    const unit = new BattleUnit(card.monster);
+    const position = unit.getPreferablePosition(this.board.freeSpots())
+    unit.rearrangeToPos(position);
+    this.board.setCell(position.x, position.y, unit);
+
+    this.invalidate();
+  }
+
+  public moveToDiscard(card) {
+    this.discard.push(card);
+    const handCardIndex = this.hand.findIndex(handCard => handCard.name === card.name);
+    if (handCardIndex !== -1) {
+      this.hand.eject(handCardIndex);
+    }
+  }
+
+  public addToDiscard(card: Card) {
+    this.discard.push(card);
+
+    this.invalidate();
   }
 
   public dealCards() {
@@ -133,8 +157,11 @@ export default class Player extends EventBusUpdater {
       uid: this.userUID,
       health: this.health,
       gold: this.gold,
+      board: this.board.toSocket(),
+
       hand: this.hand.toSocket(),
-      board: this.board.toSocket()
+      deck: this.deck.toSocket(),
+      discard: this.discard.toSocket()
     }
   }
 }

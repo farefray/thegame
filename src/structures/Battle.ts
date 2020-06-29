@@ -72,19 +72,8 @@ export default class Battle extends EventBusUpdater {
 
         if (unitBoard.units.size) {
           for (const unit of unitBoard.units) {
-            /**
-             * TODO P0 - Investigate this. based on what we see on Session, units are alrdy a battleunitlist with battle units.
-             * Shall we create them? Or they supposed to be unitConfigs, not units.
-             */
-            const battleUnit = new BattleUnit({
-              name: unit.name,
-              x: unit.x,
-              y: unit.y,
-              teamId,
-            });
-
             // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
-            this.startBoard.setCell(unit.x, unit.y, battleUnit);
+            this.startBoard.setCell(unit.x, unit.y, unit);
           }
         }
       });

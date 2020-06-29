@@ -10,19 +10,9 @@ import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';
 import Step from './Battle/Pathfinder/Step';
+import { MonsterInterface } from '../typings/Monster';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
-
-/**
- * @description Describes base unit to be built into BattleUnit
- * @interface UnitConfig
- */
-export interface UnitConfig {
-  name: string;
-  x: number;
-  y: number;
-  teamId: number;
-}
 
 interface ActionOptions {
   parent?: string;
@@ -45,11 +35,11 @@ export interface SpellOptions {
 }
 
 export default class BattleUnit {
-  public id: string;
+  public id: string = '';
   public name: string;
-  public x: number;
-  public y: number;
-  public teamId: number;
+  public x: number = -1;
+  public y: number = -1;
+  public teamId: number = -1;
   public attack: {
     value?: number;
     range?: number;
@@ -80,19 +70,11 @@ export default class BattleUnit {
     regen: number;
   };
 
-  /**
-   * ? Unit config is not used anymore? Its alrdy battleunits here...
-   * TODO fixthis
-   */
-  constructor(unitConfig: UnitConfig) {
-    this.x = +unitConfig.x;
-    this.y = +unitConfig.y;
-    this.id = this.stringifiedPosition; // id = is also a starting position for mob
-    this.teamId = unitConfig.teamId;
+  constructor(monsterConfig: MonsterInterface) {
+    const unitName = monsterConfig?.name || 'Unknown monster';
+    const unitStats = MonstersFactory.getMonsterStats(unitName);
 
-    const unitStats = MonstersFactory.getMonsterStats(unitConfig.name);
-
-    this.name = unitStats.name;
+    this.name = unitName;
     this.cost = unitStats.cost;
 
     const { attack } = unitStats;
