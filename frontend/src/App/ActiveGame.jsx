@@ -27,39 +27,34 @@ function ActiveGame() {
             <Timer initialTimerValue={countdown} />
           </Row>
         </Col>
+        <Col>
+          <Row>
+            <Merchantry />
+          </Row>
+        </Col>
       </Row>
 
       <Row className="gamecontainer">
-        <Col xs={24} sm={6} md={6} lg={6} smPush={14} lgPush={0}>
-          <Sidebar
-            width={260}
-          >
-            <Sidenav expanded={true} appearance="subtle" >
-              <Sidenav.Body>
-                <Nav>
-                  <Merchantry />
-                </Nav>
-              </Sidenav.Body>
-            </Sidenav>
-          </Sidebar>
-        </Col>
-
-        <Col xs={24} sm={14} md={12} lg={12} smPull={6} lgPull={0}>
+        <Col xs={24} sm={24} md={12}>
           <div className="gameboard">
             <div className="gameboard-background"></div>
             <div className="gameboard-wrapper">
               {gameboardState.isActiveBattleGoing ? <BattleBoardWrapper gameboardState={gameboardState} /> : <PlayerBoardWrapper boardUnits={playerState.boardUnits} />}
             </div>
           </div>
-          <div className="gameboard">
-            <div className="playerHand">
-              <PlayerHand handUnits={playerState.handUnits} />
-            </div>
+        </Col>
+        <Col xs={24} sm={24} md={12}>
+          <div>
+            Discard cards: {playerState.discard.length} <br />
+            My deck cards: {playerState.deck.length} <br />
+            My hand cards: {playerState.hand.length} <br />
+            <PlayerHand hand={playerState.hand} />
           </div>
         </Col>
-
-        <Col xs={24} sm={24} md={6} lg={6}>
-          <RightSidebar players={players} />
+      </Row>
+      <Row>
+        <Col>
+        <RightSidebar players={players} />
         </Col>
       </Row>
     </Grid>

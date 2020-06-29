@@ -1,27 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import GameBoard from './GameBoard.jsx';
-
-import Unit from '@/objects/Unit.tsx';
+import Card from './Merchantry/Card.jsx';
 
 PlayerHand.propTypes = {
-  handUnits: PropTypes.arrayOf(PropTypes.object)
+  hand: PropTypes.arrayOf(PropTypes.object)
 };
 
-function PlayerHand({ handUnits }) {
-  const [board, setBoard] = useState([]);
-
-  // If board is being updated by backend, update board state for this component
-  useEffect(() => {
-    setBoard([...handUnits]);
-  }, [handUnits]);
-
+function PlayerHand({ hand }) {
   return (
-    <GameBoard hasDnD={true} width="8" height="1" startingY={-1}>
-      {board.map((unit) => (
-        <Unit key={unit.id} unit={unit} isDraggable={true} />
+    <div> My hand:
+      {hand.map((card, index) => (
+        <Card key={index} card={card} />
       ))}
-    </GameBoard>
+    </div>
   );
 }
 

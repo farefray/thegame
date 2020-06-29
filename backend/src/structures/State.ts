@@ -6,7 +6,7 @@ import { FirebaseUser } from '../services/ConnectedPlayers';
 import Merchantry from './Merchantry';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
-import { ABILITY_PHASE } from '../typings/Card';
+import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
 import Card from './Card';
 
 const sleep = promisify(setTimeout);
@@ -38,24 +38,39 @@ export default class State extends EventBusUpdater {
 
     this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID)]));
 
-    // TODO P0
-    // if (this.players.size % 2 > 0) {
-    //   this.players.set('ai_player', new AiPlayer('ai_player'));
-    // }
+    if (this.players.size !== 2) { // todo get rid of hardcode
+      this.players.set('ai_player', new AiPlayer('ai_player'));
+    }
 
     this.merchantry = new Merchantry(this.players.values());
 
     this.invalidate();
   }
 
-  playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT) {
-    for (const card of this.firstPlayer.hand.values()) {
-      card.applyAbilities(this.firstPlayer, this.secondPlayer, phase);
-    }
+  getMerchantry() {
+    return this.merchantry;
+  }
 
-    for (const card of this.secondPlayer.hand.values()) {
-      card.applyAbilities(this.secondPlayer, this.firstPlayer, phase);
-    }
+  playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT) {
+    this.players.forEach((player) => {
+      const opponent = this.getPlayersArray().filter(p => p.getUID() !== player.getUID())[0];
+
+      const cards = [...player.hand.values()];
+      for (const card of cards) {
+        card.applyAbilities(player, opponent, phase);
+      }
+
+      for (let index = 0; index < cards.length; index++) {
+        const card = cards[index];
+        if (card.type === CARD_TYPES.CARD_MONSTER) {
+          player.addToBoard(card);
+        } else {
+          player.moveToDiscard(card);
+        }
+      }
+
+      player.invalidate(); // todo every card should be emitted separately to handle effects
+    });
   }
 
   endRound(winners?) {
@@ -101,6 +116,10 @@ export default class State extends EventBusUpdater {
   }
 
   async wait(time) {
+    // todo rework this
+    this.countdown = time;
+    this.invalidate();
+
     await sleep(time);
   }
 
@@ -121,7 +140,9 @@ export default class State extends EventBusUpdater {
         return false;
       }
 
-      player.addToDiscard(revealedCards.eject(cardIndex));
+      const ejectedCard = revealedCards.eject(cardIndex);
+      player.cardPurchase(ejectedCard);
+      this.merchantry.revealCards();
     }
 
     return true;

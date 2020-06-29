@@ -59,21 +59,21 @@ export default class AiPlayer extends Player {
     return null;
   }
 
-  considerUnitsPlacing() {
-    if (!this.isBoardFull()) {
-      // we need to place units for sure!
-      const unit = AIService.getInstance().mostSuitableUnit({
-        current: this.board.units(),
-        proposed: this.hand.units(),
-        amount: this.allowedBoardSize()
-      }, this.AIFlags);
+  // considerUnitsPlacing() {
+  //   if (!this.isBoardFull()) {
+  //     // we need to place units for sure!
+  //     const unit = AIService.getInstance().mostSuitableUnit({
+  //       current: this.board.units(),
+  //       proposed: this.hand.units(),
+  //       amount: this.allowedBoardSize()
+  //     }, this.AIFlags);
 
-      if (unit) {
-        const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
-        this.moveUnitBetweenPositions(unit.position, prefereablePosition);
-      }
-    }
-  }
+  //     if (unit) {
+  //       const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
+  //       this.moveUnitBetweenPositions(unit.position, prefereablePosition);
+  //     }
+  //   }
+  // }
 
   beforeBattle(opponent: Player) {
     super.beforeBattle(opponent);

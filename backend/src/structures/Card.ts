@@ -6,7 +6,7 @@ import Player from './Player';
 
 export default class Card extends EventBusUpdater {
   private name: string;
-  private monster?: MonsterInterface;
+  public monster?: MonsterInterface;
   private config: CardConfig;
 
   public cost: number;
@@ -18,7 +18,10 @@ export default class Card extends EventBusUpdater {
     this.cost = cardConfig.cost;
 
     if (monster) {
-      this.monster = monster;
+      this.monster = {
+        ...monster,
+        name: this.name
+      };
     }
   }
 
@@ -48,18 +51,29 @@ export default class Card extends EventBusUpdater {
           break;
         }
 
+        case 'health': {
+          player.health += abilities[ability] ?? 0;
+          break;
+        }
+
+        case 'damage': {
+          opponent.health -= abilities[ability] ?? 0;
+          break;
+        }
+
         default: {
           throw new Error('Not handled instant card ability');
-          break;
         }
       }
     });
+
+    this.invalidate();
   }
 
   ////
 
   public invalidate() {
-    // todo format custom body maybe?
+    // todo format custom body maybe? depending on whats happening
     super.invalidate();
   }
 
@@ -67,7 +81,8 @@ export default class Card extends EventBusUpdater {
     return {
       name: this.name,
       monster: this.monster,
-      config: this.config
+      config: this.config,
+      cost: this.cost
     };
   }
 }

@@ -96,9 +96,13 @@ export default class AbstractList<T> {
     return this._list.find(condition)
   }
 
+  findIndex(condition) {
+    return this._list.findIndex(condition);
+  }
+
   toSocket() {
     return this._list.reduce((prev: T[], cur: any) => {
-      if (cur.hasOwnProperty('toSocket')) {
+      if ('toSocket' in cur) {
         prev.push(cur.toSocket());
       } else {
         prev.push(JSON.parse(JSON.stringify(cur)));

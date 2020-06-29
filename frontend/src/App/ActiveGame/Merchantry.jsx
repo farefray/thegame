@@ -13,8 +13,8 @@ function Merchantry() {
       {revealedCards &&
         revealedCards.map((card, index) => {
           return (
-            <Nav.Item key={index} className="card-container" onClick={(unitIndex) => {
-              websocket.emitMessage('PURCHASE_CARD', unitIndex);
+            <Nav.Item key={index} className="card-container" onClick={() => {
+              websocket.emitMessage('PURCHASE_CARD', index);
             }}>
               <Card
                 key={index}
