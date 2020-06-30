@@ -128,6 +128,14 @@ export default class BoardMatrix {
     return new BattleUnitList(units);
   }
 
+  empty() {
+    this.forEach((spot, [x, y]) => {
+      if (spot !== null) {
+        this.setCell(x, y, null);
+      }
+    });
+  }
+
   freeSpots(): Position[] {
     const freeSpots: Position[] = [];
     this.forEach((spot, [x, y]) => {

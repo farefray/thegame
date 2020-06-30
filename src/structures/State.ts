@@ -1,12 +1,12 @@
 import Player from './Player';
 import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
-import { FirebaseUser } from '../services/ConnectedPlayers';
 import Merchantry from './Merchantry';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
 import sleep from '../utils/sleep';
+import { FirebaseUserUID } from '../utils/types';
 
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
@@ -15,13 +15,13 @@ export default class State extends EventBusUpdater {
   private amountOfPlayers: number;
   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
   private round: number = 1;
-  private players: Map<FirebaseUser['uid'], Player>;
+  private players: Map<FirebaseUserUID, Player>;
   private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
     super(
       EVENTBUS_MESSAGE_TYPE.STATE_UPDATE,
-      customers.reduce((recipients: Array<FirebaseUser['uid']>, customer) => {
+      customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
         recipients.push(customer.ID);
         return recipients;
       }, [])
@@ -46,27 +46,34 @@ export default class State extends EventBusUpdater {
     return this.merchantry;
   }
 
-  playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT) {
-    // todo phase victory, to define which cards won the battle and play them. Discard all the others
+  playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: FirebaseUserUID) {
     this.players.forEach((player) => {
       const opponent = this.getPlayersArray().filter(p => p.getUID() !== player.getUID())[0];
 
       const cards = [...player.hand.values()];
-      for (const card of cards) {
-        card.applyAbilities(player, opponent, phase);
+      if (phase !== ABILITY_PHASE.VICTORY || player.getUID() === victoryUserUID) {
+        for (const card of cards) {
+          card.applyAbilities(player, opponent, phase);
+        }
       }
 
       for (let index = 0; index < cards.length; index++) {
         const card = cards[index];
-        if (card.type === CARD_TYPES.CARD_MONSTER) {
+        if (phase === ABILITY_PHASE.INSTANT && card.type === CARD_TYPES.CARD_MONSTER) {
           player.addToBoard(card);
         } else {
           player.moveToDiscard(card);
         }
       }
 
+      if (phase === ABILITY_PHASE.VICTORY) {
+        player.board.empty();
+      }
+
       player.invalidate(); // todo every card should be emitted separately to handle effects
     });
+
+    this.invalidate(); // todo questionable?
   }
 
   dropPlayer(playerID) {
@@ -87,8 +94,7 @@ export default class State extends EventBusUpdater {
     return this.players.get(playerUID);
   }
 
-  /** TODO FirebaseUser['uid'] to be some easier type */
-  purchaseCard(playerUID: FirebaseUser['uid'], cardIndex: number) {
+  purchaseCard(playerUID: FirebaseUserUID, cardIndex: number) {
     /**
      * TODO Phase2, auction for cards?
      */

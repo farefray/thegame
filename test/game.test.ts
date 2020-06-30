@@ -8,7 +8,6 @@ import MonstersFactory from '../src/factories/MonstersFactory';
 import Merchantry from '../src/structures/Merchantry';
 import State from '../src/structures/State';
 import Customer from '../src/models/Customer';
-import { FirebaseUser } from '../src/services/ConnectedPlayers';
 import Player from '../src/structures/Player';
 import { EVENTBUS_MESSAGE_TYPE } from '../src/typings/EventBus';
 import { ABILITY_PHASE } from '../src/typings/Card';
@@ -16,6 +15,8 @@ import BattleUnitList from '../src/structures/Battle/BattleUnitList';
 import BattleUnit from '../src/structures/BattleUnit';
 import Battle from '../src/structures/Battle';
 import Position from '../src/shared/Position';
+import { FirebaseUser } from '../src/utils/types';
+import { inspect } from 'util';
 
 const useruid = 'test_userid';
 const socketid = 'test_socketid';
@@ -156,18 +157,22 @@ class BattleTestSuite {
   @test
   async canExecuteBattle() {
     const battleUnit = MonstersFactory.createBattleUnit('Dwarf');
-    battleUnit.rearrangeToPos(new Position(4,4));
-    const npcBoard = new BattleUnitList([
-      battleUnit
-    ]);
+    battleUnit.rearrangeToPos(new Position(4, 4));
 
     const secondBattleUnit = MonstersFactory.createBattleUnit('Dwarf');
-    secondBattleUnit.rearrangeToPos(new Position(3,4));
+    secondBattleUnit.rearrangeToPos(new Position(5,4));
+    const npcBoard = new BattleUnitList([
+      battleUnit, secondBattleUnit
+    ]);
+
+    const secondTeamBattleUnit = MonstersFactory.createBattleUnit('Minotaur');
+    secondTeamBattleUnit.rearrangeToPos(new Position(3,4));
     const playerBoard = new BattleUnitList([
-      secondBattleUnit
+      secondTeamBattleUnit
     ]);
 
     const battle = new Battle([{ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' }]);
-    await battle.proceedBattle(false);
+    const winner = await battle.proceedBattle(false);
+    expect(winner).to.be.equal('player_2');
   }
 }

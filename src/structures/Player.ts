@@ -2,13 +2,13 @@ import BoardMatrix from './Battle/BoardMatrix';
 import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
-import { FirebaseUser } from '../services/ConnectedPlayers';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
 import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
 import MonstersFactory from '../factories/MonstersFactory';
+import { FirebaseUserUID } from '../utils/types';
 
 const BASE_DECK_CONFIG = ['Dwarf', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
@@ -16,7 +16,7 @@ const HAND_SIZE = 5;
 export const BOARD_UNITS_LIMIT = 8;
 
 export default class Player extends EventBusUpdater {
-  public userUID: FirebaseUser['uid'];
+  public userUID: FirebaseUserUID;
   public health: number = 50;
   public exp: number = 0;
   public gold: number = 0;
@@ -26,7 +26,7 @@ export default class Player extends EventBusUpdater {
   public deck = new Deck();
   public discard = new Deck();
 
-  constructor(id: FirebaseUser['uid']) {
+  constructor(id: FirebaseUserUID) {
     super(EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, [id]);
 
     // fill starting deck
