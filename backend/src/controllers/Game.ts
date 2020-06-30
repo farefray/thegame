@@ -7,6 +7,7 @@ import { ABILITY_PHASE } from '../typings/Card';
 import Battle, { BattleBoard } from '../structures/Battle';
 
 export default class GameController {
+  // this controller is a smelling. TODO
   static async startGame(customers: Array<Customer>) {
     const session = new Session(customers);
     const state = session.getState();
@@ -43,9 +44,9 @@ export default class GameController {
           });
 
           const battle = new Battle(battleBoards);
-          await battle.proceedBattle();
+          const winner = await battle.proceedBattle();
 
-          state.playCards(ABILITY_PHASE.VICTORY);
+          state.playCards(ABILITY_PHASE.VICTORY, winner);
         }
       }
 

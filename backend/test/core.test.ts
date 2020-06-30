@@ -13,7 +13,7 @@ import Position from '../src/shared/Position';
 
 import { Container } from 'typedi';
 import Customer from '../src/models/Customer';
-import { FirebaseUser } from '../src/services/ConnectedPlayers';
+import { FirebaseUser } from '../src/utils/types';
 
 const mockedEventEmitter = {
   emit: (...args) => {
