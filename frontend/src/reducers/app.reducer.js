@@ -69,6 +69,12 @@ export function app(
         isDead: true
       };
     }
+    case 'TIMER_UPDATE': {
+      return {
+        ...state,
+        countdown: action.countdown
+      }
+      }
     default:
       break;
   }

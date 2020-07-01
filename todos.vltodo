@@ -1,20 +1,17 @@
-62 search results found
-
-file:///d:\thegame\backend\src\controllers\Game.ts
-  18:       await state.wait(15000); // todo
+58 search results found
 
 file:///d:\thegame\backend\src\factories\CardsFactory.ts
-  12:     // TODO[P3]: Player personal cards can be shuffled into deck
+  12:     // TODO[phase3]: Player personal cards can be shuffled into deck
 
 file:///d:\thegame\backend\src\factories\configs\spells\hoof.ts
   15:       return null; // todo test
 
 file:///d:\thegame\backend\src\models\Customer.ts
-  21:   get ID() { // todo rename to uid or smt, to not mislead
+  20:   get ID() { // todo rename to uid or smt, to not mislead
 
 file:///d:\thegame\backend\src\models\Session.ts
-  11: // TODO consider using https://github.com/expressjs/session#readme for socket.io
-  74:     // todo
+  8: // TODO consider using https://github.com/expressjs/session#readme for socket.io
+  41:     // todo
 
 file:///d:\thegame\backend\src\services\AI.ts
   28:   // todo get rid of dynamic imports. Preload those buckets and neurals!
@@ -22,10 +19,10 @@ file:///d:\thegame\backend\src\services\AI.ts
   68:     // todo pick combination with biggest predicted output
 
 file:///d:\thegame\backend\src\services\ConnectedPlayers.ts
-  34:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
+  29:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
 
 file:///d:\thegame\backend\src\services\EventBus.ts
-  36: // TODO
+  37: // TODO
 
 file:///d:\thegame\backend\src\services\Sessions.ts
   29:   // TODO session removale
@@ -48,38 +45,35 @@ file:///d:\thegame\backend\src\structures\AiPlayer.ts
   98:     return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
 
 file:///d:\thegame\backend\src\structures\Battle.ts
-  30:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
-  53:   private units: BattleUnitList; // temporaly public for ai needs
-  215:       // TODO why isOver not handling this?
-  257:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
-  300:       this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
-  324:             // TODO avoid such issues
-  347:       startBoard: this.startBoard, // todo unlink? matrix to json?
+  45:   private units: BattleUnitList; // temporaly public for ai needs
+  203:     //   // TODO why isOver not handling this?
+  245:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
+  301:             // TODO avoid such issues
 
 file:///d:\thegame\backend\src\structures\BattleUnit.ts
-  107:         duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
-  213:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
-  576:   // todo review this one
-  615:     // todo also base to closest unit?
+  86:         duration: Math.floor((monsterConfig.attack?.speed ?? 0) / 10) // todo isnt this supposed to be varying on distance/atkspeed?
+  192:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
+  559:   // todo review this one
+  598:     // todo also base to closest unit?
 
 file:///d:\thegame\backend\src\structures\Battle\Pathfinder.ts
   205:     // todo make this human readable
 
 file:///d:\thegame\backend\src\structures\Card.ts
-  15:     this.cost = monster.cost; // todo monster cost = card cost via card config
+  76:     // todo format custom body maybe? depending on whats happening
 
 file:///d:\thegame\backend\src\structures\Player.ts
-  69:         // Todo check if this will be covered for leveled up units
-  80:       // TODO: Inform Client about update
+  127:         // Todo check if this will be covered for leveled up units
+  138:       // TODO: Inform Client about update
 
 file:///d:\thegame\backend\src\structures\State.ts
-  18:   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
-  37:     // TODO P0
-  47:   endRound(winners?) { // todo
-  56:       // todo FOR REWORK!!
-  67:           this.dropPlayer(uid); // todo death/lose
+  16:   private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
+  36:     if (this.players.size !== 2) { // todo get rid of hardcode
+  73:       player.invalidate(); // todo every card should be emitted separately to handle effects
+  76:     this.invalidate(); // todo questionable?
+  89:     // todo rework this
   105:         //  todo new AppError('warning', 'Not enough money');
-  128:   // TODO
+  137:   // TODO
 
 file:///d:\thegame\backend\src\typings\Monster.ts
   10:     regen?: number, // TODO if we need this

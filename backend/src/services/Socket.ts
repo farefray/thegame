@@ -2,13 +2,12 @@ import 'reflect-metadata';
 import { Container } from 'typedi';
 import AppError from '../typings/AppError';
 
-import GameController from '../controllers/Game';
 import EventBus from '../services/EventBus';
-import Position from '../shared/Position';
 import { Socket } from 'socket.io';
 import ConnectedPlayers from './ConnectedPlayers';
 import { SocketID } from '../utils/types';
 import Customer from '../models/Customer';
+import Game from '../models/Game';
 // const admin = require('firebase-admin')
 
 // // Initialize Firebase
@@ -23,6 +22,8 @@ const connectedPlayers = ConnectedPlayers.getInstance();
 const eventBus = new EventBus();
 Container.set('event.bus', eventBus);
 
+const PLAYERS_REQUIRED = 2;
+// todo check case when user is starting new game while he has one already
 class SocketService {
   private socket: Socket;
   private id: SocketID;
@@ -31,7 +32,7 @@ class SocketService {
     this.socket = socket;
     this.id = socket.id;
 
-
+    console.log('constructor, game is null')
 
     /**
      * Magical handler for all frontend events. This may be wrong concept, need to be revised.
@@ -67,28 +68,6 @@ class SocketService {
 
       next();
     });
-  }
-
-  /** Private methods used in service */
-  private _startGame(clients) {
-    const io: SocketIO.Server = Container.get('socket.io');
-
-    for (let index = 0; index < clients.length; index++) {
-      const socketID = clients[index];
-      const _socket = io.sockets.connected[socketID];
-      _socket.leave(SOCKETROOMS.WAITING);
-    }
-
-    const customers = clients.reduce((customers: Customer[], socketID) => {
-      const customer = connectedPlayers.getBySocket(socketID);
-      if (customer) {
-        customers.push(customer);
-      }
-
-      return customers;
-    }, []);
-
-    GameController.startGame(customers); // todo verify that there's max 2 players
   }
 
   disconnect = () => {
@@ -178,8 +157,26 @@ class SocketService {
           throw new Error(err);
         }
 
-        if (clients.length >= 2) {
-          this._startGame(clients);
+        if (clients.length >= PLAYERS_REQUIRED) {
+          const io: SocketIO.Server = Container.get('socket.io');
+          for (let index = 0; index < PLAYERS_REQUIRED; index++) {
+            const socketID = clients[index];
+            const _socket = io.sockets.connected[socketID];
+            _socket.leave(SOCKETROOMS.WAITING);
+          }
+
+          const customers = clients.reduce((customers: Customer[], socketID) => {
+            const customer = connectedPlayers.getBySocket(socketID);
+            if (customer) {
+              customers.push(customer);
+            }
+
+            return customers;
+          }, []);
+
+          // tslint:disable-next-line: no-unused-expression
+          new Game(customers[0], customers[1]);
+          return true;
         }
       });
 
@@ -190,7 +187,13 @@ class SocketService {
   };
 
   START_AI_GAME = () => {
-    this._startGame([this.id]);
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (!customer) {
+      return false;
+    }
+
+    // tslint:disable-next-line: no-unused-expression
+    new Game(customer);
     return true;
   };
 

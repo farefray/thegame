@@ -72,19 +72,12 @@ export default class Player extends EventBusUpdater {
   }
 
   public dealCards() {
-    /** TODO some safety, so it wont go into 4ever loop */
-    while (this.hand.size < HAND_SIZE) {
+    while (this.hand.size < HAND_SIZE && (!this.deck.isEmpty() || this.discard.size > 0)) {
       if (!this.deck.isEmpty()) {
         this.hand.push(this.deck.eject(0));
       } else if (this.discard.size > 0) {
-        for (const card of this.discard) { // thats n(x) hardness function. Todo make it flat
-          this.deck.push(card);
-        }
-
-        this.deck.shuffle();
+        this.deck.pushAll(this.discard.values()).shuffle();
         this.discard.clean();
-      } else {
-        throw new Error('No cards left in discard/deck, while hand is not yet full')
       }
     }
 

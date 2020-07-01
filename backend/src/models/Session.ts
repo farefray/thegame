@@ -3,7 +3,9 @@ import State from '../structures/State';
 import SessionsService from '../services/Sessions';
 import Customer from './Customer';
 
-const MAX_ROUND = 25;
+
+
+const sessionStore = SessionsService.getInstance();
 
 // TODO consider using https://github.com/expressjs/session#readme for socket.io
 export default class Session {
@@ -17,7 +19,6 @@ export default class Session {
       customer.setSessionID(this._id);
     })
 
-    const sessionStore = SessionsService.getInstance();
     sessionStore.store(this);
   }
 
@@ -33,9 +34,7 @@ export default class Session {
     this.state = newState;
   }
 
-  hasNextRound() {
-    return Object.keys(this.state.getPlayersArray()).length > 1 && this.state.getRound() < MAX_ROUND;
-  }
+
 
   disconnect(clientID) {
     // todo

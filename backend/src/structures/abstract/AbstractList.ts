@@ -59,6 +59,11 @@ export default class AbstractList<T> {
     return this;
   }
 
+  pushAll(entities) {
+    this._list.push(...entities);
+    return this;
+  }
+
   filter(conditionFn: Function, mutateInstance = false) {
     const filtered: Array<T> = [];
     for (let iterator = 0; iterator < this._list.length; iterator++) {
