@@ -1,22 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useStoreState } from 'easy-peasy';
 import GameBoard from './GameBoard.jsx';
 import BattleBoardLogic from './GameBoard/BattleBoardLogic.jsx';
 
-BattleBoardWrapper.propTypes = {
-  gameboardState: PropTypes.shape({
-    actionStack: PropTypes.array,
-    battleStartBoard: PropTypes.arrayOf(PropTypes.object)
-  })
-};
 
-/**
- * Logical component for GameBoard
- * @param {gameboard.reducer} gameboardState
- * @returns
- */
-function BattleBoardWrapper({ gameboardState }) {
-  const { battleStartBoard, actionStack } = gameboardState;
+function BattleBoardWrapper() {
+  const { battleStartBoard, actionStack } = useStoreState((state) => state.gameboard);
 
   return (
     <React.Fragment>

@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useStoreState } from 'easy-peasy';
 import { Divider, FlexboxGrid, Button, ButtonToolbar, Form, FormGroup } from 'rsuite';
 import { WebSocketContext } from '@/socket.context';
 import { customerLogout } from '@/firebase';
 
 function Lobby() {
   const websocket = useContext(WebSocketContext);
-  const { email, isReady } = useSelector((state) => state.customer, shallowEqual);
+  const { email, isReady } = useStoreState((state) => state.customer);
 
   const handlePlayVsHuman = async () => {
     await websocket.emitMessage('PLAYER_READY');
