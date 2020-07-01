@@ -61,8 +61,12 @@ export default ({ children }) => {
       dispatch({ type: 'NOTIFICATION', notification: notification });
     });
 
-    socket.on('START_BATTLE', ({ actionStack, startBoard, winner, countdown }) => {
-      dispatch({ type: 'START_BATTLE', actionStack, startBoard, winner, countdown });
+    socket.on('START_BATTLE', ({ actionStack, startBoard, winner }) => {
+      dispatch({ type: 'START_BATTLE', actionStack, startBoard, winner });
+    });
+
+    socket.on('TIMER_UPDATE', (countdown) => {
+      dispatch({ type: 'TIMER_UPDATE', countdown });
     });
 
     socket.on('END_GAME', (winningPlayer) => {
