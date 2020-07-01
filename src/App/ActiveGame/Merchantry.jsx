@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useStoreState } from 'easy-peasy';
 import Card from './Merchantry/Card';
 import { Nav } from 'rsuite';
 import { WebSocketContext } from '@/socket.context';
 
 function Merchantry() {
-  const { revealedCards } = useSelector((state) => state.merchantry, shallowEqual);
+  const revealedCards = useStoreState((state) => state.merchantry.revealedCards);
   const websocket = useContext(WebSocketContext);
 
   return (
