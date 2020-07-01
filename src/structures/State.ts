@@ -5,15 +5,15 @@ import Merchantry from './Merchantry';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
 import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
-import sleep from '../utils/sleep';
 import { FirebaseUserUID } from '../utils/types';
 
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
 
 export default class State extends EventBusUpdater {
-  private amountOfPlayers: number;
-  private countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS; // todo move somewhere
+  MAX_ROUND = 25;
+
+  private amountOfPlayers: number; // todo
   private round: number = 1;
   private players: Map<FirebaseUserUID, Player>;
   private merchantry: Merchantry;
@@ -29,11 +29,10 @@ export default class State extends EventBusUpdater {
 
     this.round = 1;
     this.amountOfPlayers = customers.length;
-    this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
     this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID)]));
 
-    if (this.players.size !== 2) { // todo get rid of hardcode
+    if (this.players.size === 1) {
       this.players.set('ai_player', new AiPlayer('ai_player'));
     }
 
@@ -83,11 +82,6 @@ export default class State extends EventBusUpdater {
         this.amountOfPlayers -= 1;
       }
     }
-  }
-
-  async wait(time) {
-    // todo rework this
-    await sleep(time);
   }
 
   getPlayer(playerUID) {
@@ -146,7 +140,6 @@ export default class State extends EventBusUpdater {
   toSocket() {
     return {
       round: this.round,
-      countdown: this.countdown,
       players: [...this.players.values()].map((player) => ({
         uid: player.getUID(),
         health: player.health

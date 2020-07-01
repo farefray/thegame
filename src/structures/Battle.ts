@@ -39,7 +39,7 @@ export interface BattleBoard {
 
 export default class Battle extends EventBusUpdater {
   private startBoard: BoardMatrix;
-  private winner = TEAM.NONE;
+  public winner = TEAM.NONE;
   private readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
   private units: BattleUnitList; // temporaly public for ai needs
@@ -95,6 +95,10 @@ export default class Battle extends EventBusUpdater {
     this.actionGeneratorInstance = this.generateActions();
   }
 
+  get battleTime() {
+    return this.currentTimestamp;
+  }
+
   get context(): BattleContext {
     return {
       currentTimestamp: this.currentTimestamp,
@@ -113,7 +117,7 @@ export default class Battle extends EventBusUpdater {
     }
   }
 
-  async proceedBattle(wait = true) {
+  async proceedBattle() {
     /**
      * TODO such case is possible - we start battle against no units, and manaregen/casts will be executed for units, while there will be no targets and so on.
      * !FIX THIS
@@ -130,13 +134,7 @@ export default class Battle extends EventBusUpdater {
 
     this.winner = this.subscribers[this.units.onlyTeamLeft()];
 
-    this.invalidate();
-
-    if (wait) {
-      await sleep(this.currentTimestamp);
-    }
-
-    return this.winner;
+    this.invalidate(); // emitting battle start event
   }
 
   *generateActions() {

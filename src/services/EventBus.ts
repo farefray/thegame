@@ -9,7 +9,7 @@ const connectedPlayers = ConnectedPlayers.getInstance();
 /** TODO P0 how will this work with multiple customers
  * Shall we point this emitted to socket? Should it be singletone?
  */
-export default class EventBus{
+export default class EventBus {
   private uid = uuidv4();
   constructor() {
     console.log('Eventbus with uid ' + this.uid + ' is constructed');

@@ -17,6 +17,7 @@ import Battle from '../src/structures/Battle';
 import Position from '../src/shared/Position';
 import { FirebaseUser } from '../src/utils/types';
 import { inspect } from 'util';
+import GameController from '../src/models/Game';
 
 const useruid = 'test_userid';
 const socketid = 'test_socketid';
@@ -172,7 +173,7 @@ class BattleTestSuite {
     ]);
 
     const battle = new Battle([{ units: playerBoard, owner: 'player_1' }, { units: npcBoard, owner: 'player_2' }]);
-    const winner = await battle.proceedBattle(false);
-    expect(winner).to.be.equal('player_2');
+    await battle.proceedBattle();
+    expect(battle.winner).to.be.equal('player_2');
   }
 }
