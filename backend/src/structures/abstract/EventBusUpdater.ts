@@ -27,7 +27,7 @@ export abstract class EventBusUpdater {
   /**
    * Emitting event to update this player via socket
    */
-  public invalidate(eventSubtype) {
+  public invalidate(eventSubtype?) {
     this.emitEventBusMessage();
     this._invalidated = false;
   }
