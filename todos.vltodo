@@ -1,4 +1,4 @@
-57 search results found
+58 search results found
 
 file:///d:\thegame\backend\src\factories\CardsFactory.ts
   12:     // TODO[phase3]: Player personal cards can be shuffled into deck
@@ -65,11 +65,14 @@ file:///d:\thegame\backend\src\structures\Player.ts
   131:       // TODO: Inform Client about update
 
 file:///d:\thegame\backend\src\structures\State.ts
-  16:   private amountOfPlayers: number; // todo
-  72:       player.invalidate(); // todo every card should be emitted separately to handle effects
-  75:     this.invalidate(); // todo questionable?
-  99:         //  todo new AppError('warning', 'Not enough money');
-  131:   // TODO
+  13:   private amountOfPlayers: number; // todo
+  69:       player.invalidate(); // todo every card should be emitted separately to handle effects
+  73:   dropPlayer(playerID) { // todo
+  94:         //  todo new AppError('warning', 'Not enough money');
+  131:       // TODO
+
+file:///d:\thegame\backend\src\typings\EventBus.ts
+  11:   // todo
 
 file:///d:\thegame\backend\src\typings\Monster.ts
   10:     regen?: number, // TODO if we need this
@@ -87,11 +90,11 @@ file:///d:\thegame\frontend\src\UI\custom-core.less
   1: // TODO better font include
   2: // TODO replace font with better variant
 
+file:///d:\thegame\frontend\src\UI\pages\activegame.less
+  5: // TODO old styles, revise
+
 file:///d:\thegame\frontend\src\UI\pages\merchantry\card.less
   29:           background: rgb(204, 191, 75); // todo colors
-
-file:///d:\thegame\frontend\src\UI\ui.less
-  68: // Debug styles
 
 file:///d:\thegame\frontend\src\firebase.js
   35:     // TODO profiles and displayName

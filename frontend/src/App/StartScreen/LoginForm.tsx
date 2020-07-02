@@ -37,7 +37,7 @@ function LoginForm() {
     if (isFormValid) {
       busy(true);
 
-      const [error, user] = await customerLogin({ email, password });
+      const [error, /* user */] = await customerLogin({ email, password });
 
       if (error) {
         setFormMessage(error);

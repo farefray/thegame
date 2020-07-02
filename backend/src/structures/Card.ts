@@ -1,7 +1,7 @@
 import { MonsterInterface } from '../typings/Monster';
 import { CardConfig, CARD_TYPES, ABILITY_PHASE } from '../typings/Card';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE } from '../typings/EventBus';
 import Player from './Player';
 
 export default class Card extends EventBusUpdater {
@@ -11,7 +11,7 @@ export default class Card extends EventBusUpdater {
 
   public cost: number;
   constructor(cardName: string, cardConfig: CardConfig, monster?: MonsterInterface) {
-    super(EVENTBUS_MESSAGE_TYPE.CARD_PLAY);
+    super(EVENT_TYPE.CARD_PLAY);
 
     this.name = cardName.replace('_', ' ');
     this.config = cardConfig;

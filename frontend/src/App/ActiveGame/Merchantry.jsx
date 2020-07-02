@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { useStoreState } from 'easy-peasy';
 import Card from './Merchantry/Card';
-import { Nav } from 'rsuite';
 import { WebSocketContext } from '@/socket.context';
 
 function Merchantry() {
@@ -13,14 +12,14 @@ function Merchantry() {
       {revealedCards &&
         revealedCards.map((card, index) => {
           return (
-            <Nav.Item key={index} className="card-container" onClick={() => {
+            <div key={index} className="card-container" onClick={() => {
               websocket.emitMessage('PURCHASE_CARD', index);
             }}>
               <Card
                 key={index}
                 card={card}
               />
-            </Nav.Item>
+            </div>
           );
         })}
     </div>

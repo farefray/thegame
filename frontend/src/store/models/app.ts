@@ -1,15 +1,14 @@
 
-import { action, Action } from 'easy-peasy';
+import { action, thunk, Action, Thunk } from 'easy-peasy';
 
 export interface AppModel {
   isConnected: boolean;
   isGameLive: boolean;
 
   setConnected: Action<AppModel, boolean>;
+  setGameLive: Action<AppModel, boolean>;
 
-  players: any;
-  round: number;
-  stateUpdate: Action<AppModel, any>;
+  stateUpdate: Thunk<AppModel, any>;
 
   notification: object|null;
   setNotification: Action<AppModel, object>;
@@ -25,14 +24,14 @@ const appModel: AppModel = {
   }),
 
   isGameLive: false,
+  setGameLive: action((state, payload) => {
+    state.isGameLive = payload;
+  }),
 
-  players: [],
-  round: 1,
-  stateUpdate: action((state, payload) => {
-    state.round = payload.round;
-    state.players = payload.players;
+  stateUpdate: thunk(async (actions, payload) => {
+    actions.setGameLive(true)
 
-    state.isGameLive = true; // bad way :)
+    // restore/replace whole app state
   }),
 
   notification: null,

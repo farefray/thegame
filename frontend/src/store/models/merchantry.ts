@@ -1,4 +1,4 @@
-import { action, thunk, Action, Thunk } from 'easy-peasy';
+import { action, Action } from 'easy-peasy';
 
 export interface MerchantryModel {
   revealedCards: Array<any>;
