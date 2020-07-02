@@ -7,10 +7,13 @@ export interface AppModel {
 
   setConnected: Action<AppModel, boolean>;
 
-  players: Array<string>;
+  players: any;
   round: number;
+  stateUpdate: Action<AppModel, any>;
+
   notification: object|null;
   setNotification: Action<AppModel, object>;
+
   countdown: number;
   setCountdown: Action<AppModel, number>;
 }
@@ -22,12 +25,21 @@ const appModel: AppModel = {
   }),
 
   isGameLive: false,
+
   players: [],
   round: 1,
+  stateUpdate: action((state, payload) => {
+    state.round = payload.round;
+    state.players = payload.players;
+
+    state.isGameLive = true; // bad way :)
+  }),
+
   notification: null,
   setNotification: action((state, payload) => {
     state.notification = payload;
   }),
+
   countdown: 0,
   setCountdown: action((state, payload) => {
     state.countdown = payload;

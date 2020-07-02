@@ -39,9 +39,9 @@ function dispatchUnitLifecycleReducer(unitComponents, action) {
   }
 }
 
-function BattleBoardLogic({ battleStartBoard, actionStack }) {
+function BattleBoardLogic({ startBoard, actionStack }) {
   const _unitComponents = {}; // initial setup for unit components
-  battleStartBoard.forEach((unit) => {
+  startBoard.forEach((unit) => {
     _unitComponents[unit.id] = {
       ...unit,
       key: uuidv1(),

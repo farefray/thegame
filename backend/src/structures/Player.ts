@@ -148,11 +148,9 @@ export default class Player extends EventBusUpdater {
 
   toSocket() {
     return {
-      uid: this.userUID,
       health: this.health,
       gold: this.gold,
       board: this.board.toSocket(),
-
       hand: this.hand.toSocket(),
       deck: this.deck.toSocket(),
       discard: this.discard.toSocket()
