@@ -21,9 +21,5 @@ module.exports = {
     REGENERATION: 'regen',
     DEATH: 'death',
     EFFECT: 'effect'
-  },
-  STATE: {
-    FIRST_ROUND_COUNTDOWN: 15 * 1000,
-    COUNTDOWN_BETWEEN_ROUNDS: 15 * 1000
   }
 };

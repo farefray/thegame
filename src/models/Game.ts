@@ -1,6 +1,5 @@
 import { Container } from 'typedi';
 import Session from './Session';
-import { STATE } from '../shared/constants';
 import Customer from './Customer';
 import EventBus from '../services/EventBus';
 import { ABILITY_PHASE } from '../typings/Card';
@@ -8,9 +7,9 @@ import Battle, { BattleBoard } from '../structures/Battle';
 import State from '../structures/State';
 import Player from '../structures/Player';
 import sleep from '../utils/sleep';
-import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE } from '../typings/EventBus';
 
-
+const COUNTDOWN_BETWEEN_ROUNDS = 15 * 1000;
 export default class Game {
   private customers: Array<Customer>
   private session: Session;
@@ -37,14 +36,14 @@ export default class Game {
   async countdown(duration) {
     const eventBus:EventBus = Container.get('event.bus');
     this.players.forEach(player => {
-      eventBus.emitMessage(EVENTBUS_MESSAGE_TYPE.TIMER_UPDATE, player.getUID(), Math.round(duration / 1000));
+      eventBus.emitMessage(EVENT_TYPE.TIMER_UPDATE, player.getUID(), Math.round(duration / 1000));
     });
 
     await sleep(duration);
   }
 
   async roundsFlow() {
-    await this.countdown(STATE.FIRST_ROUND_COUNTDOWN);
+    await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
 
     while (this.hasNextRound()) {
 
@@ -53,7 +52,7 @@ export default class Game {
 
       this.state.playCards(ABILITY_PHASE.INSTANT);
 
-      await this.countdown(STATE.COUNTDOWN_BETWEEN_ROUNDS);
+      await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
 
       // check if battle state is required
       if (this.players[0].board.units().size > 0 || this.players[1].board.units().size > 0) { // :(
@@ -75,7 +74,7 @@ export default class Game {
 
         this.state.playCards(ABILITY_PHASE.VICTORY, battle.winner);
 
-        await this.countdown(STATE.COUNTDOWN_BETWEEN_ROUNDS);
+        await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
       }
     }
   }

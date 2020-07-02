@@ -3,7 +3,7 @@ import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
 import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
@@ -27,7 +27,7 @@ export default class Player extends EventBusUpdater {
   public discard = new Deck();
 
   constructor(id: FirebaseUserUID) {
-    super(EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, [id]);
+    super(EVENT_TYPE.PLAYER_UPDATE, [id]);
 
     // fill starting deck
     const cardsFactory = new CardsFactory();

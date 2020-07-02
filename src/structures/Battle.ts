@@ -7,7 +7,7 @@ import { ACTION, TEAM } from '../shared/constants';
 import BoardMatrix from './Battle/BoardMatrix';
 import BattleUnitList from './Battle/BattleUnitList';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE } from '../typings/EventBus';
 import sleep from '../utils/sleep';
 import { FirebaseUserUID } from '../utils/types';
 
@@ -51,7 +51,7 @@ export default class Battle extends EventBusUpdater {
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
   constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<FirebaseUserUID>) {
-    super(EVENTBUS_MESSAGE_TYPE.START_BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<FirebaseUserUID>, battleBoard) => {
+    super(EVENT_TYPE.START_BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<FirebaseUserUID>, battleBoard) => {
       subs.push(battleBoard.owner);
       return subs;
     }, []));

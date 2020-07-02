@@ -1,7 +1,7 @@
 import { Container } from 'typedi';
 import { v4 as uuidv4 } from 'uuid';
 import ConnectedPlayers from './ConnectedPlayers';
-import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE } from '../typings/EventBus';
 import { FirebaseUserUID } from '../utils/types';
 
 const connectedPlayers = ConnectedPlayers.getInstance();
@@ -16,7 +16,7 @@ export default class EventBus {
   }
 
   // emitting message from somewhere, to be sent to frontend recipients
-  public emitMessage(event: EVENTBUS_MESSAGE_TYPE, recipient: FirebaseUserUID, message) {
+  public emitMessage(event: EVENT_TYPE, recipient: FirebaseUserUID, message) {
     return this.on(event, {
       recipient,
       message
@@ -24,7 +24,7 @@ export default class EventBus {
   }
 
   // sending message to frontend recipients
-  private on(event: EVENTBUS_MESSAGE_TYPE, params) {
+  private on(event: EVENT_TYPE, params) {
     const { recipient, message } = params;
     const customer = connectedPlayers.getByID(recipient);
     if (customer) {

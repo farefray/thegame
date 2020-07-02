@@ -3,12 +3,9 @@ import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
 import Merchantry from './Merchantry';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE } from '../typings/EventBus';
 import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
 import { FirebaseUserUID } from '../utils/types';
-
-const { STATE } = require('../shared/constants');
-const MAX_ROUND_FOR_INCOME_INC = 5;
 
 export default class State extends EventBusUpdater {
   MAX_ROUND = 25;
@@ -20,7 +17,7 @@ export default class State extends EventBusUpdater {
 
   constructor(customers: Array<Customer>) {
     super(
-      EVENTBUS_MESSAGE_TYPE.STATE_UPDATE,
+      EVENT_TYPE.STATE_UPDATE,
       customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
         recipients.push(customer.ID);
         return recipients;
@@ -71,11 +68,9 @@ export default class State extends EventBusUpdater {
 
       player.invalidate(); // todo every card should be emitted separately to handle effects
     });
-
-    this.invalidate(); // todo questionable?
   }
 
-  dropPlayer(playerID) {
+  dropPlayer(playerID) { // todo
     for (const [uid, player] of this.players) {
       if (uid === playerID) {
         delete this.players[uid];
@@ -128,22 +123,12 @@ export default class State extends EventBusUpdater {
     return [...this.players.values()];
   }
 
-  // TODO
-  syncPlayers() {
-    this.players.forEach((player) => {
-      if (!player.isSynced()) {
-        player.invalidate();
-      }
-    });
-  }
-
+  /**
+   * performs full state sending. Executed on costruct and on reconnect
+   */
   toSocket() {
     return {
-      round: this.round,
-      players: [...this.players.values()].map((player) => ({
-        uid: player.getUID(),
-        health: player.health
-      }))
+      // TODO
     };
   }
 }

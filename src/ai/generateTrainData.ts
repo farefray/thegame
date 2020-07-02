@@ -85,9 +85,6 @@ const generate = async function(folderName, dataAmount) {
         records[res.bucket] = [];
       }
 
-      // if (res.round === 1) {
-      //   console.log("res", res)
-      // }
 
       records[res.bucket].push({
         units: [...res.firstUnits],

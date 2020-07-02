@@ -9,7 +9,7 @@ import Merchantry from '../src/structures/Merchantry';
 import State from '../src/structures/State';
 import Customer from '../src/models/Customer';
 import Player from '../src/structures/Player';
-import { EVENTBUS_MESSAGE_TYPE } from '../src/typings/EventBus';
+import { EVENT_TYPE } from '../src/typings/EventBus';
 import { ABILITY_PHASE } from '../src/typings/Card';
 import BattleUnitList from '../src/structures/Battle/BattleUnitList';
 import BattleUnit from '../src/structures/BattleUnit';
@@ -25,7 +25,7 @@ const monsterCardExample = 'Dwarf';
 const CUSTOMERS = [new Customer(socketid, { uid: useruid } as FirebaseUser), new Customer(socketid + '_2', { uid: useruid + '_2' } as FirebaseUser)];
 
 // state, player and merchantry after creation should be emitted
-const events = [EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, EVENTBUS_MESSAGE_TYPE.STATE_UPDATE, EVENTBUS_MESSAGE_TYPE.PLAYER_UPDATE, EVENTBUS_MESSAGE_TYPE.START_BATTLE];
+const events = [EVENT_TYPE.MERCHANTRY_UPDATE, EVENT_TYPE.STATE_UPDATE, EVENT_TYPE.PLAYER_UPDATE, EVENT_TYPE.START_BATTLE];
 
 const mockedEventEmitter = {
   emitMessage: (type, recipient, message) => {
@@ -33,7 +33,7 @@ const mockedEventEmitter = {
     expect(recipient).to.be.a('string');
     expect(message).to.be.a('object');
 
-    // if (type === EVENTBUS_MESSAGE_TYPE.START_BATTLE) {
+    // if (type === EVENT_TYPE.START_BATTLE) {
     //   console.log(('message'));
     // }
   }

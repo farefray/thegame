@@ -1,7 +1,7 @@
 import CardsFactory from '../factories/CardsFactory';
 import Player from "./Player";
 import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
 import { FirebaseUserUID } from '../utils/types';
 
@@ -13,7 +13,7 @@ export default class Merchantry extends EventBusUpdater {
   private revealedCards = new Deck();
 
   constructor(players: IterableIterator<Player>) {
-    super(EVENTBUS_MESSAGE_TYPE.MERCHANTRY_UPDATE, [...players].reduce((subscribers: Array<FirebaseUserUID>, player) => {
+    super(EVENT_TYPE.MERCHANTRY_UPDATE, [...players].reduce((subscribers: Array<FirebaseUserUID>, player) => {
       subscribers.push(player.getUID());
       return subscribers;
     }, []));

@@ -1,6 +1,6 @@
 /** Represents data structure which is supposed to be synced with frontend */
 import { Container } from 'typedi';
-import { EVENTBUS_MESSAGE_TYPE } from '../../typings/EventBus';
+import { EVENT_TYPE } from '../../typings/EventBus';
 import EventBus from '../../services/EventBus';
 import { FirebaseUserUID } from '../../utils/types';
 
@@ -13,9 +13,9 @@ export abstract class EventBusUpdater {
   /** list of players who are supposed to receive updates for this structure, same this can be used to determine customers invlolved into current instance */
   protected subscribers: Array<FirebaseUserUID>;
   /** message type which will be dispatched to frontend */
-  private messageType: EVENTBUS_MESSAGE_TYPE;
+  private messageType: EVENT_TYPE;
 
-  constructor(messageType: EVENTBUS_MESSAGE_TYPE, subscribers: Array<FirebaseUserUID> = []) {
+  constructor(messageType: EVENT_TYPE, subscribers: Array<FirebaseUserUID> = []) {
     this.messageType = messageType;
     this.subscribers = subscribers;
   }
@@ -27,7 +27,7 @@ export abstract class EventBusUpdater {
   /**
    * Emitting event to update this player via socket
    */
-  public invalidate() {
+  public invalidate(eventSubtype) {
     this.emitEventBusMessage();
     this._invalidated = false;
   }
