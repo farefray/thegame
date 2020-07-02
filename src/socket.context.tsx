@@ -35,15 +35,15 @@ export default ({ children }) => {
   });
 
   socket.on('UPDATED_STATE', (state) => {
-    //dispatch({ type: 'UPDATED_STATE', state });
+    storeActions.app.stateUpdate(state);
   });
 
   socket.on('UPDATE_PLAYER', (player) => {
-    //dispatch({ type: 'UPDATE_PLAYER', player: player });
+    storeActions.player.updatePlayer(player);
   });
 
   socket.on('MERCHANTRY_UPDATE', (merchantry) => {
-    storeActions.merchantry.revealCards(merchantry.revealedCards)
+    storeActions.merchantry.revealCards(merchantry)
   });
 
   socket.on('NOTIFICATION', (notification) => {
@@ -51,7 +51,9 @@ export default ({ children }) => {
   });
 
   socket.on('START_BATTLE', ({ actionStack, startBoard, winner }) => {
-    //dispatch({ type: 'START_BATTLE', actionStack, startBoard, winner });
+    storeActions.gameboard.startBattle({
+      actionStack, startBoard
+    })
   });
 
   socket.on('TIMER_UPDATE', (countdown) => {

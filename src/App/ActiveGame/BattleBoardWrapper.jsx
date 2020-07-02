@@ -5,12 +5,12 @@ import BattleBoardLogic from './GameBoard/BattleBoardLogic.jsx';
 
 
 function BattleBoardWrapper() {
-  const { battleStartBoard, actionStack } = useStoreState((state) => state.gameboard);
+  const { startBoard, actionStack } = useStoreState((state) => state.gameboard);
 
   return (
     <React.Fragment>
       <GameBoard hasDnD={false} width="8" height="8">
-        <BattleBoardLogic battleStartBoard={battleStartBoard} actionStack={actionStack} />
+        <BattleBoardLogic startBoard={startBoard} actionStack={actionStack} />
       </GameBoard>
     </React.Fragment>
   );

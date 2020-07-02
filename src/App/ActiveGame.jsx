@@ -22,7 +22,7 @@ function ActiveGame() {
       <Row className="gameheader">
         <Col>
           <Row className="playerstats">
-            <PlayerStats playerStats={{ health: playerState.health, level: 1 /** TODO? */, unitsAmount: playerState.boardUnits.length, gold: playerState.gold }} />
+            <PlayerStats playerStats={{ health: playerState.health, level: 1 /** TODO? */, unitsAmount: playerState.board.length, gold: playerState.gold }} />
             <Timer initialTimerValue={countdown} />
           </Row>
         </Col>
@@ -38,7 +38,7 @@ function ActiveGame() {
           <div className="gameboard">
             <div className="gameboard-background"></div>
             <div className="gameboard-wrapper">
-              {isActiveBattleGoing ? <BattleBoardWrapper /> : <PlayerBoardWrapper boardUnits={playerState.boardUnits} />}
+              {isActiveBattleGoing ? <BattleBoardWrapper /> : <PlayerBoardWrapper boardUnits={playerState.board} />}
             </div>
           </div>
         </Col>

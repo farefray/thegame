@@ -2,13 +2,13 @@ import { action, thunk, Action, Thunk } from 'easy-peasy';
 
 export interface MerchantryModel {
   revealedCards: Array<any>;
-  revealCards: Action<MerchantryModel, Array<any>>;
+  revealCards: Action<MerchantryModel, any>;
 }
 
 const merchantryModel: MerchantryModel = {
   revealedCards: [],
   revealCards: action((state, payload) => {
-    state.revealedCards = payload;
+    state.revealedCards = payload.revealedCards;
   }),
 };
 
