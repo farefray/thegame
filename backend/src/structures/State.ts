@@ -1,87 +1,82 @@
-import { promisify } from 'util';
 import Player from './Player';
 import AiPlayer from './AiPlayer';
-import AppError from '../typings/AppError';
-import { SocketID } from '../utils/types';
 import Customer from '../models/Customer';
+import Merchantry from './Merchantry';
+import { EventBusUpdater } from './abstract/EventBusUpdater';
+import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
+import { FirebaseUserUID } from '../utils/types';
 
-const sleep = promisify(setTimeout);
 const { STATE } = require('../shared/constants');
 const MAX_ROUND_FOR_INCOME_INC = 5;
-const PLAYERS_MINIMUM = 2;
-const MAX_LEVEL = 8;
 
-export default class State {
-  public round: number;
-  public incomeBase: number;
-  public amountOfPlayers: number;
-  public countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
-  public players = {};
+export default class State extends EventBusUpdater {
+  MAX_ROUND = 25;
+
+  private amountOfPlayers: number; // todo
+  private round: number = 1;
+  private players: Map<FirebaseUserUID, Player>;
+  private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
+    super(
+      EVENTBUS_MESSAGE_TYPE.STATE_UPDATE,
+      customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
+        recipients.push(customer.ID);
+        return recipients;
+      }, [])
+    );
+
     this.round = 1;
-    this.incomeBase = 1;
     this.amountOfPlayers = customers.length;
-    this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
 
-    const players: Array<Player | AiPlayer> = [];
-    // create players
-    customers.forEach((customer) => {
-      players.push(new Player(customer.ID));
-    });
+    this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID)]));
 
-    // we need to have pairs, so fill rest of spots as AI
-    while (players.length < PLAYERS_MINIMUM || players.length % 2 > 0) {
-      players.push(new AiPlayer(`ai_player_${players.length}`));
+    if (this.players.size === 1) {
+      this.players.set('ai_player', new AiPlayer('ai_player'));
     }
 
-    // this is dirty [todo better way?]
-    for (let index = 0; index < players.length; index++) {
-      const playerEntity = players[index];
-      this.players[playerEntity.getUID()]= playerEntity;
-    }
+    this.merchantry = new Merchantry(this.players.values());
+
+    this.invalidate();
   }
 
-  refreshShopForPlayers() {
-    this.getPlayers().forEach((player) => {
-        player.refreshShop();
-    });
+  getMerchantry() {
+    return this.merchantry;
   }
 
-  endRound(winners) {
-    this.countdown = STATE.COUNTDOWN_BETWEEN_ROUNDS;
-    if (this.round <= MAX_ROUND_FOR_INCOME_INC) {
-      this.incomeBase = this.incomeBase + 1;
-    }
+  playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: FirebaseUserUID) {
+    this.players.forEach((player) => {
+      const opponent = this.getPlayersArray().filter(p => p.getUID() !== player.getUID())[0];
 
-    this.round = this.round + 1;
-
-    for (const uid in this.players) {
-      // todo FOR REWORK!!
-      const gold: number = this.players[uid].gold;
-      const bonusGold: number = Math.min(Math.floor(gold / 10), 5);
-      this.players[uid].gold = gold + this.incomeBase + bonusGold;
-
-      if (this.round <= MAX_LEVEL) {
-        this.players[uid].level = this.round;
-      }
-
-      if (!winners.includes(uid)) {
-        // player lost battle, remove health
-        const newHealth: number = this.players[uid].health - this.round;
-        this.players[uid].health = newHealth;
-
-        if (newHealth < 1) {
-          this.dropPlayer(uid);
+      const cards = [...player.hand.values()];
+      if (phase !== ABILITY_PHASE.VICTORY || player.getUID() === victoryUserUID) {
+        for (const card of cards) {
+          card.applyAbilities(player, opponent, phase);
         }
       }
-    }
 
-    this.refreshShopForPlayers();
+      for (let index = 0; index < cards.length; index++) {
+        const card = cards[index];
+        if (phase === ABILITY_PHASE.INSTANT && card.type === CARD_TYPES.CARD_MONSTER) {
+          player.addToBoard(card);
+        } else {
+          player.moveToDiscard(card);
+        }
+      }
+
+      if (phase === ABILITY_PHASE.VICTORY) {
+        player.board.empty();
+      }
+
+      player.invalidate(); // todo every card should be emitted separately to handle effects
+    });
+
+    this.invalidate(); // todo questionable?
   }
 
   dropPlayer(playerID) {
-    for (const uid in this.players) {
+    for (const [uid, player] of this.players) {
       if (uid === playerID) {
         delete this.players[uid];
         this.amountOfPlayers -= 1;
@@ -89,50 +84,66 @@ export default class State {
     }
   }
 
-  async waitUntilNextRound() {
-    await sleep(this.countdown);
+  getPlayer(playerUID) {
+    return this.players.get(playerUID);
   }
 
-  async wait(time) {
-    await sleep(time);
-  }
+  purchaseCard(playerUID: FirebaseUserUID, cardIndex: number) {
+    /**
+     * TODO Phase2, auction for cards?
+     */
+    const revealedCards = this.merchantry.getRevealedCards();
+    const player = this.getPlayer(playerUID);
+    if (player) {
+      if (player.gold < revealedCards.get(cardIndex).cost) {
+        //  todo new AppError('warning', 'Not enough money');
+        return false;
+      }
 
-  getPlayer(playerUID): Player {
-    return this.players[playerUID];
-  }
+      const ejectedCard = revealedCards.eject(cardIndex);
+      player.cardPurchase(ejectedCard);
+      this.merchantry.revealCards();
+    }
 
-  /**
-   * Prepare only data which is required for socket transfer
-   */
-  toSocket() {
-    return {
-      round: this.round,
-      countdown: this.countdown,
-      // tslint:disable-next-line: ter-arrow-body-style
-      players: this.getPlayers().map((player) => {
-        return {
-          uid: player.getUID(),
-          level: player.level,
-          health: player.health
-        };
-      })
-    };
+    return true;
   }
 
   getRound() {
     return this.round;
   }
 
-  getPlayers(): Array<Player | AiPlayer> {
-    return Object.values(this.players);
+  get firstPlayer(): Player {
+    return [...this.players.values()][0];
   }
 
+  get secondPlayer(): Player {
+    return [...this.players.values()][1];
+  }
+
+  getPlayers() {
+    return this.players;
+  }
+
+  getPlayersArray() {
+    return [...this.players.values()];
+  }
+
+  // TODO
   syncPlayers() {
-    this.getPlayers().forEach((player) => {
+    this.players.forEach((player) => {
       if (!player.isSynced()) {
-        player.update(true);
+        player.invalidate();
       }
     });
   }
 
+  toSocket() {
+    return {
+      round: this.round,
+      players: [...this.players.values()].map((player) => ({
+        uid: player.getUID(),
+        health: player.health
+      }))
+    };
+  }
 }

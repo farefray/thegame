@@ -4,12 +4,12 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
     {
       "type": "node",
       "request": "launch",
       "name": "Launch via NPM",
       "runtimeExecutable": "npm",
+      "runtimeVersion": "12.16.3",
       "runtimeArgs": [
         "run-script",
         "debug"
@@ -51,20 +51,18 @@
       "cwd":"${workspaceFolder}/backend"
     },
     {
+      "name": "Mocha  debug new game test suite",
       "type": "node",
       "request": "launch",
-      "name": "Mocha Debug only",
       "program": "${cwd}/backend/node_modules/mocha/bin/_mocha",
-      "args": [
-        "{,!(node_modules)/}*/debug.test.ts"
-      ],
-      "runtimeArgs": [
-        "--nolazy"
-      ],
-      "sourceMaps": true,
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "cwd":"${workspaceFolder}/backend"
+      "stopOnEntry": false,
+      "runtimeVersion": "12.16.3",
+      "args": ["--no-timeouts", "--colors", "{,!(node_modules)/}*/game.test.ts"],
+      "cwd":"${workspaceFolder}/backend",
+      "runtimeExecutable": null,
+      "env": {
+        "NODE_ENV": "testing"
+      }
     }
   ]
 }

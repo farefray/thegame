@@ -1,98 +1,13 @@
 import BattleUnit from '../BattleUnit';
 import Position from '../../shared/Position';
+import AbstractList from '../abstract/AbstractList';
 
-export default class BattleUnitList {
-  private _list: BattleUnit[];
-
-  constructor(battleUnitArray?: BattleUnit[]) {
-    this._list = battleUnitArray ?? [];
-  }
-
-  /** Internals */
-
-  [Symbol.iterator]() {
-    let index = 0;
-    return {
-      next: () => ({
-        value: this._list[index++],
-        done: index > this.size
-      })
-    };
-  }
-
-  forEach(fn) {
-    for (const unit of this) {
-      fn(unit)
-    }
-  }
-
-/** Getters */
-  get(index) {
-    return this._list[index];
-  }
-
-  delete(index) {
-    delete this._list[index];
-  }
-
+export default class BattleUnitList extends AbstractList<BattleUnit> {
   get unitNames() {
     return this._list.reduce((prev: string[], cur) => {
       prev.push(cur.name);
       return prev;
     }, []);
-  }
-
-  get size() {
-    return this._list.length;
-  }
-
-  get random() {
-    return this._list[Math.floor(Math.random() * this.size)];
-  }
-
-  /** Modification methods */
-
-  push(unit: BattleUnit) {
-    this._list.push(unit);
-  }
-
-  filter(conditionFn: Function, mutateInstance = false) {
-    const filtered: BattleUnit[] = [];
-    for (let iterator = 0; iterator < this._list.length; iterator++) {
-      if (conditionFn(this._list[iterator])) {
-        filtered.push(this._list[iterator]);
-      }
-    }
-
-    if (mutateInstance) {
-      this._list = filtered;
-      return this;
-    }
-
-    return new BattleUnitList(filtered);
-  }
-
-  shuffle() {
-    // Fisher-Yates shuffle
-    for (let iterator = 0; iterator < this._list.length; iterator++) {
-      // define target randomized index from given array
-      const target = Math.floor(Math.random() * (iterator + 1));
-      // if target index is different of current iterator then switch values
-      if (target !== iterator) {
-        const temporary = this._list[iterator];
-        // switch values
-        this._list[iterator] = this._list[target];
-        this._list[target] = temporary;
-      }
-    }
-
-    return this;
-  }
-
-  /** Searching methods */
-
-  find(condition) : BattleUnit | undefined {
-    return this._list.find(condition)
   }
 
   byTeam(teamId: number) {
@@ -121,11 +36,35 @@ export default class BattleUnitList {
     return units;
   }
 
-  /** Output methods */
-  toJSON() {
-    return this._list.reduce((prev: any[], cur) => {
-      prev.push(cur.toJSON());
-      return prev;
-    }, []);
+  /**
+   * Returns team id of units which are only the ones left on the board
+   * @returns {number} 0 or 1 for teams, -1 for neutrals, -2 for error
+   */
+  onlyTeamLeft() {
+    return this._list.reduce((teams: number[], unit) => {
+      teams.push(unit.teamId)
+      return teams;
+    }, []).reduce((resultedTeam: 0 | 1 | -1 | -2, teamId) => {
+      if (resultedTeam === -2) {
+        return -2; // once error, always error
+      }
+
+      if (resultedTeam === -1) {
+        // first unit, take his team as resulted
+        return teamId === 0 ? 0 : 1;
+      }
+
+      // we already have some value from previous unit
+      if (teamId === 0 || teamId === 1) {
+        // if that value is not matching current unit value, return error
+        if (teamId !== resultedTeam) {
+          return -2;
+        }
+
+        return teamId;
+      }
+
+      return -1;
+    }, -1)
   }
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Loader } from './loader';
 import Session from '../models/Session';
 import AiPlayer, { StrategyFlags } from '../structures/AiPlayer';
@@ -18,7 +19,7 @@ class Simulation {
 
   constructor() {
     this.session = new Session([]);
-    this.players  = this.session.getState().getPlayers() as AiPlayer[];
+    this.players  = this.session.getState().getPlayersArray() as AiPlayer[];
 
     /**
      * first player has to be random, second player will pick best opponents.

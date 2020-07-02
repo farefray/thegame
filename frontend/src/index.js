@@ -3,22 +3,19 @@ import './lib/web-animations.min'; // Web Animations API polyfill - https://gith
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import * as serviceWorker from './service-worker';
+import * as serviceWorker from './service-worker'; // todo  do we need service worker at all?
 import store from './store';
-import { Provider } from 'react-redux';
+import { StoreProvider } from 'easy-peasy';
 import WebSocketProvider from './socket.context';
 
-if (process.env.NODE_ENV !== 'production') {
-  require('./console.log.tweaks.js');
-}
 
 // react-helmet use here?
 ReactDOM.render(
-  <Provider store={store}>
+  <StoreProvider store={store}>
     <WebSocketProvider>
       <App />
     </WebSocketProvider>
-  </Provider>,
+  </StoreProvider>,
   document.getElementById('root')
 );
 

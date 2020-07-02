@@ -6,6 +6,10 @@ import { ACTION_TYPE, Action } from '../typings/Action';
 import { ACTION, TEAM } from '../shared/constants';
 import BoardMatrix from './Battle/BoardMatrix';
 import BattleUnitList from './Battle/BattleUnitList';
+import { EventBusUpdater } from './abstract/EventBusUpdater';
+import { EVENTBUS_MESSAGE_TYPE } from '../typings/EventBus';
+import sleep from '../utils/sleep';
+import { FirebaseUserUID } from '../utils/types';
 
 /**
  * TODO: move this into Battle.d.ts, just need to investigate if thats fine to use classes in types,
@@ -16,15 +20,6 @@ export interface BattleContext {
   pathfinder: Pathfinder;
   targetPairPool: TargetPairPool;
   units: BattleUnitList;
-}
-
-export interface BattleResult {
-  battleTime: number;
-  actionStack: Array<Object>;
-  startBoard: BoardMatrix;
-  participants: Array<string>;
-  winner: string;
-  finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
 }
 
 export interface UnitAction {
@@ -42,9 +37,9 @@ export interface BattleBoard {
   owner: string;
 }
 
-export default class Battle {
+export default class Battle extends EventBusUpdater {
   private startBoard: BoardMatrix;
-  private winner = TEAM.NONE;
+  public winner = TEAM.NONE;
   private readonly actionStack: UnitAction[];
   private readonly pathfinder: Pathfinder;
   private units: BattleUnitList; // temporaly public for ai needs
@@ -55,35 +50,23 @@ export default class Battle {
   private actionGeneratorInstance: Generator;
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
-  constructor(unitBoards: Array<BattleBoard>) {
+  constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<FirebaseUserUID>) {
+    super(EVENTBUS_MESSAGE_TYPE.START_BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<FirebaseUserUID>, battleBoard) => {
+      subs.push(battleBoard.owner);
+      return subs;
+    }, []));
+
     this.startBoard = new BoardMatrix(8, 8);
-    this[Symbol.for('owners')] = {};
 
-    if (unitBoards.length) {
-      unitBoards.forEach((unitBoard, teamId) => {
-        if (unitBoard.owner) {
-          this[Symbol.for('owners')][teamId] = unitBoard.owner;
+    unitBoards.forEach((unitBoard, teamId) => {
+      if (unitBoard.units.size) {
+        for (const unit of unitBoard.units) {
+          // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
+          unit.team = teamId;
+          this.startBoard.setCell(unit.x, unit.y, unit);
         }
-
-        if (unitBoard.units.size) {
-          for (const unit of unitBoard.units) {
-            /**
-             * TODO P0 - Investigate this. based on what we see on Session, units are alrdy a battleunitlist with battle units.
-             * Shall we create them? Or they supposed to be unitConfigs, not units.
-             */
-            const battleUnit = new BattleUnit({
-              name: unit.name,
-              x: unit.x,
-              y: unit.y,
-              teamId,
-            });
-
-            // actually startBoard shouldnt nessesary to be a full unit matrix. Only representation will be enought
-            this.startBoard.setCell(unit.x, unit.y, battleUnit);
-          }
-        }
-      });
-    }
+      }
+    });
 
     this.currentTimestamp = 0;
     this.actionStack = [];
@@ -96,7 +79,7 @@ export default class Battle {
     this.units = this.startBoard.units().shuffle();
 
     // dirty way to unlink units from startboard, need to be revised
-    this.startBoard = JSON.parse(JSON.stringify(this.startBoard));
+    this.startBoard = JSON.parse(JSON.stringify(this.startBoard.toSocket()));
 
     this.pathfinder = new Pathfinder();
 
@@ -110,6 +93,10 @@ export default class Battle {
     }
 
     this.actionGeneratorInstance = this.generateActions();
+  }
+
+  get battleTime() {
+    return this.currentTimestamp;
   }
 
   get context(): BattleContext {
@@ -126,7 +113,7 @@ export default class Battle {
 
     if (!this.units.byTeam(TEAM.A).size || !this.units.byTeam(TEAM.B).size) {
       this.isOver = true;
-      this.battleTimeEndTime = this.currentTimestamp + 2500; // we ends battle in 2.5 seconds, in order to finish attacks, particles, animations
+      this.battleTimeEndTime = this.currentTimestamp;
     }
   }
 
@@ -139,17 +126,20 @@ export default class Battle {
       // action was generated already, so we dont need to execute another next() here
       const { done, value } = await this.actionGeneratorInstance.next();
 
+      // no more actions left to be handled
       if (done) {
-        this.isOver = done;
+        this.isOver = true;
       }
     }
 
-    this.setWinner();
+    this.winner = this.subscribers[this.units.onlyTeamLeft()];
 
-    return this.battleResult;
+    this.invalidate(); // emitting battle start event
   }
 
   *generateActions() {
+    this.updateUnits(); // initial run, just in case there's no units
+
     while (this.actorQueue.length && this.currentTimestamp <= this.battleTimeEndTime) {
       const actor = this.actorQueue.shift();
       if (!actor) continue;
@@ -205,12 +195,12 @@ export default class Battle {
   }
 
   processAction(action: Action) {
-    if (!action ||
-      (this.isOver /* && !([ACTION_TYPE.DEATH].includes(action.type)) */)) {
-      // ? dont proceed new actions if battle is finished, we only need old queued damage actors to finish
-      // TODO why isOver not handling this?
-      return;
-    }
+    // if (!action ||
+    //   (this.isOver /* && !([ACTION_TYPE.DEATH].includes(action.type)) */)) {
+    //   // ? dont proceed new actions if battle is finished, we only need old queued damage actors to finish
+    //   // TODO why isOver not handling this?
+    //   return;
+    // }
 
     switch (action.type) {
       /*
@@ -288,17 +278,6 @@ export default class Battle {
     this.actionStack.push(actionStackItem);
   }
 
-  setWinner() {
-    const aTeamUnits = this.units.byTeam(TEAM.A);
-    const bTeamUnits = this.units.byTeam(TEAM.B);
-
-    if (!aTeamUnits.size || !bTeamUnits.size) {
-      this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
-    } else {
-      this.winner = '';
-    }
-  }
-
   /**
    * @description optimizes actionStack for frontend, formatting chained actions
    */
@@ -333,16 +312,12 @@ export default class Battle {
     return this.actionStack.filter(action => !action.parent).sort((a, b) => ((a.time > b.time) ? 1 : -1));
   }
 
-  // output for a battle execution
-  get battleResult(): BattleResult {
+
+  toSocket() {
     return {
       actionStack: this.optimizedActionStack,
-      battleTime: this.currentTimestamp,
-      winner: this.winner,
-
-      startBoard: this.startBoard, // todo unlink? matrix to json?
-      participants: Object.values(this[Symbol.for('owners')]), // ??
-      finalBoard: this.units // OMIT this!!
-    }
+      startBoard: this.startBoard,
+      // participants: Object.values(this[Symbol.for('owners')]), // ??
+    };
   }
 }

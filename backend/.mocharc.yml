@@ -6,6 +6,7 @@ check-leaks: false
 color: true
 delay: false
 diff: true
+diagnostics: false
 exit: false # could be expressed as "no-exit: true"
 extension:
   - js
@@ -26,7 +27,7 @@ require: 'ts-node/register'
 retries: 0
 slow: 75
 sort: false
-timeout: 5000 # same as "no-timeout: true" or "timeout: 0"
+timeout: 0 # same as "no-timeout: true" or "timeout: 0"
 trace-warnings: true # node flags ok
 ui: bdd
 v8-stack-trace-limit: 100 # V8 flags are prepended with "v8-"

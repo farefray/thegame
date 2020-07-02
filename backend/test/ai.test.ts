@@ -1,10 +1,11 @@
+// @ts-nocheck
 import { suite, test, only, skip } from '@testdeck/mocha';
 import { expect } from 'chai';
 
 import Session from '../src/models/Session';
 import AiPlayer from '../src/structures/AiPlayer';
 import { BattleResult } from '../src/structures/Battle';
-import MonsterService from '../src/services/Monsters';
+import MonsterService from '../src/factories/CardsFactory';
 import BattleUnit from '../src/structures/BattleUnit';
 
 import { Container } from 'typedi';
@@ -15,7 +16,7 @@ const mockedEventEmitter = {
   }
 };
 
-Container.set('event.emitter', mockedEventEmitter);
+Container.set('event.bus', mockedEventEmitter);
 
 @suite
 class AI {
@@ -27,7 +28,7 @@ class AI {
 
     const gameState = session.getState();
     expect(gameState).to.be.a('object');
-    expect(Object.keys(gameState.players).length).to.be.equal(2);
+    expect(Object.keys(gameState.getPlayersArray()).length).to.be.equal(2);
   }
 
   @test
@@ -41,7 +42,6 @@ class AI {
   }
 
   @test
-  @skip
   async canProcessAIBattle() {
     const session = new Session([]);
     while (session.hasNextRound()) {
@@ -65,7 +65,7 @@ class AI {
     }
 
     const state = session.getState();
-    expect(state.getPlayers().length).to.be.equal(1);
+    expect(state.getPlayersArray().length).to.be.equal(1);
   }
 }
 
@@ -75,7 +75,6 @@ class Minor_AI_functionality {
   @test
   getPreferablePosition() {
     const playerOne = new AiPlayer('ai_1');
-    playerOne.level = 10;
     const monsterService = MonsterService.getInstance();
     while(!playerOne.isBoardFull()) {
       const monsterInterface = monsterService.getRandomUnit();

@@ -5,24 +5,14 @@ import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from '../typings/Action
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from '../typings/Action';
 import Actor, { ActionGeneratorValue } from '../typings/Actor';
 import { BattleContext } from './Battle';
-import MonstersService from '../services/Monsters';
+import MonstersFactory from '../factories/MonstersFactory';
 import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';
 import Step from './Battle/Pathfinder/Step';
+import { MonsterInterface } from '../typings/Monster';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
-
-/**
- * @description Describes base unit to be built into BattleUnit
- * @interface UnitConfig
- */
-export interface UnitConfig {
-  name: string;
-  x: number;
-  y: number;
-  teamId: number;
-}
 
 interface ActionOptions {
   parent?: string;
@@ -45,11 +35,11 @@ export interface SpellOptions {
 }
 
 export default class BattleUnit {
-  public id: string;
+  public id: string = '';
   public name: string;
-  public x: number;
-  public y: number;
-  public teamId: number;
+  public x: number = -1;
+  public y: number = -1;
+  public teamId: number = -1;
   public attack: {
     value?: number;
     range?: number;
@@ -80,57 +70,46 @@ export default class BattleUnit {
     regen: number;
   };
 
-  /**
-   * ? Unit config is not used anymore? Its alrdy battleunits here...
-   * TODO fixthis
-   */
-  constructor(unitConfig: UnitConfig) {
-    this.x = +unitConfig.x;
-    this.y = +unitConfig.y;
-    this.id = this.stringifiedPosition; // id = is also a starting position for mob
-    this.teamId = unitConfig.teamId;
+  constructor(monsterConfig: MonsterInterface) {
+    const unitName = monsterConfig?.name || 'Unknown monster';
 
-    const unitStats = MonstersService.getInstance().getMonsterStats(unitConfig.name);
-
-    this.name = unitStats.name;
-    this.cost = unitStats.cost;
-
-    const { attack } = unitStats;
+    this.name = unitName;
+    this.cost = monsterConfig.cost;
 
     this.attack = {
-      ...attack
+      ...monsterConfig.attack
     };
 
-    if (attack.particleID) {
-      attack.particle = {
-        id: attack.particleID || null,
-        duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
+    if (monsterConfig.attack && monsterConfig.attack.particleID) {
+      this.attack.particle = {
+        id: monsterConfig.attack?.particleID || null,
+        duration: Math.floor((monsterConfig.attack?.speed ?? 0) / 10) // todo isnt this supposed to be varying on distance/atkspeed?
       };
     }
 
-    this.armor = unitStats.armor;
-    this.lookType = unitStats.lookType;
+    this.armor = monsterConfig.armor ?? 0;
+    this.lookType = monsterConfig.lookType;
 
-    if (unitStats.mana) {
+    if (monsterConfig.mana) {
       this._mana = {
         now: 0,
-        max: unitStats.mana.max || 0,
-        regen: unitStats.mana.regen || 0
+        max: monsterConfig.mana.max || 0,
+        regen: monsterConfig.mana.regen || 0
       };
     }
 
-    this.spell = unitStats.spell;
+    this.spell = monsterConfig.spell;
 
     this._health = {
-      now: unitStats.health.max,
-      max: unitStats.health.max
+      now: monsterConfig.health.max,
+      max: monsterConfig.health.max
     };
 
-    this.walkingSpeed = unitStats.walkingSpeed;
+    this.walkingSpeed = monsterConfig.walkingSpeed ?? 0;
 
-    this.isTargetable = unitStats?.specialty?.targetable !== undefined ? unitStats.specialty.targetable : true;
-    this.isPassive = unitStats?.specialty?.passive !== undefined ? unitStats.specialty.passive : false;
-    this.isShopRestricted = !!unitStats?.specialty?.shopRestricted;
+    this.isTargetable = monsterConfig?.specialty?.targetable !== undefined ? monsterConfig.specialty.targetable : true;
+    this.isPassive = monsterConfig?.specialty?.passive !== undefined ? monsterConfig.specialty.passive : false;
+    this.isShopRestricted = !!monsterConfig?.specialty?.shopRestricted;
   }
 
   /** Socket representation for unit which not requires most of the data */
@@ -138,7 +117,7 @@ export default class BattleUnit {
    * TODO some better and more productive approach.
    * Maybe we need to rewrite monsters to classes or objects with non-
    * enumerable properties to exclude those which we dont need or maybe Symbols */
-  toJSON() {
+  toSocket() {
     const json = {};
     Object.keys(this).map(key => {
       if (key !== 'spell') { // hardcode to avoid spell functions to be sent over socket
@@ -226,6 +205,10 @@ export default class BattleUnit {
     }
 
     return 0;
+  }
+
+  set team(value) {
+    this.teamId = value;
   }
 
   rearrangeToPos(pos: Position) {

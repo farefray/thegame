@@ -1,12 +1,11 @@
-import { SocketID, SessionID } from "../utils/types";
+import { SocketID, SessionID, FirebaseUserUID, FirebaseUser } from "../utils/types";
 import SessionsService from "../services/Sessions";
-import { FirebaseUser } from "../services/ConnectedPlayers";
 
 /**
  * Represents logged in customer with attached firebase user uid
  */
 export default class Customer {
-  private userUID: FirebaseUser["uid"];
+  private userUID: FirebaseUserUID;
   public socketID: SocketID;
   public sessionID: SessionID | null;
   // public isReady: boolean;
@@ -18,7 +17,7 @@ export default class Customer {
     // this.isReady = false;
   }
 
-  get ID() {
+  get ID() { // todo rename to uid or smt, to not mislead
     return this.userUID;
   }
 

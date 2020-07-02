@@ -1,22 +1,17 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
-import { EventEmitter } from 'events';
 import AppError from '../typings/AppError';
 
-import GameController from '../controllers/Game';
-import Player from '../structures/Player';
-import State from '../structures/State';
-import { BattleResult } from '../structures/Battle';
-import Position from '../shared/Position';
+import EventBus from '../services/EventBus';
 import { Socket } from 'socket.io';
-import ConnectedPlayers, { FirebaseUser } from './ConnectedPlayers';
+import ConnectedPlayers from './ConnectedPlayers';
 import { SocketID } from '../utils/types';
 import Customer from '../models/Customer';
+import Game from '../models/Game';
 // const admin = require('firebase-admin')
 
 // // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
-
 
 const SOCKETROOMS = {
   WAITING: 'WAITING_ROOM'
@@ -24,39 +19,11 @@ const SOCKETROOMS = {
 
 const connectedPlayers = ConnectedPlayers.getInstance();
 
-// Dependency container
-// Event emitter
-const eventEmitter: EventEmitter = new EventEmitter();
-Container.set('event.emitter', eventEmitter);
+const eventBus = new EventBus();
+Container.set('event.bus', eventBus);
 
-eventEmitter.on('roundBattleStarted', (uid: FirebaseUser['uid'], playerBattleResult: BattleResult) => {
-  const customer = connectedPlayers.getByID(uid);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('START_BATTLE', playerBattleResult);
-  }
-});
-
-eventEmitter.on('stateUpdate', (uid: FirebaseUser['uid'], state: State) => {
-  const customer = connectedPlayers.getByID(uid);
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATED_STATE', state.toSocket());
-  }
-
-  // if we are sending whole state, thats game start or round update.
-  // We need to deliver all the changes to our players
-  state.syncPlayers();
-});
-
-eventEmitter.on('playerUpdate', (player: Player) => {
-  const customer = connectedPlayers.getByID(player.getUID());
-  if (customer) {
-    const io: SocketIO.Server = Container.get('socket.io');
-    io.to(customer.getSocketID()).emit('UPDATE_PLAYER', player.toSocket());
-  }
-});
-
+const PLAYERS_REQUIRED = 2;
+// todo check case when user is starting new game while he has one already
 class SocketService {
   private socket: Socket;
   private id: SocketID;
@@ -64,6 +31,8 @@ class SocketService {
   constructor(socket: Socket) {
     this.socket = socket;
     this.id = socket.id;
+
+    console.log('constructor, game is null')
 
     /**
      * Magical handler for all frontend events. This may be wrong concept, need to be revised.
@@ -75,7 +44,7 @@ class SocketService {
      * socket emiting event to backend >
      * backend retrieves event and executes handler >
      * after handler executes callback if exists >
-     * if callback was executed, frontend dispatch into redux store to update frontend app state.
+     * if callback was executed, frontend can use callback value as promise resolved value and trigger additional actions
      */
     socket.use((packet, next) => {
       const [...packetDetails] = packet;
@@ -92,7 +61,7 @@ class SocketService {
             callback({
               ok: !!handleResult,
               ...handleResult
-            })
+            });
           }
         }
       }
@@ -100,28 +69,6 @@ class SocketService {
       next();
     });
   }
-
-  /** Private methods used in service */
-  private _startGame(clients) {
-    const io: SocketIO.Server = Container.get('socket.io');
-
-    for (let index = 0; index < clients.length; index++) {
-      const socketID = clients[index];
-      const _socket = io.sockets.connected[socketID];
-      _socket.leave(SOCKETROOMS.WAITING);
-    }
-
-    const customers = clients.reduce((customers: Customer[], socketID) => {
-      const customer = connectedPlayers.getBySocket(socketID);
-      if (customer) {
-        customers.push(customer);
-      }
-
-      return customers;
-    }, []);
-
-    GameController.startGame(customers);
-  };
 
   disconnect = () => {
     console.log('@disconnect', this.id);
@@ -140,7 +87,6 @@ class SocketService {
       //   if (session.hasClients()) {
       //     return; // notify about disconnect todo
       //   }
-
       //   SessionsService.destroy(sessionID);
       // }
     } // todo case when no customer?
@@ -150,7 +96,7 @@ class SocketService {
 
   ON_CONNECTION = (firebaseUser) => {
     let message = 'Connection established!';
-    if (firebaseUser) {
+    if (firebaseUser) { // todo test and fix this case
       // upon connection, our user is already authentificated, we can restore his session
       message = 'Connection restored';
 
@@ -163,24 +109,25 @@ class SocketService {
     });
 
     return {
-      user: firebaseUser && firebaseUser.uid
+      user: firebaseUser && firebaseUser.uid,
     };
   };
 
   CUSTOMER_LOGIN = (firebaseUser) => {
     if (!firebaseUser) {
       // no user exists on firebase onAuthChanged or thats a logout
-      return;
+      return false;
     }
 
     const loginResults = connectedPlayers.login(firebaseUser, this.id);
     if (loginResults && loginResults.session) {
       // restore player session
       const { customer, session } = loginResults;
-      session.getState().getPlayer(customer.ID).update(false); // mark player as 'update needed'
+      session.getState().getPlayer(customer.ID)?.invalidate(); // mark player as 'update needed'
 
       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
-      eventEmitter.emit('stateUpdate', customer.ID, session.getState());
+      // const eventBus:EventBus = Container.get('event.bus');
+      // eventBus.emit('stateUpdate', customer.ID, session.getState()); // todo
 
       // todo restore if he is in battle?
     }
@@ -210,22 +157,49 @@ class SocketService {
           throw new Error(err);
         }
 
-        if (clients.length >= 2) {
-          this._startGame(clients);
+        if (clients.length >= PLAYERS_REQUIRED) {
+          const io: SocketIO.Server = Container.get('socket.io');
+          for (let index = 0; index < PLAYERS_REQUIRED; index++) {
+            const socketID = clients[index];
+            const _socket = io.sockets.connected[socketID];
+            _socket.leave(SOCKETROOMS.WAITING);
+          }
+
+          const customers = clients.reduce((customers: Customer[], socketID) => {
+            const customer = connectedPlayers.getBySocket(socketID);
+            if (customer) {
+              customers.push(customer);
+            }
+
+            return customers;
+          }, []);
+
+          // tslint:disable-next-line: no-unused-expression
+          new Game(customers[0], customers[1]);
+          return true;
         }
       });
 
-      return { ready: true};
+      return { ready: true };
     }
 
     return false;
   };
 
   START_AI_GAME = () => {
-    this._startGame([this.id]);
+    const customer = connectedPlayers.getBySocket(this.id);
+    if (!customer) {
+      return false;
+    }
+
+    // tslint:disable-next-line: no-unused-expression
+    new Game(customer);
     return true;
   };
 
+  /**
+   * Since registration is handled on frontend, we just send notification to backend that event successfully handled
+   */
   NEW_CUSTOMER_REGISTRATION = () => {
     this.socket.emit('NOTIFICATION', {
       type: 'success',
@@ -235,54 +209,13 @@ class SocketService {
     return true;
   };
 
-  PURCHASE_UNIT = (pieceIndex) => {
+  PURCHASE_CARD = (cardIndex) => {
     const customer = connectedPlayers.getBySocket(this.id);
     if (customer) {
-      const session = customer.getSession();
-
-      if (session) {
-        const result = session.getState().getPlayer(customer.ID)?.purchasePawn(pieceIndex);
-        if (result instanceof AppError) {
-          const io: SocketIO.Server = Container.get('socket.io');
-          io.to(`${this.id}`).emit('NOTIFICATION', result);
-          return false;
-        }
-
-        return true;
-      }
+      return customer.getSession()?.getState()?.purchaseCard(customer.ID, cardIndex);
     }
 
-    return false;
-  };
-
-  PLACE_PIECE = (positions) => {
-    const customer = connectedPlayers.getBySocket(this.id);
-    if (customer) {
-      const session = customer.getSession();
-
-      if (session) {
-        session.getState().getPlayer(customer.ID)?.moveUnitBetweenPositions(Position.fromString(positions.from), Position.fromString(positions.to));
-
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  sellUnit = (fromBoardPosition) => {
-    const customer = connectedPlayers.getBySocket(this.id);
-    if (customer) {
-      const session = customer.getSession();
-
-      if (session) {
-        session.getState().getPlayer(customer.ID)?.sellPawn(fromBoardPosition);
-
-        return true;
-      }
-    }
-
-    return false;
+    return true;
   };
 }
 

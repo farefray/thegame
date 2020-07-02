@@ -44,55 +44,57 @@ export default class AiPlayer extends Player {
       return null;
     }
 
-    if (!this.isBoardFull()) {
+    if (!this.isBoardFull()) { // todo
       // we definately need to buy some unit, find most suitable
-      const amount = Math.min(this.allowedBoardSize() - this.board.units().size, affortableUnits.size);
-      return AIService.getInstance().mostSuitableUnit({
-        current: this.board.units(),
-        proposed: affortableUnits,
-        amount
-      }, this.AIFlags);
+      // const amount = Math.min(this.allowedBoardSize() - this.board.units().size, affortableUnits.size);
+      // return AIService.getInstance().mostSuitableUnit({
+      //   current: this.board.units(),
+      //   proposed: affortableUnits,
+      //   amount
+      // }, this.AIFlags);
+      return null;
     }
 
     // todo magic logic here to find any good units in pocket
     return null;
   }
 
-  considerUnitsPlacing() {
-    if (!this.isBoardFull()) {
-      // we need to place units for sure!
-      const unit = AIService.getInstance().mostSuitableUnit({
-        current: this.board.units(),
-        proposed: this.hand.units(),
-        amount: this.allowedBoardSize()
-      }, this.AIFlags);
+  // considerUnitsPlacing() {
+  //   if (!this.isBoardFull()) {
+  //     // we need to place units for sure!
+  //     const unit = AIService.getInstance().mostSuitableUnit({
+  //       current: this.board.units(),
+  //       proposed: this.hand.units(),
+  //       amount: this.allowedBoardSize()
+  //     }, this.AIFlags);
 
-      if (unit) {
-        const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
-        this.moveUnitBetweenPositions(unit.position, prefereablePosition);
-      }
-    }
-  }
+  //     if (unit) {
+  //       const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
+  //       this.moveUnitBetweenPositions(unit.position, prefereablePosition);
+  //     }
+  //   }
+  // }
 
   beforeBattle(opponent: Player) {
     super.beforeBattle(opponent);
 
     // consider buying new units
+    // todo
     const unit = this.considerUnitsPurchase();
-    if (unit) {
-      const shopUnit = this.shopUnits.findByName(unit.name);
+    // if (unit) {
+    //   const shopUnit = this.shopUnits.findByName(unit.name);
 
-      if (shopUnit) {
-        this.purchasePawn(shopUnit.x);
-      }
-    }
+    //   if (shopUnit) {
+    //     this.purchasePawn(shopUnit.x);
+    //   }
+    // }
 
-    if (this.hand.units().size) {
-      this.considerUnitsPlacing();
-    }
+    // if (this.hand.units().size) {
+    //   this.considerUnitsPlacing();
+    // }
   }
 
   getAffortableShopUnits() {
-    return this.shopUnits.filter(unit => unit.cost <= this.gold);
+    return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
   }
 }

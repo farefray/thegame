@@ -1,0 +1,13 @@
+{
+  "cost": 1,
+  "instant": {
+    "health": 1,
+    "damage": 1,
+    "gold": 1
+  },
+  "victory": {
+    "health": 1,
+    "damage": 1,
+    "gold": 1
+  }
+}

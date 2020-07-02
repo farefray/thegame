@@ -18,10 +18,11 @@ export default function BoardSquareDnD({ cellPosition, children }) {
   const websocket = useContext(WebSocketContext);
   const movePawn = (fromPosition, toPosition) => {
     if (canMovePawn(fromPosition, toPosition)) {
-      websocket.emitMessage('PLACE_PIECE', {
-        from: fromPosition.toBoardPosition(),
-        to: toPosition.toBoardPosition()
-      });
+      throw new Error('DND WAS DISABLED')
+      // websocket.emitMessage('PLACE_PIECE', {
+      //   from: fromPosition.toBoardPosition(),
+      //   to: toPosition.toBoardPosition()
+      // });
     }
   };
 

@@ -1,47 +1,17 @@
-50 search results found
+57 search results found
 
-file:///d:\thegame\backend\src\monsters\configs\abstract\Monster.ts
-  10:     regen?: number, // TODO if we need this
+file:///d:\thegame\backend\src\factories\CardsFactory.ts
+  12:     // TODO[phase3]: Player personal cards can be shuffled into deck
 
-file:///d:\thegame\backend\src\monsters\spells\hoof.ts
+file:///d:\thegame\backend\src\factories\configs\spells\hoof.ts
   15:       return null; // todo test
 
-file:///d:\thegame\backend\src\objects\AiPlayer.ts
-  57:     // todo magic logic here to find any good units in pocket
+file:///d:\thegame\backend\src\models\Customer.ts
+  20:   get ID() { // todo rename to uid or smt, to not mislead
 
-file:///d:\thegame\backend\src\objects\Battle.ts
-  27:   finalBoard: BattleUnitList; // DEBUG needs for generating train data of naural network. Should be rewrited
-  50:   private units: BattleUnitList; // temporaly public for ai needs
-  211:       // TODO why isOver not handling this?
-  253:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
-  296:       this.winner = aTeamUnits.size ? this[Symbol.for('owners')][0] : this[Symbol.for('owners')][1]; // todo support for more board owners?
-  320:             // TODO avoid such issues
-  343:       startBoard: this.startBoard, // todo unlink? matrix to json?
-
-file:///d:\thegame\backend\src\objects\BattleUnit.ts
-  107:         duration: Math.floor(attack.speed / 10) // todo isnt this supposed to be varying on distance/atkspeed?
-  213:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
-  576:   // todo review this one
-  615:     // todo also base to closest unit?
-
-file:///d:\thegame\backend\src\objects\Pathfinder.ts
-  205:     // todo make this human readable
-
-file:///d:\thegame\backend\src\objects\Player.ts
-  16: // TODO move logic to service/controller and data to model
-  53:         x: i, // todo get rid of this for shop units
-  54:         y: -1, // todo get rid of this for shop units
-  55:         teamId: 0, // todo get rid of this for shop units
-  127:         // Todo check if this will be covered for leveled up units
-  138:       // TODO: Inform Client about update
-  159:       : this.board.getCell(fromPosition.x, fromPosition.y); // TODO this can be optimized if we use unique positions ENUM
-
-file:///d:\thegame\backend\src\objects\Session.ts
-  11: // TODO consider using https://github.com/expressjs/session#readme for socket.io
-  97:     // todo
-
-file:///d:\thegame\backend\src\objects\State.ts
-  60:       // todo FOR REWORK!!
+file:///d:\thegame\backend\src\models\Session.ts
+  10: // TODO consider using https://github.com/expressjs/session#readme for socket.io
+  40:     // todo
 
 file:///d:\thegame\backend\src\services\AI.ts
   28:   // todo get rid of dynamic imports. Preload those buckets and neurals!
@@ -49,28 +19,66 @@ file:///d:\thegame\backend\src\services\AI.ts
   68:     // todo pick combination with biggest predicted output
 
 file:///d:\thegame\backend\src\services\ConnectedPlayers.ts
-  34:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
+  29:   // todo Maybe if customer has already session and game, we need to update his state and restore session?
+
+file:///d:\thegame\backend\src\services\EventBus.ts
+  37: // TODO
 
 file:///d:\thegame\backend\src\services\Sessions.ts
   29:   // TODO session removale
 
 file:///d:\thegame\backend\src\services\Socket.ts
-  132:       // TODO !!!
-  146:     } // todo case when no customer?
-  182:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
-  185:       // todo restore if he is in battle?
+  26: // todo check case when user is starting new game while he has one already
+  79:       // TODO !!!
+  92:     } // todo case when no customer?
+  99:     if (firebaseUser) { // todo test and fix this case
+  128:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
+  130:       // eventBus.emit('stateUpdate', customer.ID, session.getState()); // todo
+  132:       // todo restore if he is in battle?
 
-file:///d:\thegame\backend\src\shared\constants.js
-  26:     FIRST_ROUND_COUNTDOWN: 15 * 1000, // todo make it work differently from countdown between rounds
+file:///d:\thegame\backend\src\structures\AiPlayer.ts
+  47:     if (!this.isBoardFull()) { // todo
+  58:     // todo magic logic here to find any good units in pocket
+  82:     // todo
+  98:     return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
+
+file:///d:\thegame\backend\src\structures\Battle.ts
+  45:   private units: BattleUnitList; // temporaly public for ai needs
+  201:     //   // TODO why isOver not handling this?
+  243:         // todo fix for case when resceduling, it actually rescheduling up to timeing when battle is over already and there is no need to execute those actors
+  299:             // TODO avoid such issues
+
+file:///d:\thegame\backend\src\structures\BattleUnit.ts
+  86:         duration: Math.floor((monsterConfig.attack?.speed ?? 0) / 10) // todo isnt this supposed to be varying on distance/atkspeed?
+  192:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
+  559:   // todo review this one
+  598:     // todo also base to closest unit?
+
+file:///d:\thegame\backend\src\structures\Battle\Pathfinder.ts
+  205:     // todo make this human readable
+
+file:///d:\thegame\backend\src\structures\Card.ts
+  76:     // todo format custom body maybe? depending on whats happening
+
+file:///d:\thegame\backend\src\structures\Player.ts
+  120:         // Todo check if this will be covered for leveled up units
+  131:       // TODO: Inform Client about update
+
+file:///d:\thegame\backend\src\structures\State.ts
+  16:   private amountOfPlayers: number; // todo
+  72:       player.invalidate(); // todo every card should be emitted separately to handle effects
+  75:     this.invalidate(); // todo questionable?
+  99:         //  todo new AppError('warning', 'Not enough money');
+  131:   // TODO
+
+file:///d:\thegame\backend\src\typings\Monster.ts
+  10:     regen?: number, // TODO if we need this
 
 file:///d:\thegame\backend\src\utils\effects.ts
   1: // todo review format for those, as its ugly and too big
 
 file:///d:\thegame\frontend\src\App\ActiveGame\GameBoard\BoardSquareDnD.jsx
   11:   // TODO the same check must be added to backend[without repeating the code!]
-
-file:///d:\thegame\frontend\src\App\ActiveGame\RightSidebar.fixture.jsx
-  8: // todo make it share functionality with jest and core.test.js
 
 file:///d:\thegame\frontend\src\App\ActiveGame\timeouts_test.js
   278:   const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
@@ -79,11 +87,20 @@ file:///d:\thegame\frontend\src\UI\custom-core.less
   1: // TODO better font include
   2: // TODO replace font with better variant
 
+file:///d:\thegame\frontend\src\UI\pages\merchantry\card.less
+  29:           background: rgb(204, 191, 75); // todo colors
+
 file:///d:\thegame\frontend\src\UI\ui.less
-  62: // Debug styles
+  68: // Debug styles
 
 file:///d:\thegame\frontend\src\firebase.js
   35:     // TODO profiles and displayName
+
+file:///d:\thegame\frontend\src\fixtures\todo3.jsx
+  8: // todo make it share functionality with jest and core.test.js
+
+file:///d:\thegame\frontend\src\index.js
+  6: import * as serviceWorker from './service-worker'; // todo  do we need service worker at all?
 
 file:///d:\thegame\frontend\src\objects\Unit.d.ts
   10:   effects: Array<any>; // TODO
@@ -94,8 +111,8 @@ file:///d:\thegame\frontend\src\objects\Unit.tsx
   294:       callback(); // todo this callback should be actually linked to created particle (:
   366:       'm-in-battle': false // todo
 
-file:///d:\thegame\frontend\src\reducers\customer.reducer.js
-  15:         email: action.response?.email // todo check if its working. Seems not :)
-
 file:///d:\thegame\frontend\src\socket.context.tsx
-  41:     // TODO
+  30:   // TODO
+
+file:///d:\thegame\frontend\src\socket.ts
+  5: // todo test if we use longpolling or sockets?
