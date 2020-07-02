@@ -1,11 +1,16 @@
 import React from 'react';
-import { Provider } from 'react-redux';
+import { StoreProvider } from 'easy-peasy';
 import ActiveGame from '@/App/ActiveGame';
 import { createMockedStore } from './MockedStore';
 
+const extraState = {
+  app: {
+    players: [{ health: 45 }, { health: 50 }]
+  }
+};
 
 export default (
-  <Provider store={createMockedStore({})}>
+  <StoreProvider store={createMockedStore(extraState)}>
     <ActiveGame />
-  </Provider>
+  </StoreProvider>
 );

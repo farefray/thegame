@@ -51,7 +51,7 @@ export default class Battle extends EventBusUpdater {
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
   constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<FirebaseUserUID>) {
-    super(EVENTBUS_MESSAGE_TYPE.BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<FirebaseUserUID>, battleBoard) => {
+    super(EVENTBUS_MESSAGE_TYPE.START_BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<FirebaseUserUID>, battleBoard) => {
       subs.push(battleBoard.owner);
       return subs;
     }, []));
@@ -316,11 +316,8 @@ export default class Battle extends EventBusUpdater {
   toSocket() {
     return {
       actionStack: this.optimizedActionStack,
-      winner: this.winner,
-
       startBoard: this.startBoard,
       // participants: Object.values(this[Symbol.for('owners')]), // ??
-      finalBoard: this.units // OMIT this!!
     };
   }
 }

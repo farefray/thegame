@@ -44,7 +44,7 @@ class SocketService {
      * socket emiting event to backend >
      * backend retrieves event and executes handler >
      * after handler executes callback if exists >
-     * if callback was executed, frontend dispatch into redux store to update frontend app state.
+     * if callback was executed, frontend can use callback value as promise resolved value and trigger additional actions
      */
     socket.use((packet, next) => {
       const [...packetDetails] = packet;
@@ -96,7 +96,7 @@ class SocketService {
 
   ON_CONNECTION = (firebaseUser) => {
     let message = 'Connection established!';
-    if (firebaseUser) {
+    if (firebaseUser) { // todo test and fix this case
       // upon connection, our user is already authentificated, we can restore his session
       message = 'Connection restored';
 
@@ -109,14 +109,14 @@ class SocketService {
     });
 
     return {
-      user: firebaseUser && firebaseUser.uid
+      user: firebaseUser && firebaseUser.uid,
     };
   };
 
   CUSTOMER_LOGIN = (firebaseUser) => {
     if (!firebaseUser) {
       // no user exists on firebase onAuthChanged or thats a logout
-      return;
+      return false;
     }
 
     const loginResults = connectedPlayers.login(firebaseUser, this.id);

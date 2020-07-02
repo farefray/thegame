@@ -42,9 +42,6 @@ function LoginForm() {
       if (error) {
         setFormMessage(error);
         busy(false);
-      } else {
-        // @ts-ignore
-        await websocket.emitMessage('CUSTOMER_LOGIN', user);
       }
     }
   };

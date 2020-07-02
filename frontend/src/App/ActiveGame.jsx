@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
 
 import { Grid, Row, Col, Sidenav, Nav, Sidebar } from 'rsuite';
+import { useStoreState } from 'easy-peasy';
 
 import Timer from './ActiveGame/Timer.jsx';
 import PlayerStats from './ActiveGame/PlayerStats.jsx';
@@ -13,17 +13,16 @@ import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import PlayerHand from './ActiveGame/PlayerHand.jsx';
 
 function ActiveGame() {
-  const appState = useSelector((state) => state.app, shallowEqual);
-  const gameboardState = useSelector((state) => state.gameboard, shallowEqual);
-  const playerState = useSelector((state) => state.player, shallowEqual);
-  const { countdown, players } = appState;
+  const isActiveBattleGoing = useStoreState((state) => state.gameboard.isActiveBattleGoing);
+  const playerState = useStoreState((state) => state.player);
+  const countdown = useStoreState((state) => state.app.countdown);
 
   return (
     <Grid fluid>
       <Row className="gameheader">
         <Col>
           <Row className="playerstats">
-            <PlayerStats playerStats={{ health: playerState.health, level: 1 /** TODO? */, unitsAmount: playerState.boardUnits.length, gold: playerState.gold }} />
+            <PlayerStats playerStats={{ health: playerState.health, level: 1 /** TODO? */, unitsAmount: playerState.board.length, gold: playerState.gold }} />
             <Timer initialTimerValue={countdown} />
           </Row>
         </Col>
@@ -39,7 +38,7 @@ function ActiveGame() {
           <div className="gameboard">
             <div className="gameboard-background"></div>
             <div className="gameboard-wrapper">
-              {gameboardState.isActiveBattleGoing ? <BattleBoardWrapper gameboardState={gameboardState} /> : <PlayerBoardWrapper boardUnits={playerState.boardUnits} />}
+              {isActiveBattleGoing ? <BattleBoardWrapper /> : <PlayerBoardWrapper boardUnits={playerState.board} />}
             </div>
           </div>
         </Col>
@@ -54,7 +53,7 @@ function ActiveGame() {
       </Row>
       <Row>
         <Col>
-        <RightSidebar players={players} />
+        <RightSidebar />
         </Col>
       </Row>
     </Grid>

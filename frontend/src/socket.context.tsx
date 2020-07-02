@@ -1,99 +1,80 @@
 import React, { createContext } from 'react';
-import io from 'socket.io-client';
-import { useDispatch } from 'react-redux';
 import { auth } from '@/firebase';
+import { useStoreActions } from './store/hooks';
+import socket, { emitMessage } from '@/socket';
 
 const WebSocketContext = createContext(null);
-const isProduction = process.env.NODE_ENV === 'production';
 
 export { WebSocketContext };
 
 export default ({ children }) => {
-  let socket;
   let ws;
-  let endpoint = isProduction ? 'https://thegame-backend.herokuapp.com/' : 'http://' + window.location.href.split(':3000')[0].split('http://')[1] + '';
 
-  const dispatch = useDispatch();
+  const storeActions = useStoreActions(actions => actions);
 
-  const emitMessage = (type, payload?) => {
-    return new Promise((resolve) => {
+  console.log('Socket events seems will be initialized now')
+  // socket listeners
+  socket.on('connect', () => {
+    console.log('Socket connected');
+    console.log('auth', auth.currentUser);
+    emitMessage('ON_CONNECTION', auth.currentUser).then((res: any) => {
+      console.log("here ON_CONNECTION", res)
+      storeActions.app.setConnected(res.ok);
 
-      socket.emit(type, payload, (response) => {
-        // on every message response, we execute dispatch to our store for backend callback
-        if (response.ok) {
-          dispatch({ type: type, response });
-          return resolve(response);
-        }
-      });
-    });
-  };
-
-  if (!socket) {
-    socket = io.connect(endpoint);
-
-    // socket listeners
-    socket.on('connect', () => {
-      console.log('Socket connected');
-      console.log('auth', auth.currentUser);
-      emitMessage('ON_CONNECTION', auth.currentUser);
-    });
-
-    // TODO
-    socket.on('disconnect', () => {
-      dispatch({ type: 'SET_CONNECTED', isConnected: false });
-      window.location.reload();
-      console.log('disconnected');
-    });
-
-    socket.on('UPDATED_STATE', (state) => {
-      dispatch({ type: 'UPDATED_STATE', state });
-    });
-
-    socket.on('UPDATE_PLAYER', (player) => {
-      dispatch({ type: 'UPDATE_PLAYER', player: player });
-    });
-
-    socket.on('MERCHANTRY_UPDATE', (merchantry) => {
-      dispatch({ type: 'MERCHANTRY_UPDATE', merchantry });
-    });
-
-    socket.on('NOTIFICATION', (notification) => {
-      dispatch({ type: 'NOTIFICATION', notification: notification });
-    });
-
-    socket.on('START_BATTLE', ({ actionStack, startBoard, winner }) => {
-      dispatch({ type: 'START_BATTLE', actionStack, startBoard, winner });
-    });
-
-    socket.on('TIMER_UPDATE', (countdown) => {
-      dispatch({ type: 'TIMER_UPDATE', countdown });
-    });
-
-    socket.on('END_GAME', (winningPlayer) => {
-      dispatch({ type: 'END_GAME', winningPlayer });
-      setTimeout(() => {
-        window.location.reload();
-      }, 60000);
-    });
-
-    socket.on('DEAD_PLAYER', (pid, position) => {
-      dispatch({ type: 'DEAD_PLAYER', pid, position });
-    });
-
-    ws = {
-      socket: socket,
-      emitMessage
-    };
-
-    // users presence
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        emitMessage('CUSTOMER_LOGIN', user);
-      } else {
-        emitMessage('CUSTOMER_LOGOUT');
+      if (res.user) {
+        storeActions.customer.setLoggedIn(true);
       }
     });
-  }
+  });
+
+  // TODO
+  socket.on('disconnect', () => {
+    storeActions.app.setConnected(false)
+    window.location.reload();
+    console.log('disconnected');
+  });
+
+  socket.on('UPDATED_STATE', (state) => {
+    storeActions.app.stateUpdate(state);
+  });
+
+  socket.on('UPDATE_PLAYER', (player) => {
+    storeActions.player.updatePlayer(player);
+  });
+
+  socket.on('MERCHANTRY_UPDATE', (merchantry) => {
+    storeActions.merchantry.revealCards(merchantry)
+  });
+
+  socket.on('NOTIFICATION', (notification) => {
+    storeActions.app.setNotification(notification);
+  });
+
+  socket.on('START_BATTLE', ({ actionStack, startBoard, winner }) => {
+    storeActions.gameboard.startBattle({
+      actionStack, startBoard
+    })
+  });
+
+  socket.on('TIMER_UPDATE', (countdown) => {
+    storeActions.app.setCountdown(countdown);
+  });
+
+  socket.on('END_GAME', (winningPlayer) => {
+    //dispatch({ type: 'END_GAME', winningPlayer });
+    setTimeout(() => {
+      window.location.reload();
+    }, 60000);
+  });
+
+  socket.on('DEAD_PLAYER', (pid, position) => {
+    //dispatch({ type: 'DEAD_PLAYER', pid, position });
+  });
+
+  ws = {
+    socket: socket,
+    emitMessage
+  };
 
   return <WebSocketContext.Provider value={ws}>{children}</WebSocketContext.Provider>;
 };
