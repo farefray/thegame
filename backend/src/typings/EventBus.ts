@@ -8,5 +8,6 @@ export enum EVENT_TYPE {
 }
 
 export enum EVENT_SUBTYPE {
-  // todo
+  PLAYER_CARD_TO_BOARD = 'PLAYER_CARD_TO_BOARD',
+  PLAYER_CARDS_DEALED = 'PLAYER_CARDS_DEALED'
 }

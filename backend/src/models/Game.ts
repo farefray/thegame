@@ -49,6 +49,7 @@ export default class Game {
 
       this.players[0].dealCards();
       this.players[1].dealCards();
+      throw new Error('TEST');
 
       this.state.playCards(ABILITY_PHASE.INSTANT);
 
