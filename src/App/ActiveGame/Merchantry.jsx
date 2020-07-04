@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useStoreState } from 'easy-peasy';
-import Card from './Merchantry/Card';
+import Card from './Deck/Card';
 import { WebSocketContext } from '@/socket.context';
 
 function Merchantry() {
