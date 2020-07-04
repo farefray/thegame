@@ -3,7 +3,7 @@ import Position from '../shared/Position';
 import BattleUnit from './BattleUnit';
 import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENT_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE, EVENT_SUBTYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
 import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
@@ -32,11 +32,10 @@ export default class Player extends EventBusUpdater {
     // fill starting deck
     const cardsFactory = new CardsFactory();
     for (let index = 0; index < BASE_DECK_CONFIG.length; index++) {
-      this.deck.push(cardsFactory.createCard(BASE_DECK_CONFIG[index]))
+      this.deck.push(cardsFactory.createCard(BASE_DECK_CONFIG[index]));
     }
 
     this.userUID = id;
-    this.invalidate();
   }
 
   getUID() {
@@ -50,16 +49,16 @@ export default class Player extends EventBusUpdater {
 
   public addToBoard(card) {
     const unit = MonstersFactory.createBattleUnit(card.monster.name);
-    const position = unit.getPreferablePosition(this.board.freeSpots())
+    const position = unit.getPreferablePosition(this.board.freeSpots());
     unit.rearrangeToPos(position);
     this.board.setCell(position.x, position.y, unit);
 
-    this.invalidate();
+    this.invalidate(EVENT_SUBTYPE.PLAYER_CARD_TO_BOARD);
   }
 
   public moveToDiscard(card) {
     this.discard.push(card);
-    const handCardIndex = this.hand.findIndex(handCard => handCard.name === card.name);
+    const handCardIndex = this.hand.findIndex((handCard) => handCard.name === card.name);
     if (handCardIndex !== -1) {
       this.hand.eject(handCardIndex);
     }
@@ -81,13 +80,12 @@ export default class Player extends EventBusUpdater {
       }
     }
 
-    this.invalidate();
+    this.invalidate(EVENT_SUBTYPE.PLAYER_CARDS_DEALED);
   }
-
 
   /////// OLD
 
-  isDead () {
+  isDead() {
     return this.health <= 0;
   }
 
@@ -100,12 +98,12 @@ export default class Player extends EventBusUpdater {
   }
 
   /**
- * Board for player with playerIndex have too many units
- * Try to withdraw the cheapest unit
- * if hand is full, sell cheapest unit
- * Do this until board.size == level
- */
-  beforeBattle (opponent: Player) {
+   * Board for player with playerIndex have too many units
+   * Try to withdraw the cheapest unit
+   * if hand is full, sell cheapest unit
+   * Do this until board.size == level
+   */
+  beforeBattle(opponent: Player) {
     // REWORK THIS P0
     /*
     const board = this.board;
@@ -145,15 +143,32 @@ export default class Player extends EventBusUpdater {
     */
   }
 
+  toSocket(eventSubtype = '') {
+    switch (eventSubtype) {
+      case EVENT_SUBTYPE.PLAYER_CARD_TO_BOARD: {
+        return {
+          board: this.board.toSocket()
+        };
+      }
 
-  toSocket() {
-    return {
-      health: this.health,
-      gold: this.gold,
-      board: this.board.toSocket(),
-      hand: this.hand.toSocket(),
-      deck: this.deck.toSocket(),
-      discard: this.discard.toSocket()
+      case EVENT_SUBTYPE.PLAYER_CARDS_DEALED: {
+        return {
+          hand: this.hand.toSocket(),
+          deckSize: this.deck.size,
+          discard: this.discard.toSocket()
+        };
+      }
+
+      default: {
+        return {
+          health: this.health,
+          gold: this.gold,
+          board: this.board.toSocket(),
+          hand: this.hand.toSocket(),
+          deckSize: this.deck.size,
+          discard: this.discard.toSocket()
+        };
+      }
     }
   }
 }
