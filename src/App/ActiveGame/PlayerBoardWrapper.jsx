@@ -8,7 +8,7 @@ function PlayerBoardWrapper() {
   const board = useStoreState((state) => state.player.board);
 
   return <GameBoard width="8" height="8">
-    {board && board.map((unit) => <Unit key={unit.id} unit={unit} isDraggable={true}/>)}
+    {board && board.map((unit) => <Unit key={unit.id} unit={unit}/>)}
   </GameBoard>;
 }
 
