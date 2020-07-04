@@ -1,11 +1,19 @@
 .card {
   background: @color-dark;
+  border-radius: rh(2);
   border: 1px inset @color-black;
-  border-radius: rh(6);
+  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
   font-size: @font-size-small;
   height: @card-height;
+  transition: box-shadow 0.5s;
   width: @card-width;
+  will-change: transform;
+
+  &:hover {
+    box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
 
   &-container {
     list-style: none;
@@ -13,7 +21,7 @@
 
   &-frame {
     border: 2px inset brown;
-    border-radius: 16px;
+    border-radius: rh(2);
     display: flex;
     flex-direction: column;
     height: 100%;
