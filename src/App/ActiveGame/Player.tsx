@@ -1,11 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
-import Card from './Deck/Card.jsx';
 import { useStoreState } from '@/store/hooks';
 import Deck from './Deck';
+import PlayerHand from './Player/PlayerHand';
 
 function Player({ isOpponent = false }) {
   const state = useStoreState((state) => state.player);
+  console.log("Player -> state", state)
   const { hand, deckSize, discard } = state;
 
   const classes = classNames('player', {
@@ -16,13 +17,15 @@ function Player({ isOpponent = false }) {
     return <div className={classes}></div>
   }
 
+  console.log('====Player rerender======')
+
   return (
     <div className={classes}>
       <div className="player-deck">
-        <Deck cards={new Array(deckSize).fill({})} />
+        <Deck size={deckSize} />
       </div>
       <div className="player-hand">
-        {hand && hand.map((card, index) => <Card key={index} card={card} />)}
+        <PlayerHand hand={hand}/>
       </div>
       <div className="player-discard">
         <Deck cards={discard} />

@@ -3,26 +3,36 @@ import { StoreProvider } from 'easy-peasy';
 import { createMockedStore } from './MockedStore';
 import { centered } from './utils';
 import Player from '@/App/ActiveGame/Player';
-import CardsFactory from '@/../../backend/src/factories/CardsFactory';
 
-const extraState = {
-  player: {
-    hand: [],
-    deckSize: 10,
-    discard: []
-  }
+// Backend stuff for testing
+import BackendPlayer from '@/../../backend/src/structures/Player';
+
+// DI
+require('./MockedEventBus');
+
+
+const backendPlayer = new BackendPlayer();
+const playerState = {
+  player: backendPlayer.toSocket()
 };
 
-const cardsFactory = new CardsFactory();
-for (let index = 0; index < 5; index++) {
-  extraState.player.hand.push(cardsFactory.getRandomCard());
-}
-for (let index = 0; index < 3; index++) {
-  extraState.player.discard.push(cardsFactory.getRandomCard());
-}
+const store = createMockedStore(playerState);
 
 export default (
-  <StoreProvider store={createMockedStore(extraState)}>
+  <StoreProvider store={store}>
+    <button
+      onClick={() => {
+        backendPlayer.dealCards();
+
+        store.getActions().player.updatePlayer({
+          subtype: 'PLAYER_CARDS_DEALED',
+          ...backendPlayer.toSocket('PLAYER_CARDS_DEALED')
+        });
+      }}
+    >
+      Deal cards
+    </button>
     {centered(<Player />)}
   </StoreProvider>
 );
+

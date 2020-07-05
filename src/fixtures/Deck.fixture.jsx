@@ -11,8 +11,12 @@ for (let index = 0; index < 5; index++) {
   cards.push(cardsFactory.getRandomCard());
 }
 
+const isEmpty = false;
+
+const store = createMockedStore({});
+
 export default (
-  <StoreProvider store={createMockedStore({})}>
-    {centered(<Deck cards={new Array(10).fill({})} />)}
+  <StoreProvider store={store}>
+    {centered(<Deck cards={isEmpty ? new Array(10).fill({}) : cards} />)}
   </StoreProvider>
 );
