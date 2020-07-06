@@ -1,41 +1,14 @@
 import Pathfinder from './Battle/Pathfinder';
 import Actor from '../typings/Actor';
 import TargetPairPool from './Battle/TargetPairPool';
-import BattleUnit from './BattleUnit';
 import { ACTION_TYPE, Action } from '../typings/Action';
 import { ACTION, TEAM } from '../shared/constants';
 import BoardMatrix from './Battle/BoardMatrix';
 import BattleUnitList from './Battle/BattleUnitList';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENT_TYPE } from '../typings/EventBus';
-import sleep from '../utils/sleep';
 import { FirebaseUserUID } from '../utils/types';
-
-/**
- * TODO: move this into Battle.d.ts, just need to investigate if thats fine to use classes in types,
- * as this will require importing real classes for .d.ts file which may be no optimal solution
- */
-export interface BattleContext {
-  currentTimestamp: number;
-  pathfinder: Pathfinder;
-  targetPairPool: TargetPairPool;
-  units: BattleUnitList;
-}
-
-export interface UnitAction {
-  type: string;
-  unitID: string;
-  payload: object;
-  time: number;
-  effects?: [];
-  uid?: string;
-  parent?: string;
-}
-
-export interface BattleBoard {
-  units: BattleUnitList;
-  owner: string;
-}
+import { BattleBoard, UnitAction, BattleContext } from '../typings/Battle';
 
 export default class Battle extends EventBusUpdater {
   private startBoard: BoardMatrix;

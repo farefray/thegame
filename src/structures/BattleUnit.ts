@@ -4,13 +4,13 @@ import Pathfinder from './Battle/Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from '../typings/Action';
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from '../typings/Action';
 import Actor, { ActionGeneratorValue } from '../typings/Actor';
-import { BattleContext } from './Battle';
 import MonstersFactory from '../factories/MonstersFactory';
 import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';
 import Step from './Battle/Pathfinder/Step';
 import { MonsterInterface } from '../typings/Monster';
+import { BattleContext } from '../typings/Battle';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
 

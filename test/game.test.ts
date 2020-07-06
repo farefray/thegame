@@ -16,8 +16,6 @@ import BattleUnit from '../src/structures/BattleUnit';
 import Battle from '../src/structures/Battle';
 import Position from '../src/shared/Position';
 import { FirebaseUser } from '../src/utils/types';
-import { inspect } from 'util';
-import GameController from '../src/models/Game';
 
 const useruid = 'test_userid';
 const socketid = 'test_socketid';
@@ -25,7 +23,7 @@ const monsterCardExample = 'Dwarf';
 const CUSTOMERS = [new Customer(socketid, { uid: useruid } as FirebaseUser), new Customer(socketid + '_2', { uid: useruid + '_2' } as FirebaseUser)];
 
 // state, player and merchantry after creation should be emitted
-const events = [EVENT_TYPE.MERCHANTRY_UPDATE, EVENT_TYPE.STATE_UPDATE, EVENT_TYPE.PLAYER_UPDATE, EVENT_TYPE.START_BATTLE];
+const events = [EVENT_TYPE.MERCHANTRY_UPDATE, EVENT_TYPE.CARD_PLAY, EVENT_TYPE.PLAYER_UPDATE, EVENT_TYPE.START_BATTLE];
 
 const mockedEventEmitter = {
   emitMessage: (type, recipient, message) => {
@@ -148,7 +146,8 @@ class CardsTestSuite {
     const allCards = cardsFactory.getAllCards()
     allCards.forEach(cardName => {
       const card = cardsFactory.createCard(cardName);
-      card.applyAbilities(state.firstPlayer, state.secondPlayer, ABILITY_PHASE.INSTANT);
+      const cardAction = card.getCardAction(state.firstPlayer, state.secondPlayer, ABILITY_PHASE.INSTANT);
+      // todo check for null or object
     })
   }
 }

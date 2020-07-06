@@ -3,11 +3,12 @@ import Session from './Session';
 import Customer from './Customer';
 import EventBus from '../services/EventBus';
 import { ABILITY_PHASE } from '../typings/Card';
-import Battle, { BattleBoard } from '../structures/Battle';
+import Battle from '../structures/Battle';
 import State from '../structures/State';
 import Player from '../structures/Player';
 import sleep from '../utils/sleep';
 import { EVENT_TYPE } from '../typings/EventBus';
+import { BattleBoard } from '../typings/Battle';
 
 const COUNTDOWN_BETWEEN_ROUNDS = 15 * 1000;
 export default class Game {
@@ -26,11 +27,19 @@ export default class Game {
     this.state = this.session.getState();
     this.players = [this.state.firstPlayer, this.state.secondPlayer];
 
+    this.notifyGameIsLive();
     this.roundsFlow();
   }
 
   hasNextRound() {
     return this.state.getRound() < this.state.MAX_ROUND;
+  }
+
+  private notifyGameIsLive() {
+    const eventBus:EventBus = Container.get('event.bus');
+    this.players.forEach(player => {
+      eventBus.emitMessage(EVENT_TYPE.GAME_IS_LIVE, player.getUID(), true);
+    });
   }
 
   async countdown(duration) {

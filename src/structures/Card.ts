@@ -1,18 +1,14 @@
 import { MonsterInterface } from '../typings/Monster';
-import { CardConfig, CARD_TYPES, ABILITY_PHASE } from '../typings/Card';
-import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENT_TYPE } from '../typings/EventBus';
+import { CardConfig, CARD_TYPES, ABILITY_PHASE, CardAction, EFFECT_TYPE } from '../typings/Card';
 import Player from './Player';
 
-export default class Card extends EventBusUpdater {
+export default class Card {
   private name: string;
   public monster?: MonsterInterface;
   private config: CardConfig;
-
   public cost: number;
-  constructor(cardName: string, cardConfig: CardConfig, monster?: MonsterInterface) {
-    super(EVENT_TYPE.CARD_PLAY);
 
+  constructor(cardName: string, cardConfig: CardConfig, monster?: MonsterInterface) {
     this.name = cardName.replace('_', ' ');
     this.config = cardConfig;
     this.cost = cardConfig.cost;
@@ -37,27 +33,48 @@ export default class Card extends EventBusUpdater {
     return this.config.instant;
   }
 
-  public applyAbilities(player: Player, opponent: Player, phase: ABILITY_PHASE) {
+  public getCardAction(player: Player, opponent: Player, phase: ABILITY_PHASE) {
     const abilities = phase === ABILITY_PHASE.INSTANT ? this.config.instant : this.config.victory;
 
     if (!abilities) {
-      return true;
+      return null;
     }
 
+    const action: CardAction = {
+      type: this.type,
+      owner: player.getUID(),
+      effects: []
+    }
+
+    // todo some factory
     Object.keys(abilities).forEach((ability) => {
+      const value = abilities[ability];
+
       switch (ability) {
         case 'gold': {
-          player.gold += abilities[ability] ?? 0;
+          action.effects.push({
+            type: EFFECT_TYPE.GOLD,
+            payload: value
+          })
+
           break;
         }
 
         case 'health': {
-          player.health += abilities[ability] ?? 0;
+          action.effects.push({
+            type: EFFECT_TYPE.HEAL,
+            payload: value
+          })
+
           break;
         }
 
         case 'damage': {
-          opponent.health -= abilities[ability] ?? 0;
+          action.effects.push({
+            type: EFFECT_TYPE.DAMAGE,
+            payload: value
+          })
+
           break;
         }
 
@@ -67,15 +84,9 @@ export default class Card extends EventBusUpdater {
       }
     });
 
-    this.invalidate();
+    return action;
   }
 
-  ////
-
-  public invalidate() {
-    // todo format custom body maybe? depending on whats happening
-    super.invalidate();
-  }
 
   toSocket() {
     return {
