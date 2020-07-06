@@ -1,6 +1,6 @@
 /** Represents data structure which is supposed to be synced with frontend */
 import { Container } from 'typedi';
-import { EVENT_TYPE } from '../../typings/EventBus';
+import { EVENT_TYPE, EVENT_SUBTYPE } from '../../typings/EventBus';
 import EventBus from '../../services/EventBus';
 import { FirebaseUserUID } from '../../utils/types';
 
@@ -27,17 +27,17 @@ export abstract class EventBusUpdater {
   /**
    * Emitting event to update this player via socket
    */
-  public invalidate(eventSubtype?) {
-    this.emitEventBusMessage();
+  public invalidate(eventSubtype?: EVENT_SUBTYPE) {
     this._invalidated = false;
-  }
 
-  private emitEventBusMessage() {
     const eventBus: EventBus = Container.get('event.bus');
     this.subscribers.forEach(recipient => {
-      eventBus.emitMessage(this.messageType, recipient, this.toSocket());
+      eventBus.emitMessage(this.messageType, recipient, {
+        subtype: eventSubtype,
+        ...this.toSocket(eventSubtype)
+      });
     });
   }
 
-  abstract toSocket();
+  abstract toSocket(eventSubtype?: EVENT_SUBTYPE);
 }

@@ -1,5 +1,5 @@
 
-import { action, thunk, Action, Thunk } from 'easy-peasy';
+import { action, Action } from 'easy-peasy';
 
 export interface AppModel {
   isConnected: boolean;
@@ -8,7 +8,7 @@ export interface AppModel {
   setConnected: Action<AppModel, boolean>;
   setGameLive: Action<AppModel, boolean>;
 
-  stateUpdate: Thunk<AppModel, any>;
+  stateUpdate: Action<AppModel, any>;
 
   notification: object|null;
   setNotification: Action<AppModel, object>;
@@ -24,12 +24,12 @@ const appModel: AppModel = {
   }),
 
   isGameLive: false,
-  setGameLive: action((state, payload) => {
+  setGameLive: action((state, payload) => { // not used
     state.isGameLive = payload;
   }),
 
-  stateUpdate: thunk(async (actions, payload) => {
-    actions.setGameLive(true)
+  stateUpdate: action((state, payload) => {
+    state.isGameLive = true; // this is the only change which ic executed now. Later we may change to thunk and execute more things
 
     // restore/replace whole app state
   }),

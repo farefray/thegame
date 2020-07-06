@@ -9,7 +9,7 @@ function BattleBoardWrapper() {
 
   return (
     <React.Fragment>
-      <GameBoard hasDnD={false} width="8" height="8">
+      <GameBoard width="8" height="8">
         <BattleBoardLogic startBoard={startBoard} actionStack={actionStack} />
       </GameBoard>
     </React.Fragment>

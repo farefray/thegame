@@ -7,6 +7,7 @@ const WebSocketContext = createContext(null);
 
 export { WebSocketContext };
 
+// todo consider using https://github.com/itaylor/redux-socket.io
 export default ({ children }) => {
   let ws;
 

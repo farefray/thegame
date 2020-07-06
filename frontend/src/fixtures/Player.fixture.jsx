@@ -1,12 +1,15 @@
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { createMockedStore } from './MockedStore';
-import ActiveGame from '@/App/ActiveGame';
+import { centered } from './utils';
+import Player from '@/App/ActiveGame/Player';
+
 // Backend stuff for testing
 import BackendPlayer from '@/../../backend/src/structures/Player';
 
 // DI
 require('./MockedEventBus');
+
 
 const backendPlayer = new BackendPlayer();
 const playerState = {
@@ -14,16 +17,9 @@ const playerState = {
 };
 
 const store = createMockedStore(playerState);
-const actions = store.getActions();
 
-// @ts-expect-error
-actions.app.setCountdown(15);
-console.log('store', store.getState());
-
-export default <ActiveGameTestingSuite />;
-
-function DebugControls() {
-  return (
+export default (
+  <StoreProvider store={store}>
     <button
       onClick={() => {
         backendPlayer.dealCards();
@@ -36,22 +32,7 @@ function DebugControls() {
     >
       Deal cards
     </button>
-  );
-}
+    {centered(<Player />)}
+  </StoreProvider>
+);
 
-function ActiveGameTestingSuite(props) {
-  const mounted = React.useRef(false);
-  React.useEffect(() => {
-    if (mounted.current) {
-    } else {
-      mounted.current = true;
-    }
-  });
-
-  return (
-    <StoreProvider store={store}>
-      {DebugControls()}
-      <ActiveGame />
-    </StoreProvider>
-  );
-}

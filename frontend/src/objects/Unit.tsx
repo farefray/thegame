@@ -7,7 +7,6 @@ import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../utils/UnitUtils';
 import Position from '../shared/Position';
 import UnitImage from './Unit/UnitImage';
-import IsDraggable from './Unit/IsDraggable';
 import EffectsFactory from './Unit/EffectsFactory';
 
 const GAMEBOARD_HEIGHT = 8;
@@ -18,7 +17,7 @@ export default class Unit extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    const { unit, isDraggable } = props;
+    const { unit } = props;
     const { x, y, id, key } = unit;
     const position = this.getPositionFromCoordinates(x, y);
     this.state = {
@@ -42,8 +41,7 @@ export default class Unit extends React.Component<IProps, IState> {
       left: position.left,
       transition: '',
 
-      isDead: false,
-      isDraggable: !!isDraggable
+      isDead: false
     };
   }
 
@@ -353,7 +351,7 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead, y, effects, isDraggable } = this.state;
+    const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead, y, effects } = this.state;
 
     if (isDead) {
       return null;
@@ -368,15 +366,6 @@ export default class Unit extends React.Component<IProps, IState> {
 
     const { unit } = this.props;
 
-    const draggableDecorator = (inner) =>
-      !isDraggable ? (
-        inner
-      ) : (
-        <IsDraggable cellPosition={this.startingPosition} lookType={unit.lookType}>
-          {inner}
-        </IsDraggable>
-      );
-
     return (
       <div
         className={classes}
@@ -387,7 +376,7 @@ export default class Unit extends React.Component<IProps, IState> {
           transition
         }}
       >
-        {draggableDecorator(<UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />)}
+        {(<UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />)}
         {effects.map((effect) => EffectsFactory.render(effect, this.onEffectDone.bind(this)))}
         <div className="unit-healthbar">
           <div

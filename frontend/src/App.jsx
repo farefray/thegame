@@ -19,6 +19,7 @@ const App = () => {
   const authenticate = useStoreActions(actions => actions.customer.authenticate)
   // users auth presence
   auth.onAuthStateChanged((user) => {
+    // TODO need to check if user is logged in and trigger thunk only if auth really changed
     authenticate(user);
   });
 
