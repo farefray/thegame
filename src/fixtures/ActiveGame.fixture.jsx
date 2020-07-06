@@ -16,7 +16,6 @@ const playerState = {
 const store = createMockedStore(playerState);
 const actions = store.getActions();
 
-// @ts-expect-error
 actions.app.setCountdown(15);
 console.log('store', store.getState());
 

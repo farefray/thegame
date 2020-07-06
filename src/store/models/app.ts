@@ -8,8 +8,6 @@ export interface AppModel {
   setConnected: Action<AppModel, boolean>;
   setGameLive: Action<AppModel, boolean>;
 
-  stateUpdate: Action<AppModel, any>;
-
   notification: object|null;
   setNotification: Action<AppModel, object>;
 
@@ -24,14 +22,8 @@ const appModel: AppModel = {
   }),
 
   isGameLive: false,
-  setGameLive: action((state, payload) => { // not used
+  setGameLive: action((state, payload) => {
     state.isGameLive = payload;
-  }),
-
-  stateUpdate: action((state, payload) => {
-    state.isGameLive = true; // this is the only change which ic executed now. Later we may change to thunk and execute more things
-
-    // restore/replace whole app state
   }),
 
   notification: null,
