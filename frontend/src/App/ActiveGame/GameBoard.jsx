@@ -37,10 +37,9 @@ class GameBoard extends React.Component {
             return (
               <div className="gameboard-board-row" key={index}>
                 {boardRow.map((cellPosition) => {
-                  const debugContent = process.env.REACT_APP_DEBUGMODE === 'true' ? cellPosition.toBoardPosition() : '';
+                  // const debugContent = process.env.REACT_APP_DEBUGMODE === 'true' ? cellPosition.toBoardPosition() : '';
 
                   return <BoardSquare key={cellPosition.toBoardPosition()} cellPosition={cellPosition}>
-                  {debugContent}
                 </BoardSquare>;
                 })}
               </div>

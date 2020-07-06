@@ -49,10 +49,9 @@ export default class Game {
 
       this.players[0].dealCards();
       this.players[1].dealCards();
-      throw new Error('TEST');
 
       this.state.playCards(ABILITY_PHASE.INSTANT);
-
+      throw new Error('TEST');
       await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
 
       // check if battle state is required

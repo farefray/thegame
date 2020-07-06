@@ -11,9 +11,9 @@ for (let index = 0; index < 5; index++) {
 }
 
 const extraState = {
-  merchantry: {
-    revealedCards
-  }
+  // merchantry: {
+  //   revealedCards
+  // }
 };
 
 export function createMockedStore(adjustedState) {
