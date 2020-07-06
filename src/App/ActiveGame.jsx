@@ -10,11 +10,12 @@ import BattleBoardWrapper from './ActiveGame/BattleBoardWrapper.jsx';
 import Merchantry from './ActiveGame/Merchantry.jsx';
 import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import Player from './ActiveGame/Player';
+import Timer from './ActiveGame/Timer.jsx';
 
 function ActiveGame() {
   const isActiveBattleGoing = useStoreState((state) => state.gameboard.isActiveBattleGoing);
 
-  // const countdown = useStoreState((state) => state.app.countdown);
+  const countdown = useStoreState((state) => state.app.countdown);
 
   return (
     <Grid fluid>
@@ -29,6 +30,7 @@ function ActiveGame() {
               {isActiveBattleGoing ? <BattleBoardWrapper /> : <PlayerBoardWrapper />}
             </div>
           </div>
+          {countdown && <Timer initialTimerValue={countdown}/>}
         </Col>
         <Col>
           <Merchantry />

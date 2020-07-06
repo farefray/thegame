@@ -34,9 +34,7 @@ function Timer({ initialTimerValue }) {
   );
 
   return (
-    <Col xs={24} sm={24} md={4} lg={4}>
-      <div className="timer">{(counter && MemoizedTimer) || <div className="timer-active">-</div>}</div>
-    </Col>
+    <div className="timer">{(counter && MemoizedTimer) || <div className="timer-active">-</div>}</div>
   );
 }
 

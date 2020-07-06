@@ -2,22 +2,15 @@ import React, { useRef, useState } from 'react';
 import { useSpring, animated } from 'react-spring';
 
 function CardSpring(children) {
-  // We add this ref to card element and use in onMouseMove event ...
-  // ... to get element's offset and dimensions.
   const ref = useRef();
 
-  // Keep track of whether card is hovered so we can increment ...
-  // ... zIndex to ensure it shows up above other cards when animation causes overlap.
-  const [isHovered, setHovered] = useState(false);
+  const [ishovered, setHovered] = useState(false);
 
-  const [animatedProps, setAnimatedProps] = useSpring(() => {
+  const [animatedprops, setAnimatedProps] = useSpring(() => {
     return {
       // Array containing [rotateX, rotateY, and scale] values.
       // We store under a single key (xys) instead of separate keys ...
-      // ... so that we can use animatedProps.xys.interpolate() to ...
-      // ... easily generate the css transform value below.
       xys: [0, 0, 1],
-      // Setup physics
       config: { mass: 1, tension: 350, friction: 40, precision: 0.00001 }
     };
   });
@@ -57,10 +50,9 @@ function CardSpring(children) {
         setAnimatedProps({ xys: [0, 0, 1] });
       }}
       style={{
-        // If hovered we want it to overlap other cards when it scales up
-        zIndex: isHovered ? 2 : 1,
-        // Interpolate function to handle css changes
-        transform: animatedProps.xys.interpolate(
+        zIndex: ishovered ? 2 : 1,
+        transform:
+        animatedprops.xys.interpolate(
           (x, y, s) =>
             `perspective(100px) rotateX(${x}deg) rotateY(${y}deg) scale(${s})`
         )

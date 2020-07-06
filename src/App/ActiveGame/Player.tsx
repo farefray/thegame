@@ -27,9 +27,9 @@ function Player({ isOpponent = false }) {
       <div className="player-hand">
         <PlayerHand hand={hand}/>
       </div>
-      <div className="player-discard">
+      {/* <div className="player-discard">
         <Deck cards={discard} />
-      </div>
+      </div> */}
     </div>
   );
 }

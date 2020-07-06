@@ -1,5 +1,5 @@
 import React from 'react';
-import DeckSpring from './Deck/Deck.spring';
+import DeckSpring from './Deck/DeckSpring';
 
 
 function Deck({size, cards}: {size?, cards?}) {

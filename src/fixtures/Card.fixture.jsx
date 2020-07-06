@@ -7,12 +7,27 @@ import { centered } from './utils';
 
 const cardsFactory = new CardsFactory();
 
-export default (
-  <StoreProvider store={createMockedStore({})}>
-    <div style={{
-      fontFamily: 'helvetica neue'
-    }}>
-    {centered(<Card card={cardsFactory.getRandomCard()} />)}
-    </div>
-  </StoreProvider>
-);
+export default <CardTestingSuite animated={false} revealed={true} />;
+
+function CardTestingSuite(props) {
+  const mounted = React.useRef(false);
+  React.useEffect(() => {
+    if (mounted.current) {
+    } else {
+      mounted.current = true;
+    }
+  });
+
+  const component = <Card card={cardsFactory.getRandomCard()} animated={props.animated} revealed={props.revealed} />;
+  return (
+    <StoreProvider store={createMockedStore({})}>
+      <div
+        style={{
+          fontFamily: 'helvetica neue'
+        }}
+      >
+        {centered(component)}
+      </div>
+    </StoreProvider>
+  );
+}

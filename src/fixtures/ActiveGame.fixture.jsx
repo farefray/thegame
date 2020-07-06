@@ -1,16 +1,57 @@
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
-import ActiveGame from '@/App/ActiveGame';
 import { createMockedStore } from './MockedStore';
+import ActiveGame from '@/App/ActiveGame';
+// Backend stuff for testing
+import BackendPlayer from '@/../../backend/src/structures/Player';
 
-const extraState = {
-  app: {
-    players: [{ health: 45 }, { health: 50 }]
-  }
+// DI
+require('./MockedEventBus');
+
+const backendPlayer = new BackendPlayer();
+const playerState = {
+  player: backendPlayer.toSocket()
 };
 
-export default (
-  <StoreProvider store={createMockedStore(extraState)}>
-    <ActiveGame />
-  </StoreProvider>
-);
+const store = createMockedStore(playerState);
+const actions = store.getActions();
+
+// @ts-expect-error
+actions.app.setCountdown(15);
+console.log('store', store.getState());
+
+export default <ActiveGameTestingSuite />;
+
+function DebugControls() {
+  return (
+    <button
+      onClick={() => {
+        backendPlayer.dealCards();
+
+        store.getActions().player.updatePlayer({
+          subtype: 'PLAYER_CARDS_DEALED',
+          ...backendPlayer.toSocket('PLAYER_CARDS_DEALED')
+        });
+      }}
+    >
+      Deal cards
+    </button>
+  );
+}
+
+function ActiveGameTestingSuite(props) {
+  const mounted = React.useRef(false);
+  React.useEffect(() => {
+    if (mounted.current) {
+    } else {
+      mounted.current = true;
+    }
+  });
+
+  return (
+    <StoreProvider store={store}>
+      {DebugControls()}
+      <ActiveGame />
+    </StoreProvider>
+  );
+}
