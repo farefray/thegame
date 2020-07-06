@@ -6,23 +6,22 @@ import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENT_TYPE } from '../typings/EventBus';
 import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
 import { FirebaseUserUID } from '../utils/types';
+import CardsActionStack from './State/CardsActionStack';
 
-export default class State extends EventBusUpdater {
+export default class State {
   MAX_ROUND = 25;
 
   private amountOfPlayers: number; // todo
   private round: number = 1;
   private players: Map<FirebaseUserUID, Player>;
   private merchantry: Merchantry;
+  private subscribers: Array<FirebaseUserUID>;
 
   constructor(customers: Array<Customer>) {
-    super(
-      EVENT_TYPE.STATE_UPDATE,
-      customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
-        recipients.push(customer.ID);
-        return recipients;
-      }, [])
-    );
+    this.subscribers = customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
+      recipients.push(customer.ID);
+      return recipients;
+    }, []);
 
     this.round = 1;
     this.amountOfPlayers = customers.length;
@@ -34,8 +33,6 @@ export default class State extends EventBusUpdater {
     }
 
     this.merchantry = new Merchantry(this.players.values());
-
-    this.invalidate();
   }
 
   getMerchantry() {
@@ -43,13 +40,22 @@ export default class State extends EventBusUpdater {
   }
 
   playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: FirebaseUserUID) {
+
+    const cardsActionStack = new CardsActionStack(this.subscribers);
+
     this.players.forEach((player) => {
       const opponent = this.getPlayersArray().filter(p => p.getUID() !== player.getUID())[0];
 
       const cards = [...player.hand.values()];
-      if (phase !== ABILITY_PHASE.VICTORY || player.getUID() === victoryUserUID) {
+      if (
+        phase !== ABILITY_PHASE.VICTORY // initial phase cards played for both players
+        || player.getUID() === victoryUserUID // victory phase is played only for battle winner
+      ) {
         for (const card of cards) {
-          card.applyAbilities(player, opponent, phase);
+          const cardAction = card.getCardAction(player, opponent, phase);
+          if (cardAction) {
+            cardsActionStack.add(cardAction);
+          }
         }
       }
 
@@ -65,9 +71,9 @@ export default class State extends EventBusUpdater {
       if (phase === ABILITY_PHASE.VICTORY) {
         player.board.empty();
       }
-
-      player.invalidate(); // todo every card should be emitted separately to handle effects
     });
+
+    cardsActionStack.invalidate();
   }
 
   dropPlayer(playerID) { // todo
@@ -121,14 +127,5 @@ export default class State extends EventBusUpdater {
 
   getPlayersArray() {
     return [...this.players.values()];
-  }
-
-  /**
-   * performs full state sending. Executed on costruct and on reconnect
-   */
-  toSocket() {
-    return {
-      // TODO
-    };
   }
 }

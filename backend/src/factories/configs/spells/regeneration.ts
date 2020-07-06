@@ -1,12 +1,12 @@
 /** globals: this: BattleUnit */
-import { BattleContext } from '../../../structures/Battle';
 import BattleUnit from '../../../structures/BattleUnit';
+import { BattleContext } from '../../../typings/Battle';
 
 export default function regeneration(this: BattleUnit, battleContext: BattleContext) {
   // @ts-ignore
   const { ticks, tickValue, tickDelay } = this.spell.config;
 
-  const target = null; //battleContext.units.byTeam(this.teamId).areDamaged().random;
+  const target = null; // battleContext.units.byTeam(this.teamId).areDamaged().random;
   if (!target) return null;
 
   return (function* () {

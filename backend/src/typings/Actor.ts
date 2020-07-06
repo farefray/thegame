@@ -1,5 +1,5 @@
 import { Action } from './Action';
-import { BattleContext } from '../structures/Battle';
+import { BattleContext } from './Battle';
 
 export interface ActionGeneratorValue {
   actionDelay?: number;

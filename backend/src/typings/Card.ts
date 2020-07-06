@@ -1,3 +1,5 @@
+import { FirebaseUserUID } from "../utils/types";
+
 export interface CardConfig {
   cost: number,
   instant?: {
@@ -20,4 +22,22 @@ export enum CARD_TYPES {
 export enum ABILITY_PHASE {
   INSTANT,
   VICTORY
+}
+
+
+export enum EFFECT_TYPE {
+  GOLD,
+  DAMAGE,
+  HEAL
+}
+
+export interface CardEffect {
+  type: EFFECT_TYPE
+  payload: any
+}
+
+export interface CardAction {
+  type: CARD_TYPES,
+  owner: FirebaseUserUID,
+  effects: CardEffect[]
 }

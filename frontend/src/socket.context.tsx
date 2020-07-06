@@ -35,8 +35,12 @@ export default ({ children }) => {
     console.log('disconnected');
   });
 
-  socket.on('UPDATED_STATE', (state) => {
-    storeActions.app.stateUpdate(state);
+  socket.on('GAME_IS_LIVE', () => {
+    storeActions.app.setGameLive(true);
+  });
+
+  socket.on('CARD_PLAY', (cardActions) => {
+    console.log("cardActions", cardActions)
   });
 
   socket.on('UPDATE_PLAYER', (player) => {

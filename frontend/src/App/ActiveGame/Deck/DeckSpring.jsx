@@ -15,7 +15,6 @@ const trans = (r, s) => `perspective(600px) rotateX(10deg) rotateY(${r / 10}deg)
 const springFn = (stage, params) => (i) => {
   switch (stage) {
     case 'deal': {
-      console.log(params);
       if (i < params.amount) {
         // not changed
         return {}
@@ -40,7 +39,6 @@ const springFn = (stage, params) => (i) => {
 function DeckSpring(cards) {
   const cardsRef = useRef(cards);
 
-  console.log('useRef', cardsRef.current);
   const [springs, setSprings] = useSprings(cardsRef.current.length, springFn('mount'));
 
   useEffectOnce(() => {

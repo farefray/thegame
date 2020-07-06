@@ -6,7 +6,6 @@ import PlayerHand from './Player/PlayerHand';
 
 function Player({ isOpponent = false }) {
   const state = useStoreState((state) => state.player);
-  console.log("Player -> state", state)
   const { hand, deckSize, discard } = state;
 
   const classes = classNames('player', {
