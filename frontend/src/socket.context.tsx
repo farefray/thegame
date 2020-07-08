@@ -63,6 +63,7 @@ export default ({ children }) => {
   });
 
   socket.on('TIMER_UPDATE', (countdown) => {
+    storeActions.app.setCountdown(0); // to re-init components
     storeActions.app.setCountdown(countdown);
   });
 

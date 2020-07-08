@@ -16,7 +16,7 @@ const playerState = {
 const store = createMockedStore(playerState);
 const actions = store.getActions();
 
-actions.app.setCountdown(15);
+actions.app.setCountdown(150);
 console.log('store', store.getState());
 
 export default <ActiveGameTestingSuite />;
