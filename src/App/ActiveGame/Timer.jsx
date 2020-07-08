@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Col } from 'rsuite';
 
 function InternalTimer({ value, onTick }) {
   useEffect(() => {
