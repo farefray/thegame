@@ -1,45 +1,65 @@
 import React, { useRef, useEffect, useLayoutEffect } from 'react';
-import { useSpring, useSprings, animated, interpolate } from 'react-spring'
+import { useSpring, useSprings, animated, interpolate } from 'react-spring';
 import Card from '../Deck/Card';
 
-const deal = (i) => ({ y: i * 100, scale: 1.25, delay: i * 100, op: 0 });
+const cardWidth = 32 * 4;
 
-const animateCardAction = (cardAction) => (i) => {
-  console.log("springFn -> cardAction", cardAction)
+const animateCardAction = (cardAction, index?) => (i) => {
+  console.log('springFn -> cardAction', cardAction);
   if (!cardAction) {
-    return { y: 0, scale: 1, op: 1 };
+    return {
+      x: 0,
+      y: 0,
+      scale: 1,
+      op: 1,
+      delay: 50 + i * 100,
+      from: {
+        x: -cardWidth * i,
+        y: 0,
+        scale: 1,
+        op: 0
+      }
+    };
   }
 
-  return { ...deal(i) };
+  return index === i ? { x:0, y: -(i * 100), scale: 1.25, op: 0 } : { x:0, y: 0, scale: 1, op: 1 };
 };
 
-function PlayerHand(hand, cardAction) {
+function PlayerHand({ hand, cardAction }) {
   const handsRef = useRef(hand);
-  console.log("PlayerHand -> handEffects", cardAction)
-  console.log("PlayerHand -> hand", hand)
-  console.log("PlayerHand -> handsRef.current.length", handsRef.current.length)
 
   const [animations, animate] = useSprings(handsRef.current.length, animateCardAction(cardAction));
 
   useEffect(() => {
     if (cardAction) {
-      console.log("PlayerHand -> cardAction", cardAction)
-      animate(animateCardAction(cardAction));
+      animate(
+        animateCardAction(cardAction,
+          handsRef.current.findIndex(card => card.uuid === cardAction.uuid))
+      );
     }
   }, [cardAction]);
 
-  return animations.map(({ y, scale, op }, i) => (
-    <animated.div key={i} style={{
-      transform: interpolate([y], (y) => `translate3d(0, ${y}px, 0 ) `)
-    }}>
-      <animated.div style={{
-        transform: interpolate([scale], (s) => `scale(${s}) `),
-        opacity: op
-      }}>
-        <Card card={handsRef.current[i]} animated={false} key={handsRef.current[i].uuid} />
-      </animated.div>
-    </animated.div>
-  ));
-  }
+  return (
+    <React.Fragment>
+      {animations.map(({ x, y, scale, op }, i) => (
+        <animated.div
+          key={i}
+          style={{
+            transform: interpolate([x, y], (x, y) => `translate3d(${x}px, ${y}px, 0 ) `)
+          }}
+        >
+          <animated.div
+            style={{
+              transform: interpolate([scale], (s) => `scale(${s}) `),
+              opacity: op
+            }}
+          >
+            <Card card={handsRef.current[i]} animated={false} key={handsRef.current[i].uuid} />
+          </animated.div>
+        </animated.div>
+      ))}
+    </React.Fragment>
+  );
+}
 
 export default PlayerHand;
