@@ -37,6 +37,7 @@ export interface CardEffect {
 }
 
 export interface CardAction {
+  uuid: string,
   type: CARD_TYPES,
   owner: FirebaseUserUID,
   effects: CardEffect[]

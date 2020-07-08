@@ -6,7 +6,7 @@ import PlayerHand from './Player/PlayerHand';
 
 function Player({ isOpponent = false }) {
   const state = useStoreState((state) => state.player);
-  const { hand, deckSize, discard } = state;
+  const { hand, cardAction, deckSize, discard } = state;
 
   const classes = classNames('player', {
     'm-opponent': isOpponent
@@ -24,7 +24,7 @@ function Player({ isOpponent = false }) {
         <Deck size={deckSize} />
       </div>
       <div className="player-hand">
-        <PlayerHand hand={hand}/>
+        {hand.length > 0 && PlayerHand(hand, cardAction)}
       </div>
       {/* <div className="player-discard">
         <Deck cards={discard} />

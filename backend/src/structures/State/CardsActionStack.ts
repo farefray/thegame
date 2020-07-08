@@ -16,6 +16,8 @@ export default class CardsActionStack extends EventBusUpdater {
 
 
   toSocket() {
-    return this.cardActions;
+    return {
+      cardActions: this.cardActions
+    };
   }
 }
