@@ -3,11 +3,10 @@ import { useSprings, animated, interpolate } from 'react-spring';
 import { useEffectOnce } from 'react-use';
 import Card from './Card';
 
-const cardWidth = 32 * 4;
 // These two are just helpers, they curate spring data, values that are later being interpolated into css
 const to = (i) => ({ x: 0, y: i * -4, scale: 1, rot: -10 + Math.random() * 20, delay: i * 100, op: 1 });
 const from = (i) => ({ x: 0, rot: 0, scale: 1.5, y: -1000, op: 1 });
-const deal = (i) => ({ x: i * cardWidth - 357, y: 0, scale: 1, rot: 0, delay: i * 100, op: 0 });
+const deal = (i) => ({ x: 0, y: 0, scale: 1, rot: 0, delay: i * 100, op: 0 });
 
 // This is being used down there in the view, it interpolates rotation and scale into a css transform
 const trans = (r, s) => `perspective(600px) rotateX(10deg) rotateY(${r / 10}deg) rotateZ(${r}deg) scale(${s})`;

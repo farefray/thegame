@@ -40,7 +40,7 @@ const playerModel: PlayerModel = {
       actions.dispatchCardAction(cardAction);
 
       // todo execute changes(hp/gold/etc)
-    }, 1000));
+    }, 1000)); // todo share with playerhand
   }),
 
   deckSize: 0,
