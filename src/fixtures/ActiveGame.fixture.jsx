@@ -19,6 +19,12 @@ const actions = store.getActions();
 actions.app.setCountdown(150);
 console.log('store', store.getState());
 
+setTimeout(() => {
+  store.getActions().player.updatePlayer({
+    ...backendPlayer.toSocket(),
+    health: 25
+  });
+}, 2000);
 export default <ActiveGameTestingSuite />;
 
 function DebugControls() {
