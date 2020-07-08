@@ -1,8 +1,10 @@
 import { MonsterInterface } from '../typings/Monster';
+import { v4 as uuidv4 } from 'uuid';
 import { CardConfig, CARD_TYPES, ABILITY_PHASE, CardAction, EFFECT_TYPE } from '../typings/Card';
 import Player from './Player';
 
 export default class Card {
+  private uuid = uuidv4();
   private name: string;
   public monster?: MonsterInterface;
   private config: CardConfig;
@@ -41,6 +43,7 @@ export default class Card {
     }
 
     const action: CardAction = {
+      uuid: this.uuid,
       type: this.type,
       owner: player.getUID(),
       effects: []
@@ -90,6 +93,7 @@ export default class Card {
 
   toSocket() {
     return {
+      uuid: this.uuid,
       name: this.name,
       monster: this.monster,
       config: this.config,
