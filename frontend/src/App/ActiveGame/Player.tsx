@@ -3,12 +3,11 @@ import classNames from 'classnames';
 import { useStoreState } from '@/store/hooks';
 import Deck from './Deck';
 import PlayerHand from './Player/PlayerHand';
+import Healthbar from './Player/Healthbar';
 
 function Player({ isOpponent = false }) {
-  const state = useStoreState((state) => state.player);
-  const { hand, cardAction, deckSize, discard } = state;
-  console.log("Player -> cardAction", cardAction)
-  console.log("Player -> hand", hand)
+  const player = useStoreState((state) => state.player);
+  const { hand, cardAction, deckSize, discard } = player;
 
   const classes = classNames('player', {
     'm-opponent': isOpponent
@@ -20,6 +19,9 @@ function Player({ isOpponent = false }) {
 
   return (
     <div className={classes}>
+      <div className="player-health">
+        <Healthbar health={player.health}/>
+      </div>
       <div className="player-deck">
         <Deck size={deckSize} />
       </div>

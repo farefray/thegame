@@ -1,11 +1,10 @@
-import React, { useRef, useEffect, useLayoutEffect } from 'react';
-import { useSpring, useSprings, animated, interpolate } from 'react-spring';
+import React, { useRef, useEffect } from 'react';
+import { useSprings, animated, interpolate } from 'react-spring';
 import Card from '../Deck/Card';
 
 const cardWidth = 32 * 4;
 
 const animateCardAction = (cardAction, index?) => (i) => {
-  console.log('springFn -> cardAction', cardAction);
   if (!cardAction) {
     return {
       x: 0,
