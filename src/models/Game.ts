@@ -63,8 +63,6 @@ export default class Game {
       this.state.playCards(ABILITY_PHASE.INSTANT);
       await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
 
-      throw new Error('TEST');
-
       // check if battle state is required
       if (this.players[0].board.units().size > 0 || this.players[1].board.units().size > 0) { // :(
         const battleBoards: Array<BattleBoard> = [];
@@ -86,6 +84,8 @@ export default class Game {
         this.state.playCards(ABILITY_PHASE.VICTORY, battle.winner);
 
         await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
+
+        throw new Error('TEST');
       }
     }
   }
