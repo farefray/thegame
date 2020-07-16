@@ -4,7 +4,7 @@ import Customer from '../models/Customer';
 import Merchantry from './Merchantry';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENT_TYPE } from '../typings/EventBus';
-import { ABILITY_PHASE, CARD_TYPES } from '../typings/Card';
+import { ABILITY_PHASE, CARD_TYPES, EFFECT_TYPE } from '../typings/Card';
 import { FirebaseUserUID } from '../utils/types';
 import CardsActionStack from './State/CardsActionStack';
 
@@ -73,7 +73,44 @@ export default class State {
       }
     });
 
+    this.executeCardActionStack(cardsActionStack);
     cardsActionStack.invalidate();
+  }
+
+  // todo send those actions to frontend once they are executed here?
+  executeCardActionStack(cardsActionStack) {
+    for (const cardAction of cardsActionStack) {
+      // todo some better way, to not duplicate with cards
+      const owner = this.getPlayer(cardAction.owner)
+      if (owner) {
+        switch (cardAction.type) {
+          case EFFECT_TYPE.GOLD: {
+            owner.gold += cardAction.payload;
+            break;
+          }
+
+          case EFFECT_TYPE.HEAL: {
+            owner.health += cardAction.payload;
+            break;
+          }
+
+          case EFFECT_TYPE.DAMAGE: {
+            // bad way >..<
+            this.players.forEach((player) => {
+              if (player.getUID() !== cardAction.owner) {
+                player.health -= cardAction.payload;
+              }
+            });
+
+            break;
+          }
+
+          default: { }
+
+        }
+      }
+
+    }
   }
 
   dropPlayer(playerID) { // todo
