@@ -30,7 +30,7 @@ function ActiveGame() {
               {isActiveBattleGoing ? <BattleBoardWrapper /> : <PlayerBoardWrapper />}
             </div>
           </div>
-          <Timer initialTimerValue={countdown}/>
+          {!isActiveBattleGoing && <Timer initialTimerValue={countdown}/>}
         </Col>
         <Col>
           <Merchantry />

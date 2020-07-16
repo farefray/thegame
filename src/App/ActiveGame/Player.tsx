@@ -4,6 +4,7 @@ import { useStoreState } from '@/store/hooks';
 import Deck from './Deck';
 import PlayerHand from './Player/PlayerHand';
 import Healthbar from './Player/Healthbar';
+import Gold from './Player/Gold';
 
 function Player({ isOpponent = false }) {
   const player = useStoreState((state) => state.player);
@@ -19,9 +20,8 @@ function Player({ isOpponent = false }) {
 
   return (
     <div className={classes}>
-      <div className="player-health">
-        <Healthbar health={player.health}/>
-      </div>
+      <Healthbar health={player.health} />
+      <Gold gold={player.gold}/>
       <div className="player-deck">
         <Deck size={deckSize} />
       </div>
