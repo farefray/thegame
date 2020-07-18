@@ -73,7 +73,7 @@ export default class Player extends EventBusUpdater {
   public dealCards() {
     while (this.hand.size < HAND_SIZE && (!this.deck.isEmpty() || this.discard.size > 0)) {
       if (!this.deck.isEmpty()) {
-        this.hand.push(this.deck.eject(0));
+        this.addCartToHand(this.deck.eject(0));
       } else if (this.discard.size > 0) {
         this.deck.pushAll(this.discard.values()).shuffle();
         this.discard.clean();
@@ -81,6 +81,10 @@ export default class Player extends EventBusUpdater {
     }
 
     this.invalidate(EVENT_SUBTYPE.PLAYER_CARDS_DEALED);
+  }
+
+  private addCartToHand(card) {
+    this.hand.push(card);
   }
 
   /////// OLD
@@ -161,6 +165,7 @@ export default class Player extends EventBusUpdater {
 
       default: {
         return {
+          uuid: this.userUID,
           health: this.health,
           gold: this.gold,
           board: this.board.toSocket(),

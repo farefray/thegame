@@ -38,7 +38,7 @@ export default class Game {
   private notifyGameIsLive() {
     const eventBus:EventBus = Container.get('event.bus');
     this.players.forEach(player => {
-      eventBus.emitMessage(EVENT_TYPE.GAME_IS_LIVE, player.getUID(), true);
+      eventBus.emitMessage(EVENT_TYPE.GAME_IS_LIVE, player.getUID(), player.getUID());
     });
   }
 

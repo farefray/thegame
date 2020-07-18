@@ -26,9 +26,9 @@ export enum ABILITY_PHASE {
 
 
 export enum EFFECT_TYPE {
-  GOLD,
-  DAMAGE,
-  HEAL
+  GOLD = 'GOLD',
+  DAMAGE = 'DAMAGE',
+  HEAL = 'HEAL'
 }
 
 export interface CardEffect {
@@ -40,5 +40,5 @@ export interface ICardAction {
   uuid: string,
   type: CARD_TYPES,
   owner: FirebaseUserUID,
-  effects: CardEffect[]
+  effects: CardEffect[],
 }
