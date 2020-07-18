@@ -6,7 +6,7 @@ import Card from './Card';
 // These two are just helpers, they curate spring data, values that are later being interpolated into css
 const to = (i) => ({ x: 0, y: i * -4, scale: 1, rot: -10 + Math.random() * 20, delay: i * 100, op: 1 });
 const from = (i) => ({ x: 0, rot: 0, scale: 1.5, y: -1000, op: 1 });
-const deal = (i) => ({ x: 0, y: 0, scale: 1, rot: 0, delay: i * 100, op: 0 });
+const deal = (i) => ({ x: 0, y: 0, scale: 1, rot: 0, delay: i * 100, op: 0.5 });
 
 // This is being used down there in the view, it interpolates rotation and scale into a css transform
 const trans = (r, s) => `perspective(600px) rotateX(10deg) rotateY(${r / 10}deg) rotateZ(${r}deg) scale(${s})`;
@@ -55,7 +55,7 @@ function DeckSpring(cards) {
 
 
   return springs.map(({ x, y, rot, scale, op }, i) => (
-    <animated.div key={i} style={{
+    <animated.div key={cardsRef.current[i].uuid || i} style={{
       transform: interpolate([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`)
     }}>
       <animated.div style={{
