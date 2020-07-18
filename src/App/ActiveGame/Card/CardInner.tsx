@@ -1,23 +1,19 @@
 import React from 'react';
 import { Icon } from 'rsuite';
-import UnitImage from '@/objects/Unit/UnitImage';
 
-export default function CardInner({card}) {
+export default function CardInner({ name, cost, children }) {
   return (
     <React.Fragment>
       <div className="frame-header">
         <div className="frame-header_icon">
           <Icon icon="star-half-o" />
         </div>
-        <span className="frame-header_name">{card.name}</span>
-        <div className="frame-header_cost">{card.cost}</div>
+        <span className="frame-header_name">{name}</span>
+        <div className="frame-header_cost">{cost}</div>
       </div>
 
-      <div className="frame-body">
-        <p className="frame-body_description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro voluptatibus reprehenderit error quam, iste dicta!</p>
-      </div>
+      {children}
 
-      <div className="frame-image">{card.monster && <UnitImage lookType={card.monster.lookType} direction={3} isMoving={false} extraClass={''}/>}</div>
     </React.Fragment>
   );
 }

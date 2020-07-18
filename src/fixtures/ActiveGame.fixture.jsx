@@ -1,5 +1,6 @@
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
+import { useValue } from 'react-cosmos/fixture';
 
 import { createMockedStore } from './MockedStore';
 import ActiveGame from '@/App/ActiveGame';
@@ -7,46 +8,52 @@ import ActiveGame from '@/App/ActiveGame';
 // Backend stuff for testing
 import State from '@/../../backend/src/structures/State';
 import Customer from '@/../../backend/src/models/Customer';
-import MockedEventBus from './MockedEventBus';
+import MockedEventBus, { MOCKED_CUSTOMER_UID } from './MockedEventBus';
 import { ABILITY_PHASE } from '@/../../backend/src/typings/Card';
 
-const store = createMockedStore({});
+const store = createMockedStore({
+  player: {
+    uuid: MOCKED_CUSTOMER_UID
+  }
+});
+
 MockedEventBus(store);
 
-const state = new State([new Customer('MOCK_SOCKETID_1', { uid: 'MOCK_SOCKETID_1' })]);
+const state = new State([new Customer(MOCKED_CUSTOMER_UID, { uid: MOCKED_CUSTOMER_UID })]);
 
-export default <ActiveGameTestingSuite />;
 
 function DebugControls() {
-  return (<>
-    <button
-      onClick={() => {
-        state.firstPlayer.dealCards();
-        state.secondPlayer.dealCards();
-      }}
-    >
-      Deal cards
-    </button>
+  return (
+    <div style={{
+      position: 'absolute',
+      color: '#000'
+    }}>
+      <button
+        onClick={() => {
+          state.firstPlayer.dealCards();
+          state.secondPlayer.dealCards();
+        }}
+      >
+        Deal cards
+      </button>
 
-    <button
-    onClick={() => {
-      state.playCards(ABILITY_PHASE.INSTANT);
-    }}
-    >
-      Play cards
-    </button>
-    </>
+      <button
+        onClick={() => {
+          state.playCards(ABILITY_PHASE.INSTANT);
+        }}
+      >
+        Play cards
+      </button>
+    </div>
   );
 }
 
 function ActiveGameTestingSuite(props) {
-  const mounted = React.useRef(false);
-  React.useEffect(() => {
-    if (mounted.current) {
-    } else {
-      mounted.current = true;
-    }
-  });
+  const [rendered] = useValue('rendered', { defaultValue: true }); // failed attemp to make it rerender refs
+
+  if (!rendered) {
+    return <div />;
+  }
 
   return (
     <StoreProvider store={store}>
@@ -55,3 +62,5 @@ function ActiveGameTestingSuite(props) {
     </StoreProvider>
   );
 }
+
+export default <ActiveGameTestingSuite />;

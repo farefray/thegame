@@ -35,11 +35,13 @@ export default ({ children }) => {
     console.log('disconnected');
   });
 
-  socket.on('GAME_IS_LIVE', () => {
+  socket.on('GAME_IS_LIVE', (playerUUID) => {
     storeActions.app.setGameLive(true);
+    storeActions.player.setUUID(playerUUID);
   });
 
   socket.on('CARD_PLAY', (cardAction) => {
+    console.log('SOCKET PLAY CARD');
     storeActions.player.playCard(cardAction);
   });
 

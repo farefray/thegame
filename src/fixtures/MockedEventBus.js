@@ -1,15 +1,13 @@
 import { Container } from '../../../backend/node_modules/typedi';
 
-/*
-store.getActions().player.updatePlayer({
-          subtype: 'PLAYER_CARDS_DEALED',
-          ...backendPlayer.toSocket('PLAYER_CARDS_DEALED')
-        });
-        */
+export const MOCKED_CUSTOMER_UID = 'MOCK_SOCKETID_1';
+
 const mockedEventBus = (store) => {
   const mockedEventEmitter = {
     emitMessage: (type, recipient, payload) => {
-
+      if (recipient !== MOCKED_CUSTOMER_UID) {
+        return;
+      }
 
       const storeActions = store.getActions();
       switch (type) {

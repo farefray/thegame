@@ -1,62 +1,25 @@
 import React, { useRef, useEffect } from 'react';
-import { useSprings, animated, interpolate } from 'react-spring';
-import Card from '../Deck/Card';
+import CardWrapper from '../Deck/Card';
+import { Card } from '@/types/Card';
 
-const cardWidth = 32 * 4;
-
-const animateCardAction = (cardAction, index?) => (i) => {
-  if (!cardAction) {
-    return {
-      x: 0,
-      y: 0,
-      scale: 1,
-      op: 1,
-      delay: 50 + i * 100,
-      from: {
-        x: -cardWidth * i,
-        y: 0,
-        scale: 1,
-        op: 0
-      }
-    };
-  }
-
-  return index === i ? { x:0, y: -(i * 100), scale: 1.25, op: 0 } : { x:0, y: 0, scale: 1, op: 1 };
-};
-
-function PlayerHand({ hand, cardAction }) {
+function PlayerHand({ hand = [] }: { hand: Card[] }) {
   const handsRef = useRef(hand);
 
-  const [animations, animate] = useSprings(handsRef.current.length, animateCardAction(cardAction));
-
   useEffect(() => {
-    if (cardAction) {
-      animate(
-        animateCardAction(cardAction,
-          handsRef.current.findIndex(card => card.uuid === cardAction.uuid))
-      );
+    if (hand.length && !handsRef.current.length) {
+      // added cards to hand
+      handsRef.current = [...hand];
     }
-  }, [cardAction, animate]);
+
+    console.log('PlayerHand -> hand', hand);
+    console.log('PlayerHand -> handsRef', handsRef.current);
+  }, [hand]);
 
   return (
     <React.Fragment>
-      {animations.map(({ x, y, scale, op }, i) => (
-        <animated.div
-          key={i}
-          style={{
-            transform: interpolate([x, y], (x, y) => `translate3d(${x}px, ${y}px, 0 ) `)
-          }}
-        >
-          <animated.div
-            style={{
-              transform: interpolate([scale], (s) => `scale(${s}) `),
-              opacity: op
-            }}
-          >
-            <Card card={handsRef.current[i]} animated={false} key={handsRef.current[i].uuid} />
-          </animated.div>
-        </animated.div>
-      ))}
+      {hand.map((card: Card) => {
+        return <CardWrapper card={card} key={card.uuid} />;
+      })}
     </React.Fragment>
   );
 }
