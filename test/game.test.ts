@@ -124,14 +124,14 @@ class GameTestSuite {
 @suite
 class CardsTestSuite {
   @test
-  cardsArePlayedInstant() {
+  async cardsArePlayedInstant() {
     const state = new State(CUSTOMERS);
     const player = state.getPlayer(useruid);
     expect(player).to.be.an.instanceof(Player);
 
     if (player) {
       player.dealCards();
-      state.playCards(ABILITY_PHASE.INSTANT);
+      await state.playCards(ABILITY_PHASE.INSTANT);
 
       // first round, all cards are instantly played and moved to discard
       expect(player.hand.size).to.be.below(5);

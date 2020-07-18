@@ -9,6 +9,7 @@ import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
 import MonstersFactory from '../factories/MonstersFactory';
 import { FirebaseUserUID } from '../utils/types';
+import { CardAction } from './Card/CardAction';
 
 const BASE_DECK_CONFIG = ['Dwarf', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
@@ -47,21 +48,20 @@ export default class Player extends EventBusUpdater {
     this.addToDiscard(card);
   }
 
-  public addToBoard(card) {
-    const unit = MonstersFactory.createBattleUnit(card.monster.name);
-    const position = unit.getPreferablePosition(this.board.freeSpots());
-    unit.rearrangeToPos(position);
-    this.board.setCell(position.x, position.y, unit);
+  public addToBoard(cardAction: CardAction) {
+    if (cardAction.monsterName) {
+      const unit = MonstersFactory.createBattleUnit(cardAction.monsterName);
+      const position = unit.getPreferablePosition(this.board.freeSpots());
+      unit.rearrangeToPos(position);
+      this.board.setCell(position.x, position.y, unit);
 
-    this.invalidate(EVENT_SUBTYPE.PLAYER_CARD_TO_BOARD);
+      this.invalidate(EVENT_SUBTYPE.PLAYER_CARD_TO_BOARD);
+    }
   }
 
-  public moveToDiscard(card) {
-    this.discard.push(card);
-    const handCardIndex = this.hand.findIndex((handCard) => handCard.name === card.name);
-    if (handCardIndex !== -1) {
-      this.hand.eject(handCardIndex);
-    }
+  public moveToDiscard(cardAction: CardAction) {
+    const handCardIndex = this.hand.findIndex((handCard) => handCard.uuid === cardAction.uuid);
+    this.discard.push(this.hand.eject(handCardIndex));
   }
 
   public addToDiscard(card: Card) {

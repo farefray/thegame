@@ -36,7 +36,7 @@ export interface CardEffect {
   payload: any
 }
 
-export interface CardAction {
+export interface ICardAction {
   uuid: string,
   type: CARD_TYPES,
   owner: FirebaseUserUID,
