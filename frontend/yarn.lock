@@ -1661,14 +1661,6 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@react-mock/state@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@react-mock/state/-/state-0.1.8.tgz#5c579570964e0254ee27a5aad72e09b0c0ea40e8"
-  integrity sha512-oX16w3FKhfF2+nQE+C4frrfVddzwhF4YEYxF8frXzboEDZsxCRpFuQC0za3T59ZxI4ygBarBqDrhYzipGsD9TQ==
-  dependencies:
-    "@babel/runtime" "^7.1.2"
-    lodash "^4.17.11"
-
 "@react-spring/animated@9.0.0-rc.3":
   version "9.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/@react-spring/animated/-/animated-9.0.0-rc.3.tgz#e792cb76aacecfc78db2be6020ac11ce96503eb5"
@@ -10774,38 +10766,15 @@ react-app-rewired@2.1.6:
   dependencies:
     semver "^5.6.0"
 
-react-cosmos-fixture@^4.8.1:
-  version "4.8.1"
-  resolved "https://registry.yarnpkg.com/react-cosmos-fixture/-/react-cosmos-fixture-4.8.1.tgz#13d2c89a8f948539bcca8d09acf707b4c5aa59ec"
-  integrity sha512-98wtw+eXf1msjwjj4yBMkfNYzBDXjjD2IFQZzAtxeJFLGR+i00PfSIU5hqkNpaX3NSu/OfVCM2PpTyZoJ0Kc1Q==
-  dependencies:
-    lodash "^4.17.11"
-    memoize-one "^5.0.0"
-    react-cosmos-shared2 "^4.8.1"
-    react-is "^16.8.1"
-    socket.io-client "^2.2.0"
+react-cosmos-playground2@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/react-cosmos-playground2/-/react-cosmos-playground2-5.4.0.tgz#da672dad0a8f413b77e0d36088135702aaae2ce7"
+  integrity sha512-jWZwU8RqxPnaCURq4WONAJcPNbAunDKY/aZk9dCwYFb6UsOARE21cYNsCtj8syh9Nn4srPoOcaPt3rTQI+weGw==
 
-react-cosmos-playground2@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/react-cosmos-playground2/-/react-cosmos-playground2-5.3.0.tgz#fa6d3c373546121dab4a27a3a07ae26c5575bb2d"
-  integrity sha512-rnxvK5AbSFOsriTVDmJOAv5b9bPi4+CP5ArAWhRIsesOzZ2NcVaqJ+CbroTUI1hPT2Hx3jaaxdHWWutCESzATg==
-
-react-cosmos-shared2@^4.8.1:
-  version "4.8.1"
-  resolved "https://registry.yarnpkg.com/react-cosmos-shared2/-/react-cosmos-shared2-4.8.1.tgz#b782b300c7593ed66e2eb952bb03b01261a7999c"
-  integrity sha512-OY9Dapl7hSGlBM1kP5F9Llrbi+5qzImzhOGnuoTXqWfyz+OadRqmXiLH1Yi4FfS/UY6CnOSN0JwGYjBYcA5kCw==
-  dependencies:
-    glob "^7.1.3"
-    lodash "^4.17.11"
-    micromatch "^3.1.10"
-    react-element-to-jsx-string "^14.0.2"
-    react-is "^16.8.1"
-    util.promisify "^1.0.0"
-
-react-cosmos-shared2@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/react-cosmos-shared2/-/react-cosmos-shared2-5.3.0.tgz#b9af997261e29711330c4336e4c9ea020ebc3cae"
-  integrity sha512-PWyQsvT3VASyVuCkpkxij0vVn7t0woOPzayeDMZdQuEBjSYME+karu+PY/Dz1XrS8YysGtpPEHr8TC7HR2n2Kw==
+react-cosmos-shared2@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/react-cosmos-shared2/-/react-cosmos-shared2-5.4.0.tgz#58eae9aa75fa0fd0cdc40e18a48ff0b0394a09ff"
+  integrity sha512-s6w5jvda5EW7QDHU/W8nK6cmbKf3lCnOytfLcW+frwh1F7N+xwh6Atm7qLsQKCXGHYAEzZk7lHFnhry5D81qhg==
   dependencies:
     lodash "^4.17.15"
     query-string "5.1.1"
@@ -10813,10 +10782,10 @@ react-cosmos-shared2@^5.3.0:
     react-is "^16.13.1"
     socket.io-client "2.2.0"
 
-react-cosmos@5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/react-cosmos/-/react-cosmos-5.3.0.tgz#613d2b803ec7d56896ce87fc831473707261c273"
-  integrity sha512-30yPSfPZ5vo+XVdxVMCPBVsHrVuGcuBk425l2v/3DGvQWCqZXaTdj+1BD3XX7E/UCyYF64KtaAzTCVWjdfH/iw==
+react-cosmos@5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/react-cosmos/-/react-cosmos-5.4.0.tgz#fddfa6b38a3bb92ba663e52225eac967bccbd0b9"
+  integrity sha512-Q2OG6pwGeYysipwAOHYQiM0ReEFh25ZbPlFj9QLY1pSGGp13kDUjz3yjyjnu5ZV4eWqN9mzKUbp47s2t8ToAUw==
   dependencies:
     "@skidding/launch-editor" "^2.2.3"
     "@skidding/webpack-hot-middleware" "^2.25.0"
@@ -10831,8 +10800,8 @@ react-cosmos@5.3.0:
     micromatch "^4.0.2"
     open "^7.0.3"
     pkg-up "^3.1.0"
-    react-cosmos-playground2 "^5.3.0"
-    react-cosmos-shared2 "^5.3.0"
+    react-cosmos-playground2 "^5.4.0"
+    react-cosmos-shared2 "^5.4.0"
     react-error-overlay "^6.0.7"
     regenerator-runtime "^0.13.5"
     resolve-from "^5.0.0"
@@ -10919,7 +10888,7 @@ react-dom@^16.7.0:
     prop-types "^15.6.2"
     scheduler "^0.19.1"
 
-react-element-to-jsx-string@^14.0.2, react-element-to-jsx-string@^14.3.1:
+react-element-to-jsx-string@^14.3.1:
   version "14.3.1"
   resolved "https://registry.yarnpkg.com/react-element-to-jsx-string/-/react-element-to-jsx-string-14.3.1.tgz#a08fa6e46eb76061aca7eabc2e70f433583cb203"
   integrity sha512-LRdQWRB+xcVPOL4PU4RYuTg6dUJ/FNmaQ8ls6w38YbzkbV6Yr5tFNESroub9GiSghtnMq8dQg2LcNN5aMIDzVg==
@@ -10961,11 +10930,6 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
-
-react-mock@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/react-mock/-/react-mock-6.0.1.tgz#e19a3d8387c91e80f0286314caab77b52cbe354f"
-  integrity sha512-mftvdN9AqKE/9MVqdKGRGiR5HG5ajEJwDkzyvMM5kBfMBaTEJTUXDLgDQvjb7EspKMe2yrBfytrxuJGPaYyoxw==
 
 react-refresh@^0.7.1:
   version "0.7.2"
@@ -12160,7 +12124,7 @@ socket.io-client@2.2.0:
     socket.io-parser "~3.3.0"
     to-array "0.1.4"
 
-socket.io-client@2.3.0, socket.io-client@^2.2.0:
+socket.io-client@2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-2.3.0.tgz#14d5ba2e00b9bcd145ae443ab96b3f86cbcc1bb4"
   integrity sha512-cEQQf24gET3rfhxZ2jJ5xzAOo/xhZwK+mOqtGRg5IowZsMgwvHwnf/mCRapAAkadhM26y+iydgwsXGObBB5ZdA==

@@ -21,6 +21,6 @@ export class CardAction extends EventBusUpdater {
   }
 
   toSocket() {
-    return this;
+    return this; // todo remove not nessesary stuff
   }
 }

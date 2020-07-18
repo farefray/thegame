@@ -4,6 +4,27 @@ import { CardConfig, CARD_TYPES, ABILITY_PHASE, EFFECT_TYPE } from '../typings/C
 import Player from './Player';
 import { CardAction } from './Card/CardAction';
 
+
+const animateCardAction = (cardAction, index?) => (i) => {
+  const cardWidth = 32 * 4;
+  if (!cardAction) {
+    return {
+      x: 0,
+      y: 0,
+      scale: 1,
+      op: 1,
+      delay: 50 + i * 100,
+      from: {
+        x: -cardWidth * i,
+        y: 0,
+        scale: 1,
+        op: 0
+      }
+    };
+  }
+
+  return index === i ? { x:0, y: -(i * 100), scale: 1.25, op: 0 } : { x:0, y: 0, scale: 1, op: 1 };
+};
 export default class Card {
   private _uuid = uuidv4();
   private name: string;
@@ -106,7 +127,7 @@ export default class Card {
       name: this.name,
       monster: this.monster,
       config: this.config,
-      cost: this.cost
+      cost: this.cost,
     };
   }
 }

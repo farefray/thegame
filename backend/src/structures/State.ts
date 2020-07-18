@@ -63,6 +63,7 @@ export default class State {
       await waitFor(1000);
     });
 
+    // todo sync state after all cards are played, just to be sure that frontend is synced with per-card actions result
     return true;
   }
 
