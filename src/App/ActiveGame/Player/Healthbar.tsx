@@ -16,7 +16,7 @@ function Healthbar({ health }) {
   useEffect(() => {
     healthRef.current = health;
     setAnimatedProps({ height: percent(healthRef.current)+'%' });
-  }, [health]);
+  }, [health, setAnimatedProps]);
 
   return (
     <div className="healthbar">

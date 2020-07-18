@@ -39,9 +39,8 @@ export default ({ children }) => {
     storeActions.app.setGameLive(true);
   });
 
-  socket.on('CARD_PLAY', ({ cardActions }) => {
-  console.log("cardActions", cardActions)
-    storeActions.player.playHand(cardActions);
+  socket.on('CARD_PLAY', (cardAction) => {
+    storeActions.player.playCard(cardAction);
   });
 
   socket.on('UPDATE_PLAYER', (player) => {

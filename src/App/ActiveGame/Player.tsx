@@ -8,7 +8,7 @@ import Gold from './Player/Gold';
 
 function Player({ isOpponent = false }) {
   const player = useStoreState((state) => state.player);
-  const { hand, cardAction, deckSize, discard } = player;
+  const { hand, cardAction, deckSize/*, discard*/ } = player;
 
   const classes = classNames('player', {
     'm-opponent': isOpponent

@@ -36,7 +36,7 @@ function PlayerHand({ hand, cardAction }) {
           handsRef.current.findIndex(card => card.uuid === cardAction.uuid))
       );
     }
-  }, [cardAction]);
+  }, [cardAction, animate]);
 
   return (
     <React.Fragment>
