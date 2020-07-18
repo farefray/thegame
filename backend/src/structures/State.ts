@@ -2,29 +2,25 @@ import Player from './Player';
 import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
 import Merchantry from './Merchantry';
-import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENT_TYPE } from '../typings/EventBus';
 import { ABILITY_PHASE, CARD_TYPES, EFFECT_TYPE } from '../typings/Card';
 import { FirebaseUserUID } from '../utils/types';
-import CardsActionStack from './State/CardsActionStack';
+import { CardAction } from './Card/CardAction';
+import sleep, { asyncForEach, waitFor } from '../utils/sleep';
 
 export default class State {
   MAX_ROUND = 25;
 
-  private amountOfPlayers: number; // todo
   private round: number = 1;
   private players: Map<FirebaseUserUID, Player>;
   private merchantry: Merchantry;
-  private subscribers: Array<FirebaseUserUID>;
 
   constructor(customers: Array<Customer>) {
-    this.subscribers = customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
-      recipients.push(customer.ID);
-      return recipients;
-    }, []);
+    // this.subscribers = customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
+    //   recipients.push(customer.ID);
+    //   return recipients;
+    // }, []);
 
     this.round = 1;
-    this.amountOfPlayers = customers.length;
 
     this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID)]));
 
@@ -39,32 +35,21 @@ export default class State {
     return this.merchantry;
   }
 
-  playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: FirebaseUserUID) {
-
-    const cardsActionStack = new CardsActionStack(this.subscribers);
-
+  async playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: FirebaseUserUID) {
+    const cardActions: CardAction[] = [];
     this.players.forEach((player) => {
-      const opponent = this.getPlayersArray().filter(p => p.getUID() !== player.getUID())[0];
+      const opponent = this.getPlayersArray().filter((p) => p.getUID() !== player.getUID())[0];
 
       const cards = [...player.hand.values()];
       if (
-        phase !== ABILITY_PHASE.VICTORY // initial phase cards played for both players
-        || player.getUID() === victoryUserUID // victory phase is played only for battle winner
+        phase !== ABILITY_PHASE.VICTORY || // initial phase cards played for both players
+        player.getUID() === victoryUserUID // victory phase is played only for battle winner
       ) {
         for (const card of cards) {
           const cardAction = card.getCardAction(player, opponent, phase);
           if (cardAction) {
-            cardsActionStack.add(cardAction);
+            cardActions.push(cardAction);
           }
-        }
-      }
-
-      for (let index = 0; index < cards.length; index++) {
-        const card = cards[index];
-        if (phase === ABILITY_PHASE.INSTANT && card.type === CARD_TYPES.CARD_MONSTER) {
-          player.addToBoard(card);
-        } else {
-          player.moveToDiscard(card);
         }
       }
 
@@ -73,24 +58,30 @@ export default class State {
       }
     });
 
-    this.executeCardActionStack(cardsActionStack);
-    cardsActionStack.invalidate();
+    await asyncForEach(cardActions, async (cardAction) => {
+      this.executeCardAction(cardAction, phase)
+      await waitFor(1000);
+    });
+
+    return true;
   }
 
-  // todo send those actions to frontend once they are executed here?
-  executeCardActionStack(cardsActionStack) {
-    for (const cardAction of cardsActionStack) {
-      // todo some better way, to not duplicate with cards
-      const owner = this.getPlayer(cardAction.owner)
-      if (owner) {
-        switch (cardAction.type) {
+  /**
+   * ? Such approach is tricky as we need to keep consistency between Card action generation, executing card on backend and executing card on frontend.
+   * Maybe need to get some better way.
+   */
+  executeCardAction(cardAction: CardAction, phase) {
+    const owner = this.getPlayer(cardAction.owner);
+    if (owner) {
+      cardAction.effects.forEach((effect) => {
+        switch (effect.type) {
           case EFFECT_TYPE.GOLD: {
-            owner.gold += cardAction.payload;
+            owner.gold += effect.payload;
             break;
           }
 
           case EFFECT_TYPE.HEAL: {
-            owner.health += cardAction.payload;
+            owner.health += effect.payload;
             break;
           }
 
@@ -98,26 +89,32 @@ export default class State {
             // bad way >..<
             this.players.forEach((player) => {
               if (player.getUID() !== cardAction.owner) {
-                player.health -= cardAction.payload;
+                player.health -= effect.payload;
               }
             });
 
             break;
           }
 
-          default: { }
-
+          default: {}
         }
-      }
+      });
 
+      if (phase === ABILITY_PHASE.INSTANT && cardAction.type === CARD_TYPES.CARD_MONSTER) {
+        owner.addToBoard(cardAction);
+      } else {
+        owner.moveToDiscard(cardAction);
+      }
     }
+
+    cardAction.invalidate();
   }
 
-  dropPlayer(playerID) { // todo
+  dropPlayer(playerID) {
+    // todo
     for (const [uid, player] of this.players) {
       if (uid === playerID) {
         delete this.players[uid];
-        this.amountOfPlayers -= 1;
       }
     }
   }

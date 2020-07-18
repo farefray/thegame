@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useSprings, animated, interpolate } from 'react-spring';
 import { useEffectOnce } from 'react-use';
 import Card from './Card';
@@ -51,7 +51,7 @@ function DeckSpring(cards) {
       }));
       cardsRef.current = cards;
     }
-  }, [cards.length]);
+  }, [cards.length, cards, setSprings]);
 
 
   return springs.map(({ x, y, rot, scale, op }, i) => (

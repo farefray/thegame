@@ -1,10 +1,11 @@
 import { MonsterInterface } from '../typings/Monster';
 import { v4 as uuidv4 } from 'uuid';
-import { CardConfig, CARD_TYPES, ABILITY_PHASE, CardAction, EFFECT_TYPE } from '../typings/Card';
+import { CardConfig, CARD_TYPES, ABILITY_PHASE, EFFECT_TYPE } from '../typings/Card';
 import Player from './Player';
+import { CardAction } from './Card/CardAction';
 
 export default class Card {
-  private uuid = uuidv4();
+  private _uuid = uuidv4();
   private name: string;
   public monster?: MonsterInterface;
   private config: CardConfig;
@@ -35,27 +36,35 @@ export default class Card {
     return this.config.instant;
   }
 
+  get uuid() {
+    return this._uuid;
+  }
+
   public getCardAction(player: Player, opponent: Player, phase: ABILITY_PHASE) {
     const abilities = phase === ABILITY_PHASE.INSTANT ? this.config.instant : this.config.victory;
 
-    if (!abilities) {
-      return null;
-    }
-
-    const action: CardAction = {
+    const cardAction = new CardAction({
       uuid: this.uuid,
       type: this.type,
       owner: player.getUID(),
       effects: []
+    }, [player.getUID(), opponent.getUID()]);
+
+    if (this.type === CARD_TYPES.CARD_MONSTER) {
+      cardAction.monsterName = this.monster?.name;
     }
 
-    // todo some factory
+    if (!abilities) {
+      return cardAction;
+    }
+
+    // todo some factory ?
     Object.keys(abilities).forEach((ability) => {
       const value = abilities[ability];
 
       switch (ability) {
         case 'gold': {
-          action.effects.push({
+          cardAction.effects.push({
             type: EFFECT_TYPE.GOLD,
             payload: value
           })
@@ -64,7 +73,7 @@ export default class Card {
         }
 
         case 'health': {
-          action.effects.push({
+          cardAction.effects.push({
             type: EFFECT_TYPE.HEAL,
             payload: value
           })
@@ -73,7 +82,7 @@ export default class Card {
         }
 
         case 'damage': {
-          action.effects.push({
+          cardAction.effects.push({
             type: EFFECT_TYPE.DAMAGE,
             payload: value
           })
@@ -87,7 +96,7 @@ export default class Card {
       }
     });
 
-    return action;
+    return cardAction;
   }
 
 

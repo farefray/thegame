@@ -25,13 +25,10 @@ Container.set('event.bus', mockedEventEmitter);
 
 describe('Core Modules', () => {
   const MOCK_SOCKETID_1 = 'MOCK_SOCKETID_1';
-  const MOCK_SOCKETID_2 = 'MOCK_SOCKETID_2';
-  const MOCK_SOCKETID_3 = 'MOCK_SOCKETID_3';
 
   const sessionsService = SessionsService.getInstance();
 
   let gameState:State;
-  const firstHandPosition = 0;
 
   describe('Sessions and game init', () => {
     let session:Session;

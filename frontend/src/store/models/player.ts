@@ -1,5 +1,4 @@
 import { thunk, action, Action, Thunk } from 'easy-peasy';
-import { delayLoop } from '@/utils/misc';
 
 export interface PlayerModel {
   health: number;
@@ -11,7 +10,7 @@ export interface PlayerModel {
   hand: [];
   cardAction: object | null; // CardAction @see {backend/typings/Card.ts}
   dispatchCardAction: Action<PlayerModel, any>
-  playHand: Thunk<PlayerModel, any>;
+  playCard: Thunk<PlayerModel, any>;
 
   deckSize: number;
   discard: [];
@@ -34,13 +33,10 @@ const playerModel: PlayerModel = {
   dispatchCardAction: action((state, payload) => {
     state.cardAction = payload;
   }),
-  playHand: thunk(async (actions, payload) => {
-    const handCards = [...payload];
-    handCards.forEach(delayLoop(cardAction => {
-      actions.dispatchCardAction(cardAction);
-
-      // todo execute changes(hp/gold/etc)
-    }, 1000)); // todo share with playerhand
+  playCard: thunk(async (actions, cardAction) => {
+    console.log("cardAction", cardAction)
+    actions.dispatchCardAction(cardAction);
+    // todo execute changes(hp/gold/etc)
   }),
 
   deckSize: 0,

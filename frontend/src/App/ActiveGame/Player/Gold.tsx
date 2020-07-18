@@ -13,7 +13,7 @@ function Gold({ gold }) {
     });
 
     goldRef.current = gold;
-  }, [gold]);
+  }, [gold, set]);
 
   return (
     <animated.div className="gold">{spring.val}</animated.div>

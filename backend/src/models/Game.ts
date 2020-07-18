@@ -60,7 +60,7 @@ export default class Game {
       this.players[1].dealCards();
 
       await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
-      this.state.playCards(ABILITY_PHASE.INSTANT);
+      await this.state.playCards(ABILITY_PHASE.INSTANT);
       await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
 
       // check if battle state is required

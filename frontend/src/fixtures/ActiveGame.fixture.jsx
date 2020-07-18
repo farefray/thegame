@@ -1,46 +1,41 @@
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
+
 import { createMockedStore } from './MockedStore';
 import ActiveGame from '@/App/ActiveGame';
+
 // Backend stuff for testing
-import BackendPlayer from '@/../../backend/src/structures/Player';
+import State from '@/../../backend/src/structures/State';
+import Customer from '@/../../backend/src/models/Customer';
+import MockedEventBus from './MockedEventBus';
+import { ABILITY_PHASE } from '@/../../backend/src/typings/Card';
 
-// DI
-require('./MockedEventBus');
+const store = createMockedStore({});
+MockedEventBus(store);
 
-const backendPlayer = new BackendPlayer();
-const playerState = {
-  player: backendPlayer.toSocket()
-};
+const state = new State([new Customer('MOCK_SOCKETID_1', { uid: 'MOCK_SOCKETID_1' })]);
 
-const store = createMockedStore(playerState);
-const actions = store.getActions();
-
-actions.app.setCountdown(150);
-console.log('store', store.getState());
-
-setTimeout(() => {
-  store.getActions().player.updatePlayer({
-    ...backendPlayer.toSocket(),
-    health: 25
-  });
-}, 2000);
 export default <ActiveGameTestingSuite />;
 
 function DebugControls() {
-  return (
+  return (<>
     <button
       onClick={() => {
-        backendPlayer.dealCards();
-
-        store.getActions().player.updatePlayer({
-          subtype: 'PLAYER_CARDS_DEALED',
-          ...backendPlayer.toSocket('PLAYER_CARDS_DEALED')
-        });
+        state.firstPlayer.dealCards();
+        state.secondPlayer.dealCards();
       }}
     >
       Deal cards
     </button>
+
+    <button
+    onClick={() => {
+      state.playCards(ABILITY_PHASE.INSTANT);
+    }}
+    >
+      Play cards
+    </button>
+    </>
   );
 }
 
