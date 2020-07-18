@@ -1,7 +1,7 @@
 .player {
   background: rgba(88, 247, 128, 0.212);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-height: @card-height;
   padding: rh(2) rh(4);
   width: 100%;
@@ -17,6 +17,8 @@
 
   &-hand {
     display: flex;
+    padding-left: rh(6);
+    width: 100%;
   }
 
   &-discard {
