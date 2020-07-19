@@ -10,6 +10,8 @@ import { EVENT_TYPE } from '../typings/EventBus';
 import { FirebaseUserUID } from '../utils/types';
 import { BattleBoard, UnitAction, BattleContext } from '../typings/Battle';
 
+const NETWORK_DELAY = 2000;
+
 export default class Battle extends EventBusUpdater {
   private startBoard: BoardMatrix;
   public winner = TEAM.NONE;
@@ -20,7 +22,7 @@ export default class Battle extends EventBusUpdater {
   private readonly targetPairPool: TargetPairPool;
   private currentTimestamp: number;
   private isOver = false;
-  private actionGeneratorInstance: Generator;
+  private actionGeneratorInstance: AsyncGenerator;
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
   constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<FirebaseUserUID>) {
@@ -69,7 +71,7 @@ export default class Battle extends EventBusUpdater {
   }
 
   get battleTime() {
-    return this.currentTimestamp;
+    return this.battleTimeEndTime + NETWORK_DELAY;
   }
 
   get context(): BattleContext {
@@ -110,7 +112,7 @@ export default class Battle extends EventBusUpdater {
     this.invalidate(); // emitting battle start event
   }
 
-  *generateActions() {
+  async *generateActions() {
     this.updateUnits(); // initial run, just in case there's no units
 
     while (this.actorQueue.length && this.currentTimestamp <= this.battleTimeEndTime) {

@@ -6,21 +6,20 @@ import Healthbar from './Player/Healthbar';
 import Gold from './Player/Gold';
 
 function Player() {
-  const player = useStoreState((state) => state.player);
-  const { hand, deckSize, discard } = player;
+  const opponent = useStoreState((state) => state.opponent);
 
   return (
-    <div className="player">
-      <Healthbar health={player.health} />
-      <Gold gold={player.gold}/>
+    <div className="player m-opponent">
+      <Healthbar health={opponent.health} />
+      <Gold gold={opponent.gold}/>
       <div className="player-deck">
-        <Deck size={deckSize} />
+        <Deck size={opponent.deckSize} />
       </div>
       <div className="player-hand">
-        <PlayerHand hand={hand} />
+        <PlayerHand hand={opponent.hand} />
       </div>
       <div className="player-discard">
-        <Deck cards={discard} />
+        <Deck cards={opponent.discard} />
       </div>
     </div>
   );

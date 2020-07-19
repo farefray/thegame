@@ -62,6 +62,12 @@ const playerModel: PlayerModel = {
   playCard: thunk(async (actions, cardAction: CardAction, { getState }) => {
     const { uuid } = getState();
 
+    if (cardAction.owner !== uuid) {
+      // opponent cards todo
+      return;
+    }
+
+    console.log("cardAction", cardAction)
     if (cardAction.monsterName) {
       // monster effect to board?
     } else {
@@ -72,10 +78,6 @@ const playerModel: PlayerModel = {
     if (cardAction.effects) {
       console.log("cardAction.effects", cardAction.effects)
       cardAction.effects.forEach(effect => {
-        if (cardAction.owner !== uuid) {
-          return;
-        }
-
         switch (effect.type) {
           case 'GOLD': {
             actions.changeGold(effect.payload);
@@ -83,7 +85,7 @@ const playerModel: PlayerModel = {
           }
 
           case 'DAMAGE': {
-            // todo
+
             break;
           }
 

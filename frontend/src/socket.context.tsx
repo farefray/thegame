@@ -57,10 +57,15 @@ export default ({ children }) => {
     storeActions.app.setNotification(notification);
   });
 
-  socket.on('START_BATTLE', ({ actionStack, startBoard, winner }) => {
+  socket.on('START_BATTLE', ({ actionStack, startBoard }) => {
     storeActions.gameboard.startBattle({
       actionStack, startBoard
     })
+  });
+
+  socket.on('END_BATTLE', () => {
+    storeActions.gameboard.endBattle();
+    storeActions.player.setBoard([]);
   });
 
   socket.on('TIMER_UPDATE', (countdown) => {
