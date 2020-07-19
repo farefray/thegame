@@ -6,6 +6,7 @@ export interface GameboardModel {
   startBoard: [];
 
   startBattle: Action<GameboardModel, any>;
+  endBattle: Action<GameboardModel>;
 }
 
 const gameboardModel: GameboardModel = {
@@ -18,6 +19,10 @@ const gameboardModel: GameboardModel = {
     state.actionStack = payload.actionStack;
     state.startBoard = payload.startBoard;
   }),
+
+  endBattle: action((state) => {
+    state.isActiveBattleGoing = false;
+  })
 
 };
 
