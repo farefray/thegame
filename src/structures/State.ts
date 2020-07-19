@@ -5,7 +5,7 @@ import Merchantry from './Merchantry';
 import { ABILITY_PHASE, CARD_TYPES, EFFECT_TYPE } from '../typings/Card';
 import { FirebaseUserUID } from '../utils/types';
 import { CardAction } from './Card/CardAction';
-import sleep, { asyncForEach, waitFor } from '../utils/sleep';
+import { asyncForEach, waitFor } from '../utils/sleep';
 
 export default class State {
   MAX_ROUND = 25;
@@ -52,10 +52,6 @@ export default class State {
           }
         }
       }
-
-      if (phase === ABILITY_PHASE.VICTORY) {
-        player.board.empty();
-      }
     });
 
     await asyncForEach(cardActions, async (cardAction) => {
@@ -63,7 +59,14 @@ export default class State {
       await waitFor(1000);
     });
 
-    // todo sync state after all cards are played, just to be sure that frontend is synced with per-card actions result
+
+    if (phase === ABILITY_PHASE.VICTORY) {
+      this.players.forEach((player) => {
+        player.board.empty();
+        // player.invalidate(); // this maybe needed to sync FE with BE, but would be just great to have it ommited
+      });
+    }
+
     return true;
   }
 
@@ -146,6 +149,10 @@ export default class State {
 
   getRound() {
     return this.round;
+  }
+
+  nextRound() {
+    this.round += 1;
   }
 
   get firstPlayer(): Player {
