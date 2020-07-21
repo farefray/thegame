@@ -174,7 +174,7 @@ class SocketService {
           }, []);
 
           // tslint:disable-next-line: no-unused-expression
-          new Game(customers[0], customers[1]);
+          new Game(customers[0], customers[1]).runRoundsFlow();
           return true;
         }
       });
@@ -192,7 +192,7 @@ class SocketService {
     }
 
     // tslint:disable-next-line: no-unused-expression
-    new Game(customer);
+    new Game(customer).runRoundsFlow();
     return true;
   };
 

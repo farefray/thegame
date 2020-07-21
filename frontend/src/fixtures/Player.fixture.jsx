@@ -2,14 +2,14 @@ import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { centered } from './utils';
 import Player from '@/App/ActiveGame/Player';
-import { store, state } from './emulateState';
+import { store, game } from './emulateState';
 
 export default (
   <StoreProvider store={store}>
     <button
       onClick={() => {
-        state.firstPlayer.dealCards();
-        state.secondPlayer.dealCards();
+        game.state.firstPlayer.dealCards();
+        game.state.secondPlayer.dealCards();
       }}
     >
       Deal cards

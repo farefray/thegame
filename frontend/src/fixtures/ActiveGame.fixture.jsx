@@ -3,18 +3,19 @@ import { StoreProvider } from 'easy-peasy';
 import { useValue } from 'react-cosmos/fixture';
 import ActiveGame from '@/App/ActiveGame';
 import { ABILITY_PHASE } from '@/../../backend/src/typings/Card';
-import { store, state } from './emulateState';
+import { store, game } from './emulateState';
 
 function DebugControls() {
   return (
     <div style={{
       position: 'absolute',
+      right: 0,
       color: '#000'
     }}>
       <button
         onClick={() => {
-          state.firstPlayer.dealCards();
-          state.secondPlayer.dealCards();
+          game.state.firstPlayer.dealCards();
+          game.state.secondPlayer.dealCards();
         }}
       >
         Deal cards
@@ -22,10 +23,40 @@ function DebugControls() {
 
       <button
         onClick={() => {
-          state.playCards(ABILITY_PHASE.INSTANT);
+          game.state.playCards(ABILITY_PHASE.INSTANT);
         }}
       >
         Play cards
+      </button>
+
+      <button
+        onClick={async () => {
+          const [hadBattle, winner] = await game.processBattle();
+
+          if (hadBattle) {
+            game.state.playCards(ABILITY_PHASE.VICTORY, winner);
+          }
+        }}
+      >
+        Battle
+      </button>
+
+      {/* <button
+        onClick={() => {
+          if (battleWinner) {
+            game.state.playCards(ABILITY_PHASE.VICTORY, battleWinner);
+          }
+        }}
+      >
+        Play victory cards
+      </button> */}
+
+      <button
+        onClick={() => {
+          game.state.nextRound();
+        }}
+      >
+        Next round
       </button>
     </div>
   );
