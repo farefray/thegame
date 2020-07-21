@@ -32,8 +32,8 @@ export class AIFlags {
 export default class AiPlayer extends Player {
   public AIFlags: AIFlags;
 
-  constructor(id: string) {
-    super(id);
+  constructor(id: string, subscribers) {
+    super(id, subscribers);
 
     this.AIFlags = new AIFlags();
   }

@@ -10,7 +10,6 @@ import BattleBoardWrapper from './ActiveGame/BattleBoardWrapper.jsx';
 import Merchantry from './ActiveGame/Merchantry.jsx';
 import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import Player from './ActiveGame/Player';
-import Opponent from './ActiveGame/Opponent';
 import Timer from './ActiveGame/Timer.jsx';
 
 function ActiveGame() {
@@ -21,7 +20,7 @@ function ActiveGame() {
   return (
     <Grid fluid>
       <Row>
-        <Opponent />
+        <Player isOpponent />
       </Row>
       <Row className="arena">
         <Col>

@@ -27,8 +27,8 @@ export default class Player extends EventBusUpdater {
   public deck = new Deck();
   public discard = new Deck();
 
-  constructor(id: FirebaseUserUID) {
-    super(EVENT_TYPE.PLAYER_UPDATE, [id]);
+  constructor(id: FirebaseUserUID, subscribers: Array<FirebaseUserUID>) {
+    super(EVENT_TYPE.PLAYER_UPDATE, subscribers);
 
     // fill starting deck
     const cardsFactory = new CardsFactory();
@@ -54,8 +54,6 @@ export default class Player extends EventBusUpdater {
       const position = unit.getPreferablePosition(this.board.freeSpots());
       unit.rearrangeToPos(position);
       this.board.setCell(position.x, position.y, unit);
-
-      this.invalidate(EVENT_SUBTYPE.PLAYER_CARD_TO_BOARD);
     }
   }
 
@@ -67,25 +65,23 @@ export default class Player extends EventBusUpdater {
   public addToDiscard(card: Card) {
     this.discard.push(card);
 
-    this.invalidate();
+    this.invalidate(EVENT_SUBTYPE.PLAYER_CARDS_UPDATED);
   }
 
   public dealCards() {
     while (this.hand.size < HAND_SIZE && (!this.deck.isEmpty() || this.discard.size > 0)) {
       if (!this.deck.isEmpty()) {
-        this.addCartToHand(this.deck.eject(0));
+        const card = this.deck.eject(0);
+        this.hand.push(card);
       } else if (this.discard.size > 0) {
         this.deck.pushAll(this.discard.values()).shuffle();
         this.discard.clean();
       }
     }
 
-    this.invalidate(EVENT_SUBTYPE.PLAYER_CARDS_DEALED);
+    this.invalidate(EVENT_SUBTYPE.PLAYER_CARDS_UPDATED);
   }
 
-  private addCartToHand(card) {
-    this.hand.push(card);
-  }
 
   /////// OLD
 
@@ -147,25 +143,23 @@ export default class Player extends EventBusUpdater {
     */
   }
 
-  toSocket(eventSubtype = '') {
-    switch (eventSubtype) {
-      case EVENT_SUBTYPE.PLAYER_CARD_TO_BOARD: {
-        return {
-          board: this.board.toSocket()
-        };
-      }
+  toSocket(eventSubtype?) {
+    let invalidatedObject = {};
 
-      case EVENT_SUBTYPE.PLAYER_CARDS_DEALED: {
-        return {
+    switch (eventSubtype) {
+      case EVENT_SUBTYPE.PLAYER_CARDS_UPDATED: {
+        invalidatedObject = {
           hand: this.hand.toSocket(),
           deckSize: this.deck.size,
           discard: this.discard.toSocket()
         };
+
+        break;
       }
 
+      case EVENT_SUBTYPE.PLAYER_SYNC:
       default: {
-        return {
-          uuid: this.userUID,
+        invalidatedObject = {
           health: this.health,
           gold: this.gold,
           board: this.board.toSocket(),
@@ -173,7 +167,12 @@ export default class Player extends EventBusUpdater {
           deckSize: this.deck.size,
           discard: this.discard.toSocket()
         };
+
+        break;
       }
     }
+
+
+    return {...invalidatedObject, ...{ uuid: this.userUID }}
   }
 }

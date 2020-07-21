@@ -1,26 +1,9 @@
 import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { useValue } from 'react-cosmos/fixture';
-
-import { createMockedStore } from './MockedStore';
 import ActiveGame from '@/App/ActiveGame';
-
-// Backend stuff for testing
-import State from '@/../../backend/src/structures/State';
-import Customer from '@/../../backend/src/models/Customer';
-import MockedEventBus, { MOCKED_CUSTOMER_UID } from './MockedEventBus';
 import { ABILITY_PHASE } from '@/../../backend/src/typings/Card';
-
-const store = createMockedStore({
-  player: {
-    uuid: MOCKED_CUSTOMER_UID
-  }
-});
-
-MockedEventBus(store);
-
-const state = new State([new Customer(MOCKED_CUSTOMER_UID, { uid: MOCKED_CUSTOMER_UID })]);
-
+import { store, state } from './emulateState';
 
 function DebugControls() {
   return (
