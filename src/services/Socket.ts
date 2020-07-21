@@ -8,6 +8,7 @@ import ConnectedPlayers from './ConnectedPlayers';
 import { SocketID } from '../utils/types';
 import Customer from '../models/Customer';
 import Game from '../models/Game';
+import { EVENT_SUBTYPE } from '../typings/EventBus';
 // const admin = require('firebase-admin')
 
 // // Initialize Firebase
@@ -123,7 +124,7 @@ class SocketService {
     if (loginResults && loginResults.session) {
       // restore player session
       const { customer, session } = loginResults;
-      session.getState().getPlayer(customer.ID)?.invalidate(); // mark player as 'update needed'
+      session.getState().getPlayer(customer.ID)?.invalidate(EVENT_SUBTYPE.PLAYER_SYNC); // mark player as 'update needed'
 
       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
       // const eventBus:EventBus = Container.get('event.bus');
@@ -135,9 +136,7 @@ class SocketService {
     return true;
   };
 
-  CUSTOMER_LOGOUT = () => {
-    return true;
-  };
+  CUSTOMER_LOGOUT = () => true;
 
   /** Methods which are responsible for socket events handling. Function name = Event name */
   PLAYER_READY = () => {

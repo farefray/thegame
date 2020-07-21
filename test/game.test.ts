@@ -69,7 +69,7 @@ class GameTestSuite {
 
   @test
   canBuildMerchantry() {
-    const merchantry = new Merchantry(new Map(CUSTOMERS.map(customer => [customer.ID, new Player(customer.ID)])).values());
+    const merchantry = new Merchantry(new Map(CUSTOMERS.map(customer => [customer.ID, new Player(customer.ID, [customer.ID])])).values());
     expect(merchantry).to.be.a('object');
     expect(merchantry).to.be.an.instanceof(Merchantry);
     expect(merchantry).to.have.property('deck');

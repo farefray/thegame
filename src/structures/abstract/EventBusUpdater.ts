@@ -8,8 +8,6 @@ import { FirebaseUserUID } from '../../utils/types';
  * Abstract class which represents some data structure which sometimes need to be synchronized with frontend, by delivering its short representation via socket.
  */
 export abstract class EventBusUpdater {
-  /** if structure is dirty and need to be synced with subscribers */
-  private _invalidated = false;
   /** list of players who are supposed to receive updates for this structure, same this can be used to determine customers invlolved into current instance */
   protected subscribers: Array<FirebaseUserUID>;
   /** message type which will be dispatched to frontend */
@@ -20,16 +18,10 @@ export abstract class EventBusUpdater {
     this.subscribers = subscribers;
   }
 
-  isSynced() {
-    return !this._invalidated;
-  }
-
   /**
    * Emitting event to update this player via socket
    */
   public invalidate(eventSubtype?: EVENT_SUBTYPE) {
-    this._invalidated = false;
-
     const eventBus: EventBus = Container.get('event.bus');
     this.subscribers.forEach(recipient => {
       eventBus.emitMessage(this.messageType, recipient, {

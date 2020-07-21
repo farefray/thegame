@@ -34,6 +34,8 @@ export default class Game {
   private notifyGameIsLive() {
     const eventBus:EventBus = Container.get('event.bus');
     this.players.forEach(player => {
+      // informs that game is live and setting UID for player frontend,
+      // so frontend app will know player uid / opponent
       eventBus.emitMessage(EVENT_TYPE.GAME_IS_LIVE, player.getUID(), player.getUID());
     });
   }

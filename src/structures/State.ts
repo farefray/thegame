@@ -15,17 +15,22 @@ export default class State {
   private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
-    // this.subscribers = customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
-    //   recipients.push(customer.ID);
-    //   return recipients;
-    // }, []);
+    const subscribers = customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
+      recipients.push(customer.ID);
+      return recipients;
+    }, []);
 
     this.round = 1;
 
-    this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID)]));
+    this.players = new Map(customers.map(
+      (customer) => [
+        customer.ID,
+        new Player(customer.ID, subscribers)
+      ]
+    ));
 
     if (this.players.size === 1) {
-      this.players.set('ai_player', new AiPlayer('ai_player'));
+      this.players.set('ai_player', new AiPlayer('ai_player', subscribers));
     }
 
     this.merchantry = new Merchantry(this.players.values());
