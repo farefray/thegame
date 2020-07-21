@@ -14,6 +14,9 @@ function Deck({size, cards}: {size?, cards?}) {
 
   return <div className="deck">
     {DeckSpring(cards)}
+    <div className="deck-size">
+      {cards.length}
+    </div>
   </div>
 }
 

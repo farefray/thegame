@@ -1,7 +1,12 @@
+/**
+ * Socket costumer on frontend. Receives all the socket events and sends further for execution.
+ * Uses react context to pass socket thru our app, so any component can dispatch events to backend socket
+ */
 import React, { createContext } from 'react';
 import { auth } from '@/firebase';
 import { useStoreActions } from './store/hooks';
 import socket, { emitMessage } from '@/socket';
+import SocketHandler from './SocketHandler';
 
 const WebSocketContext = createContext(null);
 
@@ -12,6 +17,7 @@ export default ({ children }) => {
   let ws;
 
   const storeActions = useStoreActions(actions => actions);
+  const socketHandler = new SocketHandler(storeActions);
 
   console.log('Socket events seems will be initialized now')
   // socket listeners
@@ -35,43 +41,21 @@ export default ({ children }) => {
     console.log('disconnected');
   });
 
-  socket.on('GAME_IS_LIVE', (playerUUID) => {
-    storeActions.app.setGameLive(true);
-    storeActions.player.setUUID(playerUUID);
-  });
+  socket.on('GAME_IS_LIVE', (playerUUID) => socketHandler.handle('GAME_IS_LIVE', playerUUID));
 
-  socket.on('CARD_PLAY', (cardAction) => {
-    console.log('SOCKET PLAY CARD');
-    storeActions.player.playCard(cardAction);
-  });
+  socket.on('CARD_PLAY', (cardAction) => socketHandler.handle('CARD_PLAY', cardAction));
 
-  socket.on('UPDATE_PLAYER', (player) => {
-    storeActions.player.updatePlayer(player);
-  });
+  socket.on('PLAYER_UPDATE', (player) => socketHandler.handle('PLAYER_UPDATE', player));
 
-  socket.on('MERCHANTRY_UPDATE', (merchantry) => {
-    storeActions.merchantry.revealCards(merchantry)
-  });
+  socket.on('MERCHANTRY_UPDATE', (merchantry) => socketHandler.handle('MERCHANTRY_UPDATE', merchantry));
 
-  socket.on('NOTIFICATION', (notification) => {
-    storeActions.app.setNotification(notification);
-  });
+  socket.on('NOTIFICATION', (notification) => socketHandler.handle('NOTIFICATION', notification));
 
-  socket.on('START_BATTLE', ({ actionStack, startBoard }) => {
-    storeActions.gameboard.startBattle({
-      actionStack, startBoard
-    })
-  });
+  socket.on('START_BATTLE', (battle) => socketHandler.handle('START_BATTLE', battle));
 
-  socket.on('END_BATTLE', () => {
-    storeActions.gameboard.endBattle();
-    storeActions.player.setBoard([]);
-  });
+  socket.on('END_BATTLE', () => socketHandler.handle('END_BATTLE'));
 
-  socket.on('TIMER_UPDATE', (countdown) => {
-    storeActions.app.setCountdown(0); // to re-init components
-    storeActions.app.setCountdown(countdown);
-  });
+  socket.on('TIMER_UPDATE', (countdown) => socketHandler.handle('TIMER_UPDATE', countdown));
 
   socket.on('END_GAME', (winningPlayer) => {
     //dispatch({ type: 'END_GAME', winningPlayer });

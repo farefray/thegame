@@ -1,13 +1,17 @@
 .deck {
-  position: absolute;
+  align-items: center;
+  display: flex;
   height: @card-height;
+  justify-content: center;
+  position: absolute;
   width: @card-width;
   will-change: transform;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
   > div {
     position: absolute;
+  }
+
+  &-size {
+    z-index: 10;
   }
 }

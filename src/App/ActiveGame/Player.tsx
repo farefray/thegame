@@ -5,22 +5,22 @@ import PlayerHand from './Player/PlayerHand';
 import Healthbar from './Player/Healthbar';
 import Gold from './Player/Gold';
 
-function Player() {
-  const player = useStoreState((state) => state.player);
-  const { hand, deckSize, discard } = player;
-
+function Player({ isOpponent }) {
+  const currentPlayer = useStoreState((state) => state.players.currentPlayer);
+  const opponent = useStoreState((state) => state.players.opponent);
+  const player = isOpponent ? opponent : currentPlayer;
   return (
-    <div className="player">
+    <div className={"player " + (isOpponent ? 'm-opponent' : '')}>
       <Healthbar health={player.health} />
       <Gold gold={player.gold}/>
       <div className="player-deck">
-        <Deck size={deckSize} />
+        <Deck size={player.deckSize} />
       </div>
       <div className="player-hand">
-        <PlayerHand hand={hand} />
+        <PlayerHand hand={player.hand} />
       </div>
       <div className="player-discard">
-        <Deck cards={discard} />
+        <Deck cards={player.discard} />
       </div>
     </div>
   );

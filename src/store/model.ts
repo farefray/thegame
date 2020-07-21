@@ -1,9 +1,9 @@
 import appModel, { AppModel } from './models/app';
-import playerModel, { PlayerModel } from './models/player';
+import playersModel, { PlayersModel } from './models/players';
 import gameboardModel, { GameboardModel } from './models/gameboard';
 import customerModel, { CustomerModel } from './models/customer';
 import merchantryModel, { MerchantryModel } from './models/merchantry';
-import opponentModel, { OpponentModel } from './models/opponent';
+// import opponentModel, { OpponentModel } from './models/opponent';
 
 // The interface representing our entire store model
 export interface StoreModel {
@@ -11,8 +11,7 @@ export interface StoreModel {
   customer: CustomerModel
   gameboard: GameboardModel
   merchantry: MerchantryModel
-  player: PlayerModel
-  opponent: OpponentModel
+  players: PlayersModel
 }
 
 const storeModel: StoreModel = {
@@ -20,8 +19,7 @@ const storeModel: StoreModel = {
   customer: customerModel,
   gameboard: gameboardModel,
   merchantry: merchantryModel,
-  player: playerModel,
-  opponent: opponentModel
+  players: playersModel,
 }
 
 export default storeModel;

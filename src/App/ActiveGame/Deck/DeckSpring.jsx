@@ -56,7 +56,7 @@ function DeckSpring(cards) {
 
   return springs.map(({ x, y, rot, scale, op }, i) => (
     <animated.div key={cardsRef.current[i].uuid || i} style={{
-      transform: interpolate([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`)
+      transform: interpolate([x, y], (x, y) => `translate3d(${x}px, ${y}px, 0 ) `)
     }}>
       <animated.div style={{
         transform: interpolate([rot, scale], trans),
