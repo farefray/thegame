@@ -161,7 +161,7 @@ const playersModel: PlayersModel = {
 
           case 'DAMAGE': {
             actions.changeHealth({
-              payload: effect.payload,
+              payload: -effect.payload,
               isSelf: !isSelf
             });
 

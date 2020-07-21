@@ -6,6 +6,7 @@ import { ABILITY_PHASE } from '@/../../backend/src/typings/Card';
 import { store, game } from './emulateState';
 
 function DebugControls() {
+  let battleWinner;
   return (
     <div style={{
       position: 'absolute',
@@ -32,24 +33,25 @@ function DebugControls() {
       <button
         onClick={async () => {
           const [hadBattle, winner] = await game.processBattle();
+          console.log("DebugControls -> hadBattle, winner", hadBattle, winner)
 
-          if (hadBattle) {
-            game.state.playCards(ABILITY_PHASE.VICTORY, winner);
-          }
+          battleWinner = winner;
         }}
       >
         Battle
       </button>
 
-      {/* <button
+      <button
         onClick={() => {
           if (battleWinner) {
             game.state.playCards(ABILITY_PHASE.VICTORY, battleWinner);
+          } else {
+            alert('No wiiner, no battle')
           }
         }}
       >
         Play victory cards
-      </button> */}
+      </button>
 
       <button
         onClick={() => {

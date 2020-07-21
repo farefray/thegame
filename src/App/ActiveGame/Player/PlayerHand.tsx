@@ -11,8 +11,6 @@ function PlayerHand({ hand = [] }: { hand: Card[] }) {
       handsRef.current = [...hand];
     }
 
-    console.log('PlayerHand -> hand', hand);
-    console.log('PlayerHand -> handsRef', handsRef.current);
   }, [hand]);
 
   return (
