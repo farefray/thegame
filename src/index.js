@@ -8,7 +8,6 @@ import store from './store';
 import { StoreProvider } from 'easy-peasy';
 import WebSocketProvider from './socket.context';
 
-
 // react-helmet use here?
 ReactDOM.render(
   <StoreProvider store={store}>

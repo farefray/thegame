@@ -2,8 +2,8 @@
 import { createMockedStore } from './MockedStore';
 
 // Backend stuff for testing
-import State from '@/../../backend/src/structures/State';
 import Customer from '@/../../backend/src/models/Customer';
+import Game from '@/../../backend/src/models/Game';
 import MockedEventBus, { MOCKED_CUSTOMER_UID } from './MockedEventBus';
 
 export const store = createMockedStore({
@@ -14,4 +14,4 @@ export const store = createMockedStore({
 
 MockedEventBus(store);
 
-export const state = new State([new Customer(MOCKED_CUSTOMER_UID, { uid: MOCKED_CUSTOMER_UID })]);
+export const game = new Game(new Customer(MOCKED_CUSTOMER_UID, { uid: MOCKED_CUSTOMER_UID }));
