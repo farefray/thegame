@@ -70,7 +70,6 @@ export default class Game {
 
       const battle = new Battle(battleBoards);
       await battle.proceedBattle();
-      console.log("Game -> processBattle -> battle", battle)
 
       await this.countdown(battle.battleTime);
 

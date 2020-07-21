@@ -1,4 +1,4 @@
-59 search results found
+58 search results found
 
 file:///d:\thegame\backend\src\factories\CardsFactory.ts
   12:     // TODO[phase3]: Player personal cards can be shuffled into deck
@@ -118,8 +118,7 @@ file:///d:\thegame\frontend\src\objects\Unit.tsx
   364:       'm-in-battle': false // todo
 
 file:///d:\thegame\frontend\src\socket.context.tsx
-  15: // todo consider using https://github.com/itaylor/redux-socket.io
-  37:   // TODO
+  36:   // TODO
 
 file:///d:\thegame\frontend\src\socket.ts
   5: // todo test if we use longpolling or sockets?

@@ -2,8 +2,10 @@
  * Class handling the socket emitted events from backend.
  * Made in order to have store actions in some abstract class which can be also used for testing purpouses without the real socket connection and actually take some business logic from our dispatched store
  */
+import { typedHooks } from '@/store/hooks';
+
 export default class SocketHandler {
-  private storeActions;
+  private storeActions: typedHooks.useStoreActions;
 
   constructor(storeActions) {
     console.log('SocketHandler constructed');

@@ -7,7 +7,7 @@ import BoardMatrix from './Battle/BoardMatrix';
 import BattleUnitList from './Battle/BattleUnitList';
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENT_TYPE } from '../typings/EventBus';
-import { FirebaseUserUID } from '../utils/types';
+import { UserUID } from '../utils/types';
 import { BattleBoard, UnitAction, BattleContext } from '../typings/Battle';
 
 const NETWORK_DELAY = 2000;
@@ -25,8 +25,8 @@ export default class Battle extends EventBusUpdater {
   private actionGeneratorInstance: AsyncGenerator;
   private battleTimeEndTime = 300 * 1000; // timeout for battle to be finished
 
-  constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<FirebaseUserUID>) {
-    super(EVENT_TYPE.START_BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<FirebaseUserUID>, battleBoard) => {
+  constructor(unitBoards: Array<BattleBoard>, subscribers?: Array<UserUID>) {
+    super(EVENT_TYPE.START_BATTLE, subscribers ? subscribers : unitBoards.reduce((subs: Array<UserUID>, battleBoard) => {
       subs.push(battleBoard.owner);
       return subs;
     }, []));

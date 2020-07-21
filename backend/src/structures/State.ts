@@ -3,7 +3,7 @@ import AiPlayer from './AiPlayer';
 import Customer from '../models/Customer';
 import Merchantry from './Merchantry';
 import { ABILITY_PHASE, CARD_TYPES, EFFECT_TYPE } from '../typings/Card';
-import { FirebaseUserUID } from '../utils/types';
+import { UserUID } from '../utils/types';
 import { CardAction } from './Card/CardAction';
 import { asyncForEach, waitFor } from '../utils/async';
 
@@ -11,11 +11,11 @@ export default class State {
   MAX_ROUND = 25;
 
   private round: number = 1;
-  private players: Map<FirebaseUserUID, Player>;
+  private players: Map<UserUID, Player>;
   private merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
-    const subscribers = customers.reduce((recipients: Array<FirebaseUserUID>, customer) => {
+    const subscribers = customers.reduce((recipients: Array<UserUID>, customer) => {
       recipients.push(customer.ID);
       return recipients;
     }, []);
@@ -40,22 +40,14 @@ export default class State {
     return this.merchantry;
   }
 
-  async playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: FirebaseUserUID) {
+  async playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: UserUID) {
     const cardActions: CardAction[] = [];
     this.players.forEach((player) => {
       const opponent = this.getPlayersArray().filter((p) => p.getUID() !== player.getUID())[0];
 
       const cards = [...player.hand.values()];
-      if (
-        phase !== ABILITY_PHASE.VICTORY || // initial phase cards played for both players
-        player.getUID() === victoryUserUID // victory phase is played only for battle winner
-      ) {
-        for (const card of cards) {
-          const cardAction = card.getCardAction(player, opponent, phase);
-          if (cardAction) {
-            cardActions.push(cardAction);
-          }
-        }
+      for (const card of cards) {
+        cardActions.push(card.getCardAction(player, opponent, phase, victoryUserUID));
       }
     });
 
@@ -66,7 +58,7 @@ export default class State {
 
     if (phase === ABILITY_PHASE.VICTORY) {
       this.players.forEach((player) => {
-        player.board.empty();
+        player.board.empty(); // we actually dont need board. Only battle board matters.
         // player.invalidate(); // this maybe needed to sync FE with BE, but would be just great to have it ommited
       });
     }
@@ -80,7 +72,11 @@ export default class State {
    */
   executeCardAction(cardAction: CardAction, phase) {
     const owner = this.getPlayer(cardAction.owner);
-    if (owner) {
+    if (!owner) {
+      throw new Error('Trying to execute card without owner');
+    }
+
+    if (cardAction.effects.length) {
       cardAction.effects.forEach((effect) => {
         switch (effect.type) {
           case EFFECT_TYPE.GOLD: {
@@ -107,12 +103,12 @@ export default class State {
           default: {}
         }
       });
+    }
 
-      if (phase === ABILITY_PHASE.INSTANT && cardAction.type === CARD_TYPES.CARD_MONSTER) {
-        owner.addToBoard(cardAction);
-      } else {
-        owner.moveToDiscard(cardAction);
-      }
+    if (phase === ABILITY_PHASE.INSTANT && cardAction.type === CARD_TYPES.CARD_MONSTER) {
+      owner.addToBoard(cardAction);
+    } else {
+      owner.moveToDiscard(cardAction);
     }
 
     cardAction.invalidate();
@@ -131,7 +127,7 @@ export default class State {
     return this.players.get(playerUID);
   }
 
-  purchaseCard(playerUID: FirebaseUserUID, cardIndex: number) {
+  purchaseCard(playerUID: UserUID, cardIndex: number) {
     /**
      * TODO Phase2, auction for cards?
      */

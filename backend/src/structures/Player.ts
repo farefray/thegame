@@ -8,7 +8,7 @@ import Deck from './Card/Deck';
 import Card from './Card';
 import CardsFactory from '../factories/CardsFactory';
 import MonstersFactory from '../factories/MonstersFactory';
-import { FirebaseUserUID } from '../utils/types';
+import { UserUID } from '../utils/types';
 import { CardAction } from './Card/CardAction';
 
 const BASE_DECK_CONFIG = ['Dwarf', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
@@ -17,7 +17,7 @@ const HAND_SIZE = 5;
 export const BOARD_UNITS_LIMIT = 8;
 
 export default class Player extends EventBusUpdater {
-  public userUID: FirebaseUserUID;
+  public userUID: UserUID;
   public health: number = 50;
   public exp: number = 0;
   public gold: number = 0;
@@ -27,7 +27,7 @@ export default class Player extends EventBusUpdater {
   public deck = new Deck();
   public discard = new Deck();
 
-  constructor(id: FirebaseUserUID, subscribers: Array<FirebaseUserUID>) {
+  constructor(id: UserUID, subscribers: Array<UserUID>) {
     super(EVENT_TYPE.PLAYER_UPDATE, subscribers);
 
     // fill starting deck
