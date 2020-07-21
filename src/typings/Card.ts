@@ -1,4 +1,4 @@
-import { FirebaseUserUID } from "../utils/types";
+import { UserUID } from "../utils/types";
 
 export interface CardConfig {
   cost: number,
@@ -39,6 +39,7 @@ export interface CardEffect {
 export interface ICardAction {
   uuid: string,
   type: CARD_TYPES,
-  owner: FirebaseUserUID,
+  owner: UserUID,
   effects: CardEffect[],
+  monsterName?: string
 }

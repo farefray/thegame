@@ -1,11 +1,11 @@
-import { SocketID, SessionID, FirebaseUserUID, FirebaseUser } from "../utils/types";
+import { SocketID, SessionID, UserUID, FirebaseUser } from "../utils/types";
 import SessionsService from "../services/Sessions";
 
 /**
  * Represents logged in customer with attached firebase user uid
  */
 export default class Customer {
-  private userUID: FirebaseUserUID;
+  private userUID: UserUID;
   public socketID: SocketID;
   public sessionID: SessionID | null;
   // public isReady: boolean;

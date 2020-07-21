@@ -3,28 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { CardConfig, CARD_TYPES, ABILITY_PHASE, EFFECT_TYPE } from '../typings/Card';
 import Player from './Player';
 import { CardAction } from './Card/CardAction';
+import { UserUID } from '../utils/types';
 
-
-const animateCardAction = (cardAction, index?) => (i) => {
-  const cardWidth = 32 * 4;
-  if (!cardAction) {
-    return {
-      x: 0,
-      y: 0,
-      scale: 1,
-      op: 1,
-      delay: 50 + i * 100,
-      from: {
-        x: -cardWidth * i,
-        y: 0,
-        scale: 1,
-        op: 0
-      }
-    };
-  }
-
-  return index === i ? { x:0, y: -(i * 100), scale: 1.25, op: 0 } : { x:0, y: 0, scale: 1, op: 1 };
-};
 export default class Card {
   private _uuid = uuidv4();
   private name: string;
@@ -61,19 +41,19 @@ export default class Card {
     return this._uuid;
   }
 
-  public getCardAction(player: Player, opponent: Player, phase: ABILITY_PHASE) {
-    const abilities = phase === ABILITY_PHASE.INSTANT ? this.config.instant : this.config.victory;
+  public getCardAction(player: Player, opponent: Player, phase: ABILITY_PHASE, victoryUserUID?: UserUID) {
+    const abilities = (
+      phase === ABILITY_PHASE.INSTANT ? this.config.instant : // initial phase cards played for both players
+        (player.getUID() === victoryUserUID ? this.config.victory : null) // victory phase is played only for battle winner
+    );
 
     const cardAction = new CardAction({
       uuid: this.uuid,
       type: this.type,
       owner: player.getUID(),
-      effects: []
+      effects: [],
+      monsterName: this.monster?.name
     }, [player.getUID(), opponent.getUID()]);
-
-    if (this.type === CARD_TYPES.CARD_MONSTER) {
-      cardAction.monsterName = this.monster?.name;
-    }
 
     if (!abilities) {
       return cardAction;
@@ -105,7 +85,7 @@ export default class Card {
         case 'damage': {
           cardAction.effects.push({
             type: EFFECT_TYPE.DAMAGE,
-            payload: value
+            payload: -value
           })
 
           break;
