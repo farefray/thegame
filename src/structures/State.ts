@@ -5,7 +5,7 @@ import Merchantry from './Merchantry';
 import { ABILITY_PHASE, CARD_TYPES, EFFECT_TYPE } from '../typings/Card';
 import { FirebaseUserUID } from '../utils/types';
 import { CardAction } from './Card/CardAction';
-import { asyncForEach, waitFor } from '../utils/sleep';
+import { asyncForEach, waitFor } from '../utils/async';
 
 export default class State {
   MAX_ROUND = 25;
@@ -63,7 +63,6 @@ export default class State {
       this.executeCardAction(cardAction, phase)
       await waitFor(1000);
     });
-
 
     if (phase === ABILITY_PHASE.VICTORY) {
       this.players.forEach((player) => {

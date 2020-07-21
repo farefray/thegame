@@ -6,7 +6,7 @@ import { ABILITY_PHASE } from '../typings/Card';
 import Battle from '../structures/Battle';
 import State from '../structures/State';
 import Player from '../structures/Player';
-import sleep from '../utils/sleep';
+import { waitFor } from '../utils/async';
 import { EVENT_TYPE } from '../typings/EventBus';
 import { BattleBoard } from '../typings/Battle';
 
@@ -28,7 +28,6 @@ export default class Game {
     this.players = [this.state.firstPlayer, this.state.secondPlayer];
 
     this.notifyGameIsLive();
-    this.roundsFlow();
   }
 
   private notifyGameIsLive() {
@@ -46,7 +45,7 @@ export default class Game {
       eventBus.emitMessage(EVENT_TYPE.TIMER_UPDATE, player.getUID(), Math.round(duration / 1000));
     });
 
-    await sleep(duration);
+    await waitFor(duration);
   }
 
   notifyBattleEnded() {
@@ -71,6 +70,7 @@ export default class Game {
 
       const battle = new Battle(battleBoards);
       await battle.proceedBattle();
+      console.log("Game -> processBattle -> battle", battle)
 
       await this.countdown(battle.battleTime);
 
@@ -82,7 +82,7 @@ export default class Game {
     return [false, ];
   }
 
-  async roundsFlow() {
+  async runRoundsFlow() {
     await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
 
     while (this.state.getRound() < this.state.MAX_ROUND) {
