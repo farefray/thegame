@@ -138,7 +138,7 @@ const playersModel: PlayersModel = {
 
     if (cardAction.monsterName && cardAction.phase !== ABILITY_PHASE.VICTORY) {
       // todo monster effect to board?
-    } else {
+    } else if (cardAction.isDone) {
       actions.handCardToDiscard({
         payload: cardAction.uuid,
         isSelf
