@@ -11,6 +11,7 @@ export class CardAction extends EventBusUpdater {
   public effects: CardEffect[];
   public monsterName?: string;
   public phase: ABILITY_PHASE;
+  public isDone: boolean;
 
   constructor(config: ICardAction, subscribers) {
     super(EVENT_TYPE.CARD_PLAY, subscribers);
@@ -21,6 +22,7 @@ export class CardAction extends EventBusUpdater {
     this.effects = config.effects;
     this.phase = config.phase;
     this.monsterName = config.monsterName;
+    this.isDone = config.isDone;
   }
 
   toSocket() {

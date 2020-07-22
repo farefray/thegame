@@ -42,7 +42,7 @@ export default class Card {
   }
 
   public getCardAction(player: Player, opponent: Player, phase: ABILITY_PHASE, victoryUserUID?: UserUID) {
-    const abilities = (
+    const activeEffects = (
       phase === ABILITY_PHASE.INSTANT ? this.config.instant : // initial phase cards played for both players
         (player.getUID() === victoryUserUID ? this.config.victory : null) // victory phase is played only for battle winner
     );
@@ -53,16 +53,17 @@ export default class Card {
       owner: player.getUID(),
       effects: [],
       monsterName: this.monster?.name,
-      phase
+      phase,
+      isDone: phase === ABILITY_PHASE.VICTORY || !this.config.victory
     }, [player.getUID(), opponent.getUID()]);
 
-    if (!abilities) {
+    if (!activeEffects) {
       return cardAction;
     }
 
     // todo some factory ?
-    Object.keys(abilities).forEach((ability) => {
-      const value = abilities[ability];
+    Object.keys(activeEffects).forEach((ability) => {
+      const value = activeEffects[ability];
 
       switch (ability) {
         case 'gold': {

@@ -30,7 +30,7 @@ export default class State {
     ));
 
     if (this.players.size === 1) {
-      this.players.set('ai_player', new AiPlayer('ai_player', subscribers));
+      this.players.set('ai_player', new AiPlayer('ai_player', subscribers)); // TODO send AI state to player on game start
     }
 
     this.merchantry = new Merchantry(this.players.values());
@@ -109,7 +109,7 @@ export default class State {
 
     if (phase === ABILITY_PHASE.INSTANT && cardAction.type === CARD_TYPES.CARD_MONSTER) {
       owner.addToBoard(cardAction);
-    } else {
+    } else if (cardAction.isDone) {
       owner.moveToDiscard(cardAction);
     }
 

@@ -15,13 +15,14 @@ export enum ABILITY_PHASE {
 }
 
 export interface CardAction {
-  uuid: string;
-  monsterName?: string;
-  effects: Array<CardEffect>;
-  owner: string;
+  uuid: string
+  monsterName?: string
+  effects: Array<CardEffect>
+  owner: string
   phase: ABILITY_PHASE
+  isDone: boolean
 }
 
 export interface Card {
-  uuid: string;
+  uuid: string
 }
