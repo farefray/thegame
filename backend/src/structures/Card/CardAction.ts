@@ -1,5 +1,5 @@
 import { EventBusUpdater } from "../abstract/EventBusUpdater";
-import { CARD_TYPES, CardEffect, ICardAction } from "../../typings/Card";
+import { CARD_TYPES, CardEffect, ICardAction, ABILITY_PHASE } from "../../typings/Card";
 import { UserUID } from "../../utils/types";
 import { EVENT_TYPE } from "../../typings/EventBus";
 
@@ -10,6 +10,7 @@ export class CardAction extends EventBusUpdater {
   public owner: UserUID;
   public effects: CardEffect[];
   public monsterName?: string;
+  public phase: ABILITY_PHASE;
 
   constructor(config: ICardAction, subscribers) {
     super(EVENT_TYPE.CARD_PLAY, subscribers);
@@ -18,6 +19,7 @@ export class CardAction extends EventBusUpdater {
     this.type = config.type;
     this.owner = config.owner;
     this.effects = config.effects;
+    this.phase = config.phase;
     this.monsterName = config.monsterName;
   }
 

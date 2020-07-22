@@ -58,18 +58,18 @@ file:///d:\thegame\backend\src\structures\Battle\Pathfinder.ts
   205:     // todo make this human readable
 
 file:///d:\thegame\backend\src\structures\Card.ts
-  82:     // todo some factory ?
+  63:     // todo some factory ?
 
 file:///d:\thegame\backend\src\structures\Card\CardAction.ts
-  24:     return this; // todo remove not nessesary stuff
+  27:     return this; // todo remove not nessesary stuff
 
 file:///d:\thegame\backend\src\structures\Player.ts
   118:         // Todo check if this will be covered for leveled up units
   129:       // TODO: Inform Client about update
 
 file:///d:\thegame\backend\src\structures\State.ts
-  122:     // todo
-  142:         //  todo new AppError('warning', 'Not enough money');
+  118:     // todo
+  138:         //  todo new AppError('warning', 'Not enough money');
 
 file:///d:\thegame\backend\src\typings\Monster.ts
   10:     regen?: number, // TODO if we need this
@@ -80,7 +80,7 @@ file:///d:\thegame\backend\src\utils\effects.ts
 file:///d:\thegame\frontend\src\App.jsx
   22:     // TODO need to check if user is logged in and trigger thunk only if auth really changed
 
-file:///d:\thegame\frontend\src\App\ActiveGame\Deck\Card.jsx
+file:///d:\thegame\frontend\src\App\ActiveGame\Deck\Card.tsx
   3: // import CardSpring from './CardSpring'; // todo
 
 file:///d:\thegame\frontend\src\App\ActiveGame\timeouts_test.js
@@ -118,10 +118,10 @@ file:///d:\thegame\frontend\src\objects\Unit.tsx
   364:       'm-in-battle': false // todo
 
 file:///d:\thegame\frontend\src\socket.context.tsx
-  36:   // TODO
+  37:   // TODO
 
 file:///d:\thegame\frontend\src\socket.ts
   5: // todo test if we use longpolling or sockets?
 
 file:///d:\thegame\frontend\src\store\models\players.ts
-  141:       // todo if victory, then discard
+  140:       // todo monster effect to board?

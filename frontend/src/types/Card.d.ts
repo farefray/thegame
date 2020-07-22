@@ -9,11 +9,17 @@ export interface CardEffect {
   payload: any
 }
 
+export enum ABILITY_PHASE {
+  INSTANT,
+  VICTORY
+}
+
 export interface CardAction {
   uuid: string;
   monsterName?: string;
   effects: Array<CardEffect>;
   owner: string;
+  phase: ABILITY_PHASE
 }
 
 export interface Card {

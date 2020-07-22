@@ -1,7 +1,4 @@
 import BoardMatrix from './Battle/BoardMatrix';
-import Position from '../shared/Position';
-import BattleUnit from './BattleUnit';
-import AppError from '../typings/AppError'; // refers to a value, but is being used as a type TODO[P0]. Theres full project of this
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENT_TYPE, EVENT_SUBTYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
@@ -11,7 +8,7 @@ import MonstersFactory from '../factories/MonstersFactory';
 import { UserUID } from '../utils/types';
 import { CardAction } from './Card/CardAction';
 
-const BASE_DECK_CONFIG = ['Dwarf', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
+const BASE_DECK_CONFIG = ['Dwarf', 'default', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
 
 export const BOARD_UNITS_LIMIT = 8;

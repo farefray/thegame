@@ -105,6 +105,8 @@ export default class State {
       });
     }
 
+    // todo not mosnter cards with victory phase abilityies
+
     if (phase === ABILITY_PHASE.INSTANT && cardAction.type === CARD_TYPES.CARD_MONSTER) {
       owner.addToBoard(cardAction);
     } else {
