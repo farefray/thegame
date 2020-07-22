@@ -1,5 +1,5 @@
 import { thunk, action, Action, Thunk } from 'easy-peasy';
-import { Card, CardAction } from '@/types/Card';
+import { Card, CardAction, ABILITY_PHASE } from '@/types/Card.d.ts';
 
 interface AnyPlayerModel {
   health: number;
@@ -136,9 +136,8 @@ const playersModel: PlayersModel = {
 
     const isSelf = cardAction.owner === uuid;
 
-    if (cardAction.monsterName) {
-      // monster effect to board?
-      // todo if victory, then discard
+    if (cardAction.monsterName && cardAction.phase !== ABILITY_PHASE.VICTORY) {
+      // todo monster effect to board?
     } else {
       actions.handCardToDiscard({
         payload: cardAction.uuid,
@@ -161,7 +160,7 @@ const playersModel: PlayersModel = {
 
           case 'DAMAGE': {
             actions.changeHealth({
-              payload: -effect.payload,
+              payload: effect.payload,
               isSelf: !isSelf
             });
 

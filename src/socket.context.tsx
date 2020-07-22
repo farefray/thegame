@@ -7,6 +7,7 @@ import { auth } from '@/firebase';
 import { useStoreActions } from './store/hooks';
 import socket, { emitMessage } from '@/socket';
 import SocketHandler from './SocketHandler';
+import { messageTypes } from './constants/websockets';
 
 const WebSocketContext = createContext(null);
 
@@ -40,21 +41,9 @@ export default ({ children }) => {
     console.log('disconnected');
   });
 
-  socket.on('GAME_IS_LIVE', (playerUUID) => socketHandler.handle('GAME_IS_LIVE', playerUUID));
-
-  socket.on('CARD_PLAY', (cardAction) => socketHandler.handle('CARD_PLAY', cardAction));
-
-  socket.on('PLAYER_UPDATE', (player) => socketHandler.handle('PLAYER_UPDATE', player));
-
-  socket.on('MERCHANTRY_UPDATE', (merchantry) => socketHandler.handle('MERCHANTRY_UPDATE', merchantry));
-
-  socket.on('NOTIFICATION', (notification) => socketHandler.handle('NOTIFICATION', notification));
-
-  socket.on('START_BATTLE', (battle) => socketHandler.handle('START_BATTLE', battle));
-
-  socket.on('END_BATTLE', () => socketHandler.handle('END_BATTLE'));
-
-  socket.on('TIMER_UPDATE', (countdown) => socketHandler.handle('TIMER_UPDATE', countdown));
+  Object.keys(messageTypes).forEach(type =>
+    socket.on(type, payload => socketHandler.handle(type, payload))
+  );
 
   socket.on('END_GAME', (winningPlayer) => {
     //dispatch({ type: 'END_GAME', winningPlayer });
