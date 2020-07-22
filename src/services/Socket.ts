@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
-import AppError from '../typings/AppError';
 
 import EventBus from '../services/EventBus';
 import { Socket } from 'socket.io';

@@ -52,7 +52,8 @@ export default class Card {
       type: this.type,
       owner: player.getUID(),
       effects: [],
-      monsterName: this.monster?.name
+      monsterName: this.monster?.name,
+      phase
     }, [player.getUID(), opponent.getUID()]);
 
     if (!abilities) {

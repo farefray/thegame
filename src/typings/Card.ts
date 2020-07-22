@@ -41,5 +41,6 @@ export interface ICardAction {
   type: CARD_TYPES,
   owner: UserUID,
   effects: CardEffect[],
+  phase: ABILITY_PHASE,
   monsterName?: string
 }
