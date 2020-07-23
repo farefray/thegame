@@ -1,0 +1,9 @@
+{
+    "cost": 5,
+    "instant": {
+        "damage": 2
+    },
+    "victory": {
+        "damage": 5
+    }
+}

@@ -1,4 +1,5 @@
-import Fallback from './cards/default.json';
+import Bless from './cards/bless.json';
+import Lightning from './cards/lightning.json';
 
 // items
 import Gold_Coin from './cards/gold_coin.json';
@@ -25,7 +26,11 @@ import Baby_Beholder from './cards/beholders/Baby Beholder.json';
 import Elder_Beholder from './cards/beholders/Elder Beholder.json';
 
 export {
-  Fallback as default, Gold_Coin, Knife,
+  // spells
+  Bless, Gold_Coin, Knife, Lightning,
   // monsters
-  Dwarf, Dwarf_Soldier, Dwarf_Geomancer, Dwarf_Guard, Elf, Elf_Scout, Elf_Arcanist, Minotaur, Minotaur_Archer, Minotaur_Guard, Minotaur_Mage, Beholder, Baby_Beholder, Elder_Beholder
+  Dwarf, Dwarf_Soldier, Dwarf_Geomancer, Dwarf_Guard,
+  Elf, Elf_Scout, Elf_Arcanist,
+  Minotaur, Minotaur_Archer, Minotaur_Guard, Minotaur_Mage,
+  Beholder, Baby_Beholder, Elder_Beholder
 };

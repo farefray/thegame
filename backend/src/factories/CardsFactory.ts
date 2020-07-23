@@ -1,7 +1,7 @@
 import { randomProperty } from '../utils/randomProperty';
 import Card from '../structures/Card';
 import MonstersFactory from './MonstersFactory';
-import * as cardsConfigs from './configs/cards';
+import * as cardsConfigs from '../configs/cards';
 import { CardConfig } from '../typings/Card';
 import Player from '../structures/Player';
 
@@ -32,7 +32,7 @@ class CardsFactory {
     }
 
     const monster = MonstersFactory.getUnitConfiguration(cardName);
-    const cardConfig = (cardsConfigs[cardName] ? cardsConfigs[cardName] : cardsConfigs.default) as CardConfig;
+    const cardConfig = cardsConfigs[cardName] as CardConfig;
     return new Card(cardName, cardConfig, monster);
   }
 }

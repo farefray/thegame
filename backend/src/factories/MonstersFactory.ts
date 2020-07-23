@@ -1,5 +1,5 @@
 import { MonsterInterface } from '../typings/Monster';
-import * as monsters from './configs/monsters';
+import * as monsters from '../configs/monsters';
 import BattleUnit from '../structures/BattleUnit';
 
 const DEFAULT_WALKING_SPEED = 1000;
