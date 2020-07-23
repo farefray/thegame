@@ -8,7 +8,7 @@ import MonstersFactory from '../factories/MonstersFactory';
 import { UserUID } from '../utils/types';
 import { CardAction } from './Card/CardAction';
 
-const BASE_DECK_CONFIG = ['Dwarf', 'default', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
+const BASE_DECK_CONFIG = ['Dwarf', 'Bless', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
 
 export const BOARD_UNITS_LIMIT = 8;

@@ -1,0 +1,7 @@
+{
+    "cost": 8,
+    "victory": {
+        "health": 6,
+        "damage": 6
+    }
+}
