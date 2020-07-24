@@ -3,12 +3,11 @@ import Card from '../structures/Card';
 import MonstersFactory from './MonstersFactory';
 import * as cardsConfigs from '../configs/cards';
 import { CardConfig } from '../typings/Card';
-import Player from '../structures/Player';
 
 class CardsFactory {
   private _cardNames: Array<string> = [];
 
-  constructor(players?: IterableIterator<Player>) {
+  constructor() {
     // TODO[phase3]: Player personal cards can be shuffled into deck
     const cardNames = Object.keys(cardsConfigs);
     this._cardNames.push(...cardNames);

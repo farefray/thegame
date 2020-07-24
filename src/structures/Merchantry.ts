@@ -1,9 +1,13 @@
 import CardsFactory from '../factories/CardsFactory';
 import Player from "./Player";
 import { EventBusUpdater } from './abstract/EventBusUpdater';
-import { EVENT_TYPE } from '../typings/EventBus';
+import { EVENT_TYPE, EVENT_SUBTYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
 import { UserUID } from '../utils/types';
+
+enum ACTIVEPLAYER_INDEX {
+  NONE = -1, FIRST, SECOND
+}
 
 export default class Merchantry extends EventBusUpdater {
   DECK_SIZE = 48;
@@ -12,18 +16,22 @@ export default class Merchantry extends EventBusUpdater {
   private deck = new Deck();
   private revealedCards = new Deck();
 
-  constructor(players: IterableIterator<Player>) {
-    super(EVENT_TYPE.MERCHANTRY_UPDATE, [...players].reduce((subscribers: Array<UserUID>, player) => {
-      subscribers.push(player.getUID());
-      return subscribers;
-    }, []));
+  private activePlayerIndex: ACTIVEPLAYER_INDEX;
+  private players: Array<UserUID>;
 
-    const cardsFactory = new CardsFactory(players);
+  constructor(subscribers) {
+    super(EVENT_TYPE.MERCHANTRY_UPDATE, subscribers);
+    console.log("Merchantry -> constructor -> subscribers", subscribers)
+
+    this.players = subscribers;
+
+    const cardsFactory = new CardsFactory();
     for (let i = 0; i < this.DECK_SIZE; i++) {
       const card = cardsFactory.getRandomCard();
       this.deck.push(card);
     }
 
+    this.activePlayerIndex = ACTIVEPLAYER_INDEX.NONE;
     this.revealCards();
   }
 
@@ -47,9 +55,21 @@ export default class Merchantry extends EventBusUpdater {
     this.invalidate();
   }
 
+  activate(): UserUID {
+    if (this.activePlayerIndex === ACTIVEPLAYER_INDEX.NONE) { // first round
+      this.activePlayerIndex = Math.round(Math.random());
+    } else {
+      this.activePlayerIndex = this.activePlayerIndex === ACTIVEPLAYER_INDEX.FIRST ? ACTIVEPLAYER_INDEX.SECOND : ACTIVEPLAYER_INDEX.FIRST;
+    }
+
+    this.invalidate(EVENT_SUBTYPE.MERCHANTRY_ACTIVATE);
+    return this.players[this.activePlayerIndex];
+  }
+
   toSocket() {
     return {
-      revealedCards: this.revealedCards.toSocket()
+      revealedCards: this.revealedCards.toSocket(),
+      activePlayerUID: this.players[this.activePlayerIndex]
     }
   }
 }

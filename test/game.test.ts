@@ -69,7 +69,11 @@ class GameTestSuite {
 
   @test
   canBuildMerchantry() {
-    const merchantry = new Merchantry(new Map(CUSTOMERS.map(customer => [customer.ID, new Player(customer.ID, [customer.ID])])).values());
+    const merchantry = new Merchantry(CUSTOMERS.reduce((recipients: Array<string>, customer) => {
+      recipients.push(customer.socketID);
+      return recipients;
+    }, []));
+
     expect(merchantry).to.be.a('object');
     expect(merchantry).to.be.an.instanceof(Merchantry);
     expect(merchantry).to.have.property('deck');
@@ -102,7 +106,7 @@ class GameTestSuite {
       expect(player.discard.size).to.be.above(0);
     }
 
-    const merchantry = state.getMerchantry();
+    const merchantry = state.merchantry;
     expect(merchantry.getRevealedCards().size).to.be.equal(merchantry.REVEALED_CARDS_SIZE);
     expect(merchantry.getDeck().size).to.be.equal(merchantry.DECK_SIZE - merchantry.REVEALED_CARDS_SIZE - 1);
   }

@@ -44,7 +44,7 @@ export default class AiPlayer extends Player {
       return null;
     }
 
-    if (!this.isBoardFull()) { // todo
+    // todo
       // we definately need to buy some unit, find most suitable
       // const amount = Math.min(this.allowedBoardSize() - this.board.units().size, affortableUnits.size);
       // return AIService.getInstance().mostSuitableUnit({
@@ -52,10 +52,8 @@ export default class AiPlayer extends Player {
       //   proposed: affortableUnits,
       //   amount
       // }, this.AIFlags);
-      return null;
-    }
 
-    // todo magic logic here to find any good units in pocket
+      // todo magic logic here to find any good units in pocket
     return null;
   }
 
@@ -76,7 +74,6 @@ export default class AiPlayer extends Player {
   // }
 
   beforeBattle(opponent: Player) {
-    super.beforeBattle(opponent);
 
     // consider buying new units
     // todo
