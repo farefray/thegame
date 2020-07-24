@@ -44,7 +44,7 @@ const CardWrapper = ({ card, revealed = true }) => {
   return (
     <Card>
       {revealed && (
-        <Card.Inner name={card.name} cost={card.cost}>
+        <Card.Inner config={card}>
           {card.config.instant ? <Card.Instant config={card.config.instant}></Card.Instant> : null}
           {card.monster ? <Card.Unit monster={card.monster}></Card.Unit> : null}
           {card.config.victory ? <Card.Victory config={card.config.victory}></Card.Victory> : null}

@@ -7,7 +7,7 @@ import { useStoreState } from 'easy-peasy';
 // import PlayerStats from './ActiveGame/PlayerStats.jsx';
 import BattleBoardWrapper from './ActiveGame/BattleBoardWrapper.jsx';
 
-import Merchantry from './ActiveGame/Merchantry.jsx';
+import Merchantry from './ActiveGame/Merchantry';
 import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import Player from './ActiveGame/Player';
 import Timer from './ActiveGame/Timer.jsx';

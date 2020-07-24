@@ -9,13 +9,16 @@ import socket, { emitMessage } from '@/socket';
 import SocketHandler from './SocketHandler';
 import { messageTypes } from './constants/websockets';
 
-const WebSocketContext = createContext(null);
+interface IContextProps {
+  socket: object;
+  emitMessage: Function;
+}
+
+const WebSocketContext = createContext({} as IContextProps);
 
 export { WebSocketContext };
 
 export default ({ children }) => {
-  let ws;
-
   const storeActions = useStoreActions(actions => actions);
   const socketHandler = new SocketHandler(storeActions);
 
@@ -56,7 +59,7 @@ export default ({ children }) => {
     //dispatch({ type: 'DEAD_PLAYER', pid, position });
   });
 
-  ws = {
+  let ws: IContextProps = {
     socket: socket,
     emitMessage
   };

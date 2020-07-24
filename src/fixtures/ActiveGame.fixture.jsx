@@ -55,6 +55,14 @@ function DebugControls() {
 
       <button
         onClick={() => {
+          game.state.tradeRound();
+        }}
+      >
+        Trade round
+      </button>
+
+      <button
+        onClick={() => {
           game.state.nextRound();
         }}
       >
