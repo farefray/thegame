@@ -1,19 +1,23 @@
 import React, { useContext } from 'react';
-import { useStoreState } from 'easy-peasy';
 import Card from './Deck/Card';
 import { WebSocketContext } from '@/socket.context';
+import { useStoreState } from '@/store/hooks';
 
 function Merchantry() {
-  const revealedCards = useStoreState((state) => state.merchantry.revealedCards);
+  const merchantry = useStoreState((state) => state.merchantry);
+  const { revealedCards, isLocked } = merchantry;
+
   const websocket = useContext(WebSocketContext);
 
   return (
-    <div className="merchantry">
+    <div className={'merchantry' + (isLocked ? ' m-locked' : '')}>
       {revealedCards &&
         revealedCards.map((card, index) => {
           return (
             <div key={index} className="card-container" onClick={() => {
-              websocket.emitMessage('PURCHASE_CARD', index);
+              if (!isLocked) {
+                websocket.emitMessage('PURCHASE_CARD', index);
+              }
             }}>
               <Card
                 key={index}

@@ -1,19 +1,26 @@
 import React from 'react';
-import { Icon } from 'rsuite';
+import { Icon, Tooltip, Whisper } from 'rsuite';
 
-export default function CardInner({ name, cost, children }) {
+const CardTooltip = (cardConfig) => <Tooltip>Card config: {JSON.stringify(cardConfig)}</Tooltip>;
+
+export default function CardInner({ children, config }) {
+  const { name, cost } = config;
+
   return (
     <React.Fragment>
-      <div className="frame-header">
-        <div className="frame-header_icon">
-          <Icon icon="star-half-o" />
-        </div>
-        <span className="frame-header_name">{name}</span>
-        <div className="frame-header_cost">{cost}</div>
-      </div>
+      <Whisper placement="auto" trigger="hover" speaker={CardTooltip(config)} delayShow={500}>
+        <React.Fragment>
+          <div className="frame-header">
+            <div className="frame-header_icon">
+              <Icon icon="star-half-o" />
+            </div>
+            <span className="frame-header_name">{name}</span>
+            <div className="frame-header_cost">{cost}</div>
+          </div>
 
-      {children}
-
+          {children}
+        </React.Fragment>
+      </Whisper>
     </React.Fragment>
   );
 }

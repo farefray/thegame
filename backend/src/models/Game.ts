@@ -96,6 +96,8 @@ export default class Game {
       if (hadBattle) {
         this.state.playCards(ABILITY_PHASE.VICTORY, winner);
 
+        await this.state.tradeRound();
+
         await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
       }
 

@@ -11,8 +11,6 @@ import { CardAction } from './Card/CardAction';
 const BASE_DECK_CONFIG = ['Dwarf', 'Bless', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
 
-export const BOARD_UNITS_LIMIT = 8;
-
 export default class Player extends EventBusUpdater {
   public userUID: UserUID;
   public health: number = 50;
@@ -40,8 +38,14 @@ export default class Player extends EventBusUpdater {
     return this.userUID;
   }
 
+  public changeGold(addendum: number, emit = false) {
+    this.gold += addendum;
+
+    this.invalidate(EVENT_SUBTYPE.PLAYER_GOLD_CHANGE);
+  }
+
   public cardPurchase(card: Card) {
-    this.gold -= card.cost;
+    this.changeGold(-card.cost);
     this.addToDiscard(card);
   }
 
@@ -86,64 +90,21 @@ export default class Player extends EventBusUpdater {
     return this.health <= 0;
   }
 
-  allowedBoardSize() {
-    return BOARD_UNITS_LIMIT;
-  }
-
-  isBoardFull() {
-    return this.board.units().size >= this.allowedBoardSize();
-  }
-
-  /**
-   * Board for player with playerIndex have too many units
-   * Try to withdraw the cheapest unit
-   * if hand is full, sell cheapest unit
-   * Do this until board.size == level
-   */
-  beforeBattle(opponent: Player) {
-    // REWORK THIS P0
-    /*
-    const board = this.board;
-    const takenPositions = Object.keys(board);
-    if (takenPositions.length > this.level) {
-      let unitCost = Infinity;
-      let cheapestUnitPosition = '';
-
-      for (let index = 0; index < takenPositions.length; index++) {
-        const pos = takenPositions[index];
-        const unit = board[pos];
-        // Todo check if this will be covered for leveled up units
-        if (unit.cost < unitCost) {
-          cheapestUnitPosition = pos;
-          unitCost = unit.cost;
-        }
-      }
-
-      console.log('TODO P0 widthawing for this unit:', cheapestUnitPosition);
-
-      // P0 TODO THIS PART
-      // Withdraw if possible unit, otherwise sell
-      // TODO: Inform Client about update
-      // if (Object.keys(this.hand).length < HAND_LIMIT) {
-      //   await BoardController.withdrawPiece(state, playerIndex, cheapestUnitPosition);
-      // } else {
-      //   await BoardController.sellPiece(state, playerIndex, cheapestUnitPosition);
-      // }
-
-      // const newBoard = this.board;
-      // const level = state.getIn(['players', playerIndex, 'level']);
-      // if (newBoard.size > level) {
-      //   await _mutateStateByFixingUnitLimit(state, playerIndex);
-      // }
-
-    }
-    */
-  }
+  /** AI method */
+  beforeBattle(opponent) {}
 
   toSocket(eventSubtype?) {
     let invalidatedObject = {};
 
     switch (eventSubtype) {
+      case EVENT_SUBTYPE.PLAYER_GOLD_CHANGE: {
+        invalidatedObject = {
+          gold: this.gold
+        }
+
+        break;
+      }
+
       case EVENT_SUBTYPE.PLAYER_CARDS_UPDATED: {
         invalidatedObject = {
           hand: this.hand.toSocket(),

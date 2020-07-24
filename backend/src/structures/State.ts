@@ -9,10 +9,11 @@ import { asyncForEach, waitFor } from '../utils/async';
 
 export default class State {
   MAX_ROUND = 25;
+  SECOND_PURCHASE_COMPENSATION = 1;
 
   private round: number = 1;
   private players: Map<UserUID, Player>;
-  private merchantry: Merchantry;
+  public merchantry: Merchantry;
 
   constructor(customers: Array<Customer>) {
     const subscribers = customers.reduce((recipients: Array<UserUID>, customer) => {
@@ -33,11 +34,22 @@ export default class State {
       this.players.set('ai_player', new AiPlayer('ai_player', subscribers)); // TODO send AI state to player on game start
     }
 
-    this.merchantry = new Merchantry(this.players.values());
+    this.merchantry = new Merchantry([...this.players.keys()]);
   }
 
-  getMerchantry() {
-    return this.merchantry;
+  /**
+   * activating trade round for one player, and provide 1 gold reward for other (only at first round)
+   */
+  async tradeRound() {
+    const merchantryActivePlayer = this.merchantry.activate();
+
+    if (this.round === 1) {
+      this.players.forEach(player => {
+        if (player.getUID() !== merchantryActivePlayer) {
+          player.changeGold(this.SECOND_PURCHASE_COMPENSATION);
+        }
+      });
+    }
   }
 
   async playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: UserUID) {
@@ -62,6 +74,7 @@ export default class State {
         // player.invalidate(); // this maybe needed to sync FE with BE, but would be just great to have it ommited
       });
     }
+
 
     return true;
   }
@@ -130,9 +143,6 @@ export default class State {
   }
 
   purchaseCard(playerUID: UserUID, cardIndex: number) {
-    /**
-     * TODO Phase2, auction for cards?
-     */
     const revealedCards = this.merchantry.getRevealedCards();
     const player = this.getPlayer(playerUID);
     if (player) {

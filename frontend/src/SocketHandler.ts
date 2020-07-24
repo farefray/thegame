@@ -1,9 +1,11 @@
+// @ts-nocheck [Added in order to resolve typing issues with StoreModel(it adds extra syntax here, but receives no real functionality)]
+import { StoreModel } from "./store/model";
 /**
  * Class handling the socket emitted events from backend.
  * Made in order to have store actions in some abstract class which can be also used for testing purpouses without the real socket connection and actually take some business logic from our dispatched store
  */
 export default class SocketHandler {
-  private storeActions;
+  private storeActions: StoreModel;
 
   constructor(storeActions) {
     console.log('SocketHandler constructed');
@@ -30,6 +32,15 @@ export default class SocketHandler {
         break;
       }
 
+      case 'PLAYER_GOLD_CHANGE': {
+        this.storeActions.players.updatePlayer({
+          uuid: playerModelUpdate.uuid,
+          gold: playerModelUpdate.gold
+        });
+
+        break;
+      }
+
       case 'PLAYER_SYNC':
       default: {
         this.storeActions.players.updatePlayer(playerModelUpdate);
@@ -37,8 +48,19 @@ export default class SocketHandler {
     }
   }
 
-  MERCHANTRY_UPDATE(merchantry) {
-    this.storeActions.merchantry.revealCards(merchantry);
+  MERCHANTRY_UPDATE(merchantryModelUpdate) {
+    const { subtype } = merchantryModelUpdate;
+
+    switch (subtype) {
+      case 'MERCHANTRY_ACTIVATE': {
+        this.storeActions.merchantry.activate(merchantryModelUpdate.activePlayerUID);
+        break;
+      }
+
+      default: {
+        this.storeActions.merchantry.revealCards(merchantryModelUpdate);
+      }
+    }
   }
 
   TIMER_UPDATE(countdown) {

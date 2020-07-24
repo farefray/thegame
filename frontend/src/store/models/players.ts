@@ -24,8 +24,8 @@ export interface PlayersModel {
   uuid: string; // current player UUID for frontend
   setCurrentPlayerUUID: Action<PlayersModel, string>;
 
-  currentPlayer: AnyPlayerModel,
-  opponent: AnyPlayerModel,
+  currentPlayer: AnyPlayerModel;
+  opponent: AnyPlayerModel;
 
   changeHealth: Action<PlayersModel, PlayerModelPayload>;
   changeGold: Action<PlayersModel, PlayerModelPayload>;
@@ -45,7 +45,7 @@ const defaultAnyPlayerState = {
   board: [],
   hand: [],
   deckSize: 0,
-  discard: [],
+  discard: []
 };
 
 const playersModel: PlayersModel = {
@@ -57,7 +57,8 @@ const playersModel: PlayersModel = {
   currentPlayer: { ...defaultAnyPlayerState },
   opponent: { ...defaultAnyPlayerState },
 
-  changeHealth: action((state, { payload: amount, isSelf, isSet }) => { // bad code style
+  changeHealth: action((state, { payload: amount, isSelf, isSet }) => {
+    // bad code style
     if (isSelf) {
       if (isSet) {
         state.currentPlayer.health = amount;
@@ -107,7 +108,7 @@ const playersModel: PlayersModel = {
     actions.cardsUpdate({
       payload: playerModelUpdate,
       isSelf: playerModelUpdate.uuid === uuid
-    })
+    });
   }),
 
   setBoard: action((state, { payload: board, isSelf }) => {
@@ -145,9 +146,8 @@ const playersModel: PlayersModel = {
       });
     }
 
-
     if (cardAction.effects) {
-      cardAction.effects.forEach(effect => {
+      cardAction.effects.forEach((effect) => {
         switch (effect.type) {
           case 'GOLD': {
             actions.changeGold({
@@ -185,31 +185,39 @@ const playersModel: PlayersModel = {
 
     let isSelf = playerModelUpdate.uuid === uuid;
 
-    actions.cardsUpdate({
-      payload: {
-        hand: [...playerModelUpdate.hand],
-        deckSize: playerModelUpdate.deckSize,
-        discard: playerModelUpdate.discard
-      },
-      isSelf
-    });
+    if (playerModelUpdate.hand && playerModelUpdate.deckSize && playerModelUpdate.discard) {
+      actions.cardsUpdate({
+        payload: {
+          hand: [...playerModelUpdate.hand],
+          deckSize: playerModelUpdate.deckSize,
+          discard: playerModelUpdate.discard
+        },
+        isSelf
+      });
+    }
 
-    actions.setBoard({
-      payload: [...playerModelUpdate.board],
-      isSelf
-    })
+    if (playerModelUpdate.board) {
+      actions.setBoard({
+        payload: [...playerModelUpdate.board],
+        isSelf
+      });
+    }
 
-    actions.changeGold({
-      payload: playerModelUpdate.gold,
-      isSelf,
-      isSet: true
-    })
+    if (playerModelUpdate.gold) {
+      actions.changeGold({
+        payload: playerModelUpdate.gold,
+        isSelf,
+        isSet: true
+      });
+    }
 
-    actions.changeHealth({
-      payload: playerModelUpdate.health,
-      isSelf,
-      isSet: true
-    })
+    if (playerModelUpdate.health) {
+      actions.changeHealth({
+        payload: playerModelUpdate.health,
+        isSelf,
+        isSet: true
+      });
+    }
   })
 };
 
