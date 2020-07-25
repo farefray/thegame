@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icon, Tooltip, Whisper } from 'rsuite';
+import { Tooltip, Whisper } from 'rsuite';
+import SvgIcons, { ICON_NAME } from 'components/SvgIcons';
 
 const CardTooltip = (cardConfig) => <Tooltip>Card config: {JSON.stringify(cardConfig)}</Tooltip>;
 
@@ -12,7 +13,7 @@ export default function CardInner({ children, config }) {
         <React.Fragment>
           <div className="frame-header">
             <div className="frame-header_icon">
-              <Icon icon="star-half-o" />
+              {config.monster ? SvgIcons(ICON_NAME.SWORDS) : SvgIcons(ICON_NAME.MAGIC)}
             </div>
             <span className="frame-header_name">{name}</span>
             <div className="frame-header_cost">{cost}</div>

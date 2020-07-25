@@ -1,5 +1,6 @@
 
-import { action, Action } from 'easy-peasy';
+import { action, Action, Computed, computed } from 'easy-peasy';
+import { StoreModel } from '../model';
 
 export interface AppModel {
   isConnected: boolean;
@@ -13,6 +14,11 @@ export interface AppModel {
 
   countdown: number;
   setCountdown: Action<AppModel, number>;
+
+  gamePhase: number;
+  setGamePhase: Action<AppModel, number>;
+
+  tradingPlayer: Computed<AppModel, string, StoreModel>;
 }
 
 const appModel: AppModel = {
@@ -34,6 +40,21 @@ const appModel: AppModel = {
   countdown: 0,
   setCountdown: action((state, payload) => {
     state.countdown = payload;
+  }),
+
+  gamePhase: 0,
+  setGamePhase: action((state, phase) => {
+    state.gamePhase = phase;
+  }),
+
+  tradingPlayer: computed([
+    state => state.gamePhase,
+    (state, storeState) => storeState.merchantry.activeUID
+  ],
+    (gamePhase, activeUID) => {
+      return gamePhase === 2 // display trading played only while trade game step
+        ? activeUID
+        : '';
   })
 };
 

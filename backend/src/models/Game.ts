@@ -10,6 +10,7 @@ import { waitFor } from '../utils/async';
 import { EVENT_TYPE } from '../typings/EventBus';
 import { BattleBoard } from '../typings/Battle';
 import { timeStamp } from 'console';
+import { GAME_PHASE } from '../typings/Game';
 
 const COUNTDOWN_BETWEEN_ROUNDS = 15 * 1000;
 export default class Game {
@@ -40,10 +41,15 @@ export default class Game {
     });
   }
 
-  async countdown(duration) {
+  async gamePhase(phase: GAME_PHASE, duration?: number) {
+    const countdown = Math.round((duration || COUNTDOWN_BETWEEN_ROUNDS) / 1000);
+
     const eventBus:EventBus = Container.get('event.bus');
     this.players.forEach(player => {
-      eventBus.emitMessage(EVENT_TYPE.TIMER_UPDATE, player.getUID(), Math.round(duration / 1000));
+      eventBus.emitMessage(EVENT_TYPE.GAME_PHASE_UPDATE, player.getUID(), {
+        countdown,
+        phase
+      });
     });
 
     await waitFor(duration);
@@ -72,7 +78,7 @@ export default class Game {
       const battle = new Battle(battleBoards);
       await battle.proceedBattle();
 
-      await this.countdown(battle.battleTime);
+      await this.gamePhase(GAME_PHASE.BATTLE, battle.battleTime);
 
       this.notifyBattleEnded();
 
@@ -83,14 +89,14 @@ export default class Game {
   }
 
   async runRoundsFlow() {
-    await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
+    await this.gamePhase(GAME_PHASE.CARDS_PLAY);
 
     while (this.state.getRound() < this.state.MAX_ROUND) {
 
       this.players[0].dealCards();
       this.players[1].dealCards();
 
-      await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
+      await this.gamePhase(GAME_PHASE.CARDS_PLAY);
       await this.state.playCards(ABILITY_PHASE.INSTANT);
 
       const [hadBattle, winner]: any = await this.processBattle(); // got any, to not mess with ts array type
@@ -99,11 +105,11 @@ export default class Game {
 
         this.state.tradeRound(this.state.getRound() === 1);
 
-        await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
+        await this.gamePhase(GAME_PHASE.TRADE);
 
         this.state.tradeRound();
 
-        await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
+        await this.gamePhase(GAME_PHASE.TRADE);
       }
 
       this.state.nextRound();

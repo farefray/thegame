@@ -2,11 +2,12 @@
  * Used for react cosmos, in order to include backend files from directories of backend
  * Also used for frontend to customize webpack config and use 'rsuite'
  */
-const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader, addWebpackModuleRule, adjustStyleLoaders } = require('customize-cra');
+const { override, addLessLoader, removeModuleScopePlugin, addWebpackAlias, getBabelLoader, addWebpackModuleRule, adjustStyleLoaders, addWebpackPlugin } = require('customize-cra');
 const { overridePassedProcessEnv } = require("cra-define-override");
 const { addReactRefresh } = require("customize-cra-react-refresh"); // todo test if thats works
 const LessPluginFunctions = require('less-plugin-functions');
 const path = require('path');
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 
 // Build performance measuring. If not running with MEASURE var, just doing nothing
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
@@ -43,11 +44,23 @@ const webpackConfig = override(
   },
   removeModuleScopePlugin(),
   addWebpackModuleRule({
-    test: /\.(gif|jpe?g|png|svg)$/, use: [{
+    test: /\.(gif|jpe?g|png)$/, use: [{
       loader: '@lesechos/image-size-loader', options: {
         name: '[name].[contenthash].[ext]',
         outputPath: 'static/assets/',
         postTransformPublicPath: (p) => `__webpack_public_path__ + ${p}`,
+      }
+    }]
+  }),
+  addWebpackModuleRule({
+    test: /\.svg$/,
+    include: [
+      path.resolve(__dirname, "src/assets/icons")
+    ],
+    use: [{
+      loader: 'svg-sprite-loader',
+      options: {
+        symbolId: 'icon-[name]'
       }
     }]
   }),
