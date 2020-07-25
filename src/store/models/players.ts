@@ -152,7 +152,8 @@ const playersModel: PlayersModel = {
           case 'GOLD': {
             actions.changeGold({
               payload: effect.payload,
-              isSelf
+              isSelf,
+              isSet: false
             });
 
             break;
@@ -203,7 +204,7 @@ const playersModel: PlayersModel = {
       });
     }
 
-    if (playerModelUpdate.gold) {
+    if (playerModelUpdate.gold !== undefined) {
       actions.changeGold({
         payload: playerModelUpdate.gold,
         isSelf,
@@ -211,7 +212,7 @@ const playersModel: PlayersModel = {
       });
     }
 
-    if (playerModelUpdate.health) {
+    if (playerModelUpdate.health !== undefined) {
       actions.changeHealth({
         payload: playerModelUpdate.health,
         isSelf,
