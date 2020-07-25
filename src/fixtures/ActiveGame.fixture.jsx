@@ -58,6 +58,7 @@ const DebugControls = () => (
 
     <button
       onClick={() => {
+        game.gamePhase(2);
         game.state.tradeRound(true);
       }}
     >

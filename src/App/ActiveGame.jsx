@@ -3,19 +3,16 @@ import React from 'react';
 import { Grid, Row, Col } from 'rsuite';
 import { useStoreState } from 'easy-peasy';
 
-// import Timer from './ActiveGame/Timer.jsx';
 // import PlayerStats from './ActiveGame/PlayerStats.jsx';
 import BattleBoardWrapper from './ActiveGame/BattleBoardWrapper.jsx';
 
 import Merchantry from './ActiveGame/Merchantry';
 import PlayerBoardWrapper from './ActiveGame/PlayerBoardWrapper.jsx';
 import Player from './ActiveGame/Player';
-import Timer from './ActiveGame/Timer.jsx';
+import GameSteps from './ActiveGame/GameSteps';
 
 function ActiveGame() {
   const isActiveBattleGoing = useStoreState((state) => state.gameboard.isActiveBattleGoing);
-
-  const countdown = useStoreState((state) => state.app.countdown);
 
   return (
     <Grid fluid>
@@ -24,13 +21,15 @@ function ActiveGame() {
       </Row>
       <Row className="arena">
         <Col>
+          <GameSteps />
+        </Col>
+        <Col>
           <div className="gameboard">
           <div className="gameboard-background"></div>
             <div className="gameboard-wrapper">
               {isActiveBattleGoing ? <BattleBoardWrapper /> : <PlayerBoardWrapper />}
             </div>
           </div>
-          {!isActiveBattleGoing && <Timer initialTimerValue={countdown}/>}
         </Col>
         <Col>
           <Merchantry />

@@ -63,9 +63,10 @@ export default class SocketHandler {
     }
   }
 
-  TIMER_UPDATE(countdown) {
+  GAME_PHASE_UPDATE(phaseInfo) {
     this.storeActions.app.setCountdown(0); // to re-init component todo better way
-    this.storeActions.app.setCountdown(countdown);
+    this.storeActions.app.setCountdown(phaseInfo.countdown);
+    this.storeActions.app.setGamePhase(phaseInfo.phase)
   }
 
   CARD_PLAY(cardAction) {
