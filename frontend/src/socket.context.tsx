@@ -18,7 +18,7 @@ const WebSocketContext = createContext({} as IContextProps);
 
 export { WebSocketContext };
 
-export default ({ children }) => {
+export default ({ children, injectedWS }) => {
   const storeActions = useStoreActions(actions => actions);
   const socketHandler = new SocketHandler(storeActions);
 
@@ -64,5 +64,5 @@ export default ({ children }) => {
     emitMessage
   };
 
-  return <WebSocketContext.Provider value={ws}>{children}</WebSocketContext.Provider>;
+  return <WebSocketContext.Provider value={injectedWS || ws}>{children}</WebSocketContext.Provider>;
 };

@@ -64,6 +64,17 @@ export default class AbstractList<T> {
     return this;
   }
 
+  sort(compareFn, mutateInstance = false) {
+    const sorted = [...this._list].sort(compareFn); // todo check for mutation
+
+    if (mutateInstance) {
+      this._list = sorted;
+      return this;
+    }
+
+    return new AbstractList<T>(sorted);
+  }
+
   filter(conditionFn: Function, mutateInstance = false) {
     const filtered: Array<T> = [];
     for (let iterator = 0; iterator < this._list.length; iterator++) {

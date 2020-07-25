@@ -7,6 +7,7 @@ import CardsFactory from '../factories/CardsFactory';
 import MonstersFactory from '../factories/MonstersFactory';
 import { UserUID } from '../utils/types';
 import { CardAction } from './Card/CardAction';
+import Merchantry from './Merchantry';
 
 const BASE_DECK_CONFIG = ['Dwarf', 'Bless', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Gold_Coin', 'Knife', 'Knife'];
 const HAND_SIZE = 5;
@@ -22,6 +23,8 @@ export default class Player extends EventBusUpdater {
   public deck = new Deck();
   public discard = new Deck();
 
+  public isAI = false;
+
   constructor(id: UserUID, subscribers: Array<UserUID>) {
     super(EVENT_TYPE.PLAYER_UPDATE, subscribers);
 
@@ -30,6 +33,8 @@ export default class Player extends EventBusUpdater {
     for (let index = 0; index < BASE_DECK_CONFIG.length; index++) {
       this.deck.push(cardsFactory.createCard(BASE_DECK_CONFIG[index]));
     }
+
+    this.deck.shuffle();
 
     this.userUID = id;
   }
@@ -41,11 +46,13 @@ export default class Player extends EventBusUpdater {
   public changeGold(addendum: number, emit = false) {
     this.gold += addendum;
 
-    this.invalidate(EVENT_SUBTYPE.PLAYER_GOLD_CHANGE);
+    if (emit) {
+      this.invalidate(EVENT_SUBTYPE.PLAYER_GOLD_CHANGE);
+    }
   }
 
   public cardPurchase(card: Card) {
-    this.changeGold(-card.cost);
+    this.changeGold(-card.cost, true);
     this.addToDiscard(card);
   }
 
@@ -91,7 +98,9 @@ export default class Player extends EventBusUpdater {
   }
 
   /** AI method */
-  beforeBattle(opponent) {}
+  public tradeRound(merchantry: Merchantry) {
+    return -1;
+  }
 
   toSocket(eventSubtype?) {
     let invalidatedObject = {};

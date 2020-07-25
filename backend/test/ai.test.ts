@@ -34,9 +34,8 @@ class AI {
   @test
   willPurchaseAndPlaceMob() {
     const playerOne = new AiPlayer('ai_1');
-    const playerTwo = new AiPlayer('ai_2');
 
-    playerOne.beforeBattle(playerTwo);
+    playerOne.tradeRound();
     expect(playerOne.board).to.be.a('object');
     expect((playerOne.board.units()).size).to.be.above(0);
   }
