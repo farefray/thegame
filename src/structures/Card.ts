@@ -7,7 +7,7 @@ import { UserUID } from '../utils/types';
 
 export default class Card {
   private _uuid = uuidv4();
-  private name: string;
+  public name: string;
   public monster?: MonsterInterface;
   private config: CardConfig;
   public cost: number;

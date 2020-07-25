@@ -1,5 +1,4 @@
 import CardsFactory from '../factories/CardsFactory';
-import Player from "./Player";
 import { EventBusUpdater } from './abstract/EventBusUpdater';
 import { EVENT_TYPE, EVENT_SUBTYPE } from '../typings/EventBus';
 import Deck from './Card/Deck';
@@ -21,7 +20,6 @@ export default class Merchantry extends EventBusUpdater {
 
   constructor(subscribers) {
     super(EVENT_TYPE.MERCHANTRY_UPDATE, subscribers);
-    console.log("Merchantry -> constructor -> subscribers", subscribers)
 
     this.players = subscribers;
 

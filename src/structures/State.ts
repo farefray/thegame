@@ -23,12 +23,7 @@ export default class State {
 
     this.round = 1;
 
-    this.players = new Map(customers.map(
-      (customer) => [
-        customer.ID,
-        new Player(customer.ID, subscribers)
-      ]
-    ));
+    this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID, subscribers)]));
 
     if (this.players.size === 1) {
       this.players.set('ai_player', new AiPlayer('ai_player', subscribers)); // TODO send AI state to player on game start
@@ -40,16 +35,30 @@ export default class State {
   /**
    * activating trade round for one player, and provide 1 gold reward for other (only at first round)
    */
-  async tradeRound() {
+  tradeRound(isFirstTrade = false) {
     const merchantryActivePlayer = this.merchantry.activate();
 
-    if (this.round === 1) {
-      this.players.forEach(player => {
-        if (player.getUID() !== merchantryActivePlayer) {
-          player.changeGold(this.SECOND_PURCHASE_COMPENSATION);
-        }
-      });
-    }
+    this.players.forEach((player) => {
+      if (
+        isFirstTrade && // first trade being balanced by rewarding player who acts second
+        player.getUID() !== merchantryActivePlayer
+      ) {
+        player.changeGold(this.SECOND_PURCHASE_COMPENSATION, true);
+      }
+    });
+
+    // AI merchantry round
+    this.players.forEach((player) => {
+      if (merchantryActivePlayer === player.getUID() && player.isAI) {
+        let cardToPurchaseIndex;
+        do {
+          cardToPurchaseIndex = player.tradeRound(this.merchantry);
+          if (cardToPurchaseIndex >= 0) {
+            this.purchaseCard(player.getUID(), cardToPurchaseIndex);
+          }
+        } while (cardToPurchaseIndex >= 0);
+      }
+    });
   }
 
   async playCards(phase: ABILITY_PHASE = ABILITY_PHASE.INSTANT, victoryUserUID?: UserUID) {
@@ -64,7 +73,7 @@ export default class State {
     });
 
     await asyncForEach(cardActions, async (cardAction) => {
-      this.executeCardAction(cardAction, phase)
+      this.executeCardAction(cardAction, phase);
       await waitFor(1000);
     });
 
@@ -74,7 +83,6 @@ export default class State {
         // player.invalidate(); // this maybe needed to sync FE with BE, but would be just great to have it ommited
       });
     }
-
 
     return true;
   }
@@ -93,7 +101,7 @@ export default class State {
       cardAction.effects.forEach((effect) => {
         switch (effect.type) {
           case EFFECT_TYPE.GOLD: {
-            owner.gold += effect.payload;
+            owner.changeGold(effect.payload);
             break;
           }
 
@@ -113,12 +121,11 @@ export default class State {
             break;
           }
 
-          default: {}
+          default: {
+          }
         }
       });
     }
-
-    // todo not mosnter cards with victory phase abilityies
 
     if (phase === ABILITY_PHASE.INSTANT && cardAction.type === CARD_TYPES.CARD_MONSTER) {
       owner.addToBoard(cardAction);
@@ -153,6 +160,7 @@ export default class State {
 
       const ejectedCard = revealedCards.eject(cardIndex);
       player.cardPurchase(ejectedCard);
+
       this.merchantry.revealCards();
     }
 
@@ -165,6 +173,11 @@ export default class State {
 
   nextRound() {
     this.round += 1;
+
+    // clean money from players if left any
+    this.players.forEach((player) => {
+      player.changeGold(-(player.gold), true);
+    });
   }
 
   get firstPlayer(): Player {

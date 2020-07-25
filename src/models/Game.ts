@@ -9,6 +9,7 @@ import Player from '../structures/Player';
 import { waitFor } from '../utils/async';
 import { EVENT_TYPE } from '../typings/EventBus';
 import { BattleBoard } from '../typings/Battle';
+import { timeStamp } from 'console';
 
 const COUNTDOWN_BETWEEN_ROUNDS = 15 * 1000;
 export default class Game {
@@ -96,7 +97,11 @@ export default class Game {
       if (hadBattle) {
         this.state.playCards(ABILITY_PHASE.VICTORY, winner);
 
-        await this.state.tradeRound();
+        this.state.tradeRound(this.state.getRound() === 1);
+
+        await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
+
+        this.state.tradeRound();
 
         await this.countdown(COUNTDOWN_BETWEEN_ROUNDS);
       }

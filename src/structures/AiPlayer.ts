@@ -1,5 +1,5 @@
 import Player from './Player';
-import AIService from '../services/AI';
+import Merchantry from './Merchantry';
 
 export enum StrategyFlags {
   PICK_BEST_UNITS = 1 << 0,
@@ -31,6 +31,7 @@ export class AIFlags {
 
 export default class AiPlayer extends Player {
   public AIFlags: AIFlags;
+  public isAI = true;
 
   constructor(id: string, subscribers) {
     super(id, subscribers);
@@ -38,57 +39,16 @@ export default class AiPlayer extends Player {
     this.AIFlags = new AIFlags();
   }
 
-  considerUnitsPurchase() {
-    const affortableUnits = this.getAffortableShopUnits();
-    if (!affortableUnits.size) {
-      return null;
+  public tradeRound(merchantry: Merchantry) {
+    const affortableCards = merchantry.getRevealedCards().filter(card => card.cost <= this.gold);
+    if (!affortableCards.size) {
+      return -1;
     }
 
-    // todo
-      // we definately need to buy some unit, find most suitable
-      // const amount = Math.min(this.allowedBoardSize() - this.board.units().size, affortableUnits.size);
-      // return AIService.getInstance().mostSuitableUnit({
-      //   current: this.board.units(),
-      //   proposed: affortableUnits,
-      //   amount
-      // }, this.AIFlags);
-
-      // todo magic logic here to find any good units in pocket
-    return null;
-  }
-
-  // considerUnitsPlacing() {
-  //   if (!this.isBoardFull()) {
-  //     // we need to place units for sure!
-  //     const unit = AIService.getInstance().mostSuitableUnit({
-  //       current: this.board.units(),
-  //       proposed: this.hand.units(),
-  //       amount: this.allowedBoardSize()
-  //     }, this.AIFlags);
-
-  //     if (unit) {
-  //       const prefereablePosition = unit.getPreferablePosition(this.board.freeSpots());
-  //       this.moveUnitBetweenPositions(unit.position, prefereablePosition);
-  //     }
-  //   }
-  // }
-
-  beforeBattle(opponent: Player) {
-
-    // consider buying new units
-    // todo
-    const unit = this.considerUnitsPurchase();
-    // if (unit) {
-    //   const shopUnit = this.shopUnits.findByName(unit.name);
-
-    //   if (shopUnit) {
-    //     this.purchasePawn(shopUnit.x);
-    //   }
-    // }
-
-    // if (this.hand.units().size) {
-    //   this.considerUnitsPlacing();
-    // }
+    // todo pick by ai network
+    const mostExpensiveCard = affortableCards.sort((a, b) => a.cost > b.cost).get(0);
+    const index = merchantry.getRevealedCards().findIndex(card => card.name === mostExpensiveCard.name);
+    return index;
   }
 
   getAffortableShopUnits() {
