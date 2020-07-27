@@ -1,19 +1,16 @@
 import React from 'react';
-import SvgIcons from 'components/SvgIcons';
 import { getIconName } from '@/utils/cards';
+import SvgIcons from 'components/SvgIcons';
 
-export default function CardInstant({ config }) {
+export default function CardEffects({ config, modifiers }) {
   return (
-    <div className="frame-instant">
-      Instant:
-      <div className="frame-victory_effects">
+    <div className={'frame-effects' + ' ' + modifiers?.join(' ')}>
       {config &&
         Object.keys(config).map((key, i) => (
-          <span key={i}>
+          <span key={i} className={'effect effect-' + key}>
             {SvgIcons(getIconName(key))} {config[key]}
           </span>
         ))}
-      </div>
     </div>
   );
 }

@@ -23,6 +23,14 @@
     list-style: none;
   }
 
+  &-divider {
+    background: linear-gradient(45deg, #a02c23, @red);
+    bottom: rh(12);
+    height: 4px;
+    position: absolute;
+    width: 100%;
+  }
+
   &-frame {
     border: 2px inset @red;
     border-radius: rh(2);
@@ -48,7 +56,6 @@
           border: 1px solid @orange;
           border-radius: 50%;
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.5);
-          color: @B400;
           content: '';
           display: inline-block;
           height: rh(5);
@@ -58,10 +65,42 @@
           width: rh(5);
           z-index: 5;
 
-          > p {
+          .m {
             left: 5px;
             position: absolute;
             z-index: 7;
+
+            &-1, &-0 {
+              color: @H300;
+            }
+
+            &-2 {
+              color: @H300;
+            }
+
+            &-3 {
+              color: @H400;
+            }
+
+            &-4 {
+              color: @H500;
+            }
+
+            &-5 {
+              color: @H600;
+            }
+
+            &-6 {
+              color: @H700;
+            }
+
+            &-7 {
+              color: @H800;
+            }
+
+            &-8 {
+              color: @H900;
+            }
           }
 
           &::after {
@@ -84,24 +123,48 @@
         }
 
         &_icon {
-          left: 0;
+          left: rh(1);
           position: absolute;
-          top: 0;
+          top: rh(1);
         }
       }
 
       &-image {
         bottom: rh(2);
+        height: rh(16);
         position: absolute;
         right: rh(1);
       }
 
-      &-instant {
-        background: rgba(255, 243, 133, 0.2);
-      }
+      &-effects {
+        bottom: rh(10);
+        height: rh(10);
+        position: absolute;
 
-      &-victory {
-        background: rgba(133, 255, 239, 0.2);
+        &.m-instant {}
+
+        &.m-victory {
+          bottom: 0;
+          height: rh(12);
+          padding-top: rh(2);
+        }
+
+        .effect {
+          display: inline-block;
+          padding: rh(0.5);
+
+          &-gold {
+            color: @orange;
+          }
+
+          &-health {
+            color: @green;
+          }
+
+          &-damage {
+            color: @red;
+          }
+        }
       }
     }
   }

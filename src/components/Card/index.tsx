@@ -1,31 +1,37 @@
 import React from 'react';
 
-// import CardSpring from './CardSpring'; // todo
+import CardSpring from './CardSpring';
 import CardUnit from './CardUnit';
-import CardInstant from './CardInstant';
 import CardInner from './CardInner';
-import CardVictory from './CardVictory';
+import CardEffects from './CardEffects';
 
 function Card({ children }) {
-  return <div className="card"><div className="card-frame frame">{children}</div></div>;
+  return (
+    <div className="card">
+      <div className="card-frame frame">{children}</div>
+    </div>
+  );
 }
 
+Card.Spring = CardSpring;
 Card.Inner = CardInner;
-Card.Instant = CardInstant;
+Card.Effects = CardEffects;
 Card.Unit = CardUnit;
-Card.Victory = CardVictory;
 
 const CardWrapper = ({ card, revealed = true }) => {
   return (
-    <Card>
-      {revealed && (
-        <Card.Inner config={card}>
-          {card.config.instant ? <Card.Instant config={card.config.instant}></Card.Instant> : null}
-          {card.config.victory ? <Card.Victory config={card.config.victory}></Card.Victory> : null}
-          {card.monster ? <Card.Unit monster={card.monster}></Card.Unit> : null}
-        </Card.Inner>
+    <Card.Spring>
+      <Card>
+        {revealed && (
+          <Card.Inner config={card}>
+            {card.config.instant ? <Card.Effects config={card.config.instant} modifiers={['m-instant']} /> : null}
+            <div className="card-divider"/>
+            {card.config.victory ? <Card.Effects config={card.config.victory} modifiers={['m-victory']} /> : null}
+            {card.monster ? <Card.Unit monster={card.monster}></Card.Unit> : null}
+          </Card.Inner>
         )}
-    </Card>
+      </Card>
+    </Card.Spring>
   );
 };
 
