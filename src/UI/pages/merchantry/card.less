@@ -2,7 +2,7 @@
   background: @color-dark;
   border: 1px inset @color-black;
   border-radius: rh(2);
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
   font-size: @font-size-small;
   height: @card-height;
@@ -15,7 +15,7 @@
   }
 
   &:hover {
-    box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.55);
     cursor: pointer;
   }
 
@@ -24,7 +24,7 @@
   }
 
   &-frame {
-    border: 2px inset brown;
+    border: 2px inset @red;
     border-radius: rh(2);
     display: flex;
     flex-direction: column;
@@ -37,16 +37,50 @@
         flex-wrap: nowrap;
         justify-content: center;
 
+        &_name {
+          display: block;
+          max-width: 75px;
+          text-align: center;
+        }
+
         &_cost {
-          background: rgb(204, 191, 75); // todo colors
-          border: 1px solid rgb(226, 174, 4);
+          background: linear-gradient(45deg, rgba(242, 215, 12, 1) 0%, rgba(255, 255, 255, 1) 56%, rgba(252, 235, 0, 1) 96%);
+          border: 1px solid @orange;
           border-radius: 50%;
-          color: yellow;
+          box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.5);
+          color: @B400;
+          content: '';
+          display: inline-block;
+          height: rh(5);
           position: absolute;
           right: 0;
-          text-align: center;
           top: 0;
           width: rh(5);
+          z-index: 5;
+
+          > p {
+            left: 5px;
+            position: absolute;
+            z-index: 7;
+          }
+
+          &::after {
+            background: linear-gradient(45deg, rgba(242, 215, 12, 1) 0%, rgba(255, 255, 255, 1) 56%, rgba(252, 235, 0, 1) 96%);
+            border-bottom: 1px solid rgba(242, 215, 12, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-right: 1px solid rgba(242, 215, 12, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 2px 2px rgba(150, 150, 150, 0.05);
+            content: '';
+            display: block;
+            height: rh(4);
+            left: rh(0.5);
+            position: absolute;
+            top: rh(0.5);
+            width: rh(4);
+            z-index: 6;
+          }
         }
 
         &_icon {

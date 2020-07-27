@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import CardWrapper from '../Deck/Card';
-import { Card } from '@/types/Card';
+import Card from '@/components/Card';
+import { TCard } from '@/types/Card';
 
 function PlayerHand({ hand = [] }: { hand: Card[] }) {
   const handsRef = useRef(hand);
@@ -15,8 +15,8 @@ function PlayerHand({ hand = [] }: { hand: Card[] }) {
 
   return (
     <React.Fragment>
-      {hand.map((card: Card) => {
-        return <CardWrapper card={card} key={card.uuid} />;
+      {hand.map((card: TCard) => {
+        return <Card card={card} key={card.uuid} />;
       })}
     </React.Fragment>
   );

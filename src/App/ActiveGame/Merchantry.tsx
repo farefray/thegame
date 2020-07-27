@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import Card from './Deck/Card';
+import Card from '@/components/Card';
 import { WebSocketContext } from '@/socket.context';
 import { useStoreState } from '@/store/hooks';
 

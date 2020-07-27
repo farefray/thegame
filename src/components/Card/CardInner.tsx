@@ -16,7 +16,7 @@ export default function CardInner({ children, config }) {
               {config.monster ? SvgIcons(ICON_NAME.SWORDS) : SvgIcons(ICON_NAME.MAGIC)}
             </div>
             <span className="frame-header_name">{name}</span>
-            <div className="frame-header_cost">{cost}</div>
+            <div className="frame-header_cost"><p>{cost}</p></div>
           </div>
 
           {children}
