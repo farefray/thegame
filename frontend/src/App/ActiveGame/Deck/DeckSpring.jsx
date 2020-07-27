@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useSprings, animated, interpolate } from 'react-spring';
 import { useEffectOnce } from 'react-use';
-import Card from './Card';
+import Card from '@/components/Card';
 
 // These two are just helpers, they curate spring data, values that are later being interpolated into css
 const to = (i) => ({ x: 0, y: i * -4, scale: 1, rot: -10 + Math.random() * 20, delay: i * 100, op: 1 });

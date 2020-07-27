@@ -2,7 +2,7 @@ import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { createMockedStore } from './MockedStore';
 import CardsFactory from '@/../../backend/src/factories/CardsFactory';
-import Card from '@/App/ActiveGame/Deck/Card';
+import Card from 'components/Card/index';
 import { centered } from './utils';
 
 const cardsFactory = new CardsFactory();
@@ -21,11 +21,7 @@ function CardTestingSuite(props) {
   const component = <Card card={cardsFactory.getRandomCard()} animated={props.animated} revealed={props.revealed} />;
   return (
     <StoreProvider store={createMockedStore({})}>
-      <div
-        style={{
-          fontFamily: 'helvetica neue'
-        }}
-      >
+      <div>
         {centered(component)}
       </div>
     </StoreProvider>

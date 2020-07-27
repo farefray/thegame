@@ -1,6 +1,27 @@
 import React, { useRef, useState } from 'react';
 import { useSpring, animated } from 'react-spring';
 
+// const animateCardAction = (cardAction, index?) => (i) => {
+//   const cardWidth = 32 * 4;
+//   if (!cardAction) {
+//     return {
+//       x: 0,
+//       y: 0,
+//       scale: 1,
+//       op: 1,
+//       delay: 50 + i * 100,
+//       from: {
+//         x: -cardWidth * i,
+//         y: 0,
+//         scale: 1,
+//         op: 0
+//       }
+//     };
+//   }
+
+//   return index === i ? { x:0, y: -(i * 100), scale: 1.25, op: 0 } : { x:0, y: 0, scale: 1, op: 1 };
+// };
+
 function CardSpring(children) {
   const ref = useRef();
 

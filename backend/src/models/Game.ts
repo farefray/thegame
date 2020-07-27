@@ -41,13 +41,11 @@ export default class Game {
     });
   }
 
-  async gamePhase(phase: GAME_PHASE, duration?: number) {
-    const countdown = Math.round((duration || COUNTDOWN_BETWEEN_ROUNDS) / 1000);
-
+  async gamePhase(phase: GAME_PHASE, duration = COUNTDOWN_BETWEEN_ROUNDS) {
     const eventBus:EventBus = Container.get('event.bus');
     this.players.forEach(player => {
       eventBus.emitMessage(EVENT_TYPE.GAME_PHASE_UPDATE, player.getUID(), {
-        countdown,
+        countdown: Math.round((duration) / 1000),
         phase
       });
     });
