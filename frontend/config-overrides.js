@@ -43,7 +43,9 @@ const webpackConfig = override(
     return config;
   },
   removeModuleScopePlugin(),
-  addWebpackModuleRule({
+  /** TODO resolve with optimizations */
+  /** Current loader is required for battle particles, to have image sizes while assets load. However this also makes build way slower. Need to figure something out
+   * addWebpackModuleRule({
     test: /\.(gif|jpe?g|png)$/, use: [{
       loader: '@lesechos/image-size-loader', options: {
         name: '[name].[contenthash].[ext]',
@@ -52,6 +54,8 @@ const webpackConfig = override(
       }
     }]
   }),
+   */
+  /** Svg custom icons */
   addWebpackModuleRule({
     test: /\.svg$/,
     include: [

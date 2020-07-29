@@ -9,7 +9,6 @@ export default (
     <button
       onClick={() => {
         game.state.firstPlayer.dealCards();
-        game.state.secondPlayer.dealCards();
       }}
     >
       Deal cards

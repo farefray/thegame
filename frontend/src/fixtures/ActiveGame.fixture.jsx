@@ -2,11 +2,13 @@ import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { useValue } from 'react-cosmos/fixture';
 import ActiveGame from '@/App/ActiveGame';
-import { ABILITY_PHASE } from '@/../../backend/src/typings/Card';
 import { store, game } from './emulateState';
 
 import WebSocketProvider from '@/socket.context';
 import { MOCKED_CUSTOMER_UID } from './MockedEventBus';
+
+import { EVENT_SUBTYPE } from '@/../../backend/src/typings/EventBus';
+import { ABILITY_PHASE } from '@/../../backend/src/typings/Card';
 
 let battleWinner;
 const DebugControls = () => (
@@ -75,6 +77,9 @@ const DebugControls = () => (
   </div>
 );
 
+setTimeout(() => {
+  game.state.getPlayer(MOCKED_CUSTOMER_UID).invalidate(EVENT_SUBTYPE.PLAYER_SYNC);
+}, 1000);
 
 function ActiveGameTestingSuite(props) {
   const [rendered] = useValue('rendered', { defaultValue: true }); // failed attemp to make it rerender refs

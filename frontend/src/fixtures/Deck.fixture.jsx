@@ -7,16 +7,16 @@ import { centered } from './utils';
 
 const cardsFactory = new CardsFactory();
 const cards = [];
-for (let index = 0; index < 5; index++) {
+for (let index = 0; index < 10; index++) {
   cards.push(cardsFactory.getRandomCard());
 }
 
-const isEmpty = false;
+const isHidden = false;
 
 const store = createMockedStore({});
 
 export default (
   <StoreProvider store={store}>
-    {centered(<Deck cards={isEmpty ? new Array(10).fill({}) : cards} />)}
+    {centered(isHidden ? <Deck cards={new Array(10).fill({uuid: Math.random()})} /> : <Deck cards={cards} />)}
   </StoreProvider>
 );

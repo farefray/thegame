@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import Card from '@/components/Card';
 import { WebSocketContext } from '@/socket.context';
 import { useStoreState } from '@/store/hooks';
+import CardComponent from '@/components/Card';
 
 function Merchantry() {
   const merchantry = useStoreState((state) => state.merchantry);
@@ -14,15 +14,16 @@ function Merchantry() {
       {revealedCards &&
         revealedCards.map((card, index) => {
           return (
-            <div key={index} className="card-container" onClick={() => {
-              if (!isLocked) {
-                websocket.emitMessage('PURCHASE_CARD', index);
-              }
-            }}>
-              <Card
-                key={index}
-                card={card}
-              />
+            <div
+              key={index}
+              className="card-container"
+              onClick={() => {
+                if (!isLocked) {
+                  websocket.emitMessage('PURCHASE_CARD', index);
+                }
+              }}
+            >
+              <CardComponent card={card} revealed={true} />
             </div>
           );
         })}

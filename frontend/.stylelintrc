@@ -16,20 +16,7 @@
 		"scss/at-else-empty-line-before": "never",
 		"scss/at-else-if-parentheses-space-before": "always",
 		"scss/at-function-parentheses-space-before": "never",
-		"scss/at-function-named-arguments": [
-			"always",
-			{
-				"ignore": ["single-argument"],
-				"ignoreFunctions": [
-					"z",
-					"adjust-color-to-bg",
-					"grid-span",
-					"grid-gutter",
-					"lighten",
-					"darken"
-				]
-			}
-		],
+		"scss/at-function-named-arguments": ["never"],
 		"scss/at-import-no-partial-leading-underscore": true,
 		"scss/at-mixin-argumentless-call-parentheses": "never",
 		"scss/at-mixin-parentheses-space-before": "never",
