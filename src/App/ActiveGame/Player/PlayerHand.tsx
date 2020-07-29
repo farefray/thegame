@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import Card from '@/components/Card';
-import { TCard } from '@/types/Card';
+import CardComponent from 'components/Card';
+import { Card } from '@/types/Card';
 
-function PlayerHand({ hand = [] }: { hand: Card[] }) {
+function PlayerHand({ hand = [] }: { hand: Card[]}) {
   const handsRef = useRef(hand);
 
   useEffect(() => {
@@ -15,8 +15,8 @@ function PlayerHand({ hand = [] }: { hand: Card[] }) {
 
   return (
     <React.Fragment>
-      {hand.map((card: TCard) => {
-        return <Card card={card} key={card.uuid} />;
+      {hand.map((card: any) => {
+        return <CardComponent card={card} revealed={true}/>;
       })}
     </React.Fragment>
   );

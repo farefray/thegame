@@ -17,7 +17,7 @@ function Gold({ gold }) {
 
   return (
     <animated.div className="gold">
-      {spring.val.interpolate(val => Math.floor(val))}
+      {spring.val.to(val => Math.floor(val))}
     </animated.div>
   );
 }

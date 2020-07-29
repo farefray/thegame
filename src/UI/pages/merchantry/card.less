@@ -8,7 +8,10 @@
   height: @card-height;
   transition: box-shadow 0.5s;
   width: @card-width;
-  will-change: transform;
+
+  &-animation {
+    will-change: transform;
+  }
 
   .m-locked & {
     filter: grayscale(60%);
@@ -26,7 +29,7 @@
   &-divider {
     background: linear-gradient(45deg, #a02c23, @red);
     bottom: rh(12);
-    height: 4px;
+    height: rh(0.5);
     position: absolute;
     width: 100%;
   }
