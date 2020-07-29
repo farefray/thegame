@@ -120,7 +120,7 @@ class SocketService {
     }
 
     const loginResults = connectedPlayers.login(firebaseUser, this.id);
-    if (loginResults && loginResults.session) {
+    if (loginResults && loginResults.session) { // todo check if this is fired correctly
       // restore player session
       const { customer, session } = loginResults;
       session.getState().getPlayer(customer.ID)?.invalidate(EVENT_SUBTYPE.PLAYER_SYNC); // mark player as 'update needed'
