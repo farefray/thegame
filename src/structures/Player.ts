@@ -117,7 +117,7 @@ export default class Player extends EventBusUpdater {
       case EVENT_SUBTYPE.PLAYER_CARDS_UPDATED: {
         invalidatedObject = {
           hand: this.hand.toSocket(),
-          deckSize: this.deck.size,
+          deck: this.deck.cardUniqueids(),
           discard: this.discard.toSocket()
         };
 
@@ -131,7 +131,7 @@ export default class Player extends EventBusUpdater {
           gold: this.gold,
           board: this.board.toSocket(),
           hand: this.hand.toSocket(),
-          deckSize: this.deck.size,
+          deck: this.deck.cardUniqueids(),
           discard: this.discard.toSocket()
         };
 

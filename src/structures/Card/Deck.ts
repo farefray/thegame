@@ -14,4 +14,14 @@ export default class Deck extends AbstractList<Card> {
   public clean() {
     this._list = [];
   }
+
+  public cardUniqueids() {
+    return this.values().reduce((prev: any, cur: Card) => {
+      prev.push({
+        uuid: cur.uuid
+      });
+
+      return prev;
+    }, [])
+  }
 }
