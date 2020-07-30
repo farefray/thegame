@@ -2,7 +2,7 @@ import React from 'react';
 import { StoreProvider } from 'easy-peasy';
 import { createMockedStore } from './MockedStore';
 import CardsFactory from '@/../../backend/src/factories/CardsFactory';
-import Card from 'components/Card/index';
+import Card from 'components/Card/CardComponent';
 import { centered } from './utils';
 
 const cardsFactory = new CardsFactory();

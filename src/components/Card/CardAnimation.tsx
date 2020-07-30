@@ -12,11 +12,11 @@ type AnimationProps = { x: number; y: number; rotation: number; }
 const CardAnimation: FunctionComponent<IAnimationProps> = ({ children, stackPosition = 0 }) => {
 
   const { x, y, rotation } = useSpring<AnimationProps>({
-    from: { x: 0, y: -700, rotation: 0 },
+    from: { x: 0, y: 0, rotation: 0 },
     x: 0,
     y: -(stackPosition * getRandomArbitrary(4, 10)),
     rotation: getRandomArbitrary(-5, 5),
-    delay: stackPosition >= 0 ? (stackPosition * 100 + 100) : 0
+    // delay: stackPosition >= 0 ? (stackPosition * 100 + 100) : 0
   });
 
   return (

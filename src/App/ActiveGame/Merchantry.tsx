@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { WebSocketContext } from '@/socket.context';
 import { useStoreState } from '@/store/hooks';
-import CardComponent from '@/components/Card';
+import CardComponent from 'components/Card/CardComponent';
 
 function Merchantry() {
   const merchantry = useStoreState((state) => state.merchantry);

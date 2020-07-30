@@ -10,19 +10,17 @@ function Player({ isOpponent }) {
   const opponent = useStoreState((state) => state.players.opponent);
   const player = isOpponent ? opponent : currentPlayer;
 
-
-
-  console.log("Player -> player.deckSize", player.deckSize)
   return (
     <div className={"player " + (isOpponent ? 'm-opponent' : '')}>
       <Healthbar health={player.health} />
       <Gold gold={player.gold}/>
       <div className="player-deck">
-        <Deck cards={new Array(player.deckSize).fill({})} />
+        {player.deck ? <Deck cards={player.deck} /> : <></>}
       </div>
-      {/* <div className="player-hand">
-        <PlayerHand hand={player.hand} />
+      <div className="player-hand">
+        {player.hand ? <PlayerHand cards={player.hand} /> : <></>}
       </div>
+      {/*
       <div className="player-discard">
         <Deck cards={player.discard} />
       </div> */}

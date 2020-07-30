@@ -6,7 +6,7 @@ interface AnyPlayerModel {
   gold: number;
   board: Array<any>;
   hand: Card[];
-  deckSize: number;
+  deck: Card[]; // not really a card, just a representation with UUID
   discard: Card[];
 }
 
@@ -44,7 +44,7 @@ const defaultAnyPlayerState = {
   gold: 0,
   board: [],
   hand: [],
-  deckSize: 0,
+  deck: [],
   discard: []
 };
 
@@ -93,11 +93,11 @@ const playersModel: PlayersModel = {
   cardsUpdate: action((state, { payload: cards, isSelf }) => {
     if (isSelf) {
       state.currentPlayer.hand = [...cards.hand];
-      state.currentPlayer.deckSize = cards.deckSize;
+      state.currentPlayer.deck = cards.deck;
       state.currentPlayer.discard = cards.discard;
     } else {
       state.opponent.hand = [...cards.hand];
-      state.opponent.deckSize = cards.deckSize;
+      state.opponent.deck = cards.deck;
       state.opponent.discard = cards.discard;
     }
   }),
@@ -186,11 +186,11 @@ const playersModel: PlayersModel = {
 
     let isSelf = playerModelUpdate.uuid === uuid;
 
-    if (playerModelUpdate.hand && playerModelUpdate.deckSize && playerModelUpdate.discard) {
+    if (playerModelUpdate.hand && playerModelUpdate.deck && playerModelUpdate.discard) {
       actions.cardsUpdate({
         payload: {
           hand: [...playerModelUpdate.hand],
-          deckSize: playerModelUpdate.deckSize,
+          deck: playerModelUpdate.deck,
           discard: playerModelUpdate.discard
         },
         isSelf

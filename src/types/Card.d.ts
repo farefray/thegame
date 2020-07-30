@@ -26,3 +26,5 @@ export interface CardAction {
 export interface Card {
   uuid: string
 }
+
+export const CARD_WIDTH = 32 * 4;
