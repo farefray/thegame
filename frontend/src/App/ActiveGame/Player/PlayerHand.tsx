@@ -1,24 +1,37 @@
-import React, { useRef, useEffect } from 'react';
-import CardComponent from 'components/Card';
-import { Card } from '@/types/Card';
+import React, { useEffect, useState } from 'react';
+import CardComponent from 'components/Card/CardComponent';
+import { useTransition, a } from 'react-spring';
+import { CARD_WIDTH } from '@/types/Card.d.ts';
 
-function PlayerHand({ hand = [] }: { hand: Card[]}) {
-  const handsRef = useRef(hand);
+function PlayerHand({ cards }) {
+  const [handState, updateState] = useState(cards);
 
   useEffect(() => {
-    if (hand.length && !handsRef.current.length) {
-      // added cards to hand
-      handsRef.current = [...hand];
-    }
+    updateState(cards);
+  }, [cards]);
 
-  }, [hand]);
+  const transition = useTransition(handState, {
+    keys: (cards) => cards.uuid,
+    from: (card, i) => ({ x: -(24 + i * CARD_WIDTH), y: 0, opacity: 0 }),
+    enter: { x: 0, y: 0, opacity: 1 },
+    leave: (card, i) => {
+      return [{ x: 0, y: -(24 + i * CARD_WIDTH) },
+        { transform: 'perspective(600px) rotateX(180deg)', color: '#28d79f' },
+        { transform: 'perspective(600px) rotateX(0deg)' }];
+    },
+    config: {
+      mass: 2,
+      tension: 225,
+      friction: 30
+    }
+  });
 
   return (
-    <React.Fragment>
-      {hand.map((card: any) => {
-        return <CardComponent card={card} revealed={true}/>;
-      })}
-    </React.Fragment>
+    transition((style, card, t, i) => (
+      <a.div style={style}>
+        <CardComponent card={card} revealed={true} />
+      </a.div>
+    ))
   );
 }
 
