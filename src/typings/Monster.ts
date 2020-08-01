@@ -2,12 +2,12 @@ import { SpellOptions } from "../structures/BattleUnit";
 
 export interface MonsterInterface {
   name?: string; // auto-generated later
+  spriteSize: number;
   lookType: number;
   cost: number;
   health: {
     now?: number,
     max: number,
-    regen?: number, // TODO if we need this
   };
   mana?: {
     max?: number,
