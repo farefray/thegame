@@ -1,4 +1,4 @@
-56 search results found
+53 search results found
 
 file:///d:\thegame\backend\src\configs\spells\hoof.ts
   15:       return null; // todo test
@@ -32,6 +32,7 @@ file:///d:\thegame\backend\src\services\Socket.ts
   79:       // TODO !!!
   92:     } // todo case when no customer?
   99:     if (firebaseUser) { // todo test and fix this case
+  123:     if (loginResults && loginResults.session) { // todo check if this is fired correctly
   128:       // todo state has to be corrected, so player timer will show proper timing + player actions will be blocked on frontend
   130:       // eventBus.emit('stateUpdate', customer.ID, session.getState()); // todo
   132:       // todo restore if he is in battle?
@@ -78,21 +79,11 @@ file:///d:\thegame\backend\src\utils\effects.ts
 file:///d:\thegame\frontend\src\App.jsx
   22:     // TODO need to check if user is logged in and trigger thunk only if auth really changed
 
-file:///d:\thegame\frontend\src\App\ActiveGame\Deck\Card.tsx
-  3: // import CardSpring from './CardSpring'; // todo
-
 file:///d:\thegame\frontend\src\App\ActiveGame\timeouts_test.js
   278:   const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
 
-file:///d:\thegame\frontend\src\UI\custom-core.less
-  1: // TODO better font include
-  2: // TODO replace font with better variant
-
 file:///d:\thegame\frontend\src\UI\pages\activegame.less
   5: // TODO old styles, revise
-
-file:///d:\thegame\frontend\src\UI\pages\merchantry\card.less
-  41:           background: rgb(204, 191, 75); // todo colors
 
 file:///d:\thegame\frontend\src\UI\pages\player\gold.less
   4:   color: #004909; // todo move colors into variables

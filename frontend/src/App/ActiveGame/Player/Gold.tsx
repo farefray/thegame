@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useSpring, animated } from 'react-spring';
 
-function Gold({ gold }) {
+function Gold({ gold, isOpponent }) {
   const goldRef = useRef(gold);
   const [spring, set] = useSpring(() => {
     return { from: { val: 0 }, to: { val: goldRef.current } };
@@ -16,7 +16,7 @@ function Gold({ gold }) {
   }, [gold, set]);
 
   return (
-    <animated.div className="gold">
+    <animated.div className={'gold' + (isOpponent ? ' m-opponent' : '')}>
       {spring.val.to(val => Math.floor(val))}
     </animated.div>
   );

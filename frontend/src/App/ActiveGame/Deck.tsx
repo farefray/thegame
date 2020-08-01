@@ -6,7 +6,7 @@ import { getRandomArbitrary } from '@/utils/misc';
 
 const DeckWrapper = (children) => <div className="deck">{children}</div>;
 
-function Deck({ cards }) {
+function Deck({ cards, isDiscard }) {
   const [deckState, updateState] = useState(cards);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ function Deck({ cards }) {
     keys: (cards) => cards.uuid,
     from: (card, i) => ({
       x: 0,
-      y: -500,
+      y: isDiscard ? 0 : -500,
       opacity: 0
     }),
     enter: (card, i) => ({
@@ -43,7 +43,7 @@ function Deck({ cards }) {
 
   const fragment = transition((style, card, t, i) => (
     <a.div style={style}>
-      <CardComponent card={card} revealed={false} />
+      <CardComponent card={card} revealed={!!card.name} />
     </a.div>
   ));
 

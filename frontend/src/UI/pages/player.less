@@ -12,10 +12,18 @@
     min-width: @card-width;
   }
 
+  &-deck {
+    margin-left: rh(10);
+  }
+
   &-hand {
     display: flex;
     padding-left: rh(6);
     width: 100%;
+
+    .card {
+      position: absolute;
+    }
   }
 
   &-discard {
@@ -23,5 +31,6 @@
   }
 
   @import url('./player/healthbar.less');
-  @import url('./player/gold.less');
 }
+
+@import url('./player/gold.less');
