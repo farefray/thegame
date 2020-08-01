@@ -37,6 +37,8 @@ export default class AiPlayer extends Player {
     super(id, subscribers);
 
     this.AIFlags = new AIFlags();
+
+    this.invalidate();
   }
 
   public tradeRound(merchantry: Merchantry) {

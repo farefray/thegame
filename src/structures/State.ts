@@ -26,7 +26,7 @@ export default class State {
     this.players = new Map(customers.map((customer) => [customer.ID, new Player(customer.ID, subscribers)]));
 
     if (this.players.size === 1) {
-      this.players.set('ai_player', new AiPlayer('ai_player', subscribers)); // TODO send AI state to player on game start
+      this.players.set('ai_player', new AiPlayer('ai_player', subscribers));
     }
 
     this.merchantry = new Merchantry([...this.players.keys()]);
