@@ -58,6 +58,7 @@ export default class BattleUnit {
   public isPassive: boolean;
   public isShopRestricted: boolean;
   public walkingSpeed: number;
+  private spriteSize: number; // for frontend representation
 
   private _health: {
     now: number;
@@ -106,6 +107,7 @@ export default class BattleUnit {
     };
 
     this.walkingSpeed = monsterConfig.walkingSpeed ?? 0;
+    this.spriteSize = monsterConfig.spriteSize ?? 1;
 
     this.isTargetable = monsterConfig?.specialty?.targetable !== undefined ? monsterConfig.specialty.targetable : true;
     this.isPassive = monsterConfig?.specialty?.passive !== undefined ? monsterConfig.specialty.passive : false;

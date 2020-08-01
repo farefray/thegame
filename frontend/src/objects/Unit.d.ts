@@ -22,8 +22,3 @@ export interface IProps {
   unit: any;
   onLifecycle?: Function;
 }
-
-export interface MoveOptions {
-  instant?: boolean;
-  direction?: number;
-}

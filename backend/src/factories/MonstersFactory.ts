@@ -10,8 +10,6 @@ export default class MonstersFactory {
       return undefined;
     }
 
-    const monsterConfig = monsters[unitName];
-
     const monsterDefaults = {} as MonsterInterface;
 
     // default values via Lazy Object Literal Initialization pattern to define default values
@@ -39,7 +37,9 @@ export default class MonstersFactory {
       speed: 0
     };
 
-    return Object.assign({} as MonsterInterface, monsterDefaults, monsterConfig);
+    monsterDefaults.spriteSize = 1;
+
+    return Object.assign({} as MonsterInterface, monsterDefaults, monsters[unitName]);
   }
 
   static createBattleUnit(unitName: string) {

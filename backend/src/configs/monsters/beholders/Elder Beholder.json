@@ -15,5 +15,6 @@
         "max": 0,
         "regen": 0
     },
-    "walkingSpeed": 3000
+    "walkingSpeed": 3000,
+    "spriteSize": 2
 }

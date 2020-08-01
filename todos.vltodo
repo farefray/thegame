@@ -1,4 +1,4 @@
-53 search results found
+50 search results found
 
 file:///d:\thegame\backend\src\configs\spells\hoof.ts
   15:       return null; // todo test
@@ -38,8 +38,8 @@ file:///d:\thegame\backend\src\services\Socket.ts
   132:       // todo restore if he is in battle?
 
 file:///d:\thegame\backend\src\structures\AiPlayer.ts
-  48:     // todo pick by ai network
-  55:     return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
+  50:     // todo pick by ai network
+  57:     return new Map(); // todo this.shopUnits.filter(unit => unit.cost <= this.gold);
 
 file:///d:\thegame\backend\src\structures\Battle.ts
   20:   private units: BattleUnitList; // temporaly public for ai needs
@@ -48,10 +48,10 @@ file:///d:\thegame\backend\src\structures\Battle.ts
   274:             // TODO avoid such issues
 
 file:///d:\thegame\backend\src\structures\BattleUnit.ts
-  86:         duration: Math.floor((monsterConfig.attack?.speed ?? 0) / 10) // todo isnt this supposed to be varying on distance/atkspeed?
-  192:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
-  559:   // todo review this one
-  598:     // todo also base to closest unit?
+  87:         duration: Math.floor((monsterConfig.attack?.speed ?? 0) / 10) // todo isnt this supposed to be varying on distance/atkspeed?
+  194:     return this.walkingSpeed > 0; // todo figure out stuns maybe here?
+  561:   // todo review this one
+  600:     // todo also base to closest unit?
 
 file:///d:\thegame\backend\src\structures\Battle\Pathfinder.ts
   205:     // todo make this human readable
@@ -63,21 +63,20 @@ file:///d:\thegame\backend\src\structures\Card\CardAction.ts
   29:     return this; // todo remove not nessesary stuff
 
 file:///d:\thegame\backend\src\structures\State.ts
-  29:       this.players.set('ai_player', new AiPlayer('ai_player', subscribers)); // TODO send AI state to player on game start
   140:     // todo
   157:         //  todo new AppError('warning', 'Not enough money');
 
 file:///d:\thegame\backend\src\structures\abstract\AbstractList.ts
   68:     const sorted = [...this._list].sort(compareFn); // todo check for mutation
 
-file:///d:\thegame\backend\src\typings\Monster.ts
-  10:     regen?: number, // TODO if we need this
-
 file:///d:\thegame\backend\src\utils\effects.ts
   1: // todo review format for those, as its ugly and too big
 
 file:///d:\thegame\frontend\src\App.jsx
   22:     // TODO need to check if user is logged in and trigger thunk only if auth really changed
+
+file:///d:\thegame\frontend\src\App\ActiveGame\Player\PlayerHand.tsx
+  19:       await next({ x: 1248, y: 24, delay: 1250 }); // todo figure those values dynamically?
 
 file:///d:\thegame\frontend\src\App\ActiveGame\timeouts_test.js
   278:   const boardActions = actionStack.filter(action => action.time === actionTime); // todo remove actions from stack instead?
@@ -91,9 +90,6 @@ file:///d:\thegame\frontend\src\UI\pages\player\gold.less
 file:///d:\thegame\frontend\src\firebase.js
   35:     // TODO profiles and displayName
 
-file:///d:\thegame\frontend\src\fixtures\todo3.jsx
-  8: // todo make it share functionality with jest and core.test.js
-
 file:///d:\thegame\frontend\src\index.js
   6: import * as serviceWorker from './service-worker'; // todo  do we need service worker at all?
 
@@ -101,10 +97,9 @@ file:///d:\thegame\frontend\src\objects\Unit.d.ts
   10:   effects: Array<any>; // TODO
 
 file:///d:\thegame\frontend\src\objects\Unit.tsx
-  166:   // todo options is not used? investigate
   231:     const currentEffect = this.state.effects.filter((effect) => effect.id === effectID)[0]; // todo object and get by key
   292:       callback(); // todo this callback should be actually linked to created particle (:
-  364:       'm-in-battle': false // todo
+  350:       'm-in-battle': false // todo
 
 file:///d:\thegame\frontend\src\socket.context.tsx
   40:   // TODO

@@ -15,7 +15,7 @@ function PlayerHand({ cards, isOpponent }) {
     from: (card, i) => ({ x: -(24 + i * CARD_WIDTH), y: 0, opacity: 0 }),
     enter: (card, i) => ({ x: (24 + i * CARD_WIDTH), y: 0, opacity: 1 }),
     leave: (card, i) => async (next, cancel) => {
-      await next({ x: 0, y: -(48 * 4 * (isOpponent ? -1 : 1)) });
+      await next({ y: -(48 * 4 * (isOpponent ? -1 : 1)) });
       await next({ x: 1248, y: 24, delay: 1250 }); // todo figure those values dynamically?
     },
     config: {
