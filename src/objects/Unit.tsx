@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IState, IProps, MoveOptions } from './Unit.d';
+import { IState, IProps } from './Unit.d';
 
 import { DIRECTION, ACTION } from '../shared/constants.js';
 import { getHealthColorByPercentage } from '../utils/UnitUtils';
@@ -12,12 +12,14 @@ import EffectsFactory from './Unit/EffectsFactory';
 const GAMEBOARD_HEIGHT = 8;
 const GAMEBOARD_WIDTH = 8;
 const ONE_CELL_HEIGHT = 64;
+const SPRITE_SIZE = 32;
 
 export default class Unit extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
     const { unit } = props;
+    console.log("Unit -> constructor -> unit", unit)
     const { x, y, id, key } = unit;
     const position = this.getPositionFromCoordinates(x, y);
     this.state = {
@@ -34,7 +36,7 @@ export default class Unit extends React.Component<IProps, IState> {
       mana: 0,
       health: unit._health.max,
 
-      unitSpriteDimensions: 64, // we will update it later after image will be loaded (todo check, we seems alrdy got this instantly)
+      unitSpriteDimensions: unit.spriteSize * SPRITE_SIZE,
       isLoaded: false,
 
       top: position.top,
@@ -163,8 +165,7 @@ export default class Unit extends React.Component<IProps, IState> {
     });
   }
 
-  // todo options is not used? investigate
-  private move(stepPayload, callback, options: MoveOptions = {}) {
+  private move(stepPayload, callback) {
     const { to, stepDuration } = stepPayload;
     const { top, left } = this.getPositionFromCoordinates(to.x, to.y);
 
@@ -174,9 +175,9 @@ export default class Unit extends React.Component<IProps, IState> {
         y: to.y,
         top,
         left,
-        transition: !options.instant ? `transform ${stepDuration}ms linear` : 'auto',
-        direction: options.direction || this.getDirectionToTarget(to.x, to.y),
-        isMoving: !options.instant ? true : false
+        transition: `transform ${stepDuration}ms linear`,
+        direction: this.getDirectionToTarget(to.x, to.y),
+        isMoving: true
       },
       () => callback()
     );
@@ -200,8 +201,7 @@ export default class Unit extends React.Component<IProps, IState> {
       };
     }
 
-    const spriteDims = this.state ? this.state.unitSpriteDimensions : 64;
-    const unitDimsCorrection = (ONE_CELL_HEIGHT - spriteDims) / 2;
+    const unitDimsCorrection = (ONE_CELL_HEIGHT - (this.state?.unitSpriteDimensions || 32)) / 2;
     const isInHand = y === -1;
     const top = (isInHand ? 0 : Math.abs(y - GAMEBOARD_HEIGHT + 1)) * ONE_CELL_HEIGHT - unitDimsCorrection;
     const left = (x * 512) / GAMEBOARD_WIDTH - unitDimsCorrection;
@@ -336,20 +336,6 @@ export default class Unit extends React.Component<IProps, IState> {
     return this.state.stats.attack.range === 1;
   }
 
-  onUnitSpriteLoaded(unitSpriteDimensions) {
-    const { x, y } = this.state;
-    this.setState(
-      {
-        unitSpriteDimensions,
-        isLoaded: true
-      },
-      () => {
-        const { top, left } = this.getPositionFromCoordinates(x, y);
-        this.setState({ top, left });
-      }
-    );
-  }
-
   render() {
     const { top, left, transition, health, mana, direction, isMoving, stats, isLoaded, isDead, y, effects } = this.state;
 
@@ -376,7 +362,7 @@ export default class Unit extends React.Component<IProps, IState> {
           transition
         }}
       >
-        {(<UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} onUnitSpriteLoaded={this.onUnitSpriteLoaded.bind(this)} />)}
+        {(<UnitImage lookType={unit.lookType} direction={direction} isMoving={isMoving} extraClass={''} />)}
         {effects.map((effect) => EffectsFactory.render(effect, this.onEffectDone.bind(this)))}
         <div className="unit-healthbar">
           <div

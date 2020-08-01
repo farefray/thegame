@@ -7,20 +7,17 @@ import fallbackImage from '../../assets/monsters/default.png';
  *
  * @todo refactor this
  * preload and cache images somehow
- * once fire onUnitSpriteLoaded to determine unit dimensions
  */
 export default function UnitImage({
   lookType,
   direction,
   isMoving,
-  extraClass = '',
-  onUnitSpriteLoaded
+  extraClass = ''
 }: {
   lookType: number;
   direction: number;
   isMoving: boolean;
   extraClass: string;
-  onUnitSpriteLoaded?: Function;
 }) {
   if (!lookType) {
     throw new Error('Looktype for monsters is missing');
@@ -58,12 +55,6 @@ export default function UnitImage({
       }
     });
   }, [lookType]);
-
-  // we make assumption that sprite size is same for all sprites of this monster.
-  React.useEffect(() => {
-    const firstSpriteDimension = sprites.idle[1].height;
-    onUnitSpriteLoaded && onUnitSpriteLoaded(firstSpriteDimension);
-  }, [sprites]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [sprite, setSprite] = React.useState(sprites[isMoving ? 'animated' : 'idle'][direction]);
 

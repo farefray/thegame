@@ -1,13 +1,13 @@
 import React from 'react';
 
-export function centered(children) {
+export function centered(children, height = 400) {
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        height: '400px'
+        height: height + 'px'
       }}
     >
       <div
