@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CardAnimation, { IAnimationProps } from './CardAnimation';
+import CardAnimation from './CardAnimation';
 import CardUnit from './CardUnit';
 import CardInner from './CardInner';
 import CardEffects from './CardEffects';
