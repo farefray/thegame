@@ -1,20 +1,18 @@
 {
-    "armor": 6,
+    "armor": 7,
     "cost": 5,
     "lookType": 17,
     "attack": {
-        "value": 55,
-        "speed": 1750,
+        "value": 135,
+        "speed": 2000,
         "range": 3,
         "particleID": "rocks"
     },
     "health": {
-        "max": 850
-    },
-    "mana": {
-        "max": 0,
-        "regen": 0
+        "max": 500
     },
     "walkingSpeed": 2000,
-    "spriteSize": 2
+    "mana": {
+        "regen": "0"
+    }
 }

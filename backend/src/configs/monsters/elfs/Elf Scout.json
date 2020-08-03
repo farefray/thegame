@@ -1,5 +1,5 @@
 {
-    "armor": 4,
+    "armor": 2,
     "cost": 4,
     "lookType": 64,
     "attack": {
@@ -9,11 +9,10 @@
         "particleID": "diamond_arrow"
     },
     "health": {
-        "max": 550
+        "max": 400
     },
+    "walkingSpeed": 800,
     "mana": {
-        "max": 0,
-        "regen": 0
-    },
-    "walkingSpeed": 800
+        "regen": "0"
+    }
 }

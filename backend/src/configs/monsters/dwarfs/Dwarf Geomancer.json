@@ -1,19 +1,18 @@
 {
-    "armor": 5,
+    "armor": 10,
     "cost": 7,
     "lookType": 66,
     "attack": {
-        "value": 25,
-        "speed": 1250,
+        "value": 75,
+        "speed": 1500,
         "range": 3,
         "particleID": "earth_missile"
     },
     "health": {
-        "max": 900
+        "max": 550
     },
+    "walkingSpeed": 1500,
     "mana": {
-        "max": 100,
         "regen": 20
-    },
-    "walkingSpeed": 1500
+    }
 }

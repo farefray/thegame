@@ -1,5 +1,5 @@
 {
-    "armor": 3,
+    "armor": 2,
     "cost": 1,
     "lookType": 25,
     "attack": {
@@ -11,9 +11,8 @@
     "health": {
         "max": 450
     },
+    "walkingSpeed": 1000,
     "mana": {
-        "max": 100,
         "regen": 10
-    },
-    "walkingSpeed": 1000
+    }
 }

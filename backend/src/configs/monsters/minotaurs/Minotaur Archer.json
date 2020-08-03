@@ -3,17 +3,16 @@
     "cost": 3,
     "lookType": 24,
     "attack": {
-        "value": 50,
+        "value": 40,
         "speed": 1000,
         "range": 3,
         "particleID": "bolt"
     },
     "health": {
-        "max": 550
+        "max": 450
     },
+    "walkingSpeed": 1250,
     "mana": {
-        "max": 0,
-        "regen": 0
-    },
-    "walkingSpeed": 1250
+        "regen": "0"
+    }
 }

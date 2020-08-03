@@ -1,19 +1,18 @@
 {
-    "armor": 13,
+    "armor": 10,
     "cost": 5,
     "lookType": 29,
     "attack": {
-        "value": 75,
-        "speed": 1250,
+        "value": 100,
+        "speed": 1500,
         "range": 1,
         "particleID": ""
     },
     "health": {
-        "max": 1000
+        "max": 650
     },
+    "walkingSpeed": 1750,
     "mana": {
-        "max": 0,
-        "regen": 0
-    },
-    "walkingSpeed": 1750
+        "regen": "0"
+    }
 }

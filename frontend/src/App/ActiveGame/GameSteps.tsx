@@ -10,17 +10,17 @@ const styles = {
 };
 
 function GameSteps() {
-  const { countdown, gamePhase, tradingPlayer } = useStoreState((state) => state.app)
+  const { countdown, gamePhase, tradingPlayer } = useStoreState((state) => state.app);
 
   const timer = <Timer initialTimerValue={countdown} />;
   return (
     <div className="gamesteps">
       <Steps current={gamePhase} vertical style={styles}>
-        <Steps.Item title="Cards play" icon={SvgIcons(ICON_NAMES.CARDS_RANDOM, '2x')} description={timer}/>
-        <Steps.Item title="Battle" icon={SvgIcons(ICON_NAMES.SWORDS, '2x')} description={timer}/>
-        <Steps.Item className="gamesteps-steps_trade" title="Trade" icon={SvgIcons(ICON_NAMES.TRADE, '2x')} description={timer}/>
+        <Steps.Item title="Cards play" icon={SvgIcons(ICON_NAMES.CARDS_RANDOM, '2x')} description={gamePhase === 0 && timer} />
+        <Steps.Item title="Battle" icon={SvgIcons(ICON_NAMES.SWORDS, '2x')} description={gamePhase === 1 && timer} />
+        <Steps.Item className="gamesteps-steps_trade" title="Trade" icon={SvgIcons(ICON_NAMES.TRADE, '2x')} description={gamePhase === 2 && timer} />
       </Steps>
-      {tradingPlayer ? (<div className="tradingPlayer">{tradingPlayer}</div>) : ''}
+      {tradingPlayer ? <div className="tradingPlayer">{tradingPlayer}</div> : ''}
     </div>
   );
 }

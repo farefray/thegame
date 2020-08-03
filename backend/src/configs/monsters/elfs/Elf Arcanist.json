@@ -3,17 +3,16 @@
     "cost": 6,
     "lookType": 63,
     "attack": {
-        "value": 50,
-        "speed": 1250,
+        "value": 75,
+        "speed": 1000,
         "range": 4,
         "particleID": "holy_missile"
     },
     "health": {
-        "max": 650
+        "max": 550
     },
+    "walkingSpeed": 1500,
     "mana": {
-        "max": 0,
-        "regen": 0
-    },
-    "walkingSpeed": 1500
+        "regen": "0"
+    }
 }
