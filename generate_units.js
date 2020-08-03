@@ -4,7 +4,7 @@
  */
 const fs = require('fs');
 const readline = require('readline');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
@@ -27,9 +27,8 @@ fs.readFile('credentials.json', (err, content) => {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-  const {client_secret, client_id, redirect_uris} = credentials.installed;
-  const oAuth2Client = new google.auth.OAuth2(
-      client_id, client_secret, redirect_uris[0]);
+  const { client_secret, client_id, redirect_uris } = credentials.installed;
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
@@ -48,12 +47,12 @@ function authorize(credentials, callback) {
 function getNewToken(oAuth2Client, callback) {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: SCOPES,
+    scope: SCOPES
   });
   console.log('Authorize this app by visiting this url:', authUrl);
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout,
+    output: process.stdout
   });
   rl.question('Enter the code from that page here: ', (code) => {
     rl.close();
@@ -71,46 +70,55 @@ function getNewToken(oAuth2Client, callback) {
 }
 
 function generateUnits(auth) {
-  const sheets = google.sheets({version: 'v4', auth});
-  sheets.spreadsheets.values.get({
-    spreadsheetId: '1iJL-p0L21tXqeKM4ham-vvbXrNiK7aWDEIMgM_fJzAo',
-    range: 'base!A:L',
-  }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err);
+  const sheets = google.sheets({ version: 'v4', auth });
 
-    const rows = res.data.values;
-    if (rows.length) {
-      rows.map((row) => {
-      console.log("generateUnits -> row", row)
-        if (row[0] && row[1]) {
-          const path = `./src/monsters/${row[0]}/${row[1]}.config.json`
+  sheets.spreadsheets.values.get(
+    {
+      spreadsheetId: '1iJL-p0L21tXqeKM4ham-vvbXrNiK7aWDEIMgM_fJzAo',
+      range: 'base!A:L'
+    },
+    (err, res) => {
+      if (err) return console.log('The API returned an error: ' + err);
 
-          const unitData = {
-            armor: +row[2],
-            cost: +row[3],
-            lookType: +row[4],
-            attack: {
-              value: +row[5],
-              speed: +row[6],
-              range: +row[7] || 1,
-              particleID: row[8] || ''
-            },
-            health: {
-              max: +row[9]
-            },
-            mana: {
-              max: +row[11] > 0 ? 100 : 0,
-              regen: +row[11] || 0
-            },
-            walkingSpeed: +row[10]
-          };
+      const rows = res.data.values;
+      if (rows.length) {
+        const headers = [];
+        for (let row of rows) {
+          if (row[0] === 'folder') {
+            // first run, write headers
+            headers.push(...row);
+            continue;
+          }
+
+          // monsters
+          const path = `./src/configs/monsters/${row[0]}/${row[1]}.json`;
+
+          const unitData = {};
+          for (let index = 2; index < headers.length; index++) {
+            const header = headers[index];
+            let value = row[index];
+            if (parseInt(value)) {
+              value = parseInt(value);
+            }
+
+            if (header.match('[.]')) {
+              // deep path
+              const deeperPath = header.split('.');
+              if (unitData[deeperPath[0]] === undefined) {
+                unitData[deeperPath[0]] = {};
+              }
+
+              unitData[deeperPath[0]][deeperPath[1]] = value;
+            } else {
+              unitData[header] = value;
+            }
+          }
 
           fs.writeFileSync(path, JSON.stringify(unitData, null, 4));
-          console.log(`${row[1]} generated!`)
+          console.log(`${row[1]} generated!`);
+          /////
         }
-      });
-    } else {
-      console.log('No data found.');
+      }
     }
-  });
+  );
 }

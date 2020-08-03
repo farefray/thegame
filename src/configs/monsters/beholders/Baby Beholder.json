@@ -3,17 +3,16 @@
     "cost": 2,
     "lookType": 109,
     "attack": {
-        "value": 35,
-        "speed": 1500,
+        "value": 40,
+        "speed": 1400,
         "range": 2,
         "particleID": "poison"
     },
     "health": {
-        "max": 650
+        "max": 500
     },
+    "walkingSpeed": 1500,
     "mana": {
-        "max": 0,
-        "regen": 0
-    },
-    "walkingSpeed": 1500
+        "regen": "0"
+    }
 }

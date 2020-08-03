@@ -3,17 +3,16 @@
     "cost": 7,
     "lookType": 23,
     "attack": {
-        "value": 50,
+        "value": 100,
         "speed": 1500,
         "range": 2,
         "particleID": "fireball"
     },
     "health": {
-        "max": 850
+        "max": 550
     },
+    "walkingSpeed": 2000,
     "mana": {
-        "max": 100,
         "regen": 15
-    },
-    "walkingSpeed": 2000
+    }
 }

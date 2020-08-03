@@ -3,17 +3,16 @@
     "cost": 1,
     "lookType": 69,
     "attack": {
-        "value": 25,
-        "speed": 1000,
+        "value": 30,
+        "speed": 1500,
         "range": 1,
         "particleID": ""
     },
     "health": {
         "max": 400
     },
+    "walkingSpeed": 1000,
     "mana": {
-        "max": 0,
-        "regen": 0
-    },
-    "walkingSpeed": 1000
+        "regen": "0"
+    }
 }
