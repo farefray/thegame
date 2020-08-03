@@ -1,11 +1,36 @@
 .gold {
-  .background-icon(url('../res/icons/icon_gold.png'));
-
-  color: #004909; // todo move colors into variables
-  display: block;
-  height: rh(16);
-  line-height: rh(16);
-  margin-right: rh(4);
+  display: flex;
+  flex-direction: column;
+  height: rh(32);
+  position: relative;
   text-align: center;
   width: rh(16);
+
+  &-coin {
+    .background-icon(url('../res/icons/icon_gold.png'));
+
+    height: rh(16);
+    position: absolute;
+    top: rh(8);
+    width: rh(16);
+  }
+
+  &-amount {
+    align-self: center;
+    bottom: 0;
+    color: @orange;
+    height: @lineheight;
+    height: rh(5);
+    left: rh(5.5);
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+  }
+
+  &.m-opponent {
+    .gold-amount {
+      bottom: auto;
+      top: 0;
+    }
+  }
 }

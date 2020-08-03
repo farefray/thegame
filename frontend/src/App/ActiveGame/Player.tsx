@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useStoreState } from '@/store/hooks';
 import Deck from './Deck';
 import PlayerHand from './Player/PlayerHand';

@@ -1,7 +1,7 @@
 import { thunk, action, Action, Thunk } from 'easy-peasy';
 import { Card, CardAction, ABILITY_PHASE } from '@/types/Card.d.ts';
 
-interface AnyPlayerModel {
+export interface AnyPlayerModel {
   health: number;
   gold: number;
   board: Array<any>;
@@ -39,14 +39,14 @@ export interface PlayersModel {
   updatePlayer: Thunk<PlayersModel, PlayerUpdatePayload>;
 }
 
-const defaultAnyPlayerState = {
+export const defaultAnyPlayerState = {
   health: 50,
   gold: 0,
   board: [],
   hand: [],
   deck: [],
   discard: []
-};
+} as AnyPlayerModel;
 
 const playersModel: PlayersModel = {
   uuid: '',
