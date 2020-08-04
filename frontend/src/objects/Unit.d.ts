@@ -3,7 +3,6 @@ export interface IState {
   x: number;
   y: number;
   id: string;
-  key: string;
   direction: number;
   isMoving: boolean;
   stats: any;

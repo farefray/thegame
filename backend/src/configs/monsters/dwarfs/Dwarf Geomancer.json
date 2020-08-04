@@ -14,5 +14,12 @@
     "walkingSpeed": 1500,
     "mana": {
         "regen": 20
+    },
+    "spell": {
+        "name": "regeneration",
+        "manacost": 100,
+        "ticks": 5,
+        "tickValue": 45,
+        "tickDelay": 2000
     }
 }

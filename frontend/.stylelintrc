@@ -195,7 +195,7 @@
 		"time-min-milliseconds": 100,
 		"unit-case": "lower",
 		"unit-no-unknown": true,
-		"value-keyword-case": "lower",
+		"value-keyword-case": null,
 		"value-list-comma-newline-after": "never-multi-line",
 		"value-list-comma-newline-before": "never-multi-line",
 		"value-list-comma-space-after": "always",

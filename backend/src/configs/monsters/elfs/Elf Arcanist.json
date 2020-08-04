@@ -14,5 +14,6 @@
     "walkingSpeed": 1500,
     "mana": {
         "regen": "0"
-    }
+    },
+    "spell": {}
 }
