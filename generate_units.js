@@ -75,7 +75,7 @@ function generateUnits(auth) {
   sheets.spreadsheets.values.get(
     {
       spreadsheetId: '1iJL-p0L21tXqeKM4ham-vvbXrNiK7aWDEIMgM_fJzAo',
-      range: 'base!A:L'
+      range: 'base!A:Q'
     },
     (err, res) => {
       if (err) return console.log('The API returned an error: ' + err);

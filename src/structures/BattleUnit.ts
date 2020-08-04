@@ -4,15 +4,17 @@ import Pathfinder from './Battle/Pathfinder';
 import { ACTION_TYPE, AcquireTargetAction, SpawnAction } from '../typings/Action';
 import { MoveAction, AttackAction, HealthChangeAction, ManaChangeAction, DeathAction, CastAction } from '../typings/Action';
 import Actor, { ActionGeneratorValue } from '../typings/Actor';
-import MonstersFactory from '../factories/MonstersFactory';
 import { IEffect, EFFECTS } from '../utils/effects';
 import { DIRECTION } from '../shared/constants';
 import Position from '../shared/Position';
 import Step from './Battle/Pathfinder/Step';
 import { MonsterInterface } from '../typings/Monster';
 import { BattleContext } from '../typings/Battle';
+import MonsterSpellsFactory from '../factories/MonsterSpellsFactory';
+import { MonsterSpell } from './abstract/MonsterSpell';
 
 const STARTING_DELAY = 2000; // delaying all the starting actions for frontend needs
+const MAX_MANA = 100;
 
 interface ActionOptions {
   parent?: string;
@@ -25,13 +27,11 @@ interface ManaChangeOptions extends ActionOptions { }
 
 export interface SpellOptions {
   manacost: number;
-  execute: Function;
-  config?: {
-    ticks?: number;
-    tickValue?: number;
-    tickDelay?: number;
-    effectId?: string;
-  }
+  name: string;
+  ticks?: number;
+  tickValue?: number;
+  tickDelay?: number;
+  effectId?: string;
 }
 
 export default class BattleUnit {
@@ -59,6 +59,7 @@ export default class BattleUnit {
   public isShopRestricted: boolean;
   public walkingSpeed: number;
   private spriteSize: number; // for frontend representation
+  private monsterSpell?: MonsterSpell;
 
   private _health: {
     now: number;
@@ -94,12 +95,12 @@ export default class BattleUnit {
     if (monsterConfig.mana) {
       this._mana = {
         now: 0,
-        max: monsterConfig.mana.max || 0,
+        max: MAX_MANA,
         regen: monsterConfig.mana.regen || 0
       };
     }
 
-    this.spell = monsterConfig.spell;
+    this.spell = monsterConfig.spell; // todo destruction
 
     this._health = {
       now: monsterConfig.health.max,
@@ -112,21 +113,36 @@ export default class BattleUnit {
     this.isTargetable = monsterConfig?.specialty?.targetable !== undefined ? monsterConfig.specialty.targetable : true;
     this.isPassive = monsterConfig?.specialty?.passive !== undefined ? monsterConfig.specialty.passive : false;
     this.isShopRestricted = !!monsterConfig?.specialty?.shopRestricted;
+
+    if (this.spell?.name) {
+      this.monsterSpell = MonsterSpellsFactory.create(this);
+    }
   }
 
-  /** Socket representation for unit which not requires most of the data */
-  /**
-   * TODO some better and more productive approach.
-   * Maybe we need to rewrite monsters to classes or objects with non-
-   * enumerable properties to exclude those which we dont need or maybe Symbols */
+
   toSocket() {
-    const json = {};
-    Object.keys(this).map(key => {
-      if (key !== 'spell') { // hardcode to avoid spell functions to be sent over socket
-        json[key] = this[key];
-      }
-    });
-    return json;
+    return {
+      id: this.id,
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      teamId: this.teamId,
+      attack: {
+        value: this.attack.value,
+        range: this.attack.range,
+        speed: this.attack.speed,
+        particle: {
+          id: this.attack?.particle?.id,
+          duration: this.attack?.particle?.duration
+        }
+      },
+      lookType: this.lookType,
+      armor: this.armor,
+      cost: this.cost,
+      spriteSize: this.spriteSize,
+      health: this.maxHealth,
+      manaRegen: this.manaRegen
+    };
   }
 
   get position(): Position {
@@ -220,21 +236,20 @@ export default class BattleUnit {
   }
 
   attemptSpellCast(battleContext: BattleContext) {
-    if (!this.spell || this.mana < this.spell.manacost) return {};
+    if (!this.monsterSpell || !this.spell || this.mana < this.spell.manacost) return {};
 
-    const spellActionGenerator: Generator | null = this.spell.execute.call(this, battleContext);
+    const spellActionGenerator = this.monsterSpell.cast(battleContext);
     if (!spellActionGenerator) return {};
 
     const castAction: CastAction = {
       unitID: this.id,
       uid: uuidv4(),
       type: ACTION_TYPE.CAST,
-      spellName: this.spell.execute.name
+      spellName: this.spell.name
     };
 
-    const caster = this;
     return {
-      actions: [castAction, ...caster.manaChange(-(caster.spell?.manacost || caster.mana), {
+      actions: [castAction, ...this.manaChange(-(this.spell?.manacost || this.mana), {
         parent: castAction.uid
       })],
       actors: [
@@ -304,7 +319,7 @@ export default class BattleUnit {
   }
 
   *regeneration(): Generator<ActionGeneratorValue, ActionGeneratorValue, BattleContext> {
-    while (this.isAlive && this.maxMana > 0 && this.manaRegen > 0) {
+    while (this.isAlive && this.manaRegen > 0) {
       yield { actionDelay: 1000, actions: this.manaChange(this.manaRegen) };
     }
 

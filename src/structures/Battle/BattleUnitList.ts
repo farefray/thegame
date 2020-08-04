@@ -22,6 +22,12 @@ export default class BattleUnitList extends AbstractList<BattleUnit> {
     return this.filter(({ health, maxHealth }) => health < maxHealth);
   }
 
+  /** Hacked method in order to allow chaining filter calls.
+   * Would be good to have it solved by patching AbstractList filter method, to return new instace of parent class instead of AbstractList<T> */
+  filter(conditionFn: Function, mutateInstance = false) {
+    return new BattleUnitList(super.filter(conditionFn, mutateInstance).values());
+  }
+
   fromPositions(positions: Array<Position>): BattleUnitList {
     const units = new BattleUnitList([]);
 

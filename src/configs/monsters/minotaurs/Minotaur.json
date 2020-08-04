@@ -14,5 +14,10 @@
     "walkingSpeed": 1000,
     "mana": {
         "regen": 10
+    },
+    "spell": {
+        "name": "hoof",
+        "manacost": 100,
+        "ticks": 2000
     }
 }
