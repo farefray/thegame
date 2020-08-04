@@ -13,20 +13,19 @@ const GAMEBOARD_HEIGHT = 8;
 const GAMEBOARD_WIDTH = 8;
 const ONE_CELL_HEIGHT = 64;
 const SPRITE_SIZE = 32;
+const MAX_MANA = 100;
 
 export default class Unit extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
     const { unit } = props;
-    console.log("Unit -> constructor -> unit", unit)
-    const { x, y, id, key } = unit;
+    const { x, y, id } = unit;
     const position = this.getPositionFromCoordinates(x, y);
     this.state = {
       x: parseInt(x, 10),
       y: parseInt(y, 10),
       id,
-      key,
       direction: unit.team ? DIRECTION.NORTH : DIRECTION.SOUTH,
       isMoving: false,
 
@@ -34,7 +33,7 @@ export default class Unit extends React.Component<IProps, IState> {
       effects: [],
 
       mana: 0,
-      health: unit._health.max,
+      health: unit.health,
 
       unitSpriteDimensions: unit.spriteSize * SPRITE_SIZE,
       isLoaded: false,
@@ -57,10 +56,6 @@ export default class Unit extends React.Component<IProps, IState> {
 
   get id() {
     return this.state.id;
-  }
-
-  get key() {
-    return this.state.key;
   }
 
   get startingPosition() {
@@ -228,7 +223,7 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   onEffectDone(effectID) {
-    const currentEffect = this.state.effects.filter((effect) => effect.id === effectID)[0]; // todo object and get by key
+    const currentEffect = this.state.effects.filter((effect) => effect.id === effectID)[0];
     const effectCallback = currentEffect && currentEffect.callback;
 
     this.setState(
@@ -268,7 +263,7 @@ export default class Unit extends React.Component<IProps, IState> {
         this.setState({ ...this.getPositionFromCoordinates(this.state.x, this.state.y) });
       }, duration);
     } else {
-      const { particleID } = this.props.unit.attack; // has id and duration(?)
+      const { id: particleID } = this.props.unit.attack.particle; // has id and duration(?)
 
       if (!particleID) {
         console.warn('No particle for range attack', this.props.unit);
@@ -300,9 +295,9 @@ export default class Unit extends React.Component<IProps, IState> {
   }
 
   manaChange(value) {
-    let { mana, stats } = this.state;
+    let { mana } = this.state;
     this.setState({
-      mana: Math.max(0, Math.min(mana + value, stats._mana.max))
+      mana: Math.max(0, Math.min(mana + value, MAX_MANA))
     });
   }
 
@@ -310,7 +305,7 @@ export default class Unit extends React.Component<IProps, IState> {
     let { health, stats } = this.state;
     this.setState(
       {
-        health: Math.max(0, Math.min(health + value, stats._health.max))
+        health: Math.max(0, Math.min(health + value, stats.health))
       },
       () => {
         this.addEffect({
@@ -368,8 +363,8 @@ export default class Unit extends React.Component<IProps, IState> {
           <div
             className="unit-healthbar-fill"
             style={{
-              backgroundColor: getHealthColorByPercentage((health / stats._health.max) * 100, stats.teamId),
-              right: `${21 - 20 * (health / stats._health.max)}px`
+              backgroundColor: getHealthColorByPercentage((health / stats.health) * 100, stats.teamId),
+              right: `${21 - 20 * (health / stats.health)}px`
             }}
           />
         </div>
@@ -377,7 +372,7 @@ export default class Unit extends React.Component<IProps, IState> {
           <div
             className="unit-manabar-fill"
             style={{
-              right: `${21.5 - 20 * (mana / stats._mana.max)}px`
+              right: `${21.5 - 20 * (mana / MAX_MANA)}px`
             }}
           />
         </div>

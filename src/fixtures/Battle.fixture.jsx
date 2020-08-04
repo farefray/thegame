@@ -12,7 +12,7 @@ import { GAME_PHASE } from '@/../../backend/src/typings/Game';
 import Battle from '@/../../backend/src/structures/Battle';
 
 async function emulateBattle() {
-  const battleUnit = MonstersFactory.createBattleUnit('Beholder');
+  const battleUnit = MonstersFactory.createBattleUnit('Dwarf_Geomancer');
   battleUnit.rearrangeToPos(new Position(0, 0));
   const npcBoard = new BattleUnitList([battleUnit]);
 
