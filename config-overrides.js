@@ -37,7 +37,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 const webpackConfig = override(
   overridePassedProcessEnv(["REACT_APP_DEBUGMODE", "REACT_APP_FIREBASE_CONFIG"]),
-  process.env.APP_COSMOS ? (config) => config : addReactRefresh({ disableRefreshCheck: true }), // react-refresh for yarn dev, but not for cosmos
+  process.env.APP_COSMOS ? (config) => config : addReactRefresh(), // react-refresh for yarn dev, but not for cosmos
   (config) => {
     config.devtool = 'eval-cheap-module-source-map';
     return config;
