@@ -18,12 +18,12 @@ function Deck({ cards, isDiscard }) {
     from: (card, i) => ({
       x: 0,
       y: isDiscard ? 0 : -500,
-      opacity: 0
+      // opacity: 0
     }),
     enter: (card, i) => ({
       x: 0,
       y: -i * getRandomArbitrary(2, 6),
-      opacity: 1,
+      // opacity: 1, // currently bugged in react-spring
       rotate: getRandomArbitrary(-5, 5),
       delay: 250 * i
     }),
@@ -31,7 +31,7 @@ function Deck({ cards, isDiscard }) {
       return {
         x: 24 + i * CARD_WIDTH,
         y: 0,
-        opacity: 0
+        // opacity: 0
       };
     },
     config: {

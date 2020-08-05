@@ -31,19 +31,19 @@ function GoldCoins({ amount = 0, isOpponent }) {
     keys: (coins) => coins.key,
     from: (coins, i) => ({
       y: -64,
-      opacity: 0
+      // opacity: 0
     }),
     enter: (coin, i) => {
       return ({
         x: getRandomArbitrary(-30, 30),
         y: getRandomArbitrary(-30, 30),
-        opacity: 1,
+        // opacity: 1, // Currently bugged in react-spring
         delay: 150 * i
       });
     },
     leave: (coin, i) => ({
       x: -100,
-      opacity: 0
+      // opacity: 0
     })
   });
 

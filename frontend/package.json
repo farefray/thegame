@@ -17,6 +17,7 @@
     "stylelint": "npx stylelint \"**/*.less\""
   },
   "dependencies": {
+    "@babel/preset-typescript": "^7.10.4",
     "@lesechos/image-size-loader": "^1.0.1",
     "@types/node": "^12.12.5",
     "@types/react": "^16.9.11",
@@ -33,7 +34,6 @@
     "hyperid": "^2.0.4",
     "less": "^3.10.3",
     "less-loader": "6.1.0",
-    "lodash": "^4.17.15",
     "node-sass": "^4.12.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
