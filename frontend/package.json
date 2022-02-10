@@ -34,7 +34,7 @@
     "hyperid": "^2.0.4",
     "less": "^3.10.3",
     "less-loader": "6.1.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-helmet": "^5.2.1",
